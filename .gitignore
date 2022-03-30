@@ -6,5 +6,6 @@
 !*.hpp
 !*.sh
 !*.md
+!*.yml
 !.clang-format
 !Makefile
