@@ -20,7 +20,7 @@ $(NAME): $(objs)
 
 $(objsdir)/%.o: $(srcsdir)/%.cpp
 	@mkdir -p $(objsdir)/$(*D)
-	@$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
+	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
 
 .PHONY: test
 test: $(objs)
