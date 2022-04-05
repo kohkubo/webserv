@@ -1,4 +1,4 @@
-name: Move new issues into プロジェクト名 (ここは好きに書いてください)
+name: Move new issues into 
 on:
   issues:
     types: [opened]
