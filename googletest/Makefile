@@ -2,7 +2,7 @@ NAME := tester
 
 SHELL := /bin/bash
 CXX := clang++
-CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=integer -fsanitize=address
+CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=undefined -fsanitize=address
 # CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=integer -fsanitize=address -fprofile-arcs -ftest-coverage
 LIBS := -lpthread
 INCLUDES := -I. -I../includes
