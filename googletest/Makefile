@@ -7,6 +7,11 @@ CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=integer -fsanitize=address
 LIBS := -lpthread
 INCLUDES := -I. -I../includes
 
+
+ifeq ($(shell uname), Linux)
+	lcov_op :=  --gcov-tool ./llvm-gcov.sh
+endif
+
 # ==== Enter latest release URL ==== #
 GTEST_URL := https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
 GTEST_RELEASE := googletest-$(basename $(basename $(notdir $(GTEST_URL))))
@@ -65,7 +70,7 @@ $(GTEST_RELEASE):
 cav: CXXFLAGS += -fprofile-arcs -ftest-coverage
 cav: re
 	./$(NAME)
-	lcov -c -b . -d . -o cov_test.info --gcov-tool ./llvm-gcov.sh
+	lcov -c -b . -d . -o cov_test.info $(lcov_op)
 	genhtml cov_test.info -o cov_test
 	$(RM) $(NAME) cov_test.info
 	$(RM) $(TOBJS) $(TOBJDIR)/*.gcda $(TOBJDIR)/*.gcno
