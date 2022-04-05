@@ -67,8 +67,8 @@ $(GTEST_RELEASE):
 	if [ ! -f $(notdir $(GTEST_URL)) ]; then curl -OL $(GTEST_URL); fi
 	tar -xzf $(notdir $(GTEST_URL)) $(GTEST_RELEASE) && $(RM) $(notdir $(GTEST_URL))
 
-cav: CXXFLAGS += -fprofile-arcs -ftest-coverage
-cav: re
+cov: CXXFLAGS += -fprofile-arcs -ftest-coverage
+cov: re
 	./$(NAME)
 	lcov -c -b . -d . -o cov_test.info $(lcov_op)
 	genhtml cov_test.info -o cov_test
@@ -86,4 +86,4 @@ fclean: clean
 
 re : fclean all
 
-.PHONY: all run cav clean fclean re
+.PHONY: all run cov clean fclean re
