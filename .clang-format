@@ -1,4 +1,4 @@
-BasedOnStyle: Google
+BasedOnStyle: llvm
 AlignAfterOpenBracket: Align
 AlignArrayOfStructures: Right
 AlignConsecutiveAssignments: AcrossEmptyLinesAndComments

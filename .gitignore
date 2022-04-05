@@ -8,4 +8,5 @@
 !*.md
 !*.yml
 !.clang-format
+!.clang-tidy
 !Makefile
