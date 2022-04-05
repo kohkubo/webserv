@@ -23,11 +23,11 @@ $(objsdir)/%.o: $(srcsdir)/%.cpp
 	@$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
 
 .PHONY: test
-test: $(OBJS)
+test: $(objs)
 	$(MAKE) -C $(gtestdir) run
 
 .PHONY: cav
-cav: $(OBJS)
+cav: $(objs)
 	$(MAKE) -C $(gtestdir) cav
 
 .PHONY: clean
