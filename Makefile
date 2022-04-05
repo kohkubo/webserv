@@ -2,82 +2,52 @@ NAME = webserv
 CXX = clang++
 CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g
 
-srcsdir = ./srcs
 includes = ./includes
-srcs = $(srcsdir)/main.cpp
-objs = $(srcs:.cpp=.o)
-depends = $(objs:.o=.d)
+srcsdir = srcs
+objsdir = objs
+srcs = $(shell find $(srcsdir) -name "*.cpp" -type f)
+objs = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.o))
+deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
+
+# == path of googletest dir ==
+gtestdir := googletest
 
 .PHONY: all
 all: $(NAME)
 
 $(NAME): $(objs)
-	$(CXX) $(CXXFLAGS) -o $(NAME) $(objs)
+	$(CXX) $(CXXFLAGS) $^ -o $(NAME)
+
+$(objsdir)/%.o: $(srcsdir)/%.cpp
+	@mkdir -p $(objsdir)/$(*D)
+	@$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
+
+.PHONY: test
+test:
+	$(MAKE) -C $(gtestdir) run
+
+.PHONY: cav
+cav:
+	$(MAKE) -C $(gtestdir) cav
 
 .PHONY: clean
 clean:
-	$(RM) $(objs) $(objs) $(NAME)
-	$(RM) -rf *.dSYM
-	$(RM) -rf tester
-	$(RM) -rf *.gcda
-	$(RM) -rf *.gcno
-	$(RM) -rf *.info
-	$(RM) -rf tester.dSYM
-	$(RM) -rf *_exe
-	$(RM) -rf benchmark
-	$(RM) -rf *.log
-	$(RM) -rf *.d
-	$(RM) -rf *.o
-	$(RM) -rf a.out
-	$(RM) -rf *.csv
+	$(RM) $(objs) $(deps)
+	$(RM) -r $(objsdir)
+	$(MAKE) -C $(gtestdir) clean
 
 .PHONY: fclean
 fclean: clean
-	$(RM) -rf $(NAME)
+	$(RM) $(NAME)
+	$(MAKE) -C $(gtestdir) fclean
 
 .PHONY: re
 re: fclean all
 
-gtestdir	=	./test
-gtest		=	$(gtestdir)/gtest $(gtestdir)/googletest-release-1.11.0
-gbench	=	$(gtestdir)/benchmark
 
-testdir = ./gtest
-benchdir = ./gbench
-
-$(gtest):
-	mkdir -p $(dir ../test)
-	curl -OL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
-	tar -xvzf release-1.11.0.tar.gz googletest-release-1.11.0
-	$(RM) -rf release-1.11.0.tar.gz
-	python googletest-release-1.11.0/googletest/scripts/fuse_gtest_files.py $(gtestdir)
-	mv googletest-release-1.11.0 $(gtestdir)
-
-test_compile = clang++ -std=c++11 \
-	$(testdir)/gtest.cpp $(gtestdir)/googletest-release-1.11.0/googletest/src/gtest_main.cc $(gtestdir)/gtest/gtest-all.cc \
-	-g -fsanitize=address -fsanitize=undefined \
-	-I$(gtestdir) -I/usr/local/opt/llvm/include -I$(includes) -lpthread -o tester
-
-.PHONY: test
-test: $(gtest) fclean
-	$(test_compile)
-	./tester # --gtest_filter=Vector.other
-
-.PHONY: cave
-cave: $(gtest) fclean
-	clang++ -std=c++11 -O0 $(testdir)/gtest.cpp $(gtestdir)/googletest-release-1.11.0/googletest/src/gtest_main.cc $(gtestdir)/gtest/gtest-all.cc \
-	-I$(gtestdir) -I/usr/local/opt/llvm/include -I$(includes) -lpthread -o tester -fprofile-arcs -ftest-coverage
-	./tester
-	lcov -c -b . -d . -o cov_test.info
-	lcov -r cov_test.info "*gtest*" -o cov_test.info
-	genhtml cov_test.info -o cov_test
-	$(RM) -rf cov_test.info
-	$(RM) -rf tester
-	$(RM) -rf *.gcda
-	$(RM) -rf *.gcno
-	$(RM) -rf *.info
-	$(RM) -rf tester.dSYM
-	open cov_test/index-sort-f.html
+# 改修予定
+gbench	=	./test/benchmark
+benchdir = ./gbench	
 
 benchflg = clang++ -std=c++11 -O2
 benchflg2 = $(benchdir)/gbench.cpp \
