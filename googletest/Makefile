@@ -39,8 +39,8 @@ $(NAME): $(OBJS) $(GTOBJS) $(TOBJS)
 	$(CXX) $(CXXFLAGS) $^ $(INCLUDES) $(LIBS) -o $@
 
 run: $(NAME)
-	./$@ || :
-	$(RM) $@
+	./$(NAME) || :
+	$(RM) $(NAME)
 
 $(GTOBJDIR)/%.o: $(GTSRCDIR)/%.cc
 	@mkdir -p $(GTOBJDIR)
@@ -68,7 +68,7 @@ cav: re
 	lcov -c -b . -d . -o cov_test.info --gcov-tool ./llvm-gcov.sh
 	genhtml cov_test.info -o cov_test
 	$(RM) $(NAME) cov_test.info
-	$(RM) $(TOBJDIR)/*.gcda $(TOBJDIR)/*.gcno
+	$(RM) $(TOBJS) $(TOBJDIR)/*.gcda $(TOBJDIR)/*.gcno
 	open cov_test/index-sort-f.html
 
 clean:
