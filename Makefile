@@ -13,7 +13,7 @@ deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
 gtestdir := googletest
 
 .PHONY: all
-all: $(NAME)
+all: prepush $(NAME)
 
 $(NAME): $(objs)
 	$(CXX) $(CXXFLAGS) $^ -o $(NAME)
@@ -44,10 +44,13 @@ fclean: clean
 .PHONY: re
 re: fclean all
 
+.PHONY: prepush
+prepush:
+	cp pre-push ./.git/hooks/
 
 # 改修予定
 gbench	=	./test/benchmark
-benchdir = ./gbench	
+benchdir = ./gbench
 
 benchflg = clang++ -std=c++11 -O2
 benchflg2 = $(benchdir)/gbench.cpp \

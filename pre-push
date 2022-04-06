@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+echo "Running pre-push hook"
+clang-tidy ./srcs/*
+
+exit $?
