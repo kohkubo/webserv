@@ -13,7 +13,7 @@ deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
 gtestdir := googletest
 
 .PHONY: all
-all: prepush $(NAME)
+all: $(NAME)
 
 $(NAME): $(objs)
 	$(CXX) $(CXXFLAGS) $^ -o $(NAME)
@@ -43,6 +43,9 @@ fclean: clean
 
 .PHONY: re
 re: fclean all
+
+.PHONY
+setp_env: prepush
 
 .PHONY: prepush
 prepush:
