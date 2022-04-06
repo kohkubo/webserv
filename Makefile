@@ -44,8 +44,8 @@ fclean: clean
 .PHONY: re
 re: fclean all
 
-.PHONY
-setp_env: prepush
+.PHONY: setup_env
+setup_env: prepush
 
 .PHONY: prepush
 prepush:
