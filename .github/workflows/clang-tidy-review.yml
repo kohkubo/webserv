@@ -2,7 +2,7 @@ name: clang-tidy-review
 
 # You can be more specific, but it currently only works on pull requests
 on:
-  workflow_dispatch:
+  pull_request:
     branches: [ main ]
 
 jobs:
