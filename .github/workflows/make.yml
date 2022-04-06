@@ -1,8 +1,7 @@
 name: C/C++ CI
 
 on:
-  pull_request:
-    types: [ review_requested ]
+  workflow_dispatch:
     branches: [ main ]
 
 jobs:
