@@ -1,9 +1,12 @@
 name: Run clang-format Linter
 
-on: [pull_request]
+on:
+  pull_request:
+    types: [ review_requested ]
+    branches: [ main ]
 
 jobs:
-  build:
+  format:
     runs-on: ubuntu-latest
 
     steps:
