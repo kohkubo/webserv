@@ -1,6 +1,7 @@
 #!/bin/zsh
 
 echo "Running pre-push hook"
+clang-format -i -style=file ./src/* ./includes/*
 clang-tidy ./srcs/*
 
 exit $?
