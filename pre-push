@@ -1,9 +1,10 @@
 #!/bin/zsh
 
 echo "Running pre-push hook"
-if [ "$(uname)" == 'Darwin' ]; then
+if [ "$(uname)" = 'Darwin' ]; then
   clang-format -i -style=file ./srcs/* ./includes/* && clang-tidy ./srcs/* ./includes/* -- -I./includes
-elif [ "$(uname)" == 'Linux' ]; then
+elif [ "$(uname)" = 'Linux' ]; then
+  echo linux
   clang-format-12 -i -style=file ./srcs/* ./includes/* && clang-tidy-12 ./srcs/* ./includes/* -- -I./includes
 fi
 exit $?
