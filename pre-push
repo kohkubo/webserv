@@ -2,6 +2,6 @@
 
 echo "Running pre-push hook"
 clang-format -i -style=file ./srcs/* ./includes/*
-clang-tidy ./srcs/* ./includes/*
+clang-tidy ./srcs/* ./includes/* -- -I./includes
 
 exit $?
