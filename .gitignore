@@ -11,3 +11,4 @@
 !.clang-tidy
 !Makefile
 test
+!pre-push
