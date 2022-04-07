@@ -10,3 +10,4 @@
 !.clang-format
 !.clang-tidy
 !Makefile
+!pre-push

@@ -20,7 +20,7 @@ $(NAME): $(objs)
 
 $(objsdir)/%.o: $(srcsdir)/%.cpp
 	@mkdir -p $(objsdir)/$(*D)
-	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: test
 test: $(objs)
@@ -44,6 +44,12 @@ fclean: clean
 .PHONY: re
 re: fclean all
 
+.PHONY: setup_env
+setup_env: prepush
+
+.PHONY: prepush
+prepush:
+	cp pre-push ./.git/hooks/
 
 # 改修予定
 gbench	=	./test/benchmark

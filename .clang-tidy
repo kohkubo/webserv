@@ -1,5 +1,7 @@
 Checks: 'readability-identifier-naming'
+WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
+FormatStyle: 'llvm'
 CheckOptions:
   - key:             readability-identifier-naming.ClassCase
     value:           CamelCase
