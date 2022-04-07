@@ -1,6 +1,6 @@
 BasedOnStyle: llvm
 AlignAfterOpenBracket: Align
-AlignArrayOfStructures: Right
+# AlignArrayOfStructures: Right
 AlignConsecutiveAssignments: AcrossEmptyLinesAndComments
 AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
 AlignConsecutiveDeclarations: AcrossEmptyLinesAndComments
