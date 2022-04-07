@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+set -eux
+
 echo "Running pre-push hook"
 if [ "$(uname)" = 'Darwin' ]; then
   clang-format -i -style=file ./srcs/* ./includes/* && clang-tidy ./srcs/* ./includes/* -- -I./includes
