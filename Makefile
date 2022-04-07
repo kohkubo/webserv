@@ -47,7 +47,7 @@ re: fclean all
 
 # 改修予定
 gbench	=	./test/benchmark
-benchdir = ./gbench	
+benchdir = ./gbench
 
 benchflg = clang++ -std=c++11 -O2
 benchflg2 = $(benchdir)/gbench.cpp \
@@ -63,4 +63,4 @@ bench:
 	--benchmark_out_format=csv \
 	--benchmark_out=benchmark.csv # --benchmark_filter=BM_VectorInsert_input_iterator
 
--include $(depends)
+-include $(deps)
