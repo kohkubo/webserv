@@ -11,3 +11,5 @@
 !.clang-tidy
 !Makefile
 !pre-push
+
+googletest/includes/gtest/internal/custom/README.md
