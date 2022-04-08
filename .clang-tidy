@@ -1,4 +1,6 @@
-Checks: 'readability-identifier-naming'
+Checks:
+  readability-identifier-naming,
+  -clang-analyzer-security.insecureAPI.bzero
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: 'llvm'
