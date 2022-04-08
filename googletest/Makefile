@@ -18,8 +18,8 @@ GTEST_RELEASE := googletest-$(basename $(basename $(notdir $(GTEST_URL))))
 
 SRCDIR := ../srcs
 OBJDIR := ../objs
-MAIN_SUFFIX := main.cpp
-SRCFILE := $(filter-out %$(MAIN_SUFFIX),$(shell find $(SRCDIR) -name "*.cpp" -type f))
+MAIN_FILE := main.cpp
+SRCFILE := $(filter-out %$(MAIN_FILE),$(shell find $(SRCDIR) -name "*.cpp" -type f))
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.o))
 DEPS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.d))
 
