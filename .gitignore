@@ -8,7 +8,9 @@
 !*.md
 !*.yml
 !*.txt
+!*.html
 !.clang-format
 !.clang-tidy
 !Makefile
+test
 !pre-push
