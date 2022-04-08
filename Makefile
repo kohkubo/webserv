@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g
 
 includes = ./includes
 srcsdir = srcs
-objsdir = objs
+objsdir = ./srcs/objs
 srcs = $(shell find $(srcsdir) -name "*.cpp" -type f)
 objs = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.o))
 deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
@@ -45,11 +45,12 @@ fclean: clean
 re: fclean all
 
 .PHONY: setup_env
-setup_env: prepush
+setup_env:
+	cp .github/pre-push ./.git/hooks/
 
 .PHONY: prepush
 prepush:
-	cp pre-push ./.git/hooks/
+	zsh .github/pre-push
 
 # 改修予定
 gbench	=	./test/benchmark

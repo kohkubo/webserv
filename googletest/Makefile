@@ -17,14 +17,14 @@ GTEST_URL := https://github.com/google/googletest/archive/refs/tags/release-1.11
 GTEST_RELEASE := googletest-$(basename $(basename $(notdir $(GTEST_URL))))
 
 SRCDIR := ../srcs
-OBJDIR := ../objs
+OBJDIR := ../srcs/objs
 MAIN_SUFFIX := main.cpp
 SRCFILE := $(filter-out %$(MAIN_SUFFIX),$(shell find $(SRCDIR) -name "*.cpp" -type f))
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.o))
 DEPS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.d))
 
 # ==== Path to test ==== #
-TESTDIR := ../tests
+TESTDIR := tests
 TOBJDIR := tobjs
 TESTS := $(shell find $(TESTDIR) -name "*.cpp" -type f)
 TOBJS = $(patsubst $(TESTDIR)%,$(TOBJDIR)%,$(TESTS:.cpp=.o))
