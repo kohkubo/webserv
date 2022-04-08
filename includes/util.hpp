@@ -3,10 +3,11 @@
 
 #include <cerrno>
 #include <iostream>
+#include <string.h>
 #include <string>
 
 inline void error_log_with_errno(const std::string &msg) {
-  std::cerr << msg << ": " << std::strerror(errno) << std::endl;
+  std::cerr << msg << ": " << strerror(errno) << std::endl;
 }
 
 bool is_match_suffix_string(const std::string &str, const std::string &suffix);
