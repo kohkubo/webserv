@@ -1,0 +1,114 @@
+ACCEPT(2)                      System Calls Manual                     ACCEPT(2)
+
+NAME
+     accept – accept a connection on a socket
+accept  - ソケット上の接続を受け入れます
+
+SYNOPSIS
+     #include <sys/socket.h>
+
+     int
+     accept(int socket, struct sockaddr *restrict address,
+         socklen_t *restrict address_len);
+
+DESCRIPTION
+The argument socket is a socket that has been created with socket(2), bound to an address with bind(2), and is listening for connections after a listen(2).
+引数ソケットは、SOCKET（2）で作成されたソケット（2）にバインドされている（2）、Listen（2）の後に接続を待機しています。
+
+accept() extracts the first connection request on the queue of pending connections, creates a new socket with the same properties of socket, and allocates a new file descriptor for the socket.
+accept（）保留中の接続のキューで最初の接続要求を抽出し、ソケットの同じプロパティを持つ新しいソケットを作成し、ソケットの新しいファイル記述子を割り当てます。
+
+If no pending connections are present on the queue, and the socket is not marked as non-blocking, accept() blocks the caller until a connection is present.
+キューに保留中の接続が存在しない場合、ソケットは非ブロックとしてマークされていない場合は、接続が存在するまで呼び出し元をブロックします。
+
+If the socket is marked non-blocking and no pending connections are present on the queue, accept() returns an error as described below.
+ソケットがノンブロッキングでマークされていて、キューに保留中の接続が存在しない場合、accept（）は後述のようにエラーを返します。
+
+The accepted socket may not be used to accept more connections.
+受け入れられたソケットは、より多くの接続を受け入れるために使用されないかもしれません。
+
+The original socket socket, remains open.
+元のソケットソケットは開いたままです。
+
+The argument address is a result parameter that is filled in with the address of the connecting entity, as known to the communications layer.
+引数アドレスは、通信層に認識されているように、接続エンティティのアドレスに埋められる結果パラメータです。
+
+The exact format of the address parameter is determined by the domain in which the communication is occurring.
+アドレスパラメータの正確なフォーマットは、通信が行われているドメインによって決まります。
+
+The address_len is a value-result parameter;
+address_lenは値 - 結果パラメータです。
+
+it should initially contain the amount of space pointed to by address;
+それは最初にアドレスによって指されるスペースの量を含みます。
+
+on return it will contain the actual length (in bytes) of the address returned.
+返されると、返されたアドレスの実際の長さ（バイト単位）が含まれます。
+
+This call is used with connection-based socket types, currently with SOCK_STREAM.
+この呼び出しは、現在SOCK_STREAMを使用して、接続ベースのソケットタイプで使用されます。
+
+It is possible to select(2) a socket for the purposes of doing an accept() by selecting it for read.
+読み取り用に選択して、accept（）を実行する目的で（2）ソケットを選択することができます。
+
+For certain protocols which require an explicit confirmation, such as ISO or DATAKIT, accept() can be thought of as merely dequeuing the next connection request and not implying confirmation.
+ISOやDatakitなどの明示的な確認を必要とする特定のプロトコルでは、次の接続要求をデキューし、確認を暗示していないと考えることができます。
+
+Confirmation can be implied by a normal read or write on the new file descriptor, and rejection can be implied by closing the new socket.
+確認は、新しいファイル記述子上の通常の読み取りまたは書き込みによって暗示でき、新しいソケットを閉じることで拒否を暗示できます。
+
+One can obtain user connection request data without confirming the connection by issuing a recvmsg(2) call with an msg_iovlen of 0 and a non-zero msg_controllen, or by issuing a getsockopt(2) request.
+0、MSG_IOVLENを0と非ゼロのMSG_CONTROLLENで発行することによって、またはGetSockopt（2）要求を発行することによって、接続を確認することなく、ユーザ接続要求データを取得することができる。
+
+Similarly, one can provide user connection rejection information by issuing a sendmsg(2) call with providing only the control information, or by calling
+同様に、制御情報のみを提供する、または呼び出しによって、SendMSG（2）呼び出しを発行することによってユーザ接続拒否情報を提供することができる。
+setsockopt(2).
+
+RETURN VALUES
+     The call returns -1 on error and the global variable errno is set to
+     indicate the error.  If it succeeds, it returns a non-negative integer that
+     is a descriptor for the accepted socket.
+
+ERRORS
+     The accept() system call will fail if:
+
+     [EBADF]            socket is not a valid file descriptor.
+
+     [ECONNABORTED]     The connection to socket has been aborted.
+
+     [EFAULT]           The address parameter is not in a writable part of the
+                        user address space.
+
+     [EINTR]            The accept() system call was terminated by a signal.
+
+     [EINVAL]           socket is unwilling to accept connections.
+
+     [EMFILE]           The per-process descriptor table is full.
+
+     [ENFILE]           The system file table is full.
+
+     [ENOMEM]           Insufficient memory was available to complete the
+                        operation.
+
+     [ENOTSOCK]         socket references a file type other than a socket.
+
+     [EOPNOTSUPP]       socket is not of type SOCK_STREAM and thus does not
+                        accept connections.
+
+     [EWOULDBLOCK]      socket is marked as non-blocking and no connections are
+                        present to be accepted.
+
+LEGACY SYNOPSIS
+     #include <sys/types.h>
+     #include <sys/socket.h>
+
+     The include file <sys/types.h> is necessary.
+
+SEE ALSO
+     bind(2), connect(2), connectx(2), listen(2), select(2), socket(2),
+     compat(5)
+
+HISTORY
+     The accept() function appeared in 4.2BSD.
+
+BSD 4.2                          March 18, 2015                          BSD 4.2
