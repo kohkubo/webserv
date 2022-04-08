@@ -7,9 +7,12 @@
 !*.sh
 !*.md
 !*.yml
+!*.txt
+!*.html
 !.clang-format
 !.clang-tidy
 !Makefile
+test
 !pre-push
 
 googletest/includes/
