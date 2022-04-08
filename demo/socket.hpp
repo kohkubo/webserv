@@ -11,9 +11,6 @@
 #include "configure.hpp"
 
 class Socket {
-    int listenfd;
-    int port;
-    struct sockaddr_in serv_addr;
 public:
     explicit Socket(int port_): port{port_} {}
     void set_listenfd();
@@ -21,6 +18,10 @@ public:
     int set_socket();
 
     int get_listenfd() const { return this->listenfd; }
+private:
+    int listenfd;
+    int port;
+    struct sockaddr_in serv_addr;
 };
 
 #endif

@@ -26,9 +26,9 @@
 
 int http1()
 {
-    std::string executive_file = HTML_FILE;
-    Socket *sock = new Socket(HTTP1_PORT);
-    sock->set_socket();
+    std::string __executive_file = HTML_FILE;
+    Socket *__sock = new Socket(HTTP1_PORT);
+    __sock->set_socket();
 
     int body_length = 0;
     int is_file_exist;
@@ -36,7 +36,7 @@ int http1()
     int accfd = -1;
 
     while(1) {
-        accfd = accept(sock->get_listenfd(), (struct sockaddr*)NULL, NULL);
+        accfd = accept(__sock->get_listenfd(), (struct sockaddr*)NULL, NULL);
 
         //初期化
         if(accfd == -1) {
@@ -71,14 +71,15 @@ int http1()
 
         //リクエストされたパスを取得する
         std::string path = "", path_string = "";
-        std::string exe = executive_file;
+        std::string exe = __executive_file;
         std::size_t pos = exe.rfind('/');
         if (pos != std::string::npos) {
             exe = exe.substr(pos + 1);
         }
         path_string.clear();
         path = HTTP1_Parser::get_requestline_path(buf);
-        path_string = HTTP1_Parser::argv_path_analyzer(path, executive_file.c_str(), exe.c_str());
+        path_string = HTTP1_Parser::argv_path_analyzer(path, __executive_file.c_str(), exe.c_str());
+
         std::cout << "path_string : " << path_string << std::endl;
 
         //取得したパスのファイルを開いて内容を取得する
@@ -108,7 +109,7 @@ int http1()
         close(accfd);
         accfd = -1;
    }
-    close(sock->get_listenfd());
+    close(__sock->get_listenfd());
     return 0;
 }
 

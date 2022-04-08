@@ -1,5 +1,5 @@
-#ifndef _HTTP1_RESHET_H_
-#define _HTTP1_RESHET_H_
+#ifndef DEMO_HTTP1RESPONSE_HPP_
+#define DEMO_HTTP1RESPONSE_HPP_
 
 #include <string>
 #include <cstring>
@@ -15,4 +15,4 @@ public:
     static void make_body (std::vector<std::string> &body_content, int &body_content_length, std::ifstream &output_file);
 };
 
-#endif
+#endif  // DEMO_HTTP1RESPONSE_HPP_

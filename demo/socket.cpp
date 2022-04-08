@@ -20,6 +20,7 @@ void Socket::set_sockaddr_in() {
 int Socket::set_socket() {
     Socket::set_listenfd();
     int optval = 1;
+    // ソケットのオプションの取得と設定 setsockopt
     if(setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1) {
         std::cout << "setsockopt() failed." << std::endl;
         close(listenfd);
@@ -38,6 +39,6 @@ int Socket::set_socket() {
         close(this->listenfd);
         return -1;
     }
-
+    
     return 0;
 }

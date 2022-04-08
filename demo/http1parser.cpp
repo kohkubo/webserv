@@ -7,7 +7,7 @@ char *HTTP1_Parser::get_filename(const char *excutive_file)
     readlink( "/proc/self/exe", buf, sizeof(buf)-1 );
     int buf_length = strlen(buf);
     for(int i = 0; i <= length; i++){
-       buf[buf_length-i-1] = 0;
+       buf[buf_length - i - 1] = 0;
     }
     return buf;
 }

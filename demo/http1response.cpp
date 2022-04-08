@@ -33,7 +33,6 @@ std::vector<std::string>& HTTP1_Response::make_header(int version, int body_leng
     else {
         return HTTP1_Header::make_response200(body_length);
     }
-
     static std::vector<std::string> response_header;
     return response_header;
 }

@@ -1,5 +1,5 @@
-#ifndef _HTTP1_PARSER_H_
-#define _HTTP1_PARSER_H_
+#ifndef DEMO_HTTP1PARSER_HPP_
+#define DEMO_HTTP1PARSER_HPP_
 
 #include <string>
 #include <cstring>
@@ -13,4 +13,4 @@ public:
     static std::string get_requestline_path(char _pbuf[BUF_SIZE]);
 };
 
-#endif
+#endif  // DEMO_HTTP1PARSER_HPP_

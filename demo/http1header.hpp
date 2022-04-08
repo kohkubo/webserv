@@ -1,5 +1,5 @@
-#ifndef _HTTP1_HEAD_H_
-#define _HTTP1_HEAD_H_
+#ifndef DEMO_HTTP1HEADER_HPP_
+#define DEMO_HTTP1HEADER_HPP_
 
 #include <vector>
 #include <string>
@@ -15,4 +15,4 @@ public:
     static std::vector<std::string>& make_responseUpgrade();
 };
 
-#endif
+#endif  // DEMO_HTTP1HEADER_HPP_
