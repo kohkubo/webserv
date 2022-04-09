@@ -45,11 +45,12 @@ fclean: clean
 re: fclean all
 
 .PHONY: setup_env
-setup_env: prepush
+setup_env:
+	cp .github/pre-push ./.git/hooks/
 
 .PHONY: prepush
 prepush:
-	cp pre-push ./.git/hooks/
+	zsh .github/pre-push
 
 # 改修予定
 gbench	=	./test/benchmark

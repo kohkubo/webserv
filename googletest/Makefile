@@ -20,7 +20,7 @@ OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.o))
 DEPS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.d))
 
 # ==== Path to test ==== #
-TESTDIR := ../tests
+TESTDIR := tests
 TOBJDIR := tobjs
 TESTS := $(shell find $(TESTDIR) -name "*.cpp" -type f)
 TOBJS = $(patsubst $(TESTDIR)%,$(TOBJDIR)%,$(TESTS:.cpp=.o))
