@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g
 
 includes = ./includes
 srcsdir = srcs
-objsdir = ./objs
+objsdir = objs
 srcs = $(shell find $(srcsdir) -name "*.cpp" -type f)
 objs = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.o))
 deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
