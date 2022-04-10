@@ -1,4 +1,6 @@
-Checks: 'readability-identifier-naming'
+Checks:
+  readability-identifier-naming,
+  -clang-analyzer-security.insecureAPI.bzero
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: 'llvm'
@@ -12,8 +14,6 @@ CheckOptions:
   - key:             readability-identifier-naming.FunctionCase
     value:           lower_case
   - key:             readability-identifier-naming.MemberCase
-    value:           lower_case
-  - key:             readability-identifier-naming.VariableCase
     value:           lower_case
   - key:             readability-identifier-naming.ParameterCase
     value:           lower_case
