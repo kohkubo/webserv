@@ -1,7 +1,7 @@
 /*
 message format
 syntax notation: ABNF
-説明が載っていない単語はABNFのwikipediaか, RFC7230内で該当単語を検索するとヒットするはずです.
+説明が抜けている単語や記法はABNFのwikipediaか, RFC7230内で該当単語を検索するとヒットするはずです.
 
 
 - HTTP メッセージ全体の文法
@@ -33,7 +33,7 @@ field-vchar		= VCHAR / obs-text
 obs-fold		= CRLF 1*( SP / HTAB ) ; obsolete line folding ; see Section 3.2.4
 OWS				= *( SP / HTAB ) ; optional whitespace
 
+
 - message-body
 message-body = *OCTET
-
 */
