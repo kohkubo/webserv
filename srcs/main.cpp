@@ -7,6 +7,6 @@ int main(int argc, char **argv) {
     std::cerr << "Usage: ./webserv <config file>" << std::endl;
     return (1);
   }
-  server_io_multiplexing();
+  server();
   return (0);
 }

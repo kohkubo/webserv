@@ -49,29 +49,3 @@ void server() {
   close(__socket->get_listenfd());
   return;
 }
-
-void server_io_multiplexing() {
-  const std::string __executive_file = HTML_FILE;
-  Socket           *__socket         = new Socket(HTTP1_PORT);
-  while (1) {
-    fd_set __read_fds;
-    FD_ZERO(&__read_fds);
-    FD_SET(__socket->get_listenfd(), &__read_fds);
-    int __ret =
-        select(__socket->get_listenfd() + 1, &__read_fds, NULL, NULL, NULL);
-    if (__ret == -1) {
-      error_log_with_errno("select() failed.");
-      continue;
-    }
-    if (FD_ISSET(__socket->get_listenfd(), &__read_fds)) {
-      int __accfd =
-          accept(__socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
-      if (__accfd == -1) {
-        continue;
-      }
-      read_request(__accfd);
-    }
-  }
-  close(__socket->get_listenfd());
-  return;
-}
