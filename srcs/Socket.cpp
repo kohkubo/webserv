@@ -31,9 +31,10 @@ void Socket::set_listenfd() {
  */
 void Socket::set_sockaddr_in() {
   memset(&__serv_addr_, 0, sizeof(__serv_addr_));
-  __serv_addr_.sin_family      = AF_INET;
-  __serv_addr_.sin_addr.s_addr = htonl(INADDR_ANY);
-  __serv_addr_.sin_port        = htons(__port_);
+  __serv_addr_.sin_family = AF_INET;
+  inet_pton(AF_INET, __server_config_.listen_ip_.c_str(),
+            &__serv_addr_.sin_addr);
+  __serv_addr_.sin_port = htons(__server_config_.listen_port_);
 }
 
 /*
