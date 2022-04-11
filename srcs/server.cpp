@@ -7,6 +7,7 @@
 
 #include "Socket.hpp"
 #include "Webserv.hpp"
+#include "config/ServerConfig.hpp"
 #include "util.hpp"
 
 #define HTML_FILE  "index.html"
@@ -37,7 +38,8 @@ void read_request(int accfd) {
 
 void server() {
   const std::string __executive_file = HTML_FILE;
-  Socket           *__socket         = new Socket(HTTP1_PORT);
+  ServerConfig      __server_config;
+  Socket           *__socket = new Socket(__server_config);
   while (1) {
     int __accfd =
         accept(__socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
