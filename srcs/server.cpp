@@ -10,7 +10,7 @@
 #include "util.hpp"
 
 #define HTML_FILE  "index.html"
-#define HTTP1_PORT 5000
+#define HTTP1_PORT 5001
 #define BUF_SIZE   1024
 
 void read_request(int accfd) {
