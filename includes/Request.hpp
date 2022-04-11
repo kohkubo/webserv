@@ -8,10 +8,11 @@ class Request {
 public:
   Request(const std::string &message);
   ~Request() {}
-  std::string get_method() const { return __method_; }
-  std::string get_uri() const { return __uri_; }
   Request(Request const &other);
   Request &operator=(Request const &other);
+
+  std::string get_method() const { return __method_; }
+  std::string get_uri() const { return __uri_; }
 
 private:
   Request() {}
