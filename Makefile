@@ -23,7 +23,7 @@ $(objsdir)/%.o: $(srcsdir)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: test
-test: $(objs)
+test:
 	$(MAKE) -C $(gtestdir) run
 
 .PHONY: cav

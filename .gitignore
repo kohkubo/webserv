@@ -14,5 +14,6 @@
 !Makefile
 test
 !pre-push
+memo.md
 
 googletest/includes/
