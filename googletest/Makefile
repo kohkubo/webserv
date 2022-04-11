@@ -13,7 +13,7 @@ endif
 
 LIBDIR := lib
 SRCDIR := ../srcs
-OBJDIR := ../objs
+OBJDIR := objs
 MAIN_FILE := main.cpp
 SRCFILE := $(filter-out %$(MAIN_FILE),$(shell find $(SRCDIR) -name "*.cpp" -type f))
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.o))
@@ -35,6 +35,10 @@ $(NAME):$(LIBDIR) $(OBJS) $(TOBJS)
 run: $(NAME)
 	./$(NAME) || :
 	$(RM) $(NAME)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(OBJDIR)/$(*D)
+	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
 
 $(TOBJDIR)/%.o: $(TESTDIR)/%.cpp
 	@mkdir -p $(TOBJDIR)/$(*D)
