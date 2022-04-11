@@ -3,23 +3,19 @@ NAME := tester
 SHELL := /bin/bash
 CXX := clang++
 CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=undefined -fsanitize=address
-# CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=integer -fsanitize=address -fprofile-arcs -ftest-coverage
-LIBS := -lpthread
-INCLUDES := -I. -I../includes
-
+LIBS := -lpthread -lgtest_main -lgtest
+INCLUDES := -I./includes -I../includes
+LIBINCLUDES = -L./$(LIBDIR)
 
 ifeq ($(shell uname), Linux)
-	lcov_op :=  --gcov-tool ./llvm-gcov.sh
+	lcov_op := --gcov-tool ./llvm-gcov.sh
 endif
 
-# ==== Enter latest release URL ==== #
-GTEST_URL := https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
-GTEST_RELEASE := googletest-$(basename $(basename $(notdir $(GTEST_URL))))
-
+LIBDIR := lib
 SRCDIR := ../srcs
-OBJDIR := ../srcs/objs
-MAIN_SUFFIX := main.cpp
-SRCFILE := $(filter-out %$(MAIN_SUFFIX),$(shell find $(SRCDIR) -name "*.cpp" -type f))
+OBJDIR := ../objs
+MAIN_FILE := main.cpp
+SRCFILE := $(filter-out %$(MAIN_FILE),$(shell find $(SRCDIR) -name "*.cpp" -type f))
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.o))
 DEPS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.d))
 
@@ -30,42 +26,29 @@ TESTS := $(shell find $(TESTDIR) -name "*.cpp" -type f)
 TOBJS = $(patsubst $(TESTDIR)%,$(TOBJDIR)%,$(TESTS:.cpp=.o))
 TDEPS = $(patsubst $(TESTDIR)%,$(TOBJDIR)%,$(TESTS:.cpp=.d))
 
-GTSRCDIR := gtest
-GTOBJDIR := gobjs
-.SECONDARY: $(GTESTSRC)
-GTESTSRC := $(GTSRCDIR)/gtest-all.cc $(GTSRCDIR)/gtest_main.cc
-GTOBJS   := $(patsubst $(GTSRCDIR)%,$(GTOBJDIR)%,$(GTESTSRC:.cc=.o))
-
-
 all: $(NAME)
 -include $(DEPS) $(TDEPS)
 
-$(NAME): $(OBJS) $(GTOBJS) $(TOBJS)
-	$(CXX) $(CXXFLAGS) $^ $(INCLUDES) $(LIBS) -o $@
+$(NAME):$(LIBDIR) $(OBJS) $(TOBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(TOBJS) $(INCLUDES) $(LIBINCLUDES) $(LIBS) -o $@
 
 run: $(NAME)
 	./$(NAME) || :
 	$(RM) $(NAME)
 
-$(GTOBJDIR)/%.o: $(GTSRCDIR)/%.cc
-	@mkdir -p $(GTOBJDIR)
-	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
-
 $(TOBJDIR)/%.o: $(TESTDIR)/%.cpp
 	@mkdir -p $(TOBJDIR)/$(*D)
 	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
 
-$(GTESTSRC): $(GTSRCDIR)
-	@:
-
-$(GTSRCDIR): $(GTEST_RELEASE)
-	python3 $(GTEST_RELEASE)/googletest/scripts/fuse_gtest_files.py .
-	cp $(GTEST_RELEASE)/googletest/src/gtest_main.cc gtest/gtest_main.cc
-	$(RM) -r $(GTEST_RELEASE)
-
-$(GTEST_RELEASE):
-	if [ ! -f $(notdir $(GTEST_URL)) ]; then curl -OL $(GTEST_URL); fi
-	tar -xzf $(notdir $(GTEST_URL)) $(GTEST_RELEASE) && $(RM) $(notdir $(GTEST_URL))
+$(LIBDIR):
+	git clone --depth=1 https://github.com/google/googletest.git
+	mkdir -p googletest/build includes
+	cmake -S ./googletest -B ./googletest/build
+	$(MAKE) -C googletest/build
+	cp -r googletest/build/lib ./$(LIBDIR)
+#	cp -r googletest/googlemock/include/gmock ./includes/gmock
+	cp -r googletest/googletest/include/gtest ./includes/gtest
+	$(RM) -r googletest
 
 cov: CXXFLAGS += -fprofile-arcs -ftest-coverage
 cov: re
