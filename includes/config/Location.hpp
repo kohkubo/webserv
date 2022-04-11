@@ -18,8 +18,4 @@ public:
   ~Location();
 };
 
-Location::Location() {}
-
-Location::~Location() {}
-
 #endif /* INCLUDES_CONFIG_LOCATION_HPP */
