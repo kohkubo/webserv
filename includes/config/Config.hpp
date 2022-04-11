@@ -15,8 +15,4 @@ public:
   ~Config();
 };
 
-Config::Config() {}
-
-Config::~Config() {}
-
 #endif /* INCLUDES_CONFIG_HPP */
