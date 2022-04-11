@@ -40,7 +40,6 @@ bool Lexer::__tokenize(const std::string text) {
         i++;
       }
     }
-    // std::cout << text.substr(pos, i) << std::endl;
     __token_.push_back(text.substr(pos, i));
     pos += i;
   }
