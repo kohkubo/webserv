@@ -7,7 +7,6 @@
 !*.sh
 !*.md
 !*.yml
-!*.txt
 !*.html
 !.clang-format
 !.clang-tidy
