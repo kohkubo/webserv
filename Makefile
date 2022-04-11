@@ -15,7 +15,7 @@ gtestdir := googletest
 .PHONY: all
 all: $(NAME)
 
-$(NAME): $(objs)
+$(NAME):
 	$(CXX) $(CXXFLAGS) $^ -o $(NAME)
 
 $(objsdir)/%.o: $(srcsdir)/%.cpp

@@ -21,7 +21,7 @@ public:
   token_iterator end() { return __token_.end(); }
 
 private:
-  Lexer();
+  Lexer() {}
   bool __tokenize(const std::string text);
   bool __is_delimiter(const char &c);
 };

@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-Lexer::Lexer() {}
-
 Lexer::Lexer(const std::string text, const std::string &delimiter)
     : __delimiter_(delimiter) {
   if (!__tokenize(text)) {
