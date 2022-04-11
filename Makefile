@@ -15,7 +15,7 @@ gtestdir := googletest
 .PHONY: all
 all: $(NAME)
 
-$(NAME):
+$(NAME): $(objs)
 	$(CXX) $(CXXFLAGS) $^ -o $(NAME)
 
 $(objsdir)/%.o: $(srcsdir)/%.cpp
@@ -23,7 +23,7 @@ $(objsdir)/%.o: $(srcsdir)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: test
-test: $(objs)
+test:
 	$(MAKE) -C $(gtestdir) run
 
 .PHONY: cav
