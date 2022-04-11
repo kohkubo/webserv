@@ -7,5 +7,6 @@ int main(int argc, char **argv) {
     std::cerr << "Usage: ./webserv <config file>" << std::endl;
     return (1);
   }
+  server();
   return (0);
 }
