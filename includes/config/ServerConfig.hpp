@@ -8,7 +8,7 @@
 
 class ServerConfig {
 public:
-  unsigned int             listen_ip_; // long?
+  std::string              listen_ip_;
   int                      listen_port_;
   int                      client_max_body_size_;
   std::vector<std::string> server_name_;
@@ -20,11 +20,7 @@ public:
 
 public:
   ServerConfig();
-  ~ServerConfig();
+  ~ServerConfig(){};
 };
-
-ServerConfig::ServerConfig() {}
-
-ServerConfig::~ServerConfig() {}
 
 #endif /* INCLUDES_CONFIG_SERVERCONFIG_HPP */

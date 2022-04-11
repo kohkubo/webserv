@@ -8,7 +8,7 @@
 
 class Config {
 public:
-  std::vector<ServerConfig> server_config_;
+  ServerConfig server_config_;
   // デフォルトエラーページ、ポート必要？
 public:
   Config();
