@@ -18,3 +18,32 @@ Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
   }
   return pos;
 }
+
+Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
+                                                   Lexer::token_iterator end) {
+  pos = Lexer::skip_token(++pos, end, "\v\r\f\t\n ");
+  if (pos == end)
+    throw UnexpectedTokenException("could not detect directice value.");
+
+  // parse listen dirctive
+
+  pos++;
+  if (*pos != ";")
+    throw UnexpectedTokenException(
+        "could not detect directive end token(\";\").");
+  pos++;
+  return pos;
+}
+Lexer::token_iterator ServerConfig::__parse_root(Lexer::token_iterator pos,
+                                                 Lexer::token_iterator end) {
+  pos = Lexer::skip_token(++pos, end, "\v\r\f\t\n ");
+  if (pos == end)
+    throw UnexpectedTokenException("could not detect directice value.");
+  root_ = *pos;
+  pos++;
+  if (*pos != ";")
+    throw UnexpectedTokenException(
+        "could not detect directive end token(\";\").");
+  pos++;
+  return pos;
+}
