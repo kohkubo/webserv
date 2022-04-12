@@ -11,7 +11,8 @@ inline void error_log_with_errno(const std::string &msg) {
 }
 
 bool is_match_suffix_string(const std::string &str, const std::string &suffix);
-std::string read_file_to_string(const std::string &path);
-std::string sizet_to_string(size_t val);
+bool is_file_exists(const char *path);
+std::string tostring(const size_t val);
+std::string tostring(const char *file_path);
 
 #endif // INCLUDES_UTIL_HPP_
