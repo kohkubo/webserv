@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <string>
+#include <limits>
 
 #define STATUS_OK      "200"
 #define TEXT_STATUS_OK "OK"
@@ -55,7 +55,7 @@ void Response::process() {
 
   // リクエストのターゲット(index.html)から内容読み込み, セット
   std::string file_path    = __request_line_[1];
-  std::string content      = file_to_string(file_path);
+  std::string content      = read_file_to_string(file_path);
   std::string content_size = sizet_to_string(content.size());
   __response_body_         = content;
   __response_field_.push_back("Content-Length: " + content_size);
@@ -64,22 +64,18 @@ void Response::process() {
   __response_field_.push_back("Connection: close");
 }
 
-/*
- * size_t -> string
- */
 std::string sizet_to_string(std::size_t val) {
-  // size_tの桁数 + '\0' 分のbufferを用意
-  char buffer[std::numeric_limits<std::size_t>::digits10 + 1 + 1];
+  const int max_digits = std::numeric_limits<std::size_t>::digits10 + 1;
+  char buffer[max_digits + 1];
   std::sprintf(buffer, "%zu", val);
   return buffer;
 }
 
-// file_to_string_to_string
-std::string file_to_string(const std::string &path) {
+std::string read_file_to_string(const std::string &path) {
   std::ifstream file(path.c_str());
   if (!file.good()) {
     std::cout << "fail to open file" << std::endl;
-    return "file not found"; // -> 404
+    return "file not found"; // -> 404 or 500
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
