@@ -8,18 +8,26 @@ ServerConfig::ServerConfig() : listen_ip_("0.0.0.0"), listen_port_(5001) {}
 
 Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
                                           Lexer::token_iterator end) {
+  pos++;
+  pos = Lexer::skip_delimiter(pos, end, "\v\r\f\t\n ");
+  if (*pos != "{")
+    throw UnexpectedTokenException("server directive does not have context.");
+  pos++;
   while (pos != end) {
     pos = Lexer::skip_delimiter(pos, end, "\v\r\f\t\n ");
-    if (*pos == "}") {
-      pos++;
+    if (pos == end || *pos == "}")
       break;
-    }
     if (*pos == "listen") {
       pos = __parse_listen(pos, end);
     } else if (*pos == "root") {
       pos = __parse_root(pos, end);
+    } else {
+      throw UnexpectedTokenException();
     }
   }
+  if (pos == end)
+    throw UnexpectedTokenException("could not detect context end.");
+  pos++;
   return pos;
 }
 
