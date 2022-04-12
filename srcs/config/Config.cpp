@@ -1,6 +1,8 @@
 #include "config/Config.hpp"
 #include <iostream>
 
+Config::ParseError::ParseError(const std::string &msg) : logic_error(msg) {}
+
 Config::Config(const Config &other) { (void)other; }
 
 Config &Config::operator=(const Config &other) {

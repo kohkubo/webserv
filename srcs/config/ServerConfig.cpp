@@ -1,5 +1,9 @@
 #include "config/ServerConfig.hpp"
 
+ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
+    const std::string &msg)
+    : logic_error(msg) {}
+
 ServerConfig::ServerConfig() : listen_ip_("0.0.0.0"), listen_port_(5001) {}
 
 Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
