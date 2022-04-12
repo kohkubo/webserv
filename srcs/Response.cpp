@@ -6,33 +6,28 @@
 
 #define STATUS_OK         "200"
 #define TEXT_STATUS_OK    "OK"
+#define VERSION           "HTTP/1.1"
 #define CR                "\r"
 #define LF                "\n"
 #define CRLF              "\r\n"
 #define SP                " "
-#define CONTENT_LENGTH    "Content-Length: "
-#define CONTENT_TYPE_HTML "Content-Type: text/html"
-#define CONNECTION_CLOSE  "Connection: close"
 
 /*
- * recvで受け取った文字列をもとにリクエストを作る予定です。
+ * recvでクライアントから受け取ったメッセージデータをもとに
+ * リクエストを作る予定です。
  * 今は決めうちで作ってます。
  */
 Response::Response(const std::string &message) {
   // lexer(message)
   (void)message;
 
-  // リクエスト1行目
   __request_line_.push_back("GET");
   __request_line_.push_back("./html/index.html");
-  __request_line_.push_back("HTTP/1.1");
+  __request_line_.push_back(VERSION);
 
-  // フィールド
   __request_field_.push_back("Host: example.com");
   __request_field_.push_back("User-Agent: curl/7.79.1");
   __request_field_.push_back("Accept: */*");
-
-  // ボディ省略
 }
 
 Response::Response(Response const &other) { *this = other; }
@@ -49,26 +44,48 @@ Response &Response::operator=(Response const &other) {
   return *this;
 }
 
-// void Response::method_get(std::string file_path) {
+/*
+ * レスポンスに必要な属性を埋める.
+ */
+void Response::process() {
 
-//	this->__version_ = HTTP;
-//	this->__status_ = STATUS_OK;
-//	this->__phrase_ = PHRASE_STATUS_OK;
+  __status_line_.push_back(VERSION);
+  __status_line_.push_back(STATUS_OK);
+  __status_line_.push_back(TEXT_STATUS_OK);
 
-//	std::ifstream instream(file_path);
-//	if (instream.fail())
-//		exit(1);
-//	std::stringstream buf;
-//	buf << instream.rdbuf();
-//	std::string content = buf.str();
-//	this->__body_ = content;
-//	this->__content_len_ = CONTENT_LENGTH + std::to_string(content.size());
-//	this->__content_type_ = CONTENT_TYPE_HTML;
+  // リクエストのターゲット(index.html)から内容読み込み, セット
+  std::string file_path = __request_line_[1];
+  std::string content = read_file(file_path);
+  std::string content_size = sizettos(content.size());
+	__response_body_ = content;
+	__response_field_.push_back("Content-Length: " + content_size);
 
-//	this->__connection_ = CONNECTION_CLOSE;
+  __response_field_.push_back("Content-Type: text/html");
+  __response_field_.push_back("Connection: close");
+}
 
-//	return ;
-//}
+/*
+ * size_t -> string
+ */
+std::string sizettos(size_t val)
+{
+  // size_tの桁数 + '\0' 分のbufferを用意
+  char buffer[std::numeric_limits<size_t>::digits10 + 1 + 1];
+  std::sprintf(buffer, "%zu", val);
+  return buffer;
+}
+
+std::string read_file(const std::string &path) {
+	std::ifstream file(path);
+	if (file.fail())
+  {
+    std::cout << "fail to open file" << std::endl;
+		exit(1);
+  }
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+  return buffer.str();
+ }
 
 // std::string Response::response_message() {
 //	return	this->__version_ + SP + std::to_string(this->__status_) + SP +

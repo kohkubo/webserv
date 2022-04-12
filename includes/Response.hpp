@@ -18,7 +18,7 @@ public:
   Response(Response const &other);
   Response   &operator=(Response const &other);
 
-  void        method_get(std::string file_path);
+  void        process();
   std::string response_message();
 
 private:
@@ -32,5 +32,8 @@ private:
   std::vector<std::string> __response_field_;
   std::string              __response_body_;
 };
+
+std::string read_file(const std::string &path);
+std::string sizettos(size_t val);
 
 #endif /* RESPONSE_HPP */
