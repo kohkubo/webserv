@@ -1,6 +1,13 @@
 #include "config/Config.hpp"
 #include <iostream>
 
+Config::Config(const Config &other) { (void)other; }
+
+Config &Config::operator=(const Config &other) {
+  (void)other;
+  return *this;
+}
+
 Config::Config(Lexer &config_lexer) {
   try {
     __parse(config_lexer);

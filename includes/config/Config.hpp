@@ -25,8 +25,9 @@ public:
 
 private:
   Config() {}
-  Config(const Config &other) {}
-  Config &              operator=(const Config &other) { return *this; }
+  Config &operator=(const Config &other);
+  Config(const Config &other);
+
   Lexer::token_iterator __skip_token(Lexer::token_iterator pos,
                                      Lexer::token_iterator end,
                                      const std::string &   skip);
