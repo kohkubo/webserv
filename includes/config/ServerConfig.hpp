@@ -1,9 +1,11 @@
 #ifndef INCLUDES_CONFIG_SERVERCONFIG_HPP
 #define INCLUDES_CONFIG_SERVERCONFIG_HPP
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
+#include "Lexer.hpp"
 #include "Location.hpp"
 
 class ServerConfig {
@@ -19,8 +21,16 @@ public:
   // error_page;
 
 public:
+  class UnexpectedTokenException : public std::logic_error {
+  public:
+    UnexpectedTokenException(const std::string &msg = "enexpected token.");
+  };
+
+public:
   ServerConfig();
   ~ServerConfig(){};
+  Lexer::token_iterator parse(Lexer::token_iterator pos,
+                              Lexer::token_iterator end);
 };
 
 #endif /* INCLUDES_CONFIG_SERVERCONFIG_HPP */
