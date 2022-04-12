@@ -46,3 +46,13 @@ TEST(util_test, test_sizet_to_string){
     val = SIZE_MAX;
     EXPECT_EQ(sizet_to_string(val), std::to_string(val));
 }
+
+TEST(util_test, test_read_file_to_string){
+    std::string file_path = "../googletest/testdata/test1.txt";
+    std::string expect = "test1";
+    EXPECT_EQ(read_file_to_string(file_path), expect);
+
+    file_path = "no_such_file";
+    expect = "file not found";
+    EXPECT_EQ(read_file_to_string(file_path), expect);
+}
