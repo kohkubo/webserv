@@ -1,5 +1,5 @@
-#ifndef INCLUDES_UTIL_HPP_
-#define INCLUDES_UTIL_HPP_
+#ifndef INCLUDES_UTIL_HPP
+#define INCLUDES_UTIL_HPP
 
 #include <cerrno>
 #include <iostream>
@@ -12,4 +12,4 @@ inline void error_log_with_errno(const std::string &msg) {
 
 bool is_match_suffix_string(const std::string &str, const std::string &suffix);
 
-#endif // INCLUDES_UTIL_HPP_
+#endif /* INCLUDES_UTIL_HPP */

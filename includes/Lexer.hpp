@@ -1,5 +1,5 @@
-#ifndef INCLUDES_LEXER_LEXER
-#define INCLUDES_LEXER_LEXER
+#ifndef INCLUDES_LEXER_HPP
+#define INCLUDES_LEXER_HPP
 
 #include <string>
 #include <vector>
@@ -26,4 +26,4 @@ private:
   bool __is_delimiter(const char &c);
 };
 
-#endif /* INCLUDES_LEXER_LEXER */
+#endif /* INCLUDES_LEXER_HPP */
