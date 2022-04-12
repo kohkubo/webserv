@@ -35,7 +35,7 @@ std::string tostring(const std::size_t val) {
   return buffer;
 }
 
-std::string tostring(const char *file_path) {
+std::string read_file_tostring(const char *file_path) {
   std::ifstream file(file_path);
   if (!file.good()) {
     std::cout << "fail to open file" << std::endl;

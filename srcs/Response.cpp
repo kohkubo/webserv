@@ -71,7 +71,7 @@ void Response::process() {
     __status_line_.push_back(STATUS_NOTFOUND);
     __status_line_.push_back(TEXT_STATUS_NOTFOUND);
   }
-  std::string content = tostring(target_path.c_str());
+  std::string content = read_file_tostring(target_path.c_str());
   __response_body_    = content;
   __response_field_.push_back("Content-Length: " + tostring(content.size()));
 
