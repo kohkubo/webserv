@@ -1,8 +1,6 @@
 #include "Response.hpp"
-#include <fstream>
+#include "util.hpp"
 #include <iostream>
-#include <limits>
-#include <sstream>
 
 #define STATUS_OK      "200"
 #define TEXT_STATUS_OK "OK"
@@ -62,25 +60,6 @@ void Response::process() {
 
   __response_field_.push_back("Content-Type: text/html");
   __response_field_.push_back("Connection: close");
-}
-
-std::string sizet_to_string(std::size_t val) {
-  const int max_digits = std::numeric_limits<std::size_t>::digits10 + 1;
-  char      buffer[max_digits + 1];
-  std::sprintf(buffer, "%zu", val);
-  return buffer;
-}
-
-std::string read_file_to_string(const std::string &path) {
-  std::ifstream file(path.c_str());
-  if (!file.good()) {
-    std::cout << "fail to open file" << std::endl;
-    return "file not found"; // -> 404 or 500
-  }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  file.close();
-  return buffer.str();
 }
 
 std::string Response::message() {

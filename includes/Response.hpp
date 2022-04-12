@@ -33,7 +33,4 @@ private:
   std::string              __response_body_;
 };
 
-std::string read_file_to_string(const std::string &path);
-std::string sizet_to_string(size_t val);
-
 #endif /* RESPONSE_HPP */
