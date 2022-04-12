@@ -67,9 +67,9 @@ void Response::process() {
 /*
  * size_t -> string
  */
-std::string sizettos(size_t val) {
+std::string sizettos(std::size_t val) {
   // size_tの桁数 + '\0' 分のbufferを用意
-  char buffer[std::numeric_limits<size_t>::digits10 + 1 + 1];
+  char buffer[std::numeric_limits<std::size_t>::digits10 + 1 + 1];
   std::sprintf(buffer, "%zu", val);
   return buffer;
 }
