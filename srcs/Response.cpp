@@ -74,6 +74,7 @@ std::string sizettos(std::size_t val) {
   return buffer;
 }
 
+// read_file_to_string
 std::string read_file(const std::string &path) {
   std::ifstream file(path);
   if (file.fail()) {
