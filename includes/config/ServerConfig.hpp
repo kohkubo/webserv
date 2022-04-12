@@ -11,6 +11,7 @@
 class ServerConfig {
 public:
   std::string              listen_ip_;
+  std::string              listen_host_;
   int                      listen_port_;
   int                      client_max_body_size_;
   std::vector<std::string> server_name_;
@@ -35,6 +36,8 @@ public:
 private:
   Lexer::token_iterator __parse_listen(Lexer::token_iterator pos,
                                        Lexer::token_iterator end);
+  bool                  __is_ip(const std::string &token);
+  bool                  __is_digits(const std::string &token);
   Lexer::token_iterator __parse_root(Lexer::token_iterator pos,
                                      Lexer::token_iterator end);
 };
