@@ -72,7 +72,7 @@ void server_io_multiplexing() {
       error_log_with_errno("select() failed. readfds.");
       continue;
     }
-    if (FD_ISSET(__socket->get_listenfd(), &__readfds)) {
+    if (__ret && FD_ISSET(__socket->get_listenfd(), &__readfds)) {
       int __accfd =
           accept(__socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
       if (__accfd == -1) {
