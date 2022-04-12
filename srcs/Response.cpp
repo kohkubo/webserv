@@ -16,9 +16,10 @@
 #define SP                   " "
 
 /*
- * recvでクライアントから受け取ったメッセージデータをもとに
- * リクエストを作る予定です。
- * 今は決めうちで作ってます。
+ * コンストラクタ
+ * リクエストメッセージをパース
+ * 現時点: レキサーを使ってターゲットurlのみ確認してます.
+ *        "/"ならindex.htmlを, それ以外ならエラー用のファイルを指定します.
  */
 Response::Response(const std::string &request_message) {
   Lexer                 l(request_message, SP);
@@ -54,12 +55,13 @@ Response &Response::operator=(Response const &other) {
 }
 
 /*
+ * サーバー処理
  * レスポンスに必要な属性を埋める.
  */
 void Response::process() {
   __status_line_.push_back(VERSION);
 
-  // リクエストのターゲット(index.html)から内容読み込み, セット
+  // 対象ファイルから内容読み込み
   std::string target_path = __request_line_[1];
   if (is_file_exists(target_path.c_str())) {
     __status_line_.push_back(STATUS_OK);
@@ -69,10 +71,9 @@ void Response::process() {
     __status_line_.push_back(STATUS_NOTFOUND);
     __status_line_.push_back(TEXT_STATUS_NOTFOUND);
   }
-  std::string content      = tostring(target_path.c_str());
-  std::string content_size = tostring(content.size());
-  __response_body_         = content;
-  __response_field_.push_back("Content-Length: " + content_size);
+  std::string content = tostring(target_path.c_str());
+  __response_body_    = content;
+  __response_field_.push_back("Content-Length: " + tostring(content.size()));
 
   __response_field_.push_back("Content-Type: text/html");
   __response_field_.push_back("Connection: close");
