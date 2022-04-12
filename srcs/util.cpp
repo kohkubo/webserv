@@ -2,8 +2,8 @@
 #include <fstream>
 #include <limits>
 #include <sstream>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
@@ -17,13 +17,12 @@ bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
   return false;
 }
 
-bool is_file_exists(const char *path)
-{
-	struct stat	file_info;
+bool is_file_exists(const char *path) {
+  struct stat file_info;
 
-	if (stat(path, &file_info) == -1)
-		return false; // exeption
-	if ((file_info.st_mode & S_IFMT) == S_IFREG)
+  if (stat(path, &file_info) == -1)
+    return false; // exeption
+  if ((file_info.st_mode & S_IFMT) == S_IFREG)
     return true;
   else
     return false;
