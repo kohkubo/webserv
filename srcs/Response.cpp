@@ -1,4 +1,5 @@
 #include "Response.hpp"
+#include "Lexer.hpp"
 #include "util.hpp"
 #include <iostream>
 
@@ -7,6 +8,7 @@
 #define STATUS_NOTFOUND       "404"
 #define TEXT_STATUS_NOTFOUND  "Not Found"
 #define VERSION               "HTTP/1.1"
+#define HELLO_WORLD_PAGE      "./html/index.html"
 #define ERR_PAGE              "./html/not_found.html"
 #define CR                    "\r"
 #define LF                    "\n"
@@ -19,11 +21,17 @@
  * 今は決めうちで作ってます。
  */
 Response::Response(const std::string &request_message) {
-  // lexer(request_message)
-  (void)request_message;
+  Lexer l(request_message, SP);
+  Lexer::token_iterator it = l.begin();
 
-  __request_line_.push_back("GET");
-  __request_line_.push_back("./html/index.html");
+  // token: "GET", " ", "/", " ", "HTTP/1.1"...
+  __request_line_.push_back(*it);
+  it++;
+  it++;
+  if (*it == "/")
+    __request_line_.push_back(HELLO_WORLD_PAGE);
+  else
+    __request_line_.push_back(ERR_PAGE);
   __request_line_.push_back(VERSION);
 
   __request_field_.push_back("Host: example.com");
