@@ -28,7 +28,7 @@ private:
 public:
   static Lexer::token_iterator skip_delimiter(Lexer::token_iterator pos,
                                               Lexer::token_iterator end,
-                                              const std::string &   skip);
+                                              const std::string    &skip);
 };
 
 #endif /* INCLUDES_LEXER_LEXER */

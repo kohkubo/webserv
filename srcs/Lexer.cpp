@@ -46,7 +46,7 @@ bool Lexer::__tokenize(const std::string text) {
 
 Lexer::token_iterator Lexer::skip_delimiter(Lexer::token_iterator pos,
                                             Lexer::token_iterator end,
-                                            const std::string &   skip) {
+                                            const std::string    &skip) {
   while (pos != end) {
     if (skip.find(pos[0]) == std::string::npos)
       break;
