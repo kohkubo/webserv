@@ -21,20 +21,9 @@ Config::Config(Lexer &config_lexer) {
 void Config::__parse(Lexer &config_lexer) {
   Lexer::token_iterator it = config_lexer.begin();
   while (it != config_lexer.end()) {
-    it = __skip_token(it, config_lexer.end(), "\v\r\f\t\n ");
+    it = Lexer::skip_token(it, config_lexer.end(), "\v\r\f\t\n ");
     if (*it == "server") {
       it = server_config_.parse(it, config_lexer.end());
     }
   }
-}
-
-Lexer::token_iterator Config::__skip_token(Lexer::token_iterator pos,
-                                           Lexer::token_iterator end,
-                                           const std::string &   skip) {
-  while (pos != end) {
-    if (skip.find(pos[0]) == std::string::npos)
-      break;
-    pos++;
-  }
-  return pos;
 }

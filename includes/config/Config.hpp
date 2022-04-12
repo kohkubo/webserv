@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Lexer.hpp"
-#include "ServerConfig.hpp"
+#include "config/ServerConfig.hpp"
 
 class Config {
 public:
@@ -27,11 +27,7 @@ private:
   Config() {}
   Config &operator=(const Config &other);
   Config(const Config &other);
-
-  Lexer::token_iterator __skip_token(Lexer::token_iterator pos,
-                                     Lexer::token_iterator end,
-                                     const std::string &   skip);
-  void                  __parse(Lexer &config_lexer);
+  void __parse(Lexer &config_lexer);
 };
 
 #endif /* INCLUDES_CONFIG_HPP */
