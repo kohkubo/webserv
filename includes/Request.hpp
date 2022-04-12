@@ -1,5 +1,5 @@
-#ifndef REQUEST_HPP
-#define REQUEST_HPP
+#ifndef INCLUDES_REQUEST_HPP
+#define INCLUDES_REQUEST_HPP
 
 #include <iostream>
 #include <vector>
@@ -9,7 +9,7 @@ public:
   Request(const std::string &message);
   ~Request() {}
   Request(Request const &other);
-  Request &operator=(Request const &other);
+  Request    &operator=(Request const &other);
 
   std::string get_method() const { return __method_; }
   std::string get_uri() const { return __uri_; }
@@ -22,4 +22,4 @@ private:
   std::vector<std::string> __fields_;
 };
 
-#endif /* REQUEST_HPP */
+#endif /* INCLUDES_REQUEST_HPP */
