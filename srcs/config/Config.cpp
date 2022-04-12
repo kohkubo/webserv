@@ -21,7 +21,7 @@ Config::Config(Lexer &config_lexer) {
 void Config::__parse(Lexer &config_lexer) {
   Lexer::token_iterator it = config_lexer.begin();
   while (it != config_lexer.end()) {
-    it = Lexer::skip_token(it, config_lexer.end(), "\v\r\f\t\n ");
+    it = Lexer::skip_delimiter(it, config_lexer.end(), "\v\r\f\t\n ");
     if (*it == "server") {
       it = server_config_.parse(it, config_lexer.end());
     }

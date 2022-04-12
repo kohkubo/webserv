@@ -26,9 +26,9 @@ private:
   bool __is_delimiter(const char &c);
 
 public:
-  static Lexer::token_iterator skip_token(Lexer::token_iterator pos,
-                                          Lexer::token_iterator end,
-                                          const std::string &   skip);
+  static Lexer::token_iterator skip_delimiter(Lexer::token_iterator pos,
+                                              Lexer::token_iterator end,
+                                              const std::string &   skip);
 };
 
 #endif /* INCLUDES_LEXER_LEXER */

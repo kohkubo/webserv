@@ -5,7 +5,7 @@ ServerConfig::ServerConfig() : listen_ip_("0.0.0.0"), listen_port_(5001) {}
 Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
                                           Lexer::token_iterator end) {
   while (pos != end) {
-    pos = Lexer::skip_token(pos, end, "\v\r\f\t\n ");
+    pos = Lexer::skip_delimiter(pos, end, "\v\r\f\t\n ");
     if (*pos == "}") {
       pos++;
       break;
@@ -21,7 +21,7 @@ Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
 
 Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
                                                    Lexer::token_iterator end) {
-  pos = Lexer::skip_token(++pos, end, "\v\r\f\t\n ");
+  pos = Lexer::skip_delimiter(++pos, end, "\v\r\f\t\n ");
   if (pos == end)
     throw UnexpectedTokenException("could not detect directice value.");
 
@@ -36,7 +36,7 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
 }
 Lexer::token_iterator ServerConfig::__parse_root(Lexer::token_iterator pos,
                                                  Lexer::token_iterator end) {
-  pos = Lexer::skip_token(++pos, end, "\v\r\f\t\n ");
+  pos = Lexer::skip_delimiter(++pos, end, "\v\r\f\t\n ");
   if (pos == end)
     throw UnexpectedTokenException("could not detect directice value.");
   root_ = *pos;
