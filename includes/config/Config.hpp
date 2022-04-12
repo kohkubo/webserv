@@ -1,5 +1,5 @@
-#ifndef INCLUDES_CONFIG_HPP
-#define INCLUDES_CONFIG_HPP
+#ifndef INCLUDES_CONFIG_CONFIG_HPP
+#define INCLUDES_CONFIG_CONFIG_HPP
 
 #include <stdexcept>
 #include <string>
@@ -30,4 +30,4 @@ private:
   void __parse(Lexer &config_lexer);
 };
 
-#endif /* INCLUDES_CONFIG_HPP */
+#endif /* INCLUDES_CONFIG_CONFIG_HPP */
