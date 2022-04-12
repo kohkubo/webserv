@@ -4,13 +4,13 @@
 #include <sstream>
 #include <string>
 
-#define STATUS_OK         "200"
-#define TEXT_STATUS_OK    "OK"
-#define VERSION           "HTTP/1.1"
-#define CR                "\r"
-#define LF                "\n"
-#define CRLF              "\r\n"
-#define SP                " "
+#define STATUS_OK      "200"
+#define TEXT_STATUS_OK "OK"
+#define VERSION        "HTTP/1.1"
+#define CR             "\r"
+#define LF             "\n"
+#define CRLF           "\r\n"
+#define SP             " "
 
 /*
  * recvでクライアントから受け取ったメッセージデータをもとに
@@ -54,11 +54,11 @@ void Response::process() {
   __status_line_.push_back(TEXT_STATUS_OK);
 
   // リクエストのターゲット(index.html)から内容読み込み, セット
-  std::string file_path = __request_line_[1];
-  std::string content = read_file(file_path);
+  std::string file_path    = __request_line_[1];
+  std::string content      = read_file(file_path);
   std::string content_size = sizettos(content.size());
-	__response_body_ = content;
-	__response_field_.push_back("Content-Length: " + content_size);
+  __response_body_         = content;
+  __response_field_.push_back("Content-Length: " + content_size);
 
   __response_field_.push_back("Content-Type: text/html");
   __response_field_.push_back("Connection: close");
@@ -67,8 +67,7 @@ void Response::process() {
 /*
  * size_t -> string
  */
-std::string sizettos(size_t val)
-{
+std::string sizettos(size_t val) {
   // size_tの桁数 + '\0' 分のbufferを用意
   char buffer[std::numeric_limits<size_t>::digits10 + 1 + 1];
   std::sprintf(buffer, "%zu", val);
@@ -76,22 +75,18 @@ std::string sizettos(size_t val)
 }
 
 std::string read_file(const std::string &path) {
-	std::ifstream file(path);
-	if (file.fail())
-  {
+  std::ifstream file(path);
+  if (file.fail()) {
     std::cout << "fail to open file" << std::endl;
-		exit(1);
+    exit(1);
   }
-	std::stringstream buffer;
-	buffer << file.rdbuf();
+  std::stringstream buffer;
+  buffer << file.rdbuf();
   return buffer.str();
- }
+}
 
- std::string Response::response_message() {
-   return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] + CRLF +
-          __response_field_[0] + CRLF +
-          __response_field_[1] + CRLF +
-          __response_field_[2] + CRLF +
-          CRLF +
-          __response_body_;
- }
+std::string Response::response_message() {
+  return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] +
+         CRLF + __response_field_[0] + CRLF + __response_field_[1] + CRLF +
+         __response_field_[2] + CRLF + CRLF + __response_body_;
+}
