@@ -1,8 +1,8 @@
 #include "Response.hpp"
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <limits>
+#include <sstream>
 
 #define STATUS_OK      "200"
 #define TEXT_STATUS_OK "OK"
@@ -66,7 +66,7 @@ void Response::process() {
 
 std::string sizet_to_string(std::size_t val) {
   const int max_digits = std::numeric_limits<std::size_t>::digits10 + 1;
-  char buffer[max_digits + 1];
+  char      buffer[max_digits + 1];
   std::sprintf(buffer, "%zu", val);
   return buffer;
 }
