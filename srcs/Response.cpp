@@ -87,12 +87,11 @@ std::string read_file(const std::string &path) {
   return buffer.str();
  }
 
-// std::string Response::response_message() {
-//	return	this->__version_ + SP + std::to_string(this->__status_) + SP +
-//this->__phrase_ + CRLF
-//			+ this->__content_type_ + CRLF
-//			+ this->__content_len_ + CRLF
-//			+ this->__connection_ + CRLF
-//			+ CRLF
-//			+ this->__body_;
-// }
+ std::string Response::response_message() {
+   return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] + CRLF +
+          __response_field_[0] + CRLF +
+          __response_field_[1] + CRLF +
+          __response_field_[2] + CRLF +
+          CRLF +
+          __response_body_;
+ }

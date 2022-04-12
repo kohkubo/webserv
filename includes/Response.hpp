@@ -7,7 +7,7 @@
 /*
  * リクエストとレスポンスの1行目に関して
  * indexをenumにすればわかりやすくなるかと思ったが,
- * VERSIONが被って面倒
+ * 'VERSION'が被って面倒
  */
 // enum RequestLine { METHOD, TARGET, VERSION };
 // enum StatusLine { VERSION, STATUS, REASON };
