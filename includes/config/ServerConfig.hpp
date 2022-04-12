@@ -23,7 +23,7 @@ public:
 public:
   class UnexpectedTokenException : public std::logic_error {
   public:
-    UnexpectedTokenException(const std::string &msg = "enexpected token.");
+    UnexpectedTokenException(const std::string &msg = "unexpected token.");
   };
 
 public:
