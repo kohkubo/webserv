@@ -14,12 +14,12 @@
 
 class Response {
 public:
-  Response(const std::string &message);
+  Response(const std::string &request_message);
   Response(Response const &other);
   Response   &operator=(Response const &other);
 
   void        process();
-  std::string response_message();
+  std::string message();
 
 private:
   // リクエスト

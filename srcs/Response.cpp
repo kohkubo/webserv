@@ -17,9 +17,9 @@
  * リクエストを作る予定です。
  * 今は決めうちで作ってます。
  */
-Response::Response(const std::string &message) {
-  // lexer(message)
-  (void)message;
+Response::Response(const std::string &request_message) {
+  // lexer(request_message)
+  (void)request_message;
 
   __request_line_.push_back("GET");
   __request_line_.push_back("./html/index.html");
@@ -85,7 +85,7 @@ std::string read_file(const std::string &path) {
   return buffer.str();
 }
 
-std::string Response::response_message() {
+std::string Response::message() {
   return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] +
          CRLF + __response_field_[0] + CRLF + __response_field_[1] + CRLF +
          __response_field_[2] + CRLF + CRLF + __response_body_;
