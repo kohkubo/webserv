@@ -55,8 +55,8 @@ void Response::process() {
 
   // リクエストのターゲット(index.html)から内容読み込み, セット
   std::string file_path    = __request_line_[1];
-  std::string content      = read_file(file_path);
-  std::string content_size = sizettos(content.size());
+  std::string content      = file_to_string(file_path);
+  std::string content_size = sizet_to_string(content.size());
   __response_body_         = content;
   __response_field_.push_back("Content-Length: " + content_size);
 
@@ -67,22 +67,23 @@ void Response::process() {
 /*
  * size_t -> string
  */
-std::string sizettos(std::size_t val) {
+std::string sizet_to_string(std::size_t val) {
   // size_tの桁数 + '\0' 分のbufferを用意
   char buffer[std::numeric_limits<std::size_t>::digits10 + 1 + 1];
   std::sprintf(buffer, "%zu", val);
   return buffer;
 }
 
-// read_file_to_string
-std::string read_file(const std::string &path) {
-  std::ifstream file(path);
-  if (file.fail()) {
+// file_to_string_to_string
+std::string file_to_string(const std::string &path) {
+  std::ifstream file(path.c_str());
+  if (!file.good()) {
     std::cout << "fail to open file" << std::endl;
-    return "file not found";
+    return "file not found"; // -> 404
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
+  file.close();
   return buffer.str();
 }
 
