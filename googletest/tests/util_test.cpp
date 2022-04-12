@@ -48,8 +48,8 @@ TEST(util_test, test_sizet_to_string){
 }
 
 TEST(util_test, test_read_file_to_string){
-    std::string file_path = "../googletest/testdata/test1.txt";
-    std::string expect = "test1";
+    std::string file_path = "../googletest/tdata/util_test_1.txt";
+    std::string expect = "util_test_1";
     EXPECT_EQ(read_file_to_string(file_path), expect);
 
     file_path = "no_such_file";
