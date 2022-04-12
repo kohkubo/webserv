@@ -41,28 +41,23 @@ Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
 Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
                                                    Lexer::token_iterator end) {
   pos = Lexer::skip_delimiter(++pos, end, SPACES);
-  if (pos == end)
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directice value.");
 
   Lexer                 l(*pos, ":");
   Lexer::token_iterator it = l.begin();
   while (it != l.end()) {
-    if (__is_ip(*it)) {
-      listen_ip_ = *it;
-    } else if (__is_digits(*it)) {
+    if (__is_digits(*it)) {
       listen_port_ = std::atoi((*it).c_str());
+    } else if (__is_ip(*it)) {
+      listen_ip_ = *it;
     } else if (*it != ":") {
       listen_host_ = *it;
     }
     it++;
   }
 
-  pos++;
-  if (*pos != ";")
-    throw UnexpectedTokenException(
-        "could not detect directive end token(\";\").");
-  pos++;
-  return pos;
+  return pos + 2;
 }
 
 bool ServerConfig::__is_ip(const std::string &token) {
@@ -81,13 +76,8 @@ bool ServerConfig::__is_digits(const std::string &token) {
 Lexer::token_iterator ServerConfig::__parse_root(Lexer::token_iterator pos,
                                                  Lexer::token_iterator end) {
   pos = Lexer::skip_delimiter(++pos, end, SPACES);
-  if (pos == end)
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directice value.");
   root_ = *pos;
-  pos++;
-  if (*pos != ";")
-    throw UnexpectedTokenException(
-        "could not detect directive end token(\";\").");
-  pos++;
-  return pos;
+  return pos + 2;
 }
