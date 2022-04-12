@@ -78,7 +78,7 @@ std::string read_file(const std::string &path) {
   std::ifstream file(path);
   if (file.fail()) {
     std::cout << "fail to open file" << std::endl;
-    exit(1);
+    return "file not found";
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
