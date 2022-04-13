@@ -4,14 +4,6 @@
 #include <iostream>
 #include <vector>
 
-/*
- * リクエストとレスポンスの1行目に関して
- * indexをenumにすればわかりやすくなるかと思ったが,
- * 'VERSION'が被って面倒
- */
-// enum RequestLine { METHOD, TARGET, VERSION };
-// enum StatusLine { VERSION, STATUS, REASON };
-
 class Response {
 public:
   Response(const std::string &request_message);
