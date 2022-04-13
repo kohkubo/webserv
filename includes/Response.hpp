@@ -15,13 +15,15 @@
 class Response {
 public:
   Response(const std::string &request_message);
-  Response(Response const &other);
-  Response   &operator=(Response const &other);
 
   void        process();
   std::string message();
 
 private:
+  Response();
+  Response(Response const &other);
+  Response                &operator=(Response const &other);
+
   // リクエスト
   std::vector<std::string> __request_line_;
   std::vector<std::string> __request_field_;
