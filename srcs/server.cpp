@@ -91,7 +91,10 @@ void server_io_multiplexing() {
         continue;
       }
       usleep(1000);
-      read_request(__accfd);
+      std::string request_message = read_request(__accfd);
+      Response    response(request_message);
+      response.process();
+      send_response(__accfd, response.message());
     }
   }
   close(__socket->get_listenfd());
