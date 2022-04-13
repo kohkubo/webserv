@@ -36,7 +36,6 @@ public:
 private:
   Lexer::token_iterator __parse_listen(Lexer::token_iterator pos,
                                        Lexer::token_iterator end);
-  bool                  __is_digits(const std::string &token);
   Lexer::token_iterator __parse_root(Lexer::token_iterator pos,
                                      Lexer::token_iterator end);
 };

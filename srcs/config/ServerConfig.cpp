@@ -45,7 +45,7 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
   Lexer                 l(*pos, ":");
   Lexer::token_iterator it = l.begin();
   while (it != l.end()) {
-    if (__is_digits(*it)) {
+    if (is_digits(*it)) {
       listen_port_ = std::atoi((*it).c_str());
     } else if (is_ip(*it)) {
       listen_ip_ = *it;
@@ -56,14 +56,6 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
   }
 
   return pos + 2;
-}
-
-bool ServerConfig::__is_digits(const std::string &token) {
-  for (size_t i = 0; i < token.size(); i++) {
-    if (!isdigit(token[i]))
-      return false;
-  }
-  return true;
 }
 
 Lexer::token_iterator ServerConfig::__parse_root(Lexer::token_iterator pos,

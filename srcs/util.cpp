@@ -78,3 +78,11 @@ bool is_ip(const std::string &token) {
   }
   return true;
 }
+
+bool is_digits(const std::string &token) {
+  for (size_t i = 0; i < token.size(); i++) {
+    if (!isdigit(token[i]))
+      return false;
+  }
+  return true;
+}

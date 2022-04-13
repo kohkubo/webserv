@@ -55,6 +55,15 @@ TEST(util_test, test_is_ip) {
   EXPECT_EQ(is_ip("192.168.090.0"), false);
 }
 
+TEST(util_test, test_is_digits) {
+  EXPECT_EQ(is_digits("123"), true);
+  EXPECT_EQ(is_digits("9999"), true);
+  EXPECT_EQ(is_digits("0000"), true);
+
+  EXPECT_EQ(is_digits("-123"), false);
+  EXPECT_EQ(is_digits("hello"), false);
+}
+
 TEST(util_test, test_sizet_to_string) {
   std::size_t val    = 0;
   std::string expect = "0";
