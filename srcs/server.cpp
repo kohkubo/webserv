@@ -78,6 +78,7 @@ void server_io_multiplexing() {
       if (__accfd == -1) {
         continue;
       }
+      usleep(1000);
       read_request(__accfd);
     }
   }
