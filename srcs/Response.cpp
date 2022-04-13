@@ -3,21 +3,22 @@
 #include <iostream>
 
 /*
- * 現状:超安易パース
+ * 超安易パース
+ * 挿入時keyが被っている時の処理はいるかわからないので書いてない.
  */
 void Response::__parse(Lexer &message_lexer) {
   Lexer::token_iterator it = message_lexer.begin();
-  __request_.insert({METHOD, *it}); // *it = "GET"
+  __request_[METHOD] = *it; // *it = "GET"
   it++;
   it++;
-  __request_.insert({URL, *it});    // *it = "/"
+  __request_[URL] = *it;    // *it = "/"
   it++;
   it++;
-  __request_.insert({VERSION, *it});   // *it = "HTTP/1.1"
+  __request_[VERSION] = *it;   // *it = "HTTP/1.1"
 
-  __request_.insert({HOST, "example.com"});
-  __request_.insert(USERAGENT, "curl/7.79.1");
-  __request_.insert(ACCEPT, "*/*");
+  __request_[HOST] = "example.com";
+  __request_[USERAGENT] = "curl/7.79.1";
+  __request_[ACCEPT] = "*/*";
 }
 
 /*
