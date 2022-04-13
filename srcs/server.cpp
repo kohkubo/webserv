@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "Response.hpp"
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
@@ -14,7 +15,7 @@
 #define HTTP1_PORT 5001
 #define BUF_SIZE   1024
 
-void read_request(int accfd) {
+std::string read_request(int accfd) {
   char        __buf[BUF_SIZE] = {};
   std::string __recv_str      = "";
   ssize_t     __read_size     = 0;
@@ -44,7 +45,15 @@ void read_request(int accfd) {
       break;
     }
   } while (__read_size > 0);
+  std::cout << "read_request()" << std::endl;
   std::cout << __recv_str << std::endl;
+  return __recv_str;
+}
+
+void send_response(int accfd, const std::string &message) {
+  send(accfd, message.c_str(), message.size(), 0);
+  std::cout << "send_response()" << std::endl;
+  std::cout << message << std::endl;
 }
 
 void server() {
@@ -57,7 +66,10 @@ void server() {
     if (__accfd == -1) {
       continue;
     }
-    read_request(__accfd);
+    std::string request_message = read_request(__accfd);
+    Response    response(request_message);
+    response.process();
+    send_response(__accfd, response.message());
   }
   close(__socket->get_listenfd());
   return;
@@ -89,6 +101,7 @@ void server_io_multiplexing() {
       if (__accfd == -1) {
         continue;
       }
+      usleep(1000);
       read_request(__accfd);
     }
   }
