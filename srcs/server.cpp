@@ -20,16 +20,6 @@ std::string read_request(int accfd) {
   std::string __recv_str      = "";
   ssize_t     __read_size     = 0;
 
-  while (1) {
-    fd_set __readfds;
-    FD_ZERO(&__readfds);
-    FD_SET(accfd, &__readfds);
-    timeval __timeout = (timeval){.tv_sec = 0, .tv_usec = 0};
-    int     ret       = select(accfd + 1, &__readfds, NULL, NULL, &__timeout);
-    if (ret)
-      break;
-  }
-
   do {
     __read_size = recv(accfd, __buf, sizeof(__buf) - 1, 0);
     if (__read_size == -1) {
