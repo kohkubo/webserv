@@ -1,54 +1,57 @@
 #include "Response.hpp"
-#include "Lexer.hpp"
 #include "util.hpp"
 #include <iostream>
 
-Response::Response(const std::string &request_message) {
-  Lexer                 l(request_message, SP);
-  Lexer::token_iterator it = l.begin();
+/*
+ * 現状:超安易パース
+ */
+void Response::__parse(Lexer &message_lexer) {
+  Lexer::token_iterator it = message_lexer.begin();
+  __request_.insert({METHOD, *it}); // *it = "GET"
+  it++;
+  it++;
+  __request_.insert({URL, *it});    // *it = "/"
+  it++;
+  it++;
+  __request_.insert({VERSION, *it});   // *it = "HTTP/1.1"
 
-  __request_line_.push_back(*it); // "GET"
-  it++;
-  it++;
-  __request_line_.push_back(*it); // "/"
-  it++;
-  it++;
-  __request_line_.push_back(*it); // "HTTP/1.1"
-
-  __request_field_.push_back("Host: example.com");
-  __request_field_.push_back("User-Agent: curl/7.79.1");
-  __request_field_.push_back("Accept: */*");
+  __request_.insert({HOST, "example.com"});
+  __request_.insert(USERAGENT, "curl/7.79.1");
+  __request_.insert(ACCEPT, "*/*");
 }
 
 /*
  * サーバー処理
- * レスポンスに必要な属性を埋める.
+ * GETのみ対応
+ * 対象ファイルから読み込む.
+ * レスポンスに必要な要素を埋める.
  */
-void Response::process() {
-  __status_line_.push_back(VERSION);
+void Response::__process() {
 
-  // 対象ファイルから内容読み込み
-  std::string target_path = __request_line_[1];
-  if (target_path == "/")
+  /* 対象ファイルから内容読み込み */
+  std::string target_path = __request_[URL];
+  if (target_path == ROOT)
     target_path = HELLO_WORLD_PAGE;
   if (is_file_exists(target_path.c_str())) {
-    __status_line_.push_back(STATUS_OK);
-    __status_line_.push_back(TEXT_STATUS_OK);
+  __response_.insert({STATUS, STATUS_OK});
+  __response_.insert({PHRASE, PHRASE_STATUS_OK});
   } else {
     target_path = NOT_FOUND_PAGE;
-    __status_line_.push_back(STATUS_NOTFOUND);
-    __status_line_.push_back(TEXT_STATUS_NOTFOUND);
+  __response_.insert({STATUS, STATUS_NOTFOUND});
+  __response_.insert({PHRASE, PHRASE_STATUS_NOTFOUND});
   }
   std::string content = read_file_tostring(target_path.c_str());
-  __response_body_    = content;
-  __response_field_.push_back("Content-Length: " + tostring(content.size()));
+  __response_.insert({BODY, content});
+  __response_.insert({CONTENT_LEN, tostring(content.size())});
 
-  __response_field_.push_back("Content-Type: text/html");
-  __response_field_.push_back("Connection: close");
+  /* その他必要なものをレスポンスに追加 */
+  __response_.insert({VERSION, VERSION_HTTP});
+  __response_.insert({CONTENT_TYPE, TEXT_HTML});
+  __response_.insert({CONNECTION, CONNECTION_CLOSE});
 }
 
-std::string Response::message() {
-  return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] +
-         CRLF + __response_field_[0] + CRLF + __response_field_[1] + CRLF +
-         __response_field_[2] + CRLF + CRLF + __response_body_;
-}
+//std::string Response::message() {
+//  return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] +
+//         CRLF + __response_field_[0] + CRLF + __response_field_[1] + CRLF +
+//         __response_field_[2] + CRLF + CRLF + __response_body_;
+//}
