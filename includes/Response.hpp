@@ -1,5 +1,5 @@
-#ifndef RESPONSE_HPP
-#define RESPONSE_HPP
+#ifndef INCLUDES_RESPONSE_HPP
+#define INCLUDES_RESPONSE_HPP
 
 #include <iostream>
 #include <vector>
@@ -33,4 +33,4 @@ private:
   std::string              __response_body_;
 };
 
-#endif /* RESPONSE_HPP */
+#endif /* INCLUDES_RESPONSE_HPP */
