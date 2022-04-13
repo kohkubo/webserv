@@ -15,39 +15,38 @@
 #define BUF_SIZE   1024
 
 void read_request(int accfd) {
-  char        __buf[BUF_SIZE] = {};
-  std::string __recv_str      = "";
-  ssize_t     __read_size     = 0;
+  char        buf[BUF_SIZE] = {};
+  std::string recv_str      = "";
+  ssize_t     read_size     = 0;
   do {
-    __read_size = recv(accfd, __buf, sizeof(__buf) - 1, 0);
-    if (__read_size == -1) {
+    read_size = recv(accfd, buf, sizeof(buf) - 1, 0);
+    if (read_size == -1) {
       error_log_with_errno("read() failed.");
       close(accfd);
       // __accfd = -1;
       break;
     }
-    if (__read_size > 0) {
-      __recv_str.append(__buf);
+    if (read_size > 0) {
+      recv_str.append(buf);
     }
-    if (is_match_suffix_string(__recv_str, "\r\n\r\n")) {
+    if (is_match_suffix_string(recv_str, "\r\n\r\n")) {
       break;
     }
-  } while (__read_size > 0);
-  std::cout << __recv_str << std::endl;
+  } while (read_size > 0);
+  std::cout << recv_str << std::endl;
 }
 
 void server() {
-  const std::string __executive_file = HTML_FILE;
-  ServerConfig      __server_config;
-  Socket           *__socket = new Socket(__server_config);
+  const std::string executive_file = HTML_FILE;
+  ServerConfig      server_config;
+  Socket           *socket = new Socket(server_config);
   while (1) {
-    int __accfd =
-        accept(__socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
-    if (__accfd == -1) {
+    int accfd = accept(socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
+    if (accfd == -1) {
       continue;
     }
-    read_request(__accfd);
+    read_request(accfd);
   }
-  close(__socket->get_listenfd());
+  close(socket->get_listenfd());
   return;
 }
