@@ -1,4 +1,5 @@
 #include "util.hpp"
+#include "Lexer.hpp"
 #include <fstream>
 #include <limits>
 #include <sstream>
@@ -45,4 +46,57 @@ std::string read_file_tostring(const char *path) {
   buffer << file.rdbuf();
   file.close();
   return buffer.str();
+}
+
+bool is_octet(const std::string &token) {
+  if (token.size() == 1) {
+    if (token[0] >= '0' && token[0] <= '9') {
+      return true;
+    }
+    return false;
+  } else if (token.size() == 2) {
+    if (token[0] >= '1' && token[0] <= '9' && token[1] >= '0' &&
+        token[1] <= '9') {
+      return true;
+    }
+    return false;
+  } else if (token.size() == 3) {
+    if (token[0] == '1') {
+      if ((token[1] >= '0' && token[1] <= '9') &&
+          (token[2] >= '0' && token[2] <= '9'))
+        return true;
+    }
+    if (token[0] == '2') {
+      if ((token[1] >= '0' && token[1] <= '4') &&
+          (token[2] >= '0' && token[2] <= '9'))
+        return true;
+      if (token[1] == '5' && (token[2] >= '0' && token[2] <= '5'))
+        return true;
+    }
+  }
+  return false;
+}
+
+bool is_ip(const std::string &token) {
+  Lexer                 l(token, ".");
+  Lexer::token_iterator it    = l.begin();
+  size_t                count = 0;
+  for (; it != l.end(); it++, count++) {
+    if (!is_octet(*it))
+      return false;
+    it++;
+    if (count == 3)
+      break;
+    if (it != l.end() && *it != ".")
+      return false;
+  }
+  return true;
+}
+
+bool is_digits(const std::string &token) {
+  for (size_t i = 0; i < token.size(); i++) {
+    if (!isdigit(token[i]))
+      return false;
+  }
+  return true;
 }
