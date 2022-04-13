@@ -6,18 +6,22 @@
 #include <map>
 
 /* key */
+// start line
 #define METHOD      "METHOD"
 #define URL         "URL"
 #define VERSION     "VERSION"
 #define STATUS      "STATUS"
 #define PHRASE      "PHRASE"
+// field
 #define HOST        "Host"
 #define USERAGENT   "User-Agent"
 #define ACCEPT      "Accept"
 #define CONTENT_LEN "Content-Length"
 #define CONTENT_TYPE "Content-Type"
 #define CONNECTION   "Connection"
+// body
 #define BODY        "BODY"
+
 /* value */
 #define VERSION_HTTP       "HTTP/1.1"
 #define STATUS_OK            "200"
@@ -29,6 +33,7 @@
 #define ROOT                 "/"
 #define TEXT_HTML            "text/html"
 #define CONNECTION_CLOSE     "close"
+
 /* delimiter */
 #define CR                   "\r"
 #define LF                   "\n"
@@ -37,12 +42,14 @@
 
 class Response {
 public:
+  typedef std::map<std::string, std::string> message_type;
+
   Response(Lexer &message_lexer) {
     __parse(message_lexer);
     __process();
   }
 
-  std::string message();
+  std::string message() const;
 
 private:
   Response();
@@ -51,9 +58,12 @@ private:
 
   void        __parse(Lexer &message_lexer);
   void        __process();
+  std::string __start_line_message() const;
+  std::string __field_message() const;
+  std::string __body_message() const;
 
-  std::map<std::string, std::string> __request_;
-  std::map<std::string, std::string> __response_;
+  message_type __request_;
+  message_type __response_;
 };
 
 #endif /* INCLUDES_RESPONSE_HPP */

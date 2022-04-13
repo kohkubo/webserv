@@ -50,8 +50,18 @@ void Response::__process() {
   __response_.insert({CONNECTION, CONNECTION_CLOSE});
 }
 
-//std::string Response::message() {
-//  return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] +
-//         CRLF + __response_field_[0] + CRLF + __response_field_[1] + CRLF +
-//         __response_field_[2] + CRLF + CRLF + __response_body_;
-//}
+std::string Response::message() const {
+  return __start_line_message() + __field_message() + CRLF + __body_message();
+}
+
+std::string Response::__start_line_message() const {
+  return __response_[VERSION] + SP + __response_[STATUS] + SP + __response_[PHRASE] + CRLF;
+}
+
+static std::string get_field_line(std::map<std::string, std::string> &field, const std::string &key) {
+  if ()
+}
+
+std::string Response::__field_message() const {
+  return __response_[]
+}
