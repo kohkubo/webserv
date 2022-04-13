@@ -22,13 +22,16 @@ Response::Response(const std::string &request_message) {
   Lexer                 l(request_message, SP);
   Lexer::token_iterator it = l.begin();
 
-  __request_line_.push_back(*it); // "GET"
+  __request_line_.push_back(*it); // *it = "GET"
   it++;
   it++;
-  __request_line_.push_back(*it); // "/"
+  std::string target_path = *it; // *it = "/"
+  if (target_path == "/")
+    target_path = HELLO_WORLD_PAGE;
+  __request_line_.push_back(target_path);
   it++;
   it++;
-  __request_line_.push_back(*it); // "HTTP/1.1"
+  __request_line_.push_back(*it); // *it = "HTTP/1.1"
 
   __request_field_.push_back("Host: example.com");
   __request_field_.push_back("User-Agent: curl/7.79.1");
@@ -44,8 +47,6 @@ void Response::process() {
 
   // 対象ファイルから内容読み込み
   std::string target_path = __request_line_[1];
-  if (target_path == "/")
-    target_path = HELLO_WORLD_PAGE;
   if (is_file_exists(target_path.c_str())) {
     __status_line_.push_back(STATUS_OK);
     __status_line_.push_back(TEXT_STATUS_OK);
