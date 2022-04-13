@@ -1,5 +1,5 @@
-#ifndef INCLUDES_UTIL_HPP_
-#define INCLUDES_UTIL_HPP_
+#ifndef INCLUDES_UTIL_HPP
+#define INCLUDES_UTIL_HPP
 
 #include <cerrno>
 #include <iostream>
@@ -15,4 +15,4 @@ bool is_file_exists(const char *path);
 std::string tostring(const size_t val);
 std::string read_file_tostring(const char *file_path);
 
-#endif // INCLUDES_UTIL_HPP_
+#endif /* INCLUDES_UTIL_HPP */

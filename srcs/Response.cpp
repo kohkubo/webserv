@@ -40,20 +40,6 @@ Response::Response(const std::string &request_message) {
   __request_field_.push_back("Accept: */*");
 }
 
-Response::Response(Response const &other) { *this = other; }
-
-Response &Response::operator=(Response const &other) {
-  if (this != &other) {
-    this->__request_line_   = other.__request_line_;
-    this->__request_field_  = other.__request_field_;
-    this->__request_body_   = other.__request_body_;
-    this->__status_line_    = other.__status_line_;
-    this->__response_field_ = other.__response_field_;
-    this->__response_body_  = other.__response_body_;
-  }
-  return *this;
-}
-
 /*
  * サーバー処理
  * レスポンスに必要な属性を埋める.

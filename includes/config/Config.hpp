@@ -1,5 +1,5 @@
-#ifndef INCLUDES_CONFIG_HPP
-#define INCLUDES_CONFIG_HPP
+#ifndef INCLUDES_CONFIG_CONFIG_HPP
+#define INCLUDES_CONFIG_CONFIG_HPP
 
 #include <string>
 #include <vector>
@@ -15,4 +15,4 @@ public:
   ~Config();
 };
 
-#endif /* INCLUDES_CONFIG_HPP */
+#endif /* INCLUDES_CONFIG_CONFIG_HPP */
