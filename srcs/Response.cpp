@@ -3,21 +3,6 @@
 #include "util.hpp"
 #include <iostream>
 
-#define STATUS_OK            "200"
-#define TEXT_STATUS_OK       "OK"
-#define STATUS_NOTFOUND      "404"
-#define TEXT_STATUS_NOTFOUND "Not Found"
-#define VERSION              "HTTP/1.1"
-#define HELLO_WORLD_PAGE     "./html/index.html"
-#define NOT_FOUND_PAGE       "./html/not_found.html"
-#define CR                   "\r"
-#define LF                   "\n"
-#define CRLF                 "\r\n"
-#define SP                   " "
-
-/*
- * コンストラクタ: パースを省略
- */
 Response::Response(const std::string &request_message) {
   Lexer                 l(request_message, SP);
   Lexer::token_iterator it = l.begin();
