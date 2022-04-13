@@ -75,7 +75,6 @@ void server_io_multiplexing() {
     FD_SET(__socket->get_listenfd(), &__readfds);
 
     timeval __timeout;
-    // ここをゼロにすると動かない
     __timeout.tv_sec  = 0;
     __timeout.tv_usec = 0;
 
