@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "util.hpp"
+#include "limits.h"
 
 TEST(util_test, test_is_match_suffix_string){
     std::string str = "abcdefg";
