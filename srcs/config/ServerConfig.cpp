@@ -1,9 +1,7 @@
 #include "config/ServerConfig.hpp"
+#include "util.hpp"
 
 #include <algorithm>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 
 #define SPACES "\v\r\f\t\n "
 
@@ -49,7 +47,7 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
   while (it != l.end()) {
     if (__is_digits(*it)) {
       listen_port_ = std::atoi((*it).c_str());
-    } else if (__is_ip(*it)) {
+    } else if (is_ip(*it)) {
       listen_ip_ = *it;
     } else if (*it != ":") {
       listen_host_ = *it;
@@ -58,11 +56,6 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
   }
 
   return pos + 2;
-}
-
-bool ServerConfig::__is_ip(const std::string &token) {
-  struct in_addr inp;
-  return (inet_aton(token.c_str(), &inp));
 }
 
 bool ServerConfig::__is_digits(const std::string &token) {

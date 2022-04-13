@@ -12,4 +12,7 @@ inline void error_log_with_errno(const std::string &msg) {
 
 bool is_match_suffix_string(const std::string &str, const std::string &suffix);
 
+bool is_ip(const std::string &token);
+bool is_octet(const std::string &token);
+
 #endif /* INCLUDES_UTIL_HPP */
