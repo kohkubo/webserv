@@ -58,10 +58,14 @@ std::string Response::__start_line_message() const {
   return __response_[VERSION] + SP + __response_[STATUS] + SP + __response_[PHRASE] + CRLF;
 }
 
-static std::string get_field_line(std::map<std::string, std::string> &field, const std::string &key) {
-  if ()
-}
+//static std::string get_field_line(std::map<std::string, std::string> &field, const std::string &key) {
+//  return "";
+//}
 
 std::string Response::__field_message() const {
-  return __response_[]
+  return "";
+}
+
+std::string Response::__body_message() const {
+  return __response_[BODY];
 }
