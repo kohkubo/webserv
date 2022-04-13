@@ -1,5 +1,5 @@
-#ifndef REQUEST_HPP
-#define REQUEST_HPP
+#ifndef INCLUDES_REQUEST_HPP
+#define INCLUDES_REQUEST_HPP
 
 #include <iostream>
 #include <vector>
@@ -22,4 +22,4 @@ private:
   std::vector<std::string> __fields_;
 };
 
-#endif /* REQUEST_HPP */
+#endif /* INCLUDES_REQUEST_HPP */
