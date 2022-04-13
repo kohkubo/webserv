@@ -52,7 +52,7 @@ TEST(util_test, test_tostring){
 }
 
 TEST(util_test, test_read_file_tostring){
-    const char *path = "../googletest/tdata/test_read_file_tostring.txt";
+    const char *path = "../googletest/tdata/test.txt";
     std::string expect = "test";
     EXPECT_EQ(read_file_tostring(path), expect);
 
@@ -63,10 +63,8 @@ TEST(util_test, test_read_file_tostring){
 
 TEST(util_test, test_is_file_exists){
     const char *path = "../googletest/tdata/test.txt";
-    std::string expect = "test";
-    EXPECT_EQ(read_file_tostring(path), expect);
+    EXPECT_TRUE(is_file_exists(path));
 
     path = "no_such_file";
-    expect = "";
-    EXPECT_EQ(read_file_tostring(path), expect);
+    EXPECT_FALSE(is_file_exists(path));
 }
