@@ -49,11 +49,11 @@ TEST(util_test, test_sizet_to_string){
 }
 
 TEST(util_test, test_read_file_to_string){
-    std::string file_path = "../googletest/tdata/test_read_file_to_string.txt";
+    std::string path = "../googletest/tdata/test.txt";
     std::string expect = "test";
-    EXPECT_EQ(read_file_to_string(file_path), expect);
+    EXPECT_EQ(read_file_to_string(path), expect);
 
-    file_path = "no_such_file";
+    path = "no_such_file";
     expect = "file not found";
-    EXPECT_EQ(read_file_to_string(file_path), expect);
+    EXPECT_EQ(read_file_to_string(path), expect);
 }
