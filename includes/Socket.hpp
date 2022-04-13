@@ -1,5 +1,5 @@
-#ifndef INCLUDES_SOCKET_HPP_
-#define INCLUDES_SOCKET_HPP_
+#ifndef INCLUDES_SOCKET_HPP
+#define INCLUDES_SOCKET_HPP
 
 #include <arpa/inet.h>
 #include <cstring>
@@ -32,4 +32,4 @@ private:
   ServerConfig       __server_config_;
 };
 
-#endif // INCLUDES_SOCKET_HPP_
+#endif /* INCLUDES_SOCKET_HPP */
