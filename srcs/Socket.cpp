@@ -5,6 +5,15 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+Socket::Socket(ServerConfig &config) : __server_config_(config) {
+  __set_listenfd();
+  __set_sockaddr_in();
+  __set_bind();
+  __set_listen();
+}
+
+Socket::~Socket() { close(__listenfd_); }
+
 /*
  * リスニングソケットを作成する
  * int socket(int domain, int type, int protocol);
@@ -19,7 +28,7 @@
  * 0　　　　　　　　　　　　　　　　　　　　　　　　詳解UNIXでは「引数「protocol」は普通ゼロで、指定したドメインとソケット種別に
  *              たいするデフォルトのプロトコルを選択します。」と書いてある。なぜ0になるのかわからない
  */
-void Socket::set_listenfd() {
+void Socket::__set_listenfd() {
   // TODO: getaddrinfoに書き換え　CSAPP
   // ベストプラクティスはgetaddrinfo()を使うことで引数をプロトコル非依存にする。
   __listenfd_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -44,7 +53,7 @@ void Socket::set_listenfd() {
  * sockaddr_in構造体の設定
  *　INADDR_ANY　一般には0.0.0.0が定義され、全てのローカルインターフェイスにバインドされうることを意味する。
  */
-void Socket::set_sockaddr_in() {
+void Socket::__set_sockaddr_in() {
   memset(&__serv_addr_, 0, sizeof(__serv_addr_));
   __serv_addr_.sin_family = AF_INET;
   inet_pton(AF_INET, __server_config_.listen_ip_.c_str(),
@@ -59,7 +68,7 @@ void Socket::set_sockaddr_in() {
  * addr    ソケットアドレス
  * addrlen ソケットアドレス長
  */
-void Socket::set_bind() {
+void Socket::__set_bind() {
   if (bind(__listenfd_, (struct sockaddr *)&__serv_addr_,
            sizeof(__serv_addr_)) == -1) {
     error_log_with_errno("bind() failed.");
@@ -74,7 +83,7 @@ void Socket::set_bind() {
  * sockfd 　ソケットディスクリプタ
  * backlog 　待ち受けキューの最大数
  */
-void Socket::set_listen() {
+void Socket::__set_listen() {
   if (listen(__listenfd_, SOMAXCONN) == -1) {
     error_log_with_errno("listen() failed.");
     close(__listenfd_);
