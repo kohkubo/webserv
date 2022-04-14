@@ -2,8 +2,8 @@
 #define INCLUDES_UTIL_HPP
 
 #include <cerrno>
+#include <cstring>
 #include <iostream>
-#include <string.h>
 #include <string>
 
 inline void error_log_with_errno(const std::string &msg) {
