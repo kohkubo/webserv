@@ -1,5 +1,9 @@
 #include "Socket.hpp"
 #include <cstdlib>
+#include <fcntl.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 /*
  * リスニングソケットを作成する
@@ -22,6 +26,17 @@ void Socket::set_listenfd() {
   if (__listenfd_ == -1) {
     error_log_with_errno("socket() failed.");
     exit(1);
+  }
+  if (fcntl(__listenfd_, F_SETFL, O_NONBLOCK) == -1) {
+    error_log_with_errno("fcntl() failed.");
+    exit(EXIT_FAILURE);
+  }
+  int __on = 1;
+  if (setsockopt(__listenfd_, SOL_SOCKET, SO_REUSEADDR, (const void *)&__on,
+                 sizeof(__on)) == -1) {
+    error_log_with_errno("setsockopt() failed.");
+    close(__listenfd_);
+    exit(EXIT_FAILURE);
   }
 }
 
