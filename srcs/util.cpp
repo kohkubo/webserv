@@ -22,7 +22,7 @@ bool is_file_exists(const char *path) {
   struct stat file_info;
 
   if (stat(path, &file_info) == -1)
-    return false; // exeption -> internal server error
+    return false; // exeption -> internal server error 
   if ((file_info.st_mode & S_IFMT) == S_IFREG)
     return true;
   else
@@ -38,10 +38,7 @@ std::string tostring(const std::size_t val) {
 
 std::string read_file_tostring(const char *path) {
   std::ifstream file(path);
-  if (!file.good()) {
-    std::cout << "fail to open file" << std::endl;
-    return ""; // exeption -> internal server error
-  }
+  // TODO: エラーハンドリング
   std::stringstream buffer;
   buffer << file.rdbuf();
   file.close();
