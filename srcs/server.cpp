@@ -92,8 +92,8 @@ void server_io_multiplexing() {
       }
       usleep(1000);
       std::string request_message = read_request(__accfd);
-      Response    response(request_message);
-      response.process();
+      Lexer       message_lexer(request_message, SP);
+      Response    response(message_lexer);
       send_response(__accfd, response.message());
     }
   }
