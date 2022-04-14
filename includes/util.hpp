@@ -25,8 +25,6 @@ std::string to_string(T val) {
   std::ostringstream ss;
   ss << val;
   return ss.str();
-  // valが空のifstreamの時: ss.fail() -> true, ss.str() = "": 問題なし.
-  // その他のエラーケースは再現が困難なので現状エラー処理なし.
 }
 
 #endif /* INCLUDES_UTIL_HPP */

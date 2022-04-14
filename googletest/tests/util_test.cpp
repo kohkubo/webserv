@@ -6,7 +6,7 @@
 #define TEST_FILE      "../googletest/tdata/test.txt"
 #define TEST_CONTENT   "test"
 #define EMPTY_FILE     "../googletest/tdata/empty.txt"
-#define NO_SUCH_FILE  "no such file"
+#define NO_SUCH_FILE   "no such file"
 
 TEST(util_test, test_is_match_suffix_string) {
   std::string str    = "abcdefg";
@@ -89,4 +89,5 @@ TEST(util_test, test_is_file_exists){
     EXPECT_TRUE(is_file_exists(TEST_FILE));
     EXPECT_TRUE(is_file_exists(EMPTY_FILE));
     EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
+    //ファイルに読み込み権限がないとfailが返ります。
 }
