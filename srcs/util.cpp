@@ -18,6 +18,7 @@ bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
   return false;
 }
 
+//
 bool is_file_exists(const char *path) {
   struct stat file_info;
 
@@ -27,13 +28,6 @@ bool is_file_exists(const char *path) {
     return true;
   else
     return false;
-}
-
-std::string tostring(const std::size_t val) {
-  const int max_digits = std::numeric_limits<std::size_t>::digits10 + 1;
-  char      buffer[max_digits + 1];
-  std::sprintf(buffer, "%zu", val);
-  return buffer;
 }
 
 std::string read_file_tostring(const char *path) {

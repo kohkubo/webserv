@@ -57,7 +57,7 @@ void Response::process() {
   }
   std::string content = read_file_tostring(target_path.c_str());
   __response_body_    = content;
-  __response_field_.push_back("Content-Length: " + tostring(content.size()));
+  __response_field_.push_back("Content-Length: " + to_string(content.size()));
 
   __response_field_.push_back("Content-Type: text/html");
   __response_field_.push_back("Connection: close");

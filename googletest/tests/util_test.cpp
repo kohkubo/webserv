@@ -1,6 +1,7 @@
 #include "limits.h"
 #include "util.hpp"
 #include "gtest/gtest.h"
+#include <fstream>
 
 TEST(util_test, test_is_match_suffix_string) {
   std::string str    = "abcdefg";
@@ -31,6 +32,9 @@ TEST(util_test, test_to_string) {
   EXPECT_EQ(to_string(SIZE_MAX), std::to_string(SIZE_MAX));
   // SIZE_MAX を超えると0になります。
   EXPECT_EQ(to_string(SIZE_MAX + 1), "0");
+  std::ifstream file("../googletest/tdata/empty.txt");
+  EXPECT_EQ(to_string(file.rdbuf()), "");
+  file.close();
 }
 
 TEST(util_test, test_is_uint8) {
@@ -71,32 +75,6 @@ TEST(util_test, test_is_digits) {
 
   EXPECT_EQ(is_digits("-123"), false);
   EXPECT_EQ(is_digits("hello"), false);
-}
-
-TEST(util_test, test_tostring){
-    std::size_t val = 0;
-    std::string expect = "0";
-    EXPECT_EQ(tostring(val), expect);
-
-    val = 1;
-    expect = "1";
-    EXPECT_EQ(tostring(val), expect);
-
-    val = 42;
-    expect = "42";
-    EXPECT_EQ(tostring(val), expect);
-
-    val = INT_MAX;
-    expect = std::to_string(val);
-    EXPECT_EQ(tostring(val), expect);
-
-    val = static_cast<size_t>(INT_MAX) + 1;
-    expect = std::to_string(val);
-    EXPECT_EQ(tostring(val), expect);
-
-    val = SIZE_MAX;
-    expect = std::to_string(val);
-    EXPECT_EQ(tostring(val), expect);
 }
 
 TEST(util_test, test_read_file_tostring){
