@@ -1,5 +1,5 @@
-#ifndef INCLUDES_LEXER_LEXER
-#define INCLUDES_LEXER_LEXER
+#ifndef INCLUDES_LEXER_HPP
+#define INCLUDES_LEXER_HPP
 
 #include <string>
 #include <vector>
@@ -24,6 +24,11 @@ private:
   Lexer() {}
   bool __tokenize(const std::string text);
   bool __is_delimiter(const char &c);
+
+public:
+  static Lexer::token_iterator skip_delimiter(Lexer::token_iterator pos,
+                                              Lexer::token_iterator end,
+                                              const std::string    &skip);
 };
 
-#endif /* INCLUDES_LEXER_LEXER */
+#endif /* INCLUDES_LEXER_HPP */

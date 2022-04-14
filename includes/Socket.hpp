@@ -1,5 +1,5 @@
-#ifndef INCLUDES_SOCKET_HPP_
-#define INCLUDES_SOCKET_HPP_
+#ifndef INCLUDES_SOCKET_HPP
+#define INCLUDES_SOCKET_HPP
 
 #include <arpa/inet.h>
 #include <cstring>
@@ -8,11 +8,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "config/ServerConfig.hpp"
 #include "util.hpp"
 
 class Socket {
 public:
-  explicit Socket(int port) : __port_(port) {
+  explicit Socket(ServerConfig &config) : __server_config_(config) {
     set_listenfd();
     set_sockaddr_in();
     set_bind();
@@ -27,8 +28,8 @@ public:
 
 private:
   int                __listenfd_;
-  int                __port_;
   struct sockaddr_in __serv_addr_;
+  ServerConfig       __server_config_;
 };
 
-#endif // INCLUDES_SOCKET_HPP_
+#endif /* INCLUDES_SOCKET_HPP */

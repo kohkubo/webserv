@@ -125,3 +125,16 @@ TEST(lexer_test, httpReqest) {
   EXPECT_EQ(*it++, std::string("body"));
   EXPECT_EQ(it, test.end());
 }
+
+TEST(lexer_test, skip_delimiter) {
+  Lexer                 l("apple, orange, banana", " ,");
+  Lexer::token_iterator it = l.begin();
+  EXPECT_EQ(*it++, std::string("apple"));
+  it = Lexer::skip_delimiter(it, l.end(), ",");
+  EXPECT_EQ(*it++, std::string(" "));
+  EXPECT_EQ(*it++, std::string("orange"));
+  EXPECT_EQ(*it++, std::string(","));
+  it = Lexer::skip_delimiter(it, l.end(), " ");
+  EXPECT_EQ(*it++, std::string("banana"));
+  EXPECT_EQ(it, l.end());
+}
