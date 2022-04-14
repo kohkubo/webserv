@@ -18,12 +18,11 @@ bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
   return false;
 }
 
-//
 bool is_file_exists(const char *path) {
   struct stat file_info;
 
   if (stat(path, &file_info) == -1)
-    return false; // exeption -> internal server error
+    return false; // TODO: エラーを呼び出し元に通知
   if ((file_info.st_mode & S_IFMT) == S_IFREG)
     return true;
   else
@@ -33,13 +32,11 @@ bool is_file_exists(const char *path) {
 std::string read_file_tostring(const char *path) {
   std::ifstream file(path);
   if (file.fail()) {
-    std::cout << "fail to open file" << std::endl;
-    return ""; // exeption -> internal server error
+    return ""; // TODO: エラーを呼び出し元に通知
   }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
+  std::string content = to_string(file.rdbuf());
   file.close();
-  return buffer.str();
+  return content;
 }
 
 bool is_uint8(const std::string &token) {
