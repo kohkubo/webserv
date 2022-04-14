@@ -55,7 +55,7 @@ std::string Response::message() {
   return __status_line_message() + __field_message() + CRLF + __body_message();
 }
 
-/* ステータスラインの要素は必須だが, そこのバリデートは現状してない */
+/* ステータスラインの要素は必須だが, 存在しなかった時のバリデートは現状してない */
 std::string Response::__status_line_message() {
   return __response_[VERSION] + SP + __response_[STATUS] + SP +
          __response_[PHRASE] + CRLF;
