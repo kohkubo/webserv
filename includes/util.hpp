@@ -3,7 +3,7 @@
 
 #include <cerrno>
 #include <iostream>
-#include <string.h>
+#include <sstream>
 #include <string>
 
 inline void error_log_with_errno(const std::string &msg) {
@@ -17,5 +17,12 @@ std::string sizet_to_string(size_t val);
 bool        is_ip(const std::string &token);
 bool        is_octet(const std::string &token);
 bool        is_digits(const std::string &token);
+
+template <typename T>
+std::string to_string(T val) {
+  std::ostringstream ss;
+  ss << val;
+  return ss.str();
+}
 
 #endif /* INCLUDES_UTIL_HPP */
