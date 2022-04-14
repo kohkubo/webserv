@@ -38,7 +38,7 @@ std::string tostring(const std::size_t val) {
 
 std::string read_file_tostring(const char *path) {
   std::ifstream file(path);
-  if (!file.good()) {
+  if (file.fail()) {
     std::cout << "fail to open file" << std::endl;
     return ""; // exeption -> internal server error
   }
