@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <string.h>
 
 inline void error_log_with_errno(const std::string &msg) {
   std::cerr << msg << ": " << strerror(errno) << std::endl;
