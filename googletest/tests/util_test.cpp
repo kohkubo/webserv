@@ -24,6 +24,15 @@ TEST(util_test, test_is_match_suffix_string) {
   EXPECT_FALSE(is_match_suffix_string(str, suffix));
 }
 
+TEST(util_test, test_to_string) {
+  EXPECT_EQ(to_string(0), "0");
+  EXPECT_EQ(to_string(1), "1");
+  EXPECT_EQ(to_string(INT_MAX), std::to_string(INT_MAX));
+  EXPECT_EQ(to_string(SIZE_MAX), std::to_string(SIZE_MAX));
+  // SIZE_MAX を超えると0になります。
+  EXPECT_EQ(to_string(SIZE_MAX + 1), "0");
+}
+
 TEST(util_test, test_is_uint8) {
   EXPECT_EQ(is_uint8("0"), true);
   EXPECT_EQ(is_uint8("10"), true);
