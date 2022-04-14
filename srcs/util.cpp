@@ -48,7 +48,7 @@ std::string read_file_tostring(const char *path) {
   return buffer.str();
 }
 
-bool is_octet(const std::string &token) {
+bool is_uint8(const std::string &token) {
   if (token.size() == 1) {
     if (token[0] >= '0' && token[0] <= '9') {
       return true;
@@ -82,7 +82,7 @@ bool is_ip(const std::string &token) {
   Lexer::token_iterator it    = l.begin();
   size_t                count = 0;
   for (; it != l.end(); it++, count++) {
-    if (!is_octet(*it))
+    if (!is_uint8(*it))
       return false;
     it++;
     if (count == 3)
