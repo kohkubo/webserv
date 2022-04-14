@@ -33,21 +33,21 @@ TEST(util_test, test_to_string) {
   EXPECT_EQ(to_string(SIZE_MAX + 1), "0");
 }
 
-TEST(util_test, test_is_octet) {
-  EXPECT_EQ(is_octet("0"), true);
-  EXPECT_EQ(is_octet("10"), true);
-  EXPECT_EQ(is_octet("99"), true);
-  EXPECT_EQ(is_octet("100"), true);
-  EXPECT_EQ(is_octet("199"), true);
-  EXPECT_EQ(is_octet("200"), true);
-  EXPECT_EQ(is_octet("249"), true);
-  EXPECT_EQ(is_octet("250"), true);
-  EXPECT_EQ(is_octet("255"), true);
+TEST(util_test, test_is_uint8) {
+  EXPECT_EQ(is_uint8("0"), true);
+  EXPECT_EQ(is_uint8("10"), true);
+  EXPECT_EQ(is_uint8("99"), true);
+  EXPECT_EQ(is_uint8("100"), true);
+  EXPECT_EQ(is_uint8("199"), true);
+  EXPECT_EQ(is_uint8("200"), true);
+  EXPECT_EQ(is_uint8("249"), true);
+  EXPECT_EQ(is_uint8("250"), true);
+  EXPECT_EQ(is_uint8("255"), true);
 
-  EXPECT_EQ(is_octet("-0"), false);
-  EXPECT_EQ(is_octet("01"), false);
-  EXPECT_EQ(is_octet("256"), false);
-  EXPECT_EQ(is_octet("299"), false);
+  EXPECT_EQ(is_uint8("-0"), false);
+  EXPECT_EQ(is_uint8("01"), false);
+  EXPECT_EQ(is_uint8("256"), false);
+  EXPECT_EQ(is_uint8("299"), false);
 }
 
 TEST(util_test, test_is_ip) {
