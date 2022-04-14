@@ -15,7 +15,7 @@ std::string read_file_to_string(const std::string &path);
 std::string sizet_to_string(size_t val);
 
 bool        is_ip(const std::string &token);
-bool        is_octet(const std::string &token);
+bool        is_uint8(const std::string &token);
 bool        is_digits(const std::string &token);
 
 #endif /* INCLUDES_UTIL_HPP */
