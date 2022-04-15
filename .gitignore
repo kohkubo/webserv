@@ -8,11 +8,13 @@
 !*.md
 !*.yml
 !*.html
+!*.txt
 !.clang-format
 !.clang-tidy
 !Makefile
 test
 !pre-push
 memo.md
+man
 
 googletest/includes/

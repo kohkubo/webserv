@@ -5,19 +5,19 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "Response.hpp"
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
 #include "util.hpp"
 
-#define HTML_FILE  "index.html"
-#define HTTP1_PORT 5001
-#define BUF_SIZE   1024
+#define BUF_SIZE 1024
 
-void read_request(int accfd) {
+std::string read_request(int accfd) {
   char        buf[BUF_SIZE] = {};
   std::string recv_str      = "";
   ssize_t     read_size     = 0;
+
   do {
     read_size = recv(accfd, buf, sizeof(buf) - 1, 0);
     if (read_size == -1) {
@@ -33,20 +33,62 @@ void read_request(int accfd) {
       break;
     }
   } while (read_size > 0);
+  std::cout << "read_request()" << std::endl;
   std::cout << recv_str << std::endl;
+  return recv_str;
+}
+
+void send_response(int accfd, const std::string &message) {
+  send(accfd, message.c_str(), message.size(), 0);
+  std::cout << "send_response()" << std::endl;
+  std::cout << message << std::endl;
 }
 
 void server() {
-  const std::string executive_file = HTML_FILE;
-  ServerConfig      server_config;
-  Socket           *socket = new Socket(server_config);
+  ServerConfig server_config;
+  Socket      *socket = new Socket(server_config);
   while (1) {
     int accfd = accept(socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
     if (accfd == -1) {
       continue;
     }
-    read_request(accfd);
+    std::string request_message = read_request(accfd);
+    Response    response(request_message);
+    response.process();
+    send_response(accfd, response.message());
   }
-  close(socket->get_listenfd());
+  return;
+}
+
+void server_io_multiplexing() {
+  ServerConfig server_config;
+  Socket      *socket = new Socket(server_config);
+  while (1) {
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(socket->get_listenfd(), &readfds);
+
+    timeval timeout;
+    timeout.tv_sec  = 0;
+    timeout.tv_usec = 0;
+
+    int ret =
+        select(socket->get_listenfd() + 1, &readfds, NULL, NULL, &timeout);
+    if (ret == -1) {
+      error_log_with_errno("select() failed. readfds.");
+      continue;
+    }
+    if (ret && FD_ISSET(socket->get_listenfd(), &readfds)) {
+      int accfd = accept(socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
+      if (accfd == -1) {
+        continue;
+      }
+      usleep(1000);
+      std::string request_message = read_request(accfd);
+      Response    response(request_message);
+      response.process();
+      send_response(accfd, response.message());
+    }
+  }
   return;
 }
