@@ -83,13 +83,13 @@ TEST(util_test, test_is_digits) {
 TEST(util_test, test_read_file_tostring){
   EXPECT_EQ(read_file_tostring(TEST_FILE), TEST_CONTENT);
   EXPECT_EQ(read_file_tostring(EMPTY_FILE), "");
-  EXPECT_EQ(read_file_tostring(NO_SUCH_FILE), ""); // TODO: エラー拾う
-  EXPECT_EQ(read_file_tostring(NO_PERMISSION_FILE), ""); // TODO: エラー拾う
+  EXPECT_EQ(read_file_tostring(NO_SUCH_FILE), ""); // TODO: エラーを拾う
+  //ファイルに読み込み権限がないとNO_SUCH_FILEと同じ挙動です。
 }
 
 TEST(util_test, test_is_file_exists){
     EXPECT_TRUE(is_file_exists(TEST_FILE));
     EXPECT_TRUE(is_file_exists(EMPTY_FILE));
-    EXPECT_TRUE(is_file_exists(NO_PERMISSION_FILE));
     EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
+    //ファイルに読み込み権限がないとtrueが返ります。
 }
