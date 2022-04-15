@@ -1,70 +1,82 @@
 #include "Response.hpp"
-#include "Lexer.hpp"
 #include "util.hpp"
 #include <iostream>
 
-#define STATUS_OK            "200"
-#define TEXT_STATUS_OK       "OK"
-#define STATUS_NOTFOUND      "404"
-#define TEXT_STATUS_NOTFOUND "Not Found"
-#define VERSION              "HTTP/1.1"
-#define HELLO_WORLD_PAGE     "./html/index.html"
-#define NOT_FOUND_PAGE       "./html/not_found.html"
-#define CR                   "\r"
-#define LF                   "\n"
-#define CRLF                 "\r\n"
-#define SP                   " "
+Response::Response(Lexer &message_lexer) {
+  __parse(message_lexer);
+  __process();
+}
 
 /*
- * コンストラクタ: パースを省略
+ * 超安易パース
+ * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-Response::Response(const std::string &request_message) {
-  Lexer                 l(request_message, SP);
-  Lexer::token_iterator it = l.begin();
-
-  __request_line_.push_back(*it); // *it = "GET"
+void Response::__parse(Lexer &message_lexer) {
+  Lexer::token_iterator it = message_lexer.begin();
+  __request_[METHOD]       = *it; // *it = "GET"
   it++;
   it++;
   std::string target_path = *it; // *it = "/"
   if (target_path == "/")
     target_path = HELLO_WORLD_PAGE;
-  __request_line_.push_back(target_path);
+  __request_[URL] = target_path;
   it++;
   it++;
-  __request_line_.push_back(*it); // *it = "HTTP/1.1"
+  __request_[VERSION]   = *it; // *it = "HTTP/1.1"
 
-  __request_field_.push_back("Host: example.com");
-  __request_field_.push_back("User-Agent: curl/7.79.1");
-  __request_field_.push_back("Accept: */*");
+  __request_[HOST]      = "example.com";
+  __request_[USERAGENT] = "curl/7.79.1";
+  __request_[ACCEPT]    = "*/*";
 }
 
 /*
  * サーバー処理
- * レスポンスに必要な属性を埋める.
+ * GETのみ対応.
+ * 挿入時keyが被っている時の処理は現状考慮してない.
+ * レスポンスに必要な要素を埋める.
  */
-void Response::process() {
-  __status_line_.push_back(VERSION);
-
-  // 対象ファイルから内容読み込み
-  std::string target_path = __request_line_[1];
-  if (is_file_exists(target_path.c_str())) {
-    __status_line_.push_back(STATUS_OK);
-    __status_line_.push_back(TEXT_STATUS_OK);
+void Response::__process() {
+  /* 対象ファイルから内容読み込み */
+  std::string target_url = __request_[URL];
+  if (is_file_exists(target_url.c_str())) {
+    __response_[STATUS] = STATUS_OK;
+    __response_[PHRASE] = PHRASE_STATUS_OK;
   } else {
-    target_path = NOT_FOUND_PAGE;
-    __status_line_.push_back(STATUS_NOTFOUND);
-    __status_line_.push_back(TEXT_STATUS_NOTFOUND);
+    target_url          = NOT_FOUND_PAGE;
+    __response_[STATUS] = STATUS_NOTFOUND;
+    __response_[PHRASE] = PHRASE_STATUS_NOTFOUND;
   }
-  std::string content = read_file_tostring(target_path.c_str());
-  __response_body_    = content;
-  __response_field_.push_back("Content-Length: " + to_string(content.size()));
+  std::string content       = read_file_tostring(target_url.c_str());
+  __response_[BODY]         = content;
+  __response_[CONTENT_LEN]  = to_string(content.size());
 
-  __response_field_.push_back("Content-Type: text/html");
-  __response_field_.push_back("Connection: close");
+  /* その他必要なものをレスポンスに追加 */
+  __response_[VERSION]      = VERSION_HTTP;
+  __response_[CONTENT_TYPE] = TEXT_HTML;
+  __response_[CONNECTION]   = CONNECTION_CLOSE;
 }
 
 std::string Response::message() {
-  return __status_line_[0] + SP + __status_line_[1] + SP + __status_line_[2] +
-         CRLF + __response_field_[0] + CRLF + __response_field_[1] + CRLF +
-         __response_field_[2] + CRLF + CRLF + __response_body_;
+  return __status_line_message() + __field_message() + CRLF + __body_message();
 }
+
+/* ステータスラインの要素は必須だが, 存在しなかった時のバリデートは現状してない
+ */
+std::string Response::__status_line_message() {
+  return __response_[VERSION] + SP + __response_[STATUS] + SP +
+         __response_[PHRASE] + CRLF;
+}
+
+std::string Response::__field_message() {
+  return __field_line(HOST) + __field_line(CONTENT_LEN) +
+         __field_line(CONTENT_TYPE) + __field_line(CONNECTION);
+}
+
+std::string Response::__field_line(std::string key) {
+  if (__request_.find(key) == __request_.end())
+    return "";
+  else
+    return key + ": " + __request_[key] + CRLF;
+}
+
+std::string Response::__body_message() { return __response_[BODY]; }
