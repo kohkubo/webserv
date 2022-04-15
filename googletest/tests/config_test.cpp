@@ -103,7 +103,7 @@ TEST(server_config_test, parse_listen) {
     Lexer        l(str, SPACES "{};");
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
-    EXPECT_EQ(conf.listen_port_, 888);
+    EXPECT_EQ(conf.listen_port_, "888");
   }
   {
     std::string str = "server {\n"
@@ -124,7 +124,7 @@ TEST(server_config_test, parse_listen) {
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_ip_, "192.168.0.1");
-    EXPECT_EQ(conf.listen_port_, 80);
+    EXPECT_EQ(conf.listen_port_, "80");
   }
   {
     std::string str = "server {\n"
@@ -135,6 +135,6 @@ TEST(server_config_test, parse_listen) {
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_host_, "localhost");
-    EXPECT_EQ(conf.listen_port_, 80);
+    EXPECT_EQ(conf.listen_port_, "80");
   }
 }
