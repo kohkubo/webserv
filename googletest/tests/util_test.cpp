@@ -1,6 +1,13 @@
 #include "limits.h"
 #include "util.hpp"
 #include "gtest/gtest.h"
+#include <fstream>
+
+#define TEST_FILE      "../googletest/tdata/test.txt"
+#define TEST_CONTENT   "test"
+#define EMPTY_FILE     "../googletest/tdata/empty.txt"
+#define NO_PERMISSION_FILE  "../googletest/tdata/no_permission.txt"
+#define NO_SUCH_FILE   "no such file"
 
 TEST(util_test, test_is_match_suffix_string) {
   std::string str    = "abcdefg";
@@ -24,21 +31,30 @@ TEST(util_test, test_is_match_suffix_string) {
   EXPECT_FALSE(is_match_suffix_string(str, suffix));
 }
 
-TEST(util_test, test_is_octet) {
-  EXPECT_EQ(is_octet("0"), true);
-  EXPECT_EQ(is_octet("10"), true);
-  EXPECT_EQ(is_octet("99"), true);
-  EXPECT_EQ(is_octet("100"), true);
-  EXPECT_EQ(is_octet("199"), true);
-  EXPECT_EQ(is_octet("200"), true);
-  EXPECT_EQ(is_octet("249"), true);
-  EXPECT_EQ(is_octet("250"), true);
-  EXPECT_EQ(is_octet("255"), true);
+TEST(util_test, test_to_string) {
+  EXPECT_EQ(to_string(0), "0");
+  EXPECT_EQ(to_string(1), "1");
+  EXPECT_EQ(to_string(INT_MAX), std::to_string(INT_MAX));
+  EXPECT_EQ(to_string(SIZE_MAX), std::to_string(SIZE_MAX));
+  // SIZE_MAX を超えると0になります。
+  EXPECT_EQ(to_string(SIZE_MAX + 1), "0");
+}
 
-  EXPECT_EQ(is_octet("-0"), false);
-  EXPECT_EQ(is_octet("01"), false);
-  EXPECT_EQ(is_octet("256"), false);
-  EXPECT_EQ(is_octet("299"), false);
+TEST(util_test, test_is_uint8) {
+  EXPECT_EQ(is_uint8("0"), true);
+  EXPECT_EQ(is_uint8("10"), true);
+  EXPECT_EQ(is_uint8("99"), true);
+  EXPECT_EQ(is_uint8("100"), true);
+  EXPECT_EQ(is_uint8("199"), true);
+  EXPECT_EQ(is_uint8("200"), true);
+  EXPECT_EQ(is_uint8("249"), true);
+  EXPECT_EQ(is_uint8("250"), true);
+  EXPECT_EQ(is_uint8("255"), true);
+
+  EXPECT_EQ(is_uint8("-0"), false);
+  EXPECT_EQ(is_uint8("01"), false);
+  EXPECT_EQ(is_uint8("256"), false);
+  EXPECT_EQ(is_uint8("299"), false);
 }
 
 TEST(util_test, test_is_ip) {
@@ -64,46 +80,16 @@ TEST(util_test, test_is_digits) {
   EXPECT_EQ(is_digits("hello"), false);
 }
 
-TEST(util_test, test_tostring){
-    std::size_t val = 0;
-    std::string expect = "0";
-    EXPECT_EQ(tostring(val), expect);
-
-    val = 1;
-    expect = "1";
-    EXPECT_EQ(tostring(val), expect);
-
-    val = 42;
-    expect = "42";
-    EXPECT_EQ(tostring(val), expect);
-
-    val = INT_MAX;
-    expect = std::to_string(val);
-    EXPECT_EQ(tostring(val), expect);
-
-    val = static_cast<size_t>(INT_MAX) + 1;
-    expect = std::to_string(val);
-    EXPECT_EQ(tostring(val), expect);
-
-    val = SIZE_MAX;
-    expect = std::to_string(val);
-    EXPECT_EQ(tostring(val), expect);
-}
-
 TEST(util_test, test_read_file_tostring){
-    const char *path = "../googletest/tdata/test.txt";
-    std::string expect = "test";
-    EXPECT_EQ(read_file_tostring(path), expect);
-
-    path = "no_such_file";
-    expect = "";
-    EXPECT_EQ(read_file_tostring(path), expect);
+  EXPECT_EQ(read_file_tostring(TEST_FILE), TEST_CONTENT);
+  EXPECT_EQ(read_file_tostring(EMPTY_FILE), "");
+  EXPECT_EQ(read_file_tostring(NO_SUCH_FILE), ""); // TODO: エラーを拾う
+  //ファイルに読み込み権限がないとNO_SUCH_FILEと同じ挙動です。
 }
 
 TEST(util_test, test_is_file_exists){
-    const char *path = "../googletest/tdata/test.txt";
-    EXPECT_TRUE(is_file_exists(path));
-
-    path = "no_such_file";
-    EXPECT_FALSE(is_file_exists(path));
+    EXPECT_TRUE(is_file_exists(TEST_FILE));
+    EXPECT_TRUE(is_file_exists(EMPTY_FILE));
+    EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
+    //ファイルに読み込み権限がないとtrueが返ります。
 }

@@ -11,9 +11,7 @@
 #include "config/ServerConfig.hpp"
 #include "util.hpp"
 
-#define HTML_FILE  "index.html"
-#define HTTP1_PORT 5001
-#define BUF_SIZE   1024
+#define BUF_SIZE 1024
 
 std::string read_request(int accfd) {
   char        __buf[BUF_SIZE] = {};
@@ -47,9 +45,8 @@ void send_response(int accfd, const std::string &message) {
 }
 
 void server() {
-  const std::string __executive_file = HTML_FILE;
-  ServerConfig      __server_config;
-  Socket           *__socket = new Socket(__server_config);
+  ServerConfig __server_config;
+  Socket      *__socket = new Socket(__server_config);
   while (1) {
     int __accfd =
         accept(__socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
@@ -61,14 +58,12 @@ void server() {
     Response    response(message_lexer);
     send_response(__accfd, response.message());
   }
-  close(__socket->get_listenfd());
   return;
 }
 
 void server_io_multiplexing() {
-  const std::string __executive_file = HTML_FILE;
-  ServerConfig      __server_config;
-  Socket           *__socket = new Socket(__server_config);
+  ServerConfig __server_config;
+  Socket      *__socket = new Socket(__server_config);
   while (1) {
     fd_set __readfds;
     FD_ZERO(&__readfds);
@@ -97,6 +92,5 @@ void server_io_multiplexing() {
       send_response(__accfd, response.message());
     }
   }
-  close(__socket->get_listenfd());
   return;
 }

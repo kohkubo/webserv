@@ -4,7 +4,7 @@
 
 /*
  * 超安易パース
- * 挿入時keyが被っている時の処理は現状考慮してない.
+ * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
 void Response::__parse(Lexer &message_lexer) {
   Lexer::token_iterator it = message_lexer.begin();
