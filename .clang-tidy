@@ -36,3 +36,10 @@ CheckOptions:
     value:           _
   - key:             readability-identifier-naming.ProtectedMemberSuffix
     value:           _
+    # LocalVariable
+  - key:            readability-identifier-naming.LocalVariableCase
+    value:          lower_case
+  - key:            readability-identifier-naming.LocalVariablePrefix
+    value:          ""
+  - key:            readability-identifier-naming.LocalVariableSuffix
+    value:          ""
