@@ -44,10 +44,7 @@ class Response {
 public:
   typedef std::map<std::string, std::string> message_type;
 
-  Response(Lexer &message_lexer) {
-    __parse(message_lexer);
-    __process();
-  }
+  Response(Lexer &message_lexer);
 
   std::string message();
 

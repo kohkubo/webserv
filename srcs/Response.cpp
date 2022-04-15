@@ -2,6 +2,11 @@
 #include "util.hpp"
 #include <iostream>
 
+Response::Response(Lexer &message_lexer) {
+    __parse(message_lexer);
+    __process();
+}
+
 /*
  * 超安易パース
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
