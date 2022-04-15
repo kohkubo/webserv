@@ -15,6 +15,7 @@ Socket::Socket(ServerConfig &config) : __server_config_(config) {
 Socket::~Socket() { close(__listenfd_); }
 
 void Socket::__set_addrinfo() {
+  // TODO: 不要ならhintsはNULLにするように変更する
   struct addrinfo hints;
   memset(&hints, 0, sizeof(hints));
   hints.ai_socktype = SOCK_STREAM;
