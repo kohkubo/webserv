@@ -20,14 +20,14 @@ public:
 private:
   Socket &operator=(const Socket &other);
   Socket(const Socket &other);
-  void               __set_addrinfo();
-  void               __set_listenfd();
-  void               __set_bind();
-  void               __set_listen();
+  void             __set_addrinfo();
+  void             __set_listenfd();
+  void             __set_bind();
+  void             __set_listen();
 
-  int                __listenfd_;
-  struct addrinfo    *__addrinfo_;
-  ServerConfig       __server_config_;
+  int              __listenfd_;
+  struct addrinfo *__addrinfo_;
+  ServerConfig     __server_config_;
 };
 
-#endif  /* INCLUDES_SOCKET_HPP */
+#endif /* INCLUDES_SOCKET_HPP */

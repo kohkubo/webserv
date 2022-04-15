@@ -18,9 +18,9 @@ void Socket::__set_addrinfo() {
   struct addrinfo hints;
   memset(&hints, 0, sizeof(hints));
   hints.ai_socktype = SOCK_STREAM;
-  int error = getaddrinfo(__server_config_.listen_host_.c_str(),
-                          __server_config_.listen_port_.c_str(),
-                          &hints, &__addrinfo_);
+  int error =
+      getaddrinfo(__server_config_.listen_host_.c_str(),
+                  __server_config_.listen_port_.c_str(), &hints, &__addrinfo_);
   if (error) {
     std::cerr << "getaddrinfo: " << gai_strerror(error) << std::endl;
   }
@@ -41,7 +41,8 @@ void Socket::__set_addrinfo() {
  *              たいするデフォルトのプロトコルを選択します。」と書いてある。なぜ0になるのかわからない
  */
 void Socket::__set_listenfd() {
-  __listenfd_ = socket(__addrinfo_->ai_family, __addrinfo_->ai_socktype, __addrinfo_->ai_protocol);
+  __listenfd_ = socket(__addrinfo_->ai_family, __addrinfo_->ai_socktype,
+                       __addrinfo_->ai_protocol);
   if (__listenfd_ == -1) {
     error_log_with_errno("socket() failed.");
     exit(1);
