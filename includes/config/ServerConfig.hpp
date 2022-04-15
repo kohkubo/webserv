@@ -12,7 +12,7 @@ class ServerConfig {
 public:
   std::string              listen_ip_;
   std::string              listen_host_;
-  int                      listen_port_;
+  std::string              listen_port_;
   int                      client_max_body_size_;
   std::vector<std::string> server_name_;
   std::string              root_;

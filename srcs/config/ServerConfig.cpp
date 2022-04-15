@@ -9,7 +9,7 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
     : logic_error(msg) {}
 
-ServerConfig::ServerConfig() : listen_ip_("0.0.0.0"), listen_port_(5001) {}
+ServerConfig::ServerConfig() : listen_ip_("0.0.0.0"), listen_port_("5001") {}
 
 Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
                                           Lexer::token_iterator end) {
@@ -46,7 +46,7 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
   Lexer::token_iterator it = l.begin();
   while (it != l.end()) {
     if (is_digits(*it)) {
-      listen_port_ = std::atoi((*it).c_str());
+      listen_port_ = *it;
     } else if (is_ip(*it)) {
       listen_ip_ = *it;
     } else if (*it != ":") {
