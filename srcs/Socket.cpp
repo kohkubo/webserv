@@ -6,13 +6,26 @@
 #include <sys/types.h>
 
 Socket::Socket(ServerConfig &config) : __server_config_(config) {
+  __set_addrinfo();
   __set_listenfd();
-  __set_sockaddr_in();
   __set_bind();
   __set_listen();
 }
 
 Socket::~Socket() { close(__listenfd_); }
+
+void Socket::__set_addrinfo() {
+  // TODO: 不要ならhintsはNULLにするように変更する
+  struct addrinfo hints;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_socktype = SOCK_STREAM;
+  int error =
+      getaddrinfo(__server_config_.listen_host_.c_str(),
+                  __server_config_.listen_port_.c_str(), &hints, &__addrinfo_);
+  if (error) {
+    std::cerr << "getaddrinfo: " << gai_strerror(error) << std::endl;
+  }
+}
 
 /*
  * リスニングソケットを作成する
@@ -29,9 +42,8 @@ Socket::~Socket() { close(__listenfd_); }
  *              たいするデフォルトのプロトコルを選択します。」と書いてある。なぜ0になるのかわからない
  */
 void Socket::__set_listenfd() {
-  // TODO: getaddrinfoに書き換え　CSAPP
-  // ベストプラクティスはgetaddrinfo()を使うことで引数をプロトコル非依存にする。
-  __listenfd_ = socket(AF_INET, SOCK_STREAM, 0);
+  __listenfd_ = socket(__addrinfo_->ai_family, __addrinfo_->ai_socktype,
+                       __addrinfo_->ai_protocol);
   if (__listenfd_ == -1) {
     error_log_with_errno("socket() failed.");
     exit(1);
@@ -50,18 +62,6 @@ void Socket::__set_listenfd() {
 }
 
 /*
- * sockaddr_in構造体の設定
- *　INADDR_ANY　一般には0.0.0.0が定義され、全てのローカルインターフェイスにバインドされうることを意味する。
- */
-void Socket::__set_sockaddr_in() {
-  memset(&__serv_addr_, 0, sizeof(__serv_addr_));
-  __serv_addr_.sin_family = AF_INET;
-  inet_pton(AF_INET, __server_config_.listen_ip_.c_str(),
-            &__serv_addr_.sin_addr);
-  __serv_addr_.sin_port = htons(__server_config_.listen_port_);
-}
-
-/*
  * ソケットを関連付ける
  * int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
  * sockfd 　ソケットディスクリプタ
@@ -69,8 +69,7 @@ void Socket::__set_sockaddr_in() {
  * addrlen ソケットアドレス長
  */
 void Socket::__set_bind() {
-  if (bind(__listenfd_, (struct sockaddr *)&__serv_addr_,
-           sizeof(__serv_addr_)) == -1) {
+  if (bind(__listenfd_, __addrinfo_->ai_addr, __addrinfo_->ai_addrlen) == -1) {
     error_log_with_errno("bind() failed.");
     close(__listenfd_);
     exit(1);
