@@ -23,7 +23,7 @@ std::string read_request(int accfd) {
     if (read_size == -1) {
       error_log_with_errno("read() failed.");
       close(accfd);
-      // __accfd = -1;
+      // accfd = -1;
       break;
     }
     if (read_size > 0) {
