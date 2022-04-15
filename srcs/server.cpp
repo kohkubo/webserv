@@ -14,28 +14,28 @@
 #define BUF_SIZE 1024
 
 std::string read_request(int accfd) {
-  char        __buf[BUF_SIZE] = {};
-  std::string __recv_str      = "";
-  ssize_t     __read_size     = 0;
+  char        buf[BUF_SIZE] = {};
+  std::string recv_str      = "";
+  ssize_t     read_size     = 0;
 
   do {
-    __read_size = recv(accfd, __buf, sizeof(__buf) - 1, 0);
-    if (__read_size == -1) {
+    read_size = recv(accfd, buf, sizeof(buf) - 1, 0);
+    if (read_size == -1) {
       error_log_with_errno("read() failed.");
       close(accfd);
-      // __accfd = -1;
+      // accfd = -1;
       break;
     }
-    if (__read_size > 0) {
-      __recv_str.append(__buf);
+    if (read_size > 0) {
+      recv_str.append(buf);
     }
-    if (is_match_suffix_string(__recv_str, "\r\n\r\n")) {
+    if (is_match_suffix_string(recv_str, "\r\n\r\n")) {
       break;
     }
-  } while (__read_size > 0);
+  } while (read_size > 0);
   std::cout << "read_request()" << std::endl;
-  std::cout << __recv_str << std::endl;
-  return __recv_str;
+  std::cout << recv_str << std::endl;
+  return recv_str;
 }
 
 void send_response(int accfd, const std::string &message) {
@@ -45,51 +45,49 @@ void send_response(int accfd, const std::string &message) {
 }
 
 void server() {
-  ServerConfig __server_config;
-  Socket      *__socket = new Socket(__server_config);
+  ServerConfig server_config;
+  Socket      *socket = new Socket(server_config);
   while (1) {
-    int __accfd =
-        accept(__socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
-    if (__accfd == -1) {
+    int accfd = accept(socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
+    if (accfd == -1) {
       continue;
     }
-    std::string request_message = read_request(__accfd);
+    std::string request_message = read_request(accfd);
     Response    response(request_message);
     response.process();
-    send_response(__accfd, response.message());
+    send_response(accfd, response.message());
   }
   return;
 }
 
 void server_io_multiplexing() {
-  ServerConfig __server_config;
-  Socket      *__socket = new Socket(__server_config);
+  ServerConfig server_config;
+  Socket      *socket = new Socket(server_config);
   while (1) {
-    fd_set __readfds;
-    FD_ZERO(&__readfds);
-    FD_SET(__socket->get_listenfd(), &__readfds);
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(socket->get_listenfd(), &readfds);
 
-    timeval __timeout;
-    __timeout.tv_sec  = 0;
-    __timeout.tv_usec = 0;
+    timeval timeout;
+    timeout.tv_sec  = 0;
+    timeout.tv_usec = 0;
 
-    int __ret = select(__socket->get_listenfd() + 1, &__readfds, NULL, NULL,
-                       &__timeout);
-    if (__ret == -1) {
+    int ret =
+        select(socket->get_listenfd() + 1, &readfds, NULL, NULL, &timeout);
+    if (ret == -1) {
       error_log_with_errno("select() failed. readfds.");
       continue;
     }
-    if (__ret && FD_ISSET(__socket->get_listenfd(), &__readfds)) {
-      int __accfd =
-          accept(__socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
-      if (__accfd == -1) {
+    if (ret && FD_ISSET(socket->get_listenfd(), &readfds)) {
+      int accfd = accept(socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
+      if (accfd == -1) {
         continue;
       }
       usleep(1000);
-      std::string request_message = read_request(__accfd);
+      std::string request_message = read_request(accfd);
       Response    response(request_message);
       response.process();
-      send_response(__accfd, response.message());
+      send_response(accfd, response.message());
     }
   }
   return;
