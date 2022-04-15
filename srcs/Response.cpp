@@ -43,7 +43,7 @@ void Response::__process() {
   }
   std::string content       = read_file_tostring(target_url.c_str());
   __response_[BODY]         = content;
-  __response_[CONTENT_LEN]  = tostring(content.size());
+  __response_[CONTENT_LEN]  = to_string(content.size());
 
   /* その他必要なものをレスポンスに追加 */
   __response_[VERSION]      = VERSION_HTTP;
