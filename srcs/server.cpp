@@ -10,6 +10,7 @@
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
 #include "util.hpp"
+#include "message.hpp"
 
 #define BUF_SIZE 1024
 
@@ -53,9 +54,11 @@ void server() {
       continue;
     }
     std::string request_message = read_request(accfd);
-    Lexer       message_lexer(request_message, SP);
-    Response    response(message_lexer);
-    send_response(accfd, response.message());
+    Lexer       request_lexer(request_message, SP);
+    message_type request = parse_request(request_lexer);
+    message_type response;
+    get(request, response);
+    send_response(accfd, response_message(response));
   }
   return;
 }
@@ -85,9 +88,11 @@ void server_io_multiplexing() {
       }
       usleep(1000);
       std::string request_message = read_request(accfd);
-      Lexer       message_lexer(request_message, SP);
-      Response    response(message_lexer);
-      send_response(accfd, response.message());
+      Lexer       request_lexer(request_message, SP);
+      message_type request = parse_request(request_lexer);
+      message_type response;
+      get(request, response);
+      send_response(accfd, response_message(response));
     }
   }
   return;

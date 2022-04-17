@@ -1,6 +1,10 @@
 #ifndef INCLUDES_MESSAGE_HPP
 #define INCLUDES_MESSAGE_HPP
 
+#include <iostream>
+#include <map>
+#include "Lexer.hpp"
+
 /* key */
 // start line
 #define METHOD                 "METHOD"
@@ -35,5 +39,11 @@
 #define LF                     "\n"
 #define CRLF                   "\r\n"
 #define SP                     " "
+
+typedef std::map<std::string, std::string> message_type;
+
+std::string response_message(std::map<std::string, std::string> &response);
+std::map<std::string, std::string> parse_request(Lexer &request_lexer);
+void get(message_type &request, message_type &response);
 
 #endif /* INCLUDES_MESSAGE_HPP */

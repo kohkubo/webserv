@@ -9,7 +9,7 @@
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  * レスポンスに必要な要素を埋める.
  */
-void get(std::map<std::string, std::string> &request, std::map<std::string, std::string> &response) {
+void get(message_type &request, message_type &response) {
   /* 対象ファイルから内容読み込み */
   std::string target_url = request[URL];
   if (is_file_exists(target_url.c_str())) {
