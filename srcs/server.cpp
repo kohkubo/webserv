@@ -11,57 +11,6 @@
 #include "message.hpp"
 #include "util.hpp"
 
-#define BUF_SIZE 1024
-
-std::string read_request(int accfd) {
-  char        buf[BUF_SIZE] = {};
-  std::string recv_str      = "";
-  ssize_t     read_size     = 0;
-
-  do {
-    read_size = recv(accfd, buf, sizeof(buf) - 1, 0);
-    if (read_size == -1) {
-      error_log_with_errno("read() failed.");
-      close(accfd);
-      // accfd = -1;
-      break;
-    }
-    if (read_size > 0) {
-      recv_str.append(buf);
-    }
-    if (is_match_suffix_string(recv_str, "\r\n\r\n")) {
-      break;
-    }
-  } while (read_size > 0);
-  std::cout << "read_request()" << std::endl;
-  std::cout << recv_str << std::endl;
-  return recv_str;
-}
-
-void send_response(int accfd, const std::string &message) {
-  send(accfd, message.c_str(), message.size(), 0);
-  std::cout << "send_response()" << std::endl;
-  std::cout << message << std::endl;
-}
-
-void server() {
-  ServerConfig server_config;
-  Socket      *socket = new Socket(server_config);
-  while (1) {
-    int accfd = accept(socket->get_listenfd(), (struct sockaddr *)NULL, NULL);
-    if (accfd == -1) {
-      continue;
-    }
-    std::string  request_message = read_request(accfd);
-    Lexer        request_lexer(request_message, SP);
-    message_type request = parse_request(request_lexer);
-    message_type response;
-    get(request, response);
-    send_response(accfd, response_message(response));
-  }
-  return;
-}
-
 void server_io_multiplexing() {
   ServerConfig server_config;
   Socket      *socket = new Socket(server_config);
