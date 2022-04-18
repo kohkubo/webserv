@@ -9,8 +9,8 @@
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
-#include "util.hpp"
 #include "message.hpp"
+#include "util.hpp"
 
 #define BUF_SIZE 1024
 
@@ -53,8 +53,8 @@ void server() {
     if (accfd == -1) {
       continue;
     }
-    std::string request_message = read_request(accfd);
-    Lexer       request_lexer(request_message, SP);
+    std::string  request_message = read_request(accfd);
+    Lexer        request_lexer(request_message, SP);
     message_type request = parse_request(request_lexer);
     message_type response;
     get(request, response);
@@ -87,8 +87,8 @@ void server_io_multiplexing() {
         continue;
       }
       usleep(1000);
-      std::string request_message = read_request(accfd);
-      Lexer       request_lexer(request_message, SP);
+      std::string  request_message = read_request(accfd);
+      Lexer        request_lexer(request_message, SP);
       message_type request = parse_request(request_lexer);
       message_type response;
       get(request, response);

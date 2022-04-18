@@ -20,7 +20,7 @@ void get(message_type &request, message_type &response) {
     response[STATUS] = STATUS_NOTFOUND;
     response[PHRASE] = PHRASE_STATUS_NOTFOUND;
   }
-  std::string content       = read_file_tostring(target_url.c_str());
+  std::string content    = read_file_tostring(target_url.c_str());
   response[BODY]         = content;
   response[CONTENT_LEN]  = to_string(content.size());
 

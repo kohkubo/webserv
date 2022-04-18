@@ -1,5 +1,5 @@
-#include "message.hpp"
 #include "Lexer.hpp"
+#include "message.hpp"
 #include <iostream>
 #include <map>
 
@@ -10,8 +10,8 @@
  */
 message_type parse_request(Lexer &request_lexer) {
   Lexer::token_iterator it = request_lexer.begin();
-  message_type  request;
-  request[METHOD]       = *it; // *it = "GET"
+  message_type          request;
+  request[METHOD] = *it; // *it = "GET"
   it++;
   it++;
   std::string target_path = *it; // *it = "/"

@@ -1,9 +1,9 @@
 #ifndef INCLUDES_MESSAGE_HPP
 #define INCLUDES_MESSAGE_HPP
 
+#include "Lexer.hpp"
 #include <iostream>
 #include <map>
-#include "Lexer.hpp"
 
 /* key */
 // start line
