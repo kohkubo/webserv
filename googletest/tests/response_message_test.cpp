@@ -11,7 +11,7 @@ TEST(response_message_test, simple_message) {
 	response[CONNECTION]   = CONNECTION_CLOSE;
 	response[BODY]   = "test";
 
-	// レスポンスフィールドの順番はfield_message()による
+	// フィールドの順番はfield_message()による
 	std::string expect = 	"HTTP/1.1 200 OK\r\n"
 							"Content-Length: 4\r\n"
 							"Content-Type: text/html\r\n"
@@ -21,3 +21,5 @@ TEST(response_message_test, simple_message) {
 
 	EXPECT_EQ(response_message(response), expect);
 }
+
+// response_message()がエラーを出すようになったらそれもテスト
