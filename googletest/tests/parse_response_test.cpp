@@ -1,8 +1,7 @@
 #include "gtest/gtest.h"
-#include "Response.hpp"
+#include "message.hpp"
 
-// 現状結合テストになってしまうので, 
-// ユニットテストができるようになるまで保留します.
+// parse_request()を実装したらテスト
 //TEST(response_test, response_helloworld) {
 //  {
 //    std::string request = "GET / HTTP/1.1\n"
@@ -14,6 +13,6 @@
 //    std::string response = ""
 //
 //    Lexer        l(request, " ");
-//    Response    response(l);
+//    parse_request(l);
 //  }
 //}
