@@ -44,6 +44,8 @@ typedef std::map<std::string, std::string> message_type;
 
 std::string response_message(std::map<std::string, std::string> &response);
 std::map<std::string, std::string> parse_request(Lexer &request_lexer);
-void get(message_type &request, message_type &response);
+void        get(message_type &request, message_type &response);
+void        send_response(int accfd, const std::string &message);
+std::string read_request(int accfd);
 
 #endif /* INCLUDES_MESSAGE_HPP */
