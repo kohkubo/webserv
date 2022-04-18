@@ -1,9 +1,10 @@
-#ifndef INCLUDES_MESSAGE_HPP
-#define INCLUDES_MESSAGE_HPP
+#ifndef INCLUDES_HTTP_DEFINE_HPP
+#define INCLUDES_HTTP_DEFINE_HPP
 
-#include "Lexer.hpp"
-#include <iostream>
 #include <map>
+#include <string>
+
+typedef std::map<std::string, std::string> message_type;
 
 /* key */
 // start line
@@ -40,12 +41,4 @@
 #define CRLF                   "\r\n"
 #define SP                     " "
 
-typedef std::map<std::string, std::string> message_type;
-
-std::string response_message(std::map<std::string, std::string> &response);
-std::map<std::string, std::string> parse_request(Lexer &request_lexer);
-void        get(message_type &request, message_type &response);
-void        send_response(int accfd, const std::string &message);
-std::string read_request(int accfd);
-
-#endif /* INCLUDES_MESSAGE_HPP */
+#endif /* INCLUDES_HTTP_DEFINE_HPP */

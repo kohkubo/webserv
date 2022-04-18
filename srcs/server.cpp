@@ -8,7 +8,7 @@
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
-#include "message.hpp"
+#include "http/http.hpp"
 #include "util.hpp"
 
 void server_io_multiplexing() {
@@ -35,12 +35,7 @@ void server_io_multiplexing() {
         continue;
       }
       usleep(1000);
-      std::string  request_message = read_request(accfd);
-      Lexer        request_lexer(request_message, SP);
-      message_type request = parse_request(request_lexer);
-      message_type response;
-      get(request, response);
-      send_response(accfd, response_message(response));
+      http(accfd);
     }
   }
   return;

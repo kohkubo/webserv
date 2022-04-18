@@ -1,0 +1,6 @@
+#ifndef INCLUDES_HTTP_PROCESS_HPP
+#define INCLUDES_HTTP_PROCESS_HPP
+
+void http(int accfd);
+
+#endif /* INCLUDES_HTTP_PROCESS_HPP */
