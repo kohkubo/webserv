@@ -56,7 +56,7 @@ void http(int accfd) {
   message_type request = parse_request(request_lexer);
   message_type response;
   get(request, response);
-  response[VERSION]    = VERSION_HTTP; // TODO: 別関数に実装
-  response[CONNECTION] = CONNECTION_CLOSE;  // TODO: 別関数に実装
+  response[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
+  response[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
   send_message(accfd, response_message(response));
 }
