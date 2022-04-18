@@ -8,7 +8,6 @@
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
-#include "response/Response.hpp"
 #include "response/message.hpp"
 #include "util.hpp"
 
