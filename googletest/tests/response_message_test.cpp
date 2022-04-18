@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "response/message.hpp"
+#include "message.hpp"
 
 TEST(response_message_test, simple_message) {
 	message_type response;

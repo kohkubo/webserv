@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "response/message.hpp"
+#include "message.hpp"
 
 // parse_request()を実装したらテスト
 //TEST(response_test, response_helloworld) {

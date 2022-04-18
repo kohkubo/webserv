@@ -8,7 +8,7 @@
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
-#include "response/message.hpp"
+#include "message.hpp"
 #include "util.hpp"
 
 #define BUF_SIZE 1024
