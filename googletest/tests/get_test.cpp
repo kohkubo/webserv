@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "message.hpp"
+#include "http/method.hpp"
 
 #define TEST_FILE      "../googletest/tdata/test.txt"
 #define TEST_CONTENT   "test"
