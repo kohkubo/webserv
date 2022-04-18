@@ -5,10 +5,10 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "response/Response.hpp"
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
+#include "response/Response.hpp"
 #include "response/message.hpp"
 #include "util.hpp"
 
