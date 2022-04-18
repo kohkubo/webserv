@@ -1,5 +1,5 @@
-#ifndef INCLUDES_RESPONSE_HPP
-#define INCLUDES_RESPONSE_HPP
+#ifndef INCLUDES_RESPONSE_RESPONSE_HPP
+#define INCLUDES_RESPONSE_RESPONSE_HPP
 
 #include "Lexer.hpp"
 #include <iostream>
@@ -64,4 +64,4 @@ private:
   message_type __response_;
 };
 
-#endif /* INCLUDES_RESPONSE_HPP */
+#endif /* INCLUDES_RESPONSE_RESPONSE_HPP */

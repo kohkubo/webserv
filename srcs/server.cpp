@@ -5,11 +5,11 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "Response.hpp"
+#include "response/Response.hpp"
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
-#include "message.hpp"
+#include "response/message.hpp"
 #include "util.hpp"
 
 #define BUF_SIZE 1024

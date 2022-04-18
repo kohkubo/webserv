@@ -1,5 +1,5 @@
-#ifndef INCLUDES_MESSAGE_HPP
-#define INCLUDES_MESSAGE_HPP
+#ifndef INCLUDES_RESPONSE_MESSAGE_HPP
+#define INCLUDES_RESPONSE_MESSAGE_HPP
 
 #include "Lexer.hpp"
 #include <iostream>
@@ -46,4 +46,4 @@ std::string response_message(std::map<std::string, std::string> &response);
 std::map<std::string, std::string> parse_request(Lexer &request_lexer);
 void get(message_type &request, message_type &response);
 
-#endif /* INCLUDES_MESSAGE_HPP */
+#endif /* INCLUDES_RESPONSE_MESSAGE_HPP */
