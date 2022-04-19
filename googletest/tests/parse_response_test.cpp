@@ -10,7 +10,7 @@
 //                          "Accept: */*\n"
 //                          "\n";
 //
-//    std::string http_response_message = ""
+//    std::string response_message_to_string = ""
 //
 //    Lexer        l(http_request_message, " ");
 //    http_parse_request_message(l);

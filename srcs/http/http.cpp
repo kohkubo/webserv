@@ -80,5 +80,5 @@ void http(int accfd) {
   }
   request_message[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
   request_message[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
-  http_send_response(accfd, http_response_message_get(response_message));
+  http_send_response(accfd, response_message_to_string(response_message));
 }

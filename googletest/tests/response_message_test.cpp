@@ -19,7 +19,7 @@ TEST(response_message_test, simple_message) {
                                    "\r\n"
                                    "test";
 
-  EXPECT_EQ(http_response_message_get(response_message), expect);
+  EXPECT_EQ(response_message_to_string(response_message), expect);
 }
 
 // response_message()がエラーを出すようになったらそれもテスト

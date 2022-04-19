@@ -47,7 +47,7 @@ enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 
 void             http(int accfd);
 http_message_map http_parse_request_message(Lexer &request_lexer);
-std::string      http_response_message_get(http_message_map &response_message);
+std::string      response_message_to_string(http_message_map &response_message);
 http_message_map http_read_method_get(http_message_map &request_message);
 
 #endif /* INCLUDES_HTTP_PROCESS_HPP */
