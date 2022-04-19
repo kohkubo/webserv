@@ -8,7 +8,7 @@
 #include "Socket.hpp"
 #include "Webserv.hpp"
 #include "config/ServerConfig.hpp"
-#include "http/http.hpp"
+#include "http.hpp"
 #include "util.hpp"
 
 void server_io_multiplexing() {

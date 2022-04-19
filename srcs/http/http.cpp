@@ -3,10 +3,7 @@
 #include <unistd.h>
 
 #include "Lexer.hpp"
-#include "http/define.hpp"
-#include "http/method.hpp"
-#include "http/request.hpp"
-#include "http/response.hpp"
+#include "http.hpp"
 #include "util.hpp"
 
 #define BUF_SIZE 1024
@@ -14,7 +11,7 @@
 /*
  * メッセージ読み込み
  */
-static std::string read_message(int accfd) {
+static std::string http_read_message(int accfd) {
   char        buf[BUF_SIZE] = {};
   std::string recv_str      = "";
   ssize_t     read_size     = 0;
@@ -34,7 +31,7 @@ static std::string read_message(int accfd) {
       break;
     }
   } while (read_size > 0);
-  std::cout << "read_message()" << std::endl;
+  std::cout << "http_read_message()" << std::endl;
   std::cout << recv_str << std::endl;
   return recv_str;
 }
@@ -48,15 +45,40 @@ static void send_message(int accfd, const std::string &message) {
   std::cout << message << std::endl;
 }
 
+static HttpMethod
+http_request_message_method_to_int(const std::string &method) {
+  if (method == "GET") {
+    return GET;
+  }
+  if (method == "POST") {
+    return POST;
+  }
+  if (method == "DELETE") {
+    return DELETE;
+  }
+  return UNKNOWN;
+}
+
 /*
  * リクエストを受けて, レスポンスを返すまでの処理
  */
 void http(int accfd) {
-  Lexer        request_lexer(read_message(accfd), SP);
-  message_type request = parse_request(request_lexer);
-  message_type response;
-  get(request, response);
-  response[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
-  response[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
-  send_message(accfd, response_message(response));
+  Lexer        request_lexer(http_read_message(accfd), SP);
+  http_message request_message = http_parse_request_message(request_lexer);
+  http_message response_message;
+
+  switch (http_request_message_method_to_int(request_message[METHOD])) {
+  case GET:
+    response_message = http_read_method_get(request_message);
+    break;
+  // case POST:
+  //   break;
+  // case DELETE:
+  //   break;
+  default:
+    break;
+  }
+  request_message[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
+  request_message[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
+  send_message(accfd, http_response_message_get(response_message));
 }

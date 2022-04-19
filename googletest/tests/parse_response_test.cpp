@@ -1,18 +1,18 @@
 #include "gtest/gtest.h"
-#include "http/request.hpp"
+#include "http.hpp"
 
-// parse_request()を実装したらテスト
+// http_parse_request_message()を実装したらテスト
 //TEST(response_test, response_helloworld) {
 //  {
-//    std::string request = "GET / HTTP/1.1\n"
+//    std::string http_request_message = "http_method_read_get / HTTP/1.1\n"
 //                          "Host: example.com\n"
 //                          "User-Agent: curl/7.79.1\n"
 //                          "Accept: */*\n"
 //                          "\n";
 //
-//    std::string response = ""
+//    std::string http_response_message = ""
 //
-//    Lexer        l(request, " ");
-//    parse_request(l);
+//    Lexer        l(http_request_message, " ");
+//    http_parse_request_message(l);
 //  }
 //}
