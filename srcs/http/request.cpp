@@ -63,7 +63,5 @@ static std::string read_connected_fd(int accfd) {
 http_message_map receive_request(int accfd) {
   Lexer            request_lexer(read_connected_fd(accfd), SP);
   http_message_map request_message = parse_request_message(request_lexer);
-  request_message[VERSION]         = VERSION_HTTP; // TODO: 別関数に実装
-  request_message[CONNECTION] = CONNECTION_CLOSE;  // TODO: 別関数に実装
   return request_message;
 }
