@@ -11,7 +11,7 @@
 /*
  * メッセージ読み込み
  */
-static std::string http_read_message(int accfd) {
+static std::string http_receive_request(int accfd) {
   char        buf[BUF_SIZE] = {};
   std::string recv_str      = "";
   ssize_t     read_size     = 0;
@@ -31,7 +31,7 @@ static std::string http_read_message(int accfd) {
       break;
     }
   } while (read_size > 0);
-  std::cout << "http_read_message()" << std::endl;
+  std::cout << "http_receive_request()" << std::endl;
   std::cout << recv_str << std::endl;
   return recv_str;
 }
@@ -39,9 +39,9 @@ static std::string http_read_message(int accfd) {
 /*
  * メッセージ書き込み
  */
-static void send_message(int accfd, const std::string &message) {
+static void http_send_response(int accfd, const std::string &message) {
   send(accfd, message.c_str(), message.size(), 0);
-  std::cout << "send_message()" << std::endl;
+  std::cout << "http_send_response()" << std::endl;
   std::cout << message << std::endl;
 }
 
@@ -63,7 +63,7 @@ http_request_message_method_to_int(const std::string &method) {
  * リクエストを受けて, レスポンスを返すまでの処理
  */
 void http(int accfd) {
-  Lexer            request_lexer(http_read_message(accfd), SP);
+  Lexer            request_lexer(http_receive_request(accfd), SP);
   http_message_map request_message = http_parse_request_message(request_lexer);
   http_message_map response_message;
 
@@ -80,5 +80,5 @@ void http(int accfd) {
   }
   request_message[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
   request_message[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
-  send_message(accfd, http_response_message_get(response_message));
+  http_send_response(accfd, http_response_message_get(response_message));
 }
