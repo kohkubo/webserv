@@ -12,7 +12,7 @@ TEST(get_test, target_file_exist) {
   http_message_map response_message;
 
   request_message[URL] = TEST_FILE;
-  response_message     = http_read_method_get(request_message);
+  response_message     = method_get(request_message);
   EXPECT_EQ(response_message[STATUS], STATUS_OK);
   EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_OK);
   EXPECT_EQ(response_message[BODY], TEST_CONTENT);
@@ -27,7 +27,7 @@ TEST(get_test, target_file_not_exist) {
   http_message_map response_message;
 
   request_message[URL] = NO_SUCH_FILE;
-  response_message     = http_read_method_get(request_message);
+  response_message     = method_get(request_message);
   EXPECT_EQ(response_message[STATUS], STATUS_NOTFOUND);
   EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_NOTFOUND);
   // EXPECT_EQ(response_message[BODY], TEST_CONTENT);

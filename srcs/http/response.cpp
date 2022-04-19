@@ -40,6 +40,7 @@ static std::string response_body(http_message_map &response_message) {
  * 引数responseの型は const http_message_map& で受け取りたかったが
  * map[key]でのアクセス方法はconstに用意されていないみたいなので現状このまま
  */
+// TODO: 命名候補
 // std::string generate_response_message(http_message_map &response_message)
 // std::string get_response_message(http_message_map &response_message)
 // std::string make_response_message(http_message_map &response_message)

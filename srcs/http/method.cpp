@@ -4,7 +4,7 @@
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map http_read_method_get(http_message_map &request_message) {
+http_message_map method_get(http_message_map &request_message) {
   std::string      target_url = request_message[URL];
   http_message_map response_message;
 
