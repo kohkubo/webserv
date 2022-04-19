@@ -9,6 +9,7 @@
 !*.yml
 !*.html
 !*.txt
+!*.go
 !.clang-format
 !.clang-tidy
 !Makefile
