@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-typedef std::map<std::string, std::string> http_message;
+typedef std::map<std::string, std::string> http_message_map;
 
 /* key */
 // start line
@@ -45,9 +45,9 @@ enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 #define CRLF                   "\r\n"
 #define SP                     " "
 
-void         http(int accfd);
-http_message http_parse_request_message(Lexer &request_lexer);
-std::string  http_response_message_get(http_message &response_message);
-http_message http_read_method_get(http_message &request_message);
+void             http(int accfd);
+http_message_map http_parse_request_message(Lexer &request_lexer);
+std::string      http_response_message_get(http_message_map &response_message);
+http_message_map http_read_method_get(http_message_map &request_message);
 
 #endif /* INCLUDES_HTTP_PROCESS_HPP */

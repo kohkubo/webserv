@@ -4,7 +4,7 @@
  * ステータスラインの要素は必須だが, 存在しなかった時のバリデートは現状してない
  */
 // clang-format off
-static std::string http_reponse_startline(http_message &response_message) {
+static std::string http_reponse_startline(http_message_map &response_message) {
   return \
     response_message[VERSION] + SP + \
     response_message[STATUS] + SP + \
@@ -13,7 +13,7 @@ static std::string http_reponse_startline(http_message &response_message) {
 }
 // clang-format on
 
-static std::string http_response_header(http_message     &response_message,
+static std::string http_response_header(http_message_map &response_message,
                                         const std::string key) {
   if (response_message.find(key) == response_message.end())
     return "";
@@ -21,7 +21,7 @@ static std::string http_response_header(http_message     &response_message,
 }
 
 // clang-format off
-static std::string http_response_headers(http_message &response_message) {
+static std::string http_response_headers(http_message_map &response_message) {
   return \
     http_response_header(response_message, HOST) + \
     http_response_header(response_message, CONTENT_LEN) + \
@@ -32,16 +32,16 @@ static std::string http_response_headers(http_message &response_message) {
 
 static std::string http_empty_line() { return CRLF; }
 
-static std::string http_response_body(http_message &response_message) {
+static std::string http_response_body(http_message_map &response_message) {
   return response_message[BODY];
 }
 
 /*
- * 引数responseの型は const http_message& で受け取りたかったが
+ * 引数responseの型は const http_message_map& で受け取りたかったが
  * map[key]でのアクセス方法はconstに用意されていないみたいなので現状このまま
  */
 // clang-format off
-std::string http_response_message_get(http_message &response_message) {
+std::string http_response_message_get(http_message_map &response_message) {
   return \
     http_reponse_startline(response_message) + \
     http_response_headers(response_message) + \

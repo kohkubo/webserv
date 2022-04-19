@@ -63,9 +63,9 @@ http_request_message_method_to_int(const std::string &method) {
  * リクエストを受けて, レスポンスを返すまでの処理
  */
 void http(int accfd) {
-  Lexer        request_lexer(http_read_message(accfd), SP);
-  http_message request_message = http_parse_request_message(request_lexer);
-  http_message response_message;
+  Lexer            request_lexer(http_read_message(accfd), SP);
+  http_message_map request_message = http_parse_request_message(request_lexer);
+  http_message_map response_message;
 
   switch (http_request_message_method_to_int(request_message[METHOD])) {
   case GET:

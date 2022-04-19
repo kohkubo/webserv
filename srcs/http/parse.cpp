@@ -6,9 +6,9 @@
  * リクエストメッセージのターゲットURLが"/"の時index.htmlに差し替えることだけしています.
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message http_parse_request_message(Lexer &request_lexer) {
+http_message_map http_parse_request_message(Lexer &request_lexer) {
   Lexer::token_iterator it = request_lexer.begin();
-  http_message          http_request_message;
+  http_message_map      http_request_message;
   http_request_message[METHOD] = *it; // *it = "http_method_read_get"
   it++;
   it++;
