@@ -33,6 +33,9 @@ import (
 //User-Agent: Go-http-client/1.1
 //Accept-Encoding: gzip
 
+// get, post, deleteでテストを分ける
+// デフォルトで追加されるフィールドに関してまとめておく
+// 追加のフィールドはrangeで追加する
 func main() {
 	req, err := http.NewRequest("DELETE", "http://localhost:5001", nil)
 	if err != nil {
