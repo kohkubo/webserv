@@ -1,3 +1,7 @@
+#include <iostream>
+#include <string>
+#include <sys/socket.h>
+
 #include "http.hpp"
 
 /*
@@ -47,7 +51,7 @@ static std::string response_body(http_message_map &response_message) {
 // std::string response_message_to_string(http_message_map &response_message)
 // 名前空間のことも含めて相談
 // clang-format off
-std::string response_message_to_string(http_message_map &response_message) {
+static std::string response_message_to_string(http_message_map &response_message) {
   return \
     reponse_startline(response_message) + \
     response_headers(response_message) + \
@@ -55,3 +59,32 @@ std::string response_message_to_string(http_message_map &response_message) {
     response_body(response_message);
 }
 // clang-format on
+
+static HttpMethod request_method_to_int(const std::string &method) {
+  if (method == "GET") {
+    return GET;
+  }
+  if (method == "POST") {
+    return POST;
+  }
+  if (method == "DELETE") {
+    return DELETE;
+  }
+  return UNKNOWN;
+}
+
+std::string create_response(http_message_map &request_message) {
+  http_message_map response_message;
+  switch (request_method_to_int(request_message[METHOD])) {
+  case GET:
+    response_message = method_get(request_message);
+    break;
+  // case POST:
+  //   break;
+  // case DELETE:
+  //   break;
+  default:
+    break;
+  }
+  return response_message_to_string(response_message);
+}
