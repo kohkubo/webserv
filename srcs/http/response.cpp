@@ -14,7 +14,7 @@ static std::string reponse_startline(http_message_map &response_message) {
 // clang-format on
 
 static std::string response_header(http_message_map &response_message,
-                                        const std::string key) {
+                                   const std::string key) {
   if (response_message.find(key) == response_message.end())
     return "";
   return key + ": " + response_message[key] + CRLF;
