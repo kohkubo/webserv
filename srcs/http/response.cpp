@@ -86,7 +86,7 @@ std::string create_response(http_message_map &request_message) {
   default:
     break;
   }
-  response_message[VERSION]         = VERSION_HTTP; // TODO: 別関数に実装
-  response_message[CONNECTION] = CONNECTION_CLOSE;  // TODO: 別関数に実装
+  response_message[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
+  response_message[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
   return response_message_to_string(response_message);
 }
