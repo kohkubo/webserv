@@ -45,8 +45,7 @@ static void send_response(int accfd, const std::string &message) {
   std::cout << message << std::endl;
 }
 
-static HttpMethod
-request_method_to_int(const std::string &method) {
+static HttpMethod request_method_to_int(const std::string &method) {
   if (method == "GET") {
     return GET;
   }
