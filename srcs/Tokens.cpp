@@ -31,7 +31,7 @@ bool Tokens::__tokenize(const std::string &text) {
         i++;
       }
     }
-    if (!__is_skip(text[pos]))
+    if (!(__is_skip(text[pos]) && i == 1))
       push_back(text.substr(pos, i));
     pos += i;
   }

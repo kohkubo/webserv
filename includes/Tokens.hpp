@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "TokenIterator.hpp"
-
 class Tokens : public std::vector<std::string> {
 public:
   typedef std::vector<std::string>           token_type;
