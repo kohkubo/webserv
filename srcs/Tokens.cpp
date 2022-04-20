@@ -1,19 +1,21 @@
 
 #include "Tokens.hpp"
 
-Tokens::Tokens(const std::string text, const std::string &delimiter,
+Tokens::Tokens(const std::string &text, const std::string &delimiter,
                const std::string &skip)
     : __delimiter_(delimiter), __skip_(skip) {
   __tokenize(text);
 }
 
 Tokens::Tokens(const Tokens &other)
-    : __delimiter_(other.__delimiter_), __skip_(other.__skip_) {}
+    : token_type(other), __delimiter_(other.__delimiter_),
+      __skip_(other.__skip_) {}
 
 Tokens &Tokens::operator=(const Tokens &other) {
   if (this != &other) {
-    __delimiter_ = other.__delimiter_;
-    __skip_      = other.__skip_;
+    token_type::operator=(other);
+    __delimiter_        = other.__delimiter_;
+    __skip_             = other.__skip_;
   }
   return *this;
 }
@@ -29,7 +31,8 @@ bool Tokens::__tokenize(const std::string &text) {
         i++;
       }
     }
-    push_back(text.substr(pos, i));
+    if (!__is_skip(text[pos]))
+      push_back(text.substr(pos, i));
     pos += i;
   }
   return true;
@@ -37,6 +40,12 @@ bool Tokens::__tokenize(const std::string &text) {
 
 bool Tokens::__is_delimiter(const char &c) {
   if (__delimiter_.find(c) != std::string::npos)
+    return true;
+  return false;
+}
+
+bool Tokens::__is_skip(const char &c) {
+  if (__skip_.find(c) != std::string::npos)
     return true;
   return false;
 }
