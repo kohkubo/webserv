@@ -36,6 +36,17 @@ TEST(tokens_test, multi_delimiter) {
   EXPECT_EQ(it, l.end());
 }
 
+TEST(tokens_test, skip_front_back) {
+  Tokens                 l("\n apple, orange, banana \n", " ,", SPACES);
+  Tokens::token_iterator it = l.begin();
+  EXPECT_EQ(*it++, std::string("apple"));
+  EXPECT_EQ(*it++, std::string(","));
+  EXPECT_EQ(*it++, std::string("orange"));
+  EXPECT_EQ(*it++, std::string(","));
+  EXPECT_EQ(*it++, std::string("banana"));
+  EXPECT_EQ(it, l.end());
+}
+
 TEST(tokens_test, delimiter) {
   Tokens                 l("{{}}{}{,}", "{},", SPACES);
   Tokens::token_iterator it = l.begin();
