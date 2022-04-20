@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Lexer.hpp"
+#include "Tokens.hpp"
 #include "config/ServerConfig.hpp"
 
 class Config {
@@ -20,14 +20,14 @@ public:
   };
 
 public:
-  Config(Lexer &config_lexer);
+  Config(Tokens &config_tokens);
   ~Config() {}
 
 private:
   Config() {}
   Config &operator=(const Config &other);
   Config(const Config &other);
-  void __parse(Lexer &config_lexer);
+  void __parse(Tokens &config_tokens);
 };
 
 #endif /* INCLUDES_CONFIG_CONFIG_HPP */

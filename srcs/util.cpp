@@ -1,5 +1,5 @@
 #include "util.hpp"
-#include "Lexer.hpp"
+#include "Tokens.hpp"
 #include <fstream>
 #include <limits>
 #include <sstream>
@@ -75,9 +75,9 @@ bool is_uint8(const std::string &token) {
 }
 
 bool is_ip(const std::string &token) {
-  Lexer                 l(token, ".");
-  Lexer::token_iterator it    = l.begin();
-  size_t                count = 0;
+  Tokens                 l(token, ".", "");
+  Tokens::token_iterator it    = l.begin();
+  size_t                 count = 0;
   for (; it != l.end(); it++, count++) {
     if (!is_uint8(*it))
       return false;
