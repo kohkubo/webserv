@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Lexer.hpp"
+#include "Tokens.hpp"
 #include "config/Location.hpp"
 
 class ServerConfig {
@@ -30,14 +30,14 @@ public:
 public:
   ServerConfig();
   ~ServerConfig(){};
-  Lexer::token_iterator parse(Lexer::token_iterator pos,
-                              Lexer::token_iterator end);
+  Tokens::token_iterator parse(Tokens::token_iterator pos,
+                               Tokens::token_iterator end);
 
 private:
-  Lexer::token_iterator __parse_listen(Lexer::token_iterator pos,
-                                       Lexer::token_iterator end);
-  Lexer::token_iterator __parse_root(Lexer::token_iterator pos,
-                                     Lexer::token_iterator end);
+  Tokens::token_iterator __parse_listen(Tokens::token_iterator pos,
+                                        Tokens::token_iterator end);
+  Tokens::token_iterator __parse_root(Tokens::token_iterator pos,
+                                      Tokens::token_iterator end);
 };
 
 #endif /* INCLUDES_CONFIG_SERVERCONFIG_HPP */

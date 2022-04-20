@@ -2,7 +2,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "Lexer.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
