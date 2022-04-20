@@ -11,8 +11,6 @@
 #include "http.hpp"
 #include "util.hpp"
 
-
-
 void server_io_multiplexing() {
   std::string config_file = read_file_tostring("conf/webserv.conf");
   Lexer l(config_file, "\v\r\f\t\n " "{};");
