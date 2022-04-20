@@ -134,7 +134,7 @@ TEST(server_config_test, parse_listen) {
     Lexer        l(str, SPACES "{};");
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
-    EXPECT_EQ(conf.listen_host_, "localhost");
+    EXPECT_EQ(conf.listen_ip_, "localhost");
     EXPECT_EQ(conf.listen_port_, "80");
   }
 }

@@ -47,10 +47,8 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
   while (it != l.end()) {
     if (is_digits(*it)) {
       listen_port_ = *it;
-    } else if (is_ip(*it)) {
+    } else if (is_ip(*it) || *it != ":") {
       listen_ip_ = *it;
-    } else if (*it != ":") {
-      listen_host_ = *it;
     }
     it++;
   }
