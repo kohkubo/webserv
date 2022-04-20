@@ -39,7 +39,7 @@ ServerConfig::__parse_listen(Tokens::token_iterator pos,
                              Tokens::token_iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directice value.");
+    throw UnexpectedTokenException("could not detect directive value.");
 
   Tokens                 l(*pos, ": ", " ");
   Tokens::token_iterator it = l.begin();
@@ -61,7 +61,7 @@ Tokens::token_iterator ServerConfig::__parse_root(Tokens::token_iterator pos,
                                                   Tokens::token_iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directice value.");
+    throw UnexpectedTokenException("could not detect directive value.");
   root_ = *pos;
   return pos + 2;
 }
