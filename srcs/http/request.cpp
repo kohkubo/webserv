@@ -2,7 +2,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "Lexer.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
@@ -13,9 +12,10 @@
  * リクエストメッセージのターゲットURLが"/"の時index.htmlに差し替えることだけしています.
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map parse_request_message(Lexer &request_lexer) {
-  Lexer::token_iterator it = request_lexer.begin();
-  http_message_map      request_message;
+http_message_map
+parse_request_message(std::vector<std::string> &request_tokens) {
+  std::vector<std::string>::iterator it = request_tokens.begin();
+  http_message_map                   request_message;
   request_message[METHOD] = *it; // *it = "http_method_read_get"
   it++;
   it++;
@@ -61,7 +61,8 @@ static std::string read_connected_fd(int accfd) {
  * メッセージ読み込み
  */
 http_message_map receive_request(int accfd) {
-  Lexer            request_lexer(read_connected_fd(accfd), SP);
-  http_message_map request_message = parse_request_message(request_lexer);
+  std::vector<std::string> request_tokens =
+      tokenize(read_connected_fd(accfd), SP, "");
+  http_message_map request_message = parse_request_message(request_tokens);
   return request_message;
 }

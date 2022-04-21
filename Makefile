@@ -19,7 +19,7 @@ $(NAME): $(objs)
 	$(CXX) $(CXXFLAGS) $^ -o $(NAME)
 
 $(objsdir)/%.o: $(srcsdir)/%.cpp
-	@mkdir -p $(objsdir)/$(*D)
+	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: test
