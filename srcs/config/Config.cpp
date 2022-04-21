@@ -1,14 +1,8 @@
 #include "config/Config.hpp"
+#include "Tokens.hpp"
 #include <iostream>
 
 Config::ParseError::ParseError(const std::string &msg) : logic_error(msg) {}
-
-Config::Config(const Config &other) { (void)other; }
-
-Config &Config::operator=(const Config &other) {
-  (void)other;
-  return *this;
-}
 
 Config::Config(Tokens &config_tokens) {
   try {
