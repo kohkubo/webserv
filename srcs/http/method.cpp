@@ -6,8 +6,8 @@
 #include "http.hpp"
 #include "util.hpp"
 
-static int set_url(ServerConfig     &server_config,
-                   http_message_map &request_message) {
+static int set_url(const ServerConfig &server_config,
+                   http_message_map   &request_message) {
   std::string path;
   if (request_message[URL] == "/") {
     path = server_config.root_ + server_config.index_;
@@ -30,8 +30,8 @@ static int set_url(ServerConfig     &server_config,
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map method_get(ServerConfig     &server_config,
-                            http_message_map &request_message) {
+http_message_map method_get(const ServerConfig &server_config,
+                            http_message_map   &request_message) {
   std::string      target_url;
   http_message_map response_message;
   switch (set_url(server_config, request_message)) {

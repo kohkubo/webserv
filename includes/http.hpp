@@ -44,10 +44,10 @@ typedef std::map<std::string, std::string> http_message_map;
 
 void             http(int accfd);
 http_message_map receive_request(int accfd);
-std::string      create_response(ServerConfig     &server_config,
-                                 http_message_map &request_message);
+std::string      create_response(const ServerConfig &server_config,
+                                 http_message_map   &request_message);
 
-http_message_map method_get(ServerConfig     &server_config,
-                            http_message_map &request_message);
+http_message_map method_get(const ServerConfig &server_config,
+                            http_message_map   &request_message);
 
 #endif /* INCLUDES_HTTP_HPP */

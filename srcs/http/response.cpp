@@ -76,7 +76,7 @@ static HttpMethod request_method_to_int(const std::string &method) {
   return UNKNOWN;
 }
 
-std::string create_response(ServerConfig &server_config, http_message_map &request_message) {
+std::string create_response(const ServerConfig &server_config, http_message_map &request_message) {
   http_message_map response_message;
   switch (request_method_to_int(request_message[METHOD])) {
   case GET:
