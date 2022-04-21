@@ -10,7 +10,7 @@ static int response_status(ServerConfig      &server_config,
   if (server_config.status_code_ == 404) {
     return 404;
   }
-  std::ifstream file(path);
+  std::ifstream file(path.c_str());
   if (file.fail()) {
     // TODO: エラーによってステータス変える?
     std::cout << "internal error?" << std::endl;
