@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "Tokens.hpp"
 #include "config/ServerConfig.hpp"
 
 class Config {
@@ -20,14 +19,14 @@ public:
   };
 
 public:
-  Config(Tokens &config_tokens);
+  Config(std::vector<std::string> &config_tokens);
   ~Config() {}
 
 private:
   Config() {}
   Config &operator=(const Config &other);
   Config(const Config &other);
-  void __parse(Tokens &config_tokens);
+  void __parse(std::vector<std::string> &config_tokens);
 };
 
 #endif /* INCLUDES_CONFIG_CONFIG_HPP */

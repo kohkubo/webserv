@@ -11,8 +11,9 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
 
 ServerConfig::ServerConfig() : listen_address_("0.0.0.0"), listen_port_("80") {}
 
-Tokens::token_iterator ServerConfig::parse(Tokens::token_iterator pos,
-                                           Tokens::token_iterator end) {
+std::vector<std::string>::iterator
+ServerConfig::parse(std::vector<std::string>::iterator pos,
+                    std::vector<std::string>::iterator end) {
   pos++;
   if (*pos != "{")
     throw UnexpectedTokenException("server directive does not have context.");
@@ -34,15 +35,15 @@ Tokens::token_iterator ServerConfig::parse(Tokens::token_iterator pos,
   return pos;
 }
 
-Tokens::token_iterator
-ServerConfig::__parse_listen(Tokens::token_iterator pos,
-                             Tokens::token_iterator end) {
+std::vector<std::string>::iterator
+ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
+                             std::vector<std::string>::iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directice value.");
 
-  Tokens                 l(*pos, ": ", " ");
-  Tokens::token_iterator it = l.begin();
+  std::vector<std::string>           l  = tokenize(*pos, ": ", " ");
+  std::vector<std::string>::iterator it = l.begin();
   while (it != l.end()) {
     if (is_digits(*it)) {
       listen_port_ = *it;
@@ -55,8 +56,9 @@ ServerConfig::__parse_listen(Tokens::token_iterator pos,
   return pos + 2;
 }
 
-Tokens::token_iterator ServerConfig::__parse_root(Tokens::token_iterator pos,
-                                                  Tokens::token_iterator end) {
+std::vector<std::string>::iterator
+ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
+                           std::vector<std::string>::iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directice value.");

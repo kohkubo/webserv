@@ -1,5 +1,4 @@
 #include "util.hpp"
-#include "Tokens.hpp"
 #include <fstream>
 #include <limits>
 #include <sstream>
@@ -75,9 +74,9 @@ bool is_uint8(const std::string &token) {
 }
 
 bool is_ip(const std::string &token) {
-  Tokens                 l(token, ".", "");
-  Tokens::token_iterator it    = l.begin();
-  size_t                 count = 0;
+  std::vector<std::string>           l     = tokenize(token, ".", "");
+  std::vector<std::string>::iterator it    = l.begin();
+  size_t                             count = 0;
   for (; it != l.end(); it++, count++) {
     if (!is_uint8(*it))
       return false;

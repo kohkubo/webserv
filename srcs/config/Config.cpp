@@ -1,10 +1,16 @@
 #include "config/Config.hpp"
-#include "Tokens.hpp"
 #include <iostream>
 
 Config::ParseError::ParseError(const std::string &msg) : logic_error(msg) {}
 
-Config::Config(Tokens &config_tokens) {
+Config::Config(const Config &other) { (void)other; }
+
+Config &Config::operator=(const Config &other) {
+  (void)other;
+  return *this;
+}
+
+Config::Config(std::vector<std::string> &config_tokens) {
   try {
     __parse(config_tokens);
   } catch (const ServerConfig::UnexpectedTokenException &e) {
@@ -14,8 +20,8 @@ Config::Config(Tokens &config_tokens) {
   }
 }
 
-void Config::__parse(Tokens &config_tokens) {
-  Tokens::token_iterator it = config_tokens.begin();
+void Config::__parse(std::vector<std::string> &config_tokens) {
+  std::vector<std::string>::iterator it = config_tokens.begin();
   while (it != config_tokens.end()) {
     if (*it == "server") {
       it = server_config_.parse(it, config_tokens.end());
