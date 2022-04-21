@@ -59,7 +59,6 @@ static std::string response_message_to_string(http_message_map &response_message
     empty_line() + \
     response_body(response_message);
 }
-// clang-f
 
 // method
 enum HttpMethod { GET, POST, DELETE, UNKNOWN };
