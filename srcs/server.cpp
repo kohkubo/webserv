@@ -11,7 +11,7 @@
 #include "http.hpp"
 #include "util.hpp"
 
-void server_io_multiplexing(ServerConfig &server_config) {
+void server_io_multiplexing(const ServerConfig &server_config) {
   Socket *socket             = new Socket(server_config);
   while (1) {
     fd_set readfds;

@@ -3,6 +3,6 @@
 
 #include "config/ServerConfig.hpp"
 
-void server_io_multiplexing(ServerConfig &server_config);
+void server_io_multiplexing(const ServerConfig &server_config);
 
 #endif /* INCLUDES_WEBSERV_HPP */
