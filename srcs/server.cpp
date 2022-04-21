@@ -5,9 +5,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "ServerConfig.hpp"
 #include "Socket.hpp"
 #include "Webserv.hpp"
-#include "ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
