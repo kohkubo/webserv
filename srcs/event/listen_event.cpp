@@ -3,16 +3,16 @@
 #include "config/ServerConfig.hpp"
 #include "event.hpp"
 
-void listen_event(std::map<int, std::vector<ServerConfig>> server_list) {
+void listen_event(const std::vector<ServerConfig> server_list) {
   // 必要なもの
   // serverConfigのリスト
+  // チェックしたいfdのリスト
   std::deque<int> socket_fd;
   std::deque<int> connection_fd;
 
-  // server_listのportに対してsocketを開く。
+  // server_listのportに対してsocketを開く。 + socketfdをkeyにしたmapを作る。
   Socket         *socket = new Socket(server_config);
   while (1) {
-    // チェックしたいfdのリスト
     // socket_fd + connection_fd（接続済みのsocket）
     fd_set readfds;
     FD_ZERO(&readfds);
