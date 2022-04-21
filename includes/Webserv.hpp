@@ -4,6 +4,6 @@
 #include <map>
 #include "ServerConfig.hpp"
 
-void server_io_multiplexing(std::map<std::string, ServerConfig> &server_config_map);
+void server_io_multiplexing(ServerConfig &server_config);
 
 #endif /* INCLUDES_WEBSERV_HPP */
