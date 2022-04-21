@@ -18,6 +18,7 @@ public:
   std::vector<Location>    location_;
 
   // error_page;
+  int status_code_;
 
 public:
   class UnexpectedTokenException : public std::logic_error {
@@ -41,4 +42,4 @@ private:
                std::vector<std::string>::iterator end);
 };
 
-#endif  /* INCLUDES_CONFIG_SERVERCONFIG_HPP */
+#endif /* INCLUDES_CONFIG_SERVERCONFIG_HPP */

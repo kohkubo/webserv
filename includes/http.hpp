@@ -4,28 +4,26 @@
 #include <map>
 #include <string>
 
+#include "config/ServerConfig.hpp"
+
 typedef std::map<std::string, std::string> http_message_map;
 
 /* key */
 // start line
-#define METHOD       "METHOD"
-#define URL          "URL"
-#define VERSION      "VERSION"
-#define STATUS       "STATUS"
-#define PHRASE       "PHRASE"
+#define METHOD                 "METHOD"
+#define URL                    "URL"
+#define VERSION                "VERSION"
+#define STATUS                 "STATUS"
+#define PHRASE                 "PHRASE"
 // field
-#define HOST         "Host"
-#define USERAGENT    "User-Agent"
-#define ACCEPT       "Accept"
-#define CONTENT_LEN  "Content-Length"
-#define CONTENT_TYPE "Content-Type"
-#define CONNECTION   "Connection"
+#define HOST                   "Host"
+#define USERAGENT              "User-Agent"
+#define ACCEPT                 "Accept"
+#define CONTENT_LEN            "Content-Length"
+#define CONTENT_TYPE           "Content-Type"
+#define CONNECTION             "Connection"
 // body
-#define BODY         "BODY"
-
-// method
-enum HttpMethod { GET, POST, DELETE, UNKNOWN };
-
+#define BODY                   "BODY"
 /* value */
 #define VERSION_HTTP           "HTTP/1.1"
 #define STATUS_OK              "200"
@@ -45,9 +43,11 @@ enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 #define SP                     " "
 
 void             http(int accfd);
-http_message_map receive_request(int accfd);
-std::string      create_response(http_message_map &request_message);
+http_message_map receive_request(ServerConfig &server_config, int accfd);
+std::string      create_response(ServerConfig     &server_config,
+                                 http_message_map &request_message);
 
-http_message_map method_get(http_message_map &request_message);
+http_message_map method_get(ServerConfig     &server_config,
+                            http_message_map &request_message);
 
 #endif /* INCLUDES_HTTP_PROCESS_HPP */

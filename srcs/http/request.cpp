@@ -8,21 +8,26 @@
 
 #define BUF_SIZE 1024
 
-static void init_server_config(ServerConfig &server_config) {
-  server_config.root_ = "./html/";
-  server_config.index_.push_back("index.html");
-}
-
-std::string index_path(const ServerConfig                 &server_config,
-                       std::vector<std::string>::iterator &it) {
-  std::string root_path;
+static std::string index_path(ServerConfig                       &server_config,
+                              std::vector<std::string>::iterator &it) {
+  std::string path;
   if (*it == "/") {
-    // TODO: 複数のindexファイル設定には不対応
-    root_path = server_config.root_ + server_config.index_[0];
+    for (std::vector<std::string>::iterator it_index =
+             server_config.index_.begin();
+         it_index != server_config.index_.end(); ++it_index) {
+      path = server_config.root_ + *it_index;
+      if (is_file_exists(path.c_str())) {
+        return path;
+      }
+    }
   } else {
-    root_path = server_config.root_ + *it;
+    path = server_config.root_ + *it;
+    if (is_file_exists(path.c_str())) {
+      return path;
+    }
   }
-  return root_path;
+  server_config.status_code_ = 404;
+  return "";
 }
 
 /*
@@ -30,7 +35,7 @@ std::string index_path(const ServerConfig                 &server_config,
  * リクエストメッセージのターゲットURLが"/"の時index.htmlに差し替えることだけしています.
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map
+static http_message_map
 parse_request_message(ServerConfig             &server_config,
                       std::vector<std::string> &request_tokens) {
   std::vector<std::string>::iterator it = request_tokens.begin();
@@ -76,9 +81,7 @@ static std::string read_connected_fd(int accfd) {
 /*
  * メッセージ読み込み
  */
-http_message_map receive_request(int accfd) {
-  ServerConfig server_config;
-  init_server_config(server_config);
+http_message_map receive_request(ServerConfig &server_config, int accfd) {
   std::vector<std::string> request_tokens =
       tokenize(read_connected_fd(accfd), SP, "");
   http_message_map request_message =
