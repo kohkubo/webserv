@@ -10,22 +10,21 @@ Config &Config::operator=(const Config &other) {
   return *this;
 }
 
-Config::Config(Lexer &config_lexer) {
+Config::Config(Tokens &config_tokens) {
   try {
-    __parse(config_lexer);
+    __parse(config_tokens);
   } catch (const ServerConfig::UnexpectedTokenException &e) {
-    throw ParseError();
+    throw e;
   } catch (const std::exception &e) {
     throw e;
   }
 }
 
-void Config::__parse(Lexer &config_lexer) {
-  Lexer::token_iterator it = config_lexer.begin();
-  while (it != config_lexer.end()) {
-    it = Lexer::skip_delimiter(it, config_lexer.end(), "\v\r\f\t\n ");
+void Config::__parse(Tokens &config_tokens) {
+  Tokens::token_iterator it = config_tokens.begin();
+  while (it != config_tokens.end()) {
     if (*it == "server") {
-      it = server_config_.parse(it, config_lexer.end());
+      it = server_config_.parse(it, config_tokens.end());
     }
   }
 }
