@@ -1,7 +1,7 @@
-#include "config/ServerConfig.hpp"
-#include "util.hpp"
-
 #include <algorithm>
+
+#include "ServerConfig.hpp"
+#include "util.hpp"
 
 #define SPACES "\v\r\f\t\n "
 
@@ -40,7 +40,7 @@ ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
                              std::vector<std::string>::iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directice value.");
+    throw UnexpectedTokenException("could not detect directive value.");
 
   std::vector<std::string>           l  = tokenize(*pos, ": ", " ");
   std::vector<std::string>::iterator it = l.begin();
@@ -61,7 +61,7 @@ ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
                            std::vector<std::string>::iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directice value.");
+    throw UnexpectedTokenException("could not detect directive value.");
   root_ = *pos;
   return pos + 2;
 }

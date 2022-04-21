@@ -5,16 +5,14 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "ServerConfig.hpp"
 #include "Socket.hpp"
 #include "Webserv.hpp"
-#include "config/ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
-void server_io_multiplexing() {
-  ServerConfig server_config;
-  server_config.listen_port_ = "5001"; // 一時的
-  Socket *socket             = new Socket(server_config);
+void server_io_multiplexing(const ServerConfig &server_config) {
+  Socket *socket = new Socket(server_config);
   while (1) {
     fd_set readfds;
     FD_ZERO(&readfds);

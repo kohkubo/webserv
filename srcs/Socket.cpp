@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-Socket::Socket(ServerConfig &config) : __server_config_(config) {
+Socket::Socket(const ServerConfig &config) : __server_config_(config) {
   __set_addrinfo();
   __set_listenfd();
   __set_bind();
