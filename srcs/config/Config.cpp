@@ -10,7 +10,7 @@ Config &Config::operator=(const Config &other) {
   return *this;
 }
 
-Config::Config(Tokens &config_tokens) {
+Config::Config(std::vector<std::string> &config_tokens) {
   try {
     __parse(config_tokens);
   } catch (const ServerConfig::UnexpectedTokenException &e) {
@@ -20,8 +20,8 @@ Config::Config(Tokens &config_tokens) {
   }
 }
 
-void Config::__parse(Tokens &config_tokens) {
-  Tokens::token_iterator it = config_tokens.begin();
+void Config::__parse(std::vector<std::string> &config_tokens) {
+  std::vector<std::string>::iterator it = config_tokens.begin();
   while (it != config_tokens.end()) {
     if (*it == "server") {
       it = server_config_.parse(it, config_tokens.end());
