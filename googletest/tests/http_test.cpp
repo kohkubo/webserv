@@ -55,7 +55,7 @@ TEST(http_test, target_file_not_exist) {
   http_message_map request_message;
   http_message_map response_message;
 
-  request_message[URL] = NO_SUCH_FILE;
+  server_config.status_code_ = 404;
   response_message     = method_get(server_config, request_message);
   EXPECT_EQ(response_message[STATUS], STATUS_NOTFOUND);
   EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_NOTFOUND);

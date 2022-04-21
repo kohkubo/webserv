@@ -19,7 +19,7 @@ void send_response(int accfd, const std::string &message) {
  * リクエストを受けて, レスポンスを返すまでの処理
  */
 void http(int accfd) {
-  ServerConfig server_config;
+  ServerConfig     server_config;
   http_message_map request_message = receive_request(server_config, accfd);
   std::string      response_message =
       create_response(server_config, request_message);
