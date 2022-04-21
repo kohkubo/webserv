@@ -11,15 +11,14 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
 
 ServerConfig::ServerConfig() : listen_address_("0.0.0.0"), listen_port_("80") {}
 
-Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
-                                          Lexer::token_iterator end) {
+std::vector<std::string>::iterator
+ServerConfig::parse(std::vector<std::string>::iterator pos,
+                    std::vector<std::string>::iterator end) {
   pos++;
-  pos = Lexer::skip_delimiter(pos, end, SPACES);
   if (*pos != "{")
     throw UnexpectedTokenException("server directive does not have context.");
   pos++;
   while (pos != end) {
-    pos = Lexer::skip_delimiter(pos, end, SPACES);
     if (pos == end || *pos == "}")
       break;
     if (*pos == "listen") {
@@ -36,14 +35,15 @@ Lexer::token_iterator ServerConfig::parse(Lexer::token_iterator pos,
   return pos;
 }
 
-Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
-                                                   Lexer::token_iterator end) {
-  pos = Lexer::skip_delimiter(++pos, end, SPACES);
+std::vector<std::string>::iterator
+ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
+                             std::vector<std::string>::iterator end) {
+  pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directice value.");
 
-  Lexer                 l(*pos, ":");
-  Lexer::token_iterator it = l.begin();
+  std::vector<std::string>           l  = tokenize(*pos, ": ", " ");
+  std::vector<std::string>::iterator it = l.begin();
   while (it != l.end()) {
     if (is_digits(*it)) {
       listen_port_ = *it;
@@ -56,9 +56,10 @@ Lexer::token_iterator ServerConfig::__parse_listen(Lexer::token_iterator pos,
   return pos + 2;
 }
 
-Lexer::token_iterator ServerConfig::__parse_root(Lexer::token_iterator pos,
-                                                 Lexer::token_iterator end) {
-  pos = Lexer::skip_delimiter(++pos, end, SPACES);
+std::vector<std::string>::iterator
+ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
+                           std::vector<std::string>::iterator end) {
+  pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directice value.");
   root_ = *pos;
