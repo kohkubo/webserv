@@ -5,19 +5,14 @@
 #include <string>
 #include <vector>
 
-#include "Tokens.hpp"
-#include "config/Location.hpp"
-
 class ServerConfig {
 public:
-  std::string              listen_ip_;
-  std::string              listen_host_;
+  std::string              listen_address_;
   std::string              listen_port_;
   int                      client_max_body_size_;
   std::vector<std::string> server_name_;
   std::string              root_;
   std::vector<std::string> index_;
-  std::vector<Location>    location_;
 
   // error_page;
 
@@ -30,14 +25,17 @@ public:
 public:
   ServerConfig();
   ~ServerConfig(){};
-  Tokens::token_iterator parse(Tokens::token_iterator pos,
-                               Tokens::token_iterator end);
+  std::vector<std::string>::iterator
+  parse(std::vector<std::string>::iterator pos,
+        std::vector<std::string>::iterator end);
 
 private:
-  Tokens::token_iterator __parse_listen(Tokens::token_iterator pos,
-                                        Tokens::token_iterator end);
-  Tokens::token_iterator __parse_root(Tokens::token_iterator pos,
-                                      Tokens::token_iterator end);
+  std::vector<std::string>::iterator
+  __parse_listen(std::vector<std::string>::iterator pos,
+                 std::vector<std::string>::iterator end);
+  std::vector<std::string>::iterator
+  __parse_root(std::vector<std::string>::iterator pos,
+               std::vector<std::string>::iterator end);
 };
 
 #endif /* INCLUDES_CONFIG_SERVERCONFIG_HPP */

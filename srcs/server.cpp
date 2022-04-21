@@ -5,14 +5,16 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include <map>
+
+#include "ServerConfig.hpp"
 #include "Socket.hpp"
 #include "Webserv.hpp"
-#include "config/Config.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
-void server_io_multiplexing(Config &config) {
-  Socket *socket = new Socket(config.server_config_);
+void server_io_multiplexing(std::map<std::string, ServerConfig> &server_config_map) {
+  Socket *socket             = new Socket(server_config_map["tmp"]);
   while (1) {
     fd_set readfds;
     FD_ZERO(&readfds);

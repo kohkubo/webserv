@@ -20,7 +20,7 @@ void Socket::__set_addrinfo() {
   memset(&hints, 0, sizeof(hints));
   hints.ai_socktype = SOCK_STREAM;
   int error =
-      getaddrinfo(__server_config_.listen_host_.c_str(),
+      getaddrinfo(__server_config_.listen_address_.c_str(),
                   __server_config_.listen_port_.c_str(), &hints, &__addrinfo_);
   if (error) {
     std::cerr << "getaddrinfo: " << gai_strerror(error) << std::endl;
