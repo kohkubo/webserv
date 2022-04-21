@@ -39,4 +39,4 @@ private:
                                       Tokens::token_iterator end);
 };
 
-#endif /* INCLUDES_CONFIG_SERVERCONFIG_HPP */
+#endif  /* INCLUDES_CONFIG_SERVERCONFIG_HPP */

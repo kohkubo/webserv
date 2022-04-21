@@ -27,4 +27,4 @@ private:
   bool __is_skip(const char &c);
 };
 
-#endif /* INCLUDES_TOKENS_HPP */
+#endif  /* INCLUDES_TOKENS_HPP */
