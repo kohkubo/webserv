@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "config/Location.hpp"
-
 class ServerConfig {
 public:
   std::string              listen_address_;
@@ -15,7 +13,6 @@ public:
   std::vector<std::string> server_name_;
   std::string              root_;
   std::vector<std::string> index_;
-  std::vector<Location>    location_;
 
   // error_page;
   int                      status_code_;
