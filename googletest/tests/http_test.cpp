@@ -1,5 +1,5 @@
 #include "http.hpp"
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "gtest/gtest.h"
 
 TEST(http_test, create_response) {

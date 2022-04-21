@@ -1,7 +1,7 @@
 #include <fstream>
 #include <string>
 
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
