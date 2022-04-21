@@ -37,11 +37,11 @@ run: $(NAME)
 	$(RM) $(NAME)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(OBJDIR)/$(*D)
+	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
 
 $(TOBJDIR)/%.o: $(TESTDIR)/%.cpp
-	@mkdir -p $(TOBJDIR)/$(*D)
+	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
 
 $(LIBDIR):
@@ -64,8 +64,9 @@ cov: re
 	open cov_test/index-sort-f.html
 
 clean:
-	$(RM) $(TOBJS) $(TOBJDIR)/*.gcda $(TOBJDIR)/*.gcno
-	$(RM) -r $(TOBJDIR)
+	$(RM) $(OBJS)  $(DEPS) $(OBJDIR)/*.gcda $(OBJDIR)/*.gcno
+	$(RM) $(TOBJS)  $(TDEPS) $(TOBJDIR)/*.gcda $(TOBJDIR)/*.gcno
+	$(RM) -r $(TOBJDIR) $(OBJDIR)
 	$(RM) -r cov_test
 
 fclean: clean
