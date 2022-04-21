@@ -1,5 +1,5 @@
-#ifndef INCLUDES_CONFIG_SERVERCONFIG_HPP
-#define INCLUDES_CONFIG_SERVERCONFIG_HPP
+#ifndef INCLUDES_SERVERCONFIG_HPP
+#define INCLUDES_SERVERCONFIG_HPP
 
 #include <stdexcept>
 #include <string>
@@ -12,11 +12,9 @@ public:
   int                      client_max_body_size_;
   std::vector<std::string> server_name_;
   std::string              root_;
-  std::vector<std::string> index_;
+  std::string              index_;
 
   // error_page;
-  int                      status_code_;
-
 public:
   class UnexpectedTokenException : public std::logic_error {
   public:
@@ -39,4 +37,4 @@ private:
                std::vector<std::string>::iterator end);
 };
 
-#endif /* INCLUDES_CONFIG_SERVERCONFIG_HPP */
+#endif /* INCLUDES_SERVERCONFIG_HPP */

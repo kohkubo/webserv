@@ -1,5 +1,5 @@
-#ifndef INCLUDES_HTTP_PROCESS_HPP
-#define INCLUDES_HTTP_PROCESS_HPP
+#ifndef INCLUDES_HTTP_HPP
+#define INCLUDES_HTTP_HPP
 
 #include <map>
 #include <string>
@@ -43,11 +43,11 @@ typedef std::map<std::string, std::string> http_message_map;
 #define SP                     " "
 
 void             http(int accfd);
-http_message_map receive_request(ServerConfig &server_config, int accfd);
+http_message_map receive_request(int accfd);
 std::string      create_response(ServerConfig     &server_config,
                                  http_message_map &request_message);
 
 http_message_map method_get(ServerConfig     &server_config,
                             http_message_map &request_message);
 
-#endif /* INCLUDES_HTTP_PROCESS_HPP */
+#endif /* INCLUDES_HTTP_HPP */

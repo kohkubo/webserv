@@ -10,10 +10,8 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     : logic_error(msg) {}
 
 ServerConfig::ServerConfig() : listen_address_("0.0.0.0"), listen_port_("80") {
-  root_ = "./html/";
-  index_.push_back("index.html");
-  index_.push_back("index.htm");
-  status_code_ = 0;
+  root_  = "./html/";
+  index_ = "index.html";
 }
 
 std::vector<std::string>::iterator

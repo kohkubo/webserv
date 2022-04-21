@@ -8,42 +8,19 @@
 
 #define BUF_SIZE 1024
 
-static std::string index_path(ServerConfig                       &server_config,
-                              std::vector<std::string>::iterator &it) {
-  std::string path;
-  if (*it == "/") {
-    for (std::vector<std::string>::iterator it_index =
-             server_config.index_.begin();
-         it_index != server_config.index_.end(); ++it_index) {
-      path = server_config.root_ + *it_index;
-      if (is_file_exists(path.c_str())) {
-        return path;
-      }
-    }
-  } else {
-    path = server_config.root_ + *it;
-    if (is_file_exists(path.c_str())) {
-      return path;
-    }
-  }
-  server_config.status_code_ = 404;
-  return "";
-}
-
 /*
  * 超安易パース
  * リクエストメッセージのターゲットURLが"/"の時index.htmlに差し替えることだけしています.
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
 static http_message_map
-parse_request_message(ServerConfig             &server_config,
-                      std::vector<std::string> &request_tokens) {
+parse_request_message(std::vector<std::string> &request_tokens) {
   std::vector<std::string>::iterator it = request_tokens.begin();
   http_message_map                   request_message;
   request_message[METHOD] = *it; // *it = "http_method_read_get"
   it++;
   it++;
-  request_message[URL] = index_path(server_config, it); // /index.html
+  request_message[URL] = *it;
   it++;
   it++;
   request_message[VERSION]   = *it; // *it = "HTTP/1.1"
@@ -81,10 +58,9 @@ static std::string read_connected_fd(int accfd) {
 /*
  * メッセージ読み込み
  */
-http_message_map receive_request(ServerConfig &server_config, int accfd) {
+http_message_map receive_request(int accfd) {
   std::vector<std::string> request_tokens =
       tokenize(read_connected_fd(accfd), SP, "");
-  http_message_map request_message =
-      parse_request_message(server_config, request_tokens);
+  http_message_map request_message = parse_request_message(request_tokens);
   return request_message;
 }
