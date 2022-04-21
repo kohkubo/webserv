@@ -7,7 +7,7 @@
 
 #include "Socket.hpp"
 #include "Webserv.hpp"
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
 

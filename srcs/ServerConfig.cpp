@@ -1,4 +1,4 @@
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "util.hpp"
 
 #include <algorithm>
