@@ -14,7 +14,7 @@
 void server_io_multiplexing() {
   ServerConfig server_config;
   server_config.listen_port_ = "5001"; // 一時的
-  Socket      *socket = new Socket(server_config);
+  Socket *socket             = new Socket(server_config);
   while (1) {
     fd_set readfds;
     FD_ZERO(&readfds);
