@@ -1,9 +1,9 @@
 #include <fstream>
 #include <string>
 
+#include "config/ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
-#include "config/ServerConfig.hpp"
 
 static int response_status(ServerConfig      &server_config,
                            const std::string &path) {

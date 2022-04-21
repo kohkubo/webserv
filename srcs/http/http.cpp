@@ -26,7 +26,7 @@ void init_server_config(ServerConfig &server_config) {
  * リクエストを受けて, レスポンスを返すまでの処理
  */
 void http(int accfd) {
-  ServerConfig     server_config;
+  ServerConfig server_config;
   init_server_config(server_config);
   http_message_map request_message = receive_request(server_config, accfd);
   std::string      response_message =

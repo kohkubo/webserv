@@ -18,7 +18,7 @@ public:
   std::vector<Location>    location_;
 
   // error_page;
-  int status_code_;
+  int                      status_code_;
 
 public:
   class UnexpectedTokenException : public std::logic_error {
