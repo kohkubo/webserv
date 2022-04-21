@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "ServerConfig.hpp"
+#include "config/ServerConfig.hpp"
 #include "util.hpp"
 
 class Socket {

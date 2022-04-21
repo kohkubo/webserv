@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "ServerConfig.hpp"
+#include "config/ServerConfig.hpp"
 #include "util.hpp"
 
 #define SPACES "\v\r\f\t\n "
