@@ -2,7 +2,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "config/Config.hpp"
+#include "ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
 

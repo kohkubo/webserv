@@ -2,7 +2,7 @@
 #include <string>
 #include <sys/socket.h>
 
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "http.hpp"
 
 /*

@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 
 typedef std::map<std::string, std::string> http_message_map;
 
