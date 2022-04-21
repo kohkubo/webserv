@@ -7,7 +7,7 @@
 #define SKIP "\v\r\f\t\n "
 
 Config *generate_config(const char *config_file_path) {
-  std::string config_content = read_file_tostring(config_file_path);
+  std::string config_content = read_file_tostring(config_file_path);// TODO: エラー受け取る
   Tokens t(config_content, DELIMITER, SKIP);
   try
   {
