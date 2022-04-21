@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "util.hpp"
 
 #define SPACES "\v\r\f\t\n "
