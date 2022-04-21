@@ -9,7 +9,7 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
     : logic_error(msg) {}
 
-ServerConfig::ServerConfig() : listen_ip_("0.0.0.0"), listen_port_("5001") {}
+ServerConfig::ServerConfig() : listen_address_("0.0.0.0"), listen_port_("80") {}
 
 std::vector<std::string>::iterator
 ServerConfig::parse(std::vector<std::string>::iterator pos,
@@ -47,10 +47,8 @@ ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
   while (it != l.end()) {
     if (is_digits(*it)) {
       listen_port_ = *it;
-    } else if (is_ip(*it)) {
-      listen_ip_ = *it;
-    } else if (*it != ":") {
-      listen_host_ = *it;
+    } else if (is_ip(*it) || *it != ":") {
+      listen_address_ = *it;
     }
     it++;
   }
