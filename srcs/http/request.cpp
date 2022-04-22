@@ -34,18 +34,31 @@ static std::string parse_request_host(const std::string &request_line_host) {
   return request_line_host.substr(0, pos);
 }
 
+static HttpMethod parse_request_method(const std::string &method) {
+  if (method == "GET") {
+    return GET;
+  }
+  if (method == "POST") {
+    return POST;
+  }
+  if (method == "DELETE") {
+    return DELETE;
+  }
+  return UNKNOWN;
+}
+
 /*
  * 超安易パース
  * 必須情報のみを取得しています。
  */
-static http_message_map
+static HttpMessage
 parse_request_message(std::vector<std::string> &request_tokens) {
   std::vector<std::string>::iterator it = request_tokens.begin();
-  http_message_map                   request_message;
-  request_message[METHOD]  = *it;     // "GET"
-  request_message[URL]     = *(++it); // "example.com/test/test"
-  request_message[VERSION] = *(++it); // "HTTP/1.1"
-  request_message[HOST]    = parse_request_host(*(++it)); // "example.com"
+  HttpMessage                        request_message;
+  request_message.method_  = parse_request_method(*it); // "GET"
+  request_message.url_     = *(++it); // "example.com/test/test"
+  request_message.version_ = *(++it); // "HTTP/1.1"
+  request_message.host_    = parse_request_host(*(++it)); // "example.com"
   return request_message;
 }
 
@@ -78,13 +91,13 @@ static std::string read_connected_fd(int accfd) {
 /*
  * メッセージ読み込み
  */
-http_message_map receive_request(int accfd) {
+HttpMessage receive_request(int accfd) {
   std::vector<std::string> request_tokens =
       tokenize(read_connected_fd(accfd), SEPARATOR, SEPARATOR);
   if (is_request_error(request_tokens)) {
     std::cout << "request error." << std::endl;
-    http_message_map request_message;
-    request_message[STATUS_CODE] = STATUS_BADREQUEST;
+    HttpMessage request_message;
+    request_message.status_code_ = BAD_REQUEST;
     return request_message;
   }
   return parse_request_message(request_tokens);
