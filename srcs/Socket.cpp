@@ -12,7 +12,10 @@ Socket::Socket(const ServerConfig &config) : __server_config_(config) {
   __set_listen();
 }
 
-Socket::~Socket() { close(__listenfd_); }
+Socket::~Socket() {
+  freeaddrinfo(__addrinfo_);
+  // close(__listenfd_);
+}
 
 void Socket::__set_addrinfo() {
   // TODO: 不要ならhintsはNULLにするように変更する

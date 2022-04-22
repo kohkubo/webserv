@@ -47,5 +47,6 @@ void listen_event(const std::vector<ServerConfig> &server_list) {
       }
     }
   }
-  return;
+  // tmp
+  close_all_socket(socket_list);
 }

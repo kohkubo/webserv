@@ -13,6 +13,8 @@ std::map<socket_fd, std::vector<ServerConfig> >
 bool is_same_socket(const ServerConfig &serv_x, const ServerConfig &serv_y);
 std::pair<fd_set, int> create_readfds(
     const std::map<socket_fd, std::vector<ServerConfig> > &socket_list);
+void close_all_socket(
+    const std::map<socket_fd, std::vector<ServerConfig> > &socket_list);
 
 template <typename T>
 int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
