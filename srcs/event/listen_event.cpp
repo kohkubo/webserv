@@ -31,8 +31,8 @@ void listen_event(const std::vector<ServerConfig> &server_list) {
       error_log_with_errno("select() failed. readfds.");
       continue;
     }
-    int i = 0;
-    while (i < ret) {
+    // TODO: retの数処理を行ったら打ち切り
+    if (ret) {
       std::map<int, Socket>::iterator sit = socket_list.begin();
       for (; sit != socket_list.end(); sit++) {
         if (FD_ISSET(sit->first, &readfds)) {
