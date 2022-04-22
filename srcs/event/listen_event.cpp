@@ -1,5 +1,5 @@
+#include "ServerConfig.hpp"
 #include "Socket.hpp"
-#include "config/ServerConfig.hpp"
 #include "event.hpp"
 
 #include <set>
