@@ -1,49 +1,51 @@
+#include "Socket.hpp"
+#include "config/ServerConfig.hpp"
+#include "event.hpp"
 
-// #include "Socket.hpp"
-// #include "config/ServerConfig.hpp"
-// #include "event.hpp"
+#include <set>
 
-// void listen_event(const std::vector<ServerConfig> server_list) {
-//   // 必要なもの
-//   // serverConfigのリスト
-//   // チェックしたいfdのリスト
-//   std::deque<int> socket_fd;
-//   std::deque<int> connection_fd;
+/*
+socket -> listenディレクティブで決まる（と仮定する。）　ip+portでいい？
+一意なip+portの識別子（socketfdだと楽な気がする）の集合をkeyにしたServer_configのmapがほしい。
 
-//   // server_listのportに対してsocketを開く。 + socketfdをkeyにしたmapを作る。
-//   // Socket         *socket = new Socket(server_config);
-//   while (1) {
-//     // socket_fd + connection_fd（接続済みのsocket）
-//     fd_set readfds;
-//     FD_ZERO(&readfds);
-//     FD_SET(socket->get_listenfd(), &readfds);
+実際のリクエストはaccfdから受け取る。->accfdからどのsocketの通信か判別する必要あり。
+  std::map connection_list<accfd,socketfd>>（もしくは類似の構造）
 
-//     timeval timeout = {.tv_sec = 0, .tv_usec = 0};
 
-//     int     ret =
-//         select(socket->get_listenfd() + 1, &readfds, NULL, NULL, &timeout);
-//     if (ret == -1) {
-//       error_log_with_errno("select() failed. readfds.");
-//       continue;
-//     }
-//     int i = 0;
-//     while (i < ret) {
-//       // socket_fd -> acceptしてconnection_fdに加える。
-//       if (FD_ISSET(socket_fd[0], &readfds)) {
-//         // handle_connection();
-//       }
-//       // connection_fd -> リクエストのデータがある。
-//       if (FD_ISSET(connection_fd[0], &readfds)) {
-//         // handle_request();
-//       }
-//     }
+pollingするときに二つのmapのkeyをreadfdsに加える。
+*/
 
-//     if (ret && FD_ISSET(socket->get_listenfd(), &readfds)) {
-//       int accfd = accept(socket->get_listenfd(), (struct sockaddr *)NULL,
-//       NULL); if (accfd == -1) {
-//         continue;
-//       }
-//     }
-//   }
-//   return;
-// }
+void listen_event(const std::vector<ServerConfig> &server_list) {
+  std::map<int, Socket> socket_list = create_socket_map(server_list);
+  std::map<int, int>    connection_list;
+
+  timeval               timeout = {.tv_sec = 0, .tv_usec = 0};
+  while (1) {
+    // TODO: pair以外のデータ構造に変える。
+    std::pair<fd_set, int> res = create_readfds(socket_list, connection_list);
+    fd_set                 readfds = res.first;
+    int                    ret, nfds = res.second;
+
+    ret = select(nfds, &readfds, NULL, NULL, &timeout);
+    if (ret == -1) {
+      error_log_with_errno("select() failed. readfds.");
+      continue;
+    }
+    int i = 0;
+    while (i < ret) {
+      std::map<int, Socket>::iterator sit = socket_list.begin();
+      for (; sit != socket_list.end(); sit++) {
+        if (FD_ISSET(sit->first, &readfds)) {
+          add_connection_list(sit->first, connection_list);
+        }
+      }
+      std::map<int, int>::iterator cit = connection_list.begin();
+      for (; cit != connection_list.end(); cit++) {
+        if (FD_ISSET(cit->first, &readfds)) {
+          handle_request(cit->first, socket_list, connection_list);
+        }
+      }
+    }
+  }
+  return;
+}

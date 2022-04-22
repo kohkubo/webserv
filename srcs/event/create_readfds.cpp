@@ -1,7 +1,9 @@
 #include "event.hpp"
 
-std::pair<fd_set, int> create_readfds(std::map<int, Socket> socket_list,
-                                      std::map<int, int>    connection_list) {
+// socket_fd + connection_fdをreadfdsに加える。
+std::pair<fd_set, int>
+create_readfds(const std::map<int, Socket> &socket_list,
+               const std::map<int, int>    &connection_list) {
   int    nfds = -1, res;
   fd_set readfds;
 
