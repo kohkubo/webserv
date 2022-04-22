@@ -14,6 +14,8 @@ std::pair<fd_set, int>
                     const std::map<int, int>    &connection_list);
 
 bool add_connection_list(int socket_fd, std::map<int, int> &connection_list);
+void handle_request(int connection, const std::map<int, Socket> &socket_list,
+                    std::map<int, int> &connection_list);
 
 template <typename T>
 int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
