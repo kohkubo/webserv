@@ -8,9 +8,10 @@
 #include "util.hpp"
 
 static HttpStatusCode set_url(const ServerConfig &server_config,
-                              HttpMessage        &request_message) {
+                              HttpMessage        &request_message,
+                              http_message_map   &response_message) {
   if (request_message.status_code_ == BAD_REQUEST) {
-    request_message.path_ = BAD_REQUEST_PAGE;
+    response_message[PATH] = BAD_REQUEST_PAGE;
     return BAD_REQUEST;
   }
   std::string path;
@@ -21,20 +22,19 @@ static HttpStatusCode set_url(const ServerConfig &server_config,
   }
   if (is_file_exists(path.c_str())) {
     if (access(path.c_str(), R_OK) == 0) {
-      request_message.path_ = path;
+      response_message[PATH] = path;
       return OK;
     } else {
-      request_message.path_ = FORBIDDEN_PAGE;
+      response_message[PATH] = FORBIDDEN_PAGE;
       return FORBIDDEN; // TODO: Permission error が 403なのか確かめてない
     }
   }
-  request_message.path_ = NOT_FOUND_PAGE;
+  response_message[PATH] = NOT_FOUND_PAGE;
   return NOT_FOUND;
 }
 
-static void set_response_body(HttpMessage      &request_message,
-                              http_message_map &response_message) {
-  std::string content    = read_file_tostring(request_message.path_.c_str());
+static void set_response_body(http_message_map &response_message) {
+  std::string content    = read_file_tostring(response_message[PATH].c_str());
   response_message[BODY] = content;
   response_message[CONTENT_LEN]  = to_string(content.size());
   response_message[CONTENT_TYPE] = TEXT_HTML;
@@ -46,7 +46,7 @@ static void set_response_body(HttpMessage      &request_message,
 http_message_map method_get(const ServerConfig &server_config,
                             HttpMessage        &request_message) {
   http_message_map response_message;
-  switch (set_url(server_config, request_message)) {
+  switch (set_url(server_config, request_message, response_message)) {
   case OK:
     response_message[STATUS] = STATUS_OK;
     response_message[PHRASE] = PHRASE_STATUS_OK;
@@ -64,6 +64,6 @@ http_message_map method_get(const ServerConfig &server_config,
     response_message[PHRASE] = PHRASE_STATUS_UNKNOWNERROR;
     break;
   }
-  set_response_body(request_message, response_message);
+  set_response_body(response_message);
   return response_message;
 }
