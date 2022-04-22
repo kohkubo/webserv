@@ -17,14 +17,13 @@ std::pair<fd_set, int> create_readfds(
 
 template <typename T>
 int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
-  int                                       maxfd = -1;
-  typename std::map<int, T>::const_iterator it    = list.begin();
+  int                                       max_fd = -1;
+  typename std::map<int, T>::const_iterator it     = list.begin();
   for (; it != list.end(); it++) {
     FD_SET(it->first, readfds);
-    if (it->first > maxfd)
-      maxfd = it->first;
+    max_fd = std::max(it->first, max_fd);
   }
-  return maxfd;
+  return max_fd;
 }
 
 #endif /* INCLUDES_EVENT_HPP */

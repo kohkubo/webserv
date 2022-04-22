@@ -15,6 +15,7 @@ pollingするときに二つのmapのkeyをreadfdsに加える。
 */
 
 void listen_event(const std::vector<ServerConfig> &server_list) {
+  // socket open
   std::map<socket_fd, std::vector<ServerConfig> > socket_list =
       create_socket_map(server_list);
 

@@ -7,8 +7,7 @@ std::pair<fd_set, int> create_readfds(
   fd_set readfds;
 
   FD_ZERO(&readfds);
-  res = set_fd_list(&readfds, socket_list);
-  if (res > nfds)
-    nfds = res;
+  res  = set_fd_list(&readfds, socket_list);
+  nfds = std::max(nfds, res);
   return std::make_pair(readfds, nfds);
 }
