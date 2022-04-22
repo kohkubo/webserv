@@ -9,10 +9,10 @@ typedef int socket_fd;
 
 void        listen_event();
 
-std::map<socket_fd, std::vector<Socket>>
+std::map<socket_fd, std::vector<ServerConfig>>
 create_socket_map(const std::vector<ServerConfig> &server_list);
-std::pair<fd_set, int>
-create_readfds(const std::map<socket_fd, std::vector<Socket>> &socket_list);
+std::pair<fd_set, int> create_readfds(
+    const std::map<socket_fd, std::vector<ServerConfig>> &socket_list);
 
 template <typename T>
 int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
