@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
@@ -12,17 +13,14 @@
  * リクエストメッセージのターゲットURLが"/"の時index.htmlに差し替えることだけしています.
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map
+static http_message_map
 parse_request_message(std::vector<std::string> &request_tokens) {
   std::vector<std::string>::iterator it = request_tokens.begin();
   http_message_map                   request_message;
   request_message[METHOD] = *it; // *it = "http_method_read_get"
   it++;
   it++;
-  std::string target_path = *it; // *it = "/"
-  if (target_path == "/")
-    target_path = HELLO_WORLD_PAGE;
-  request_message[URL] = target_path;
+  request_message[URL] = *it;
   it++;
   it++;
   request_message[VERSION]   = *it; // *it = "HTTP/1.1"

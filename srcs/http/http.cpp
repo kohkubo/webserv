@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "ServerConfig.hpp"
 #include "http.hpp"
 #include "util.hpp"
 
@@ -18,7 +19,9 @@ void send_response(int accfd, const std::string &message) {
  * リクエストを受けて, レスポンスを返すまでの処理
  */
 void http(int accfd) {
-  http_message_map request_message  = receive_request(accfd);
-  std::string      response_message = create_response(request_message);
+  const ServerConfig server_config;
+  http_message_map   request_message = receive_request(accfd);
+  std::string        response_message =
+      create_response(server_config, request_message);
   send_response(accfd, response_message);
 }

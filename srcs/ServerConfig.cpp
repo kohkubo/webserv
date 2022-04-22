@@ -9,7 +9,10 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
     : logic_error(msg) {}
 
-ServerConfig::ServerConfig() : listen_address_("0.0.0.0"), listen_port_("80") {}
+ServerConfig::ServerConfig() : listen_address_("0.0.0.0"), listen_port_("80") {
+  root_  = "./html/";
+  index_ = "index.html";
+}
 
 std::vector<std::string>::iterator
 ServerConfig::parse(std::vector<std::string>::iterator pos,
