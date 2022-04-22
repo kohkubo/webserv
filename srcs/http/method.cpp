@@ -10,7 +10,7 @@
 static HttpStatusCode set_url(const ServerConfig &server_config,
                               HttpMessage        &request_message) {
   if (request_message.status_code_ == BAD_REQUEST) {
-    request_message.path_ = NOT_FOUND_PAGE;
+    request_message.path_ = BAD_REQUEST_PAGE;
     return BAD_REQUEST;
   }
   std::string path;
@@ -24,7 +24,7 @@ static HttpStatusCode set_url(const ServerConfig &server_config,
       request_message.path_ = path;
       return OK;
     } else {
-      request_message.path_ = NOT_FOUND_PAGE;
+      request_message.path_ = FORBIDDEN_PAGE;
       return FORBIDDEN; // TODO: Permission error が 403なのか確かめてない
     }
   }
