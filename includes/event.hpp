@@ -9,10 +9,10 @@ typedef std::map<int, std::vector<ServerConfig> > socket_list_type;
 
 void listen_event(const std::vector<ServerConfig> &server_list);
 socket_list_type
-     create_socket_map(const std::vector<ServerConfig> &server_list);
-bool is_same_socket(const ServerConfig &serv_x, const ServerConfig &serv_y);
-std::pair<fd_set, int> create_readfds(const socket_list_type &socket_list);
-void                   close_all_socket(const socket_list_type &socket_list);
+       create_socket_map(const std::vector<ServerConfig> &server_list);
+bool   is_same_socket(const ServerConfig &serv_x, const ServerConfig &serv_y);
+fd_set create_readfds(const socket_list_type &socket_list, int &nfds);
+void   close_all_socket(const socket_list_type &socket_list);
 
 template <typename T>
 int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
