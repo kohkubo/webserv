@@ -15,6 +15,14 @@ create_socket_map(const std::vector<ServerConfig> &server_list) {
   std::vector<std::vector<ServerConfig> >         tmp;
   std::vector<ServerConfig>::const_iterator       sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
+    // FIXME: tyottohenn
+    for (size_t i = 0; i < tmp.size(); i++) {
+      if (is_same_socket((tmp[i])[0], *sl_it))
+        tmp[i].push_back(*sl_it);
+      continue;
+    }
+    tmp.push_back(std::vector<ServerConfig>());
+    tmp.back().push_back(*sl_it);
   }
 
   // tmpからsocketを開いて、fdをkeyにしたmapにする。
