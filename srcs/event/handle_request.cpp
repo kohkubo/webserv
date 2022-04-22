@@ -10,4 +10,4 @@
 */
 
 void handle_request(int connection, const std::map<int, Socket> &socket_list,
-                    std::map<int, int> &connection_list) {}
+                    std::map<int, Connection> &connection_list) {}

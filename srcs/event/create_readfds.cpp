@@ -2,8 +2,8 @@
 
 // socket_fd + connection_fdをreadfdsに加える。
 std::pair<fd_set, int>
-create_readfds(const std::map<int, Socket> &socket_list,
-               const std::map<int, int>    &connection_list) {
+create_readfds(const std::map<int, Socket>     &socket_list,
+               const std::map<int, Connection> &connection_list) {
   int    nfds = -1, res;
   fd_set readfds;
 
