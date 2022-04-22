@@ -1,10 +1,13 @@
 #include "http.hpp"
+#include "ServerConfig.hpp"
 #include "gtest/gtest.h"
 
 TEST(http_test, create_response) {
+  ServerConfig server_config;
+  server_config.root_ = "../html/";
   http_message_map      request_message;
   request_message[METHOD] = "GET";
-  request_message[URL] = "./../html/index.html";
+  request_message[URL] = "/";
   request_message[VERSION] = "HTTP/1.1";
   request_message[HOST] = "localhost:5001";
   request_message[USERAGENT] = "curl/7.79.1";
@@ -23,7 +26,7 @@ TEST(http_test, create_response) {
                                    "Hello World!\n"
                                    "    </body>\n"
                                    "</html>";
-  EXPECT_EQ(create_response(request_message), expect);
+  EXPECT_EQ(create_response(server_config, request_message), expect);
 }
 
 #define TEST_FILE          "../googletest/tdata/test.txt"
@@ -33,11 +36,13 @@ TEST(http_test, create_response) {
 #define NO_SUCH_FILE       "no such file"
 
 TEST(http_test, method_get) {
+  ServerConfig server_config;
+  server_config.root_ = "./tdata/";
+  server_config.index_ = "test.txt";
   http_message_map request_message;
   http_message_map response_message;
-
-  request_message[URL] = TEST_FILE;
-  response_message     = method_get(request_message);
+  request_message[URL] = "/";
+  response_message     = method_get(server_config, request_message);
   EXPECT_EQ(response_message[STATUS], STATUS_OK);
   EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_OK);
   EXPECT_EQ(response_message[BODY], TEST_CONTENT);
@@ -48,11 +53,11 @@ TEST(http_test, method_get) {
 // 今はget()の中でNOT_FOUNDページを挿入するようになっているため
 // テスト側からNOT_FOUNDページの中身について確認するのが難しいのでボディのテスト保留
 TEST(http_test, target_file_not_exist) {
+  const ServerConfig server_config;
   http_message_map request_message;
   http_message_map response_message;
 
-  request_message[URL] = NO_SUCH_FILE;
-  response_message     = method_get(request_message);
+  response_message     = method_get(server_config, request_message);
   EXPECT_EQ(response_message[STATUS], STATUS_NOTFOUND);
   EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_NOTFOUND);
   // EXPECT_EQ(response_message[BODY], TEST_CONTENT);

@@ -2,6 +2,7 @@
 #include <string>
 #include <sys/socket.h>
 
+#include "ServerConfig.hpp"
 #include "http.hpp"
 
 /*
@@ -58,7 +59,9 @@ static std::string response_message_to_string(http_message_map &response_message
     empty_line() + \
     response_body(response_message);
 }
-// clang-format on
+
+// method
+enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 
 static HttpMethod request_method_to_int(const std::string &method) {
   if (method == "GET") {
@@ -73,11 +76,11 @@ static HttpMethod request_method_to_int(const std::string &method) {
   return UNKNOWN;
 }
 
-std::string create_response(http_message_map &request_message) {
+std::string create_response(const ServerConfig &server_config, http_message_map &request_message) {
   http_message_map response_message;
   switch (request_method_to_int(request_message[METHOD])) {
   case GET:
-    response_message = method_get(request_message);
+    response_message = method_get(server_config, request_message);
     break;
   // case POST:
   //   break;
