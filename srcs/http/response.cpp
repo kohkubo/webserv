@@ -59,26 +59,12 @@ static std::string response_message_to_string(http_message_map &response_message
     empty_line() + \
     response_body(response_message);
 }
+// clang-format on
 
-// method
-enum HttpMethod { GET, POST, DELETE, UNKNOWN };
-
-static HttpMethod request_method_to_int(const std::string &method) {
-  if (method == "GET") {
-    return GET;
-  }
-  if (method == "POST") {
-    return POST;
-  }
-  if (method == "DELETE") {
-    return DELETE;
-  }
-  return UNKNOWN;
-}
-
-std::string create_response(const ServerConfig &server_config, http_message_map &request_message) {
+std::string create_response(const ServerConfig &server_config,
+                            HttpMessage        &request_message) {
   http_message_map response_message;
-  switch (request_method_to_int(request_message[METHOD])) {
+  switch (request_message.method_) {
   case GET:
     response_message = method_get(server_config, request_message);
     break;
