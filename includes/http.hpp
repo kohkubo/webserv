@@ -8,6 +8,17 @@
 
 typedef std::map<std::string, std::string> http_message_map;
 
+enum HttpStatusCode {
+  OK                    = 200,
+  BAD_REQUEST           = 400,
+  FORBIDDEN             = 403,
+  NOT_FOUND             = 404,
+  INTERNAL_SERVER_ERROR = 500,
+  NOT_IMPLEMENTED       = 501,
+  UNKNOWN_ERROR         = 520,
+  NONE                  = 0
+};
+
 /* key */
 // start line
 #define METHOD                 "METHOD"
