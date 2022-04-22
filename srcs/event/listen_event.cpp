@@ -1,4 +1,3 @@
-#include "ServerConfig.hpp"
 #include "event.hpp"
 #include "http.hpp"
 
