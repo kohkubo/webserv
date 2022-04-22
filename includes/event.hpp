@@ -7,8 +7,7 @@
 
 typedef int socket_fd;
 
-void        listen_event();
-
+void        listen_event(const std::vector<ServerConfig> &server_list);
 std::map<socket_fd, std::vector<ServerConfig> >
      create_socket_map(const std::vector<ServerConfig> &server_list);
 bool is_same_socket(const ServerConfig &serv_x, const ServerConfig &serv_y);
