@@ -22,12 +22,15 @@ typedef std::map<std::string, std::string> http_message_map;
 #define CONTENT_LEN            "Content-Length"
 #define CONTENT_TYPE           "Content-Type"
 #define CONNECTION             "Connection"
+// status code
+#define STATUS_CODE            "status_code"
 // body
 #define BODY                   "BODY"
 /* value */
 #define VERSION_HTTP           "HTTP/1.1"
 #define STATUS_OK              "200"
 #define STATUS_NOTFOUND        "404"
+#define STATUS_BADREQUEST      "400"
 #define PHRASE_STATUS_OK       "OK"
 #define PHRASE_STATUS_NOTFOUND "Not Found"
 #define HELLO_WORLD_PAGE       "./html/index.html"

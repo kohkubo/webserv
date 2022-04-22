@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <fstream>
 #include <string>
 #include <unistd.h>
@@ -8,6 +9,10 @@
 
 static int set_url(const ServerConfig &server_config,
                    http_message_map   &request_message) {
+  if (request_message.find(STATUS_CODE) != request_message.end()) {
+    request_message[URL] = NOT_FOUND_PAGE;
+    return std::atoi(request_message[STATUS_CODE].c_str());
+  }
   std::string path;
   if (request_message[URL] == "/") {
     path = server_config.root_ + server_config.index_;
@@ -27,16 +32,22 @@ static int set_url(const ServerConfig &server_config,
   return 404;
 }
 
+static void set_body(http_message_map &request_message,
+                     http_message_map &response_message) {
+  std::string content    = read_file_tostring(request_message[URL].c_str());
+  response_message[BODY] = content;
+  response_message[CONTENT_LEN]  = to_string(content.size());
+  response_message[CONTENT_TYPE] = TEXT_HTML;
+}
+
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
 http_message_map method_get(const ServerConfig &server_config,
                             http_message_map   &request_message) {
-  std::string      target_url;
   http_message_map response_message;
   switch (set_url(server_config, request_message)) {
   case 200:
-    std::cout << response_message[URL] << std::endl;
     response_message[STATUS] = STATUS_OK;
     response_message[PHRASE] = PHRASE_STATUS_OK;
     break;
@@ -48,9 +59,6 @@ http_message_map method_get(const ServerConfig &server_config,
     // TODO: error
     break;
   }
-  std::string content    = read_file_tostring(request_message[URL].c_str());
-  response_message[BODY] = content;
-  response_message[CONTENT_LEN]  = to_string(content.size());
-  response_message[CONTENT_TYPE] = TEXT_HTML;
+  set_body(request_message, response_message);
   return response_message;
 }
