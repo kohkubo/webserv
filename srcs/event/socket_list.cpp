@@ -23,13 +23,13 @@ find_same_socket(const ServerConfig                      &conf,
 ** ServerConfigのリストからソケットを作成、ソケットのfdをkeyにしたSocketクラスのmapを作る。
 */
 
-std::map<socket_fd, std::vector<ServerConfig> >
+socket_list_type
 create_socket_map(const std::vector<ServerConfig> &server_list) {
-  std::map<socket_fd, std::vector<ServerConfig> > res;
+  socket_list_type                          res;
 
   // tmpにlistenディレクティブが共通するServerConfigのリストを作る
-  std::vector<std::vector<ServerConfig> >         double_arr;
-  std::vector<ServerConfig>::const_iterator       sl_it = server_list.begin();
+  std::vector<std::vector<ServerConfig> >   double_arr;
+  std::vector<ServerConfig>::const_iterator sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
     std::vector<std::vector<ServerConfig> >::iterator it =
         find_same_socket(*sl_it, double_arr);
@@ -55,10 +55,8 @@ create_socket_map(const std::vector<ServerConfig> &server_list) {
   return res;
 }
 
-void close_all_socket(
-    const std::map<socket_fd, std::vector<ServerConfig> > &socket_list) {
-  std::map<socket_fd, std::vector<ServerConfig> >::const_iterator it =
-      socket_list.begin();
+void close_all_socket(const socket_list_type &socket_list) {
+  socket_list_type::const_iterator it = socket_list.begin();
   for (; it != socket_list.end(); it++) {
     close(it->first);
   }

@@ -15,10 +15,9 @@ pollingするときに二つのmapのkeyをreadfdsに加える。
 
 void listen_event(const std::vector<ServerConfig> &server_list) {
   // socket open
-  std::map<socket_fd, std::vector<ServerConfig> > socket_list =
-      create_socket_map(server_list);
+  socket_list_type socket_list = create_socket_map(server_list);
 
-  timeval timeout = {.tv_sec = 0, .tv_usec = 0};
+  timeval          timeout     = {.tv_sec = 0, .tv_usec = 0};
   while (1) {
     // TODO: pair以外のデータ構造に変える。
     std::pair<fd_set, int> res     = create_readfds(socket_list);
@@ -32,11 +31,10 @@ void listen_event(const std::vector<ServerConfig> &server_list) {
     }
     // TODO: retの数処理を行ったら打ち切り
     if (ret) {
-      std::map<socket_fd, std::vector<ServerConfig> >::iterator sit =
-          socket_list.begin();
-      for (; sit != socket_list.end(); sit++) {
-        if (FD_ISSET(sit->first, &readfds)) {
-          int accfd = accept(sit->first, (struct sockaddr *)NULL, NULL);
+      socket_list_type::iterator it = socket_list.begin();
+      for (; it != socket_list.end(); it++) {
+        if (FD_ISSET(it->first, &readfds)) {
+          int accfd = accept(it->first, (struct sockaddr *)NULL, NULL);
           if (accfd == -1) {
             continue;
           }
