@@ -19,8 +19,8 @@ void handle_request(int connection, const std::map<int, Socket> &socket_list,
 
 template <typename T>
 int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
-  int                                 maxfd = -1;
-  typename std::map<int, T>::iterator it    = list.begin();
+  int                                       maxfd = -1;
+  typename std::map<int, T>::const_iterator it    = list.begin();
   for (; it != list.end(); it++) {
     FD_SET(it->first, readfds);
     if (it->first > maxfd)
