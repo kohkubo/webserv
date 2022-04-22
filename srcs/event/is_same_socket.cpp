@@ -3,9 +3,9 @@
 #include <netdb.h>
 
 struct addrinfo *getaddrinfo_via_serv(const ServerConfig &conf) {
-  struct addrinfo hints, *info;
+  struct addrinfo  hints;
+  struct addrinfo *info;
   memset(&hints, 0, sizeof(hints));
-  memset(&info, 0, sizeof(info));
   hints.ai_family   = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   int error         = getaddrinfo(conf.listen_address_.c_str(),
