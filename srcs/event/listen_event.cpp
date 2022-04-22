@@ -24,7 +24,7 @@ void listen_event(const std::vector<ServerConfig> &server_list) {
     fd_set                 readfds = res.first;
     int                    ret, nfds = res.second;
 
-    ret = select(nfds, &readfds, NULL, NULL, &timeout);
+    ret = select(nfds + 1, &readfds, NULL, NULL, &timeout);
     if (ret == -1) {
       error_log_with_errno("select() failed. readfds.");
       continue;
