@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include <vector>
 
 #include "ServerConfig.hpp"
 #include "Webserv.hpp"
@@ -20,8 +21,8 @@ static const char *resolve_conf_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char  *conf_file_path   = resolve_conf_file(argc, argv);
-  ServerConfig server_config    = read_server_configuration(conf_file_path);
+  const char  *conf_file_path             = resolve_conf_file(argc, argv);
+  std::vector<ServerConfig> server_list   = read_server_configuration(conf_file_path);
   //(void)config_file_path;
   //std::vector<ServerConfig> server_list;
   //server_list.push_back(ServerConfig());
