@@ -46,6 +46,7 @@ struct HttpMessage {
 #define VERSION                      "VERSION"
 #define STATUS                       "STATUS"
 #define PHRASE                       "PHRASE"
+#define PATH                         "PATH"
 // field
 #define HOST                         "Host"
 #define USERAGENT                    "User-Agent"
