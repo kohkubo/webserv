@@ -7,12 +7,11 @@
 #include <map>
 #include <vector>
 typedef std::vector<ServerConfig> server_config_vector;
-typedef std::map<int, server_config_vector> server_config_map;
 
 #define DELIMITER "\v\r\f\t\n {};"
 #define SKIP      "\v\r\f\t\n "
 
-ServerConfig read_config_file(const char *config_file_path) {
+ServerConfig read_server_configuration(const char *config_file_path) {
   std::string config_content =
       read_file_tostring(config_file_path); // TODO: エラー受け取る
   std::vector<std::string> config_tokens = tokenize(config_content, DELIMITER, SKIP);
