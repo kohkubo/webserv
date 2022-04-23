@@ -7,37 +7,31 @@
 #include "http.hpp"
 #include "util.hpp"
 
-static HttpStatusCode set_url(const ServerConfig &server_config,
-                              HttpMessage        &request_message,
-                              http_message_map   &response_message) {
-  if (request_message.status_code_ == BAD_REQUEST) {
-    response_message[PATH] = BAD_REQUEST_PAGE;
-    return BAD_REQUEST;
-  }
-  std::string path;
-  if (request_message.url_ == "/") {
-    path = server_config.root_ + server_config.index_;
-  } else {
-    path = server_config.root_ + path;
-  }
-  if (is_file_exists(path.c_str())) {
-    if (access(path.c_str(), R_OK) == 0) {
-      response_message[PATH] = path;
+static HttpStatusCode check_url(const char *target_url) {
+  if (is_file_exists(target_url)) {
+    if (access(target_url, R_OK) == 0) {
       return OK;
     } else {
-      response_message[PATH] = FORBIDDEN_PAGE;
       return FORBIDDEN; // TODO: Permission error が 403なのか確かめてない
     }
   }
-  response_message[PATH] = NOT_FOUND_PAGE;
   return NOT_FOUND;
 }
 
-static void set_response_body(http_message_map &response_message) {
-  std::string content    = read_file_tostring(response_message[PATH].c_str());
+static void set_response_body(http_message_map &response_message, const std::string &target_url) {
+  std::string content    = read_file_tostring(target_url.c_str());
   response_message[BODY] = content;
   response_message[CONTENT_LEN]  = to_string(content.size());
   response_message[CONTENT_TYPE] = TEXT_HTML;
+}
+
+static std::string resolve_url(const ServerConfig &server_config,
+                               const std::string   request_url) {
+  if (request_url == "/") {
+    return server_config.root_ + server_config.index_;
+  } else {
+    return server_config.root_ + request_url;
+  }
 }
 
 /*
@@ -45,8 +39,9 @@ static void set_response_body(http_message_map &response_message) {
  */
 http_message_map method_get(const ServerConfig &server_config,
                             HttpMessage        &request_message) {
+  std::string target_url = resolve_url(server_config, request_message.url_);
   http_message_map response_message;
-  switch (set_url(server_config, request_message, response_message)) {
+  switch (check_url(target_url.c_str())) {
   case OK:
     response_message[STATUS] = STATUS_OK;
     response_message[PHRASE] = PHRASE_STATUS_OK;
@@ -54,16 +49,19 @@ http_message_map method_get(const ServerConfig &server_config,
   case FORBIDDEN:
     response_message[STATUS] = STATUS_FORBIDDEN;
     response_message[PHRASE] = PHRASE_STATUS_FORBIDDEN;
+    target_url = FORBIDDEN_PAGE;
     break;
   case NOT_FOUND:
     response_message[STATUS] = STATUS_NOTFOUND;
     response_message[PHRASE] = PHRASE_STATUS_NOTFOUND;
+    target_url = NOT_FOUND_PAGE;
     break;
   default:
     response_message[STATUS] = STATUS_UNKNOWNERROR;
     response_message[PHRASE] = PHRASE_STATUS_UNKNOWNERROR;
+    target_url = UNKNOWN_ERROR_PAGE;
     break;
   }
-  set_response_body(response_message);
+  set_response_body(response_message, target_url);
   return response_message;
 }
