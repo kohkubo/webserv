@@ -10,9 +10,8 @@
 
 std::vector<ServerConfig>
 read_server_configuration(const char *config_file_path) {
-  std::string contents = read_file_tostring(config_file_path);
-  std::vector<std::string> config_tokens =
-      tokenize(contents, DELIMITER, SKIP);
+  std::string               contents = read_file_tostring(config_file_path);
+  std::vector<std::string>  config_tokens = tokenize(contents, DELIMITER, SKIP);
   std::vector<ServerConfig> server_list;
   try {
     std::vector<std::string>::iterator it = config_tokens.begin();
