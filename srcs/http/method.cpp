@@ -18,9 +18,10 @@ static HttpStatusCode check_url(const char *target_url) {
   return NOT_FOUND;
 }
 
-static void set_response_body(http_message_map &response_message, const std::string &target_url) {
-  std::string content    = read_file_tostring(target_url.c_str());
-  response_message[BODY] = content;
+static void set_response_body(http_message_map &response_message,
+                              const char       *target_url) {
+  std::string content            = read_file_tostring(target_url);
+  response_message[BODY]         = content;
   response_message[CONTENT_LEN]  = to_string(content.size());
   response_message[CONTENT_TYPE] = TEXT_HTML;
 }
@@ -49,19 +50,19 @@ http_message_map method_get(const ServerConfig &server_config,
   case FORBIDDEN:
     response_message[STATUS] = STATUS_FORBIDDEN;
     response_message[PHRASE] = PHRASE_STATUS_FORBIDDEN;
-    target_url = FORBIDDEN_PAGE;
+    target_url               = FORBIDDEN_PAGE;
     break;
   case NOT_FOUND:
     response_message[STATUS] = STATUS_NOTFOUND;
     response_message[PHRASE] = PHRASE_STATUS_NOTFOUND;
-    target_url = NOT_FOUND_PAGE;
+    target_url               = NOT_FOUND_PAGE;
     break;
   default:
     response_message[STATUS] = STATUS_UNKNOWNERROR;
     response_message[PHRASE] = PHRASE_STATUS_UNKNOWNERROR;
-    target_url = UNKNOWN_ERROR_PAGE;
+    target_url               = UNKNOWN_ERROR_PAGE;
     break;
   }
-  set_response_body(response_message, target_url);
+  set_response_body(response_message, target_url.c_str());
   return response_message;
 }
