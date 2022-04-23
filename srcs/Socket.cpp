@@ -12,7 +12,9 @@ Socket::Socket(const ServerConfig &config) : __server_config_(config) {
   __set_listen();
 }
 
-Socket::~Socket() { close(__listenfd_); }
+Socket::~Socket() {
+  // freeaddrinfo(__addrinfo_);
+}
 
 void Socket::__set_addrinfo() {
   // TODO: 不要ならhintsはNULLにするように変更する
@@ -56,7 +58,7 @@ void Socket::__set_listenfd() {
   if (setsockopt(__listenfd_, SOL_SOCKET, SO_REUSEADDR, (const void *)&on,
                  sizeof(on)) == -1) {
     error_log_with_errno("setsockopt() failed.");
-    close(__listenfd_);
+    ::close(__listenfd_);
     exit(EXIT_FAILURE);
   }
 }
@@ -71,7 +73,7 @@ void Socket::__set_listenfd() {
 void Socket::__set_bind() {
   if (bind(__listenfd_, __addrinfo_->ai_addr, __addrinfo_->ai_addrlen) == -1) {
     error_log_with_errno("bind() failed.");
-    close(__listenfd_);
+    ::close(__listenfd_);
     exit(1);
   }
 }
@@ -85,7 +87,7 @@ void Socket::__set_bind() {
 void Socket::__set_listen() {
   if (listen(__listenfd_, SOMAXCONN) == -1) {
     error_log_with_errno("listen() failed.");
-    close(__listenfd_);
+    ::close(__listenfd_);
     exit(1);
   }
 }

@@ -15,7 +15,8 @@ class Socket {
 public:
   Socket(const ServerConfig &config);
   ~Socket();
-  int get_listenfd() const { return __listenfd_; }
+  int  get_listenfd() const { return __listenfd_; }
+  void close() { ::close(__listenfd_); }
 
 private:
   Socket &operator=(const Socket &other);
