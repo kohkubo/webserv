@@ -21,20 +21,20 @@ enum HttpStatusCode {
 
 /* key */
 // start line
-#define METHOD                 "METHOD"
-#define URL                    "URL"
-#define VERSION                "VERSION"
-#define STATUS                 "STATUS"
-#define PHRASE                 "PHRASE"
+#define METHOD                       "METHOD"
+#define URL                          "URL"
+#define VERSION                      "VERSION"
+#define STATUS                       "STATUS"
+#define PHRASE                       "PHRASE"
 // field
-#define HOST                   "Host"
-#define USERAGENT              "User-Agent"
-#define ACCEPT                 "Accept"
-#define CONTENT_LEN            "Content-Length"
-#define CONTENT_TYPE           "Content-Type"
-#define CONNECTION             "Connection"
+#define HOST                         "Host"
+#define USERAGENT                    "User-Agent"
+#define ACCEPT                       "Accept"
+#define CONTENT_LEN                  "Content-Length"
+#define CONTENT_TYPE                 "Content-Type"
+#define CONNECTION                   "Connection"
 // body
-#define BODY                   "BODY"
+#define BODY                         "BODY"
 /* value */
 #define VERSION_HTTP                 "HTTP/1.1"
 #define STATUS_OK                    "200"
@@ -63,10 +63,10 @@ enum HttpStatusCode {
 #define CONNECTION_CLOSE             "close"
 
 /* delimiter */
-#define CR                         "\r"
-#define LF                         "\n"
-#define CRLF                       "\r\n"
-#define SP                         " "
+#define CR                           "\r"
+#define LF                           "\n"
+#define CRLF                         "\r\n"
+#define SP                           " "
 
 void             http(int accfd);
 http_message_map receive_request(int accfd);

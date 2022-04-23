@@ -8,7 +8,7 @@
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 
-static const char *resolve_conf_file(int argc, char **argv) {
+static const char *resolve_config_file(int argc, char **argv) {
   switch (argc) {
   case 1:
     return (DEFAULT_CONFIG_FILE_PATH);
@@ -21,16 +21,9 @@ static const char *resolve_conf_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char  *conf_file_path             = resolve_conf_file(argc, argv);
-  std::vector<ServerConfig> server_list   = read_server_configuration(conf_file_path);
-  //(void)config_file_path;
-  //std::vector<ServerConfig> server_list;
-  //server_list.push_back(ServerConfig());
-  //server_list.push_back(ServerConfig());
-  //server_list.push_back(ServerConfig());
-  //server_list[0].listen_port_ = "5500";
-  //server_list[1].listen_port_ = "5500";
-  //server_list[2].listen_port_ = "5001";
+  const char               *config_file_path = resolve_config_file(argc, argv);
+  std::vector<ServerConfig> server_list =
+      read_server_configuration(config_file_path);
   listen_event(server_list);
   return (0);
 }
