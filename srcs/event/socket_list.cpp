@@ -9,9 +9,9 @@
 
 static std::vector<std::vector<ServerConfig> >::iterator
 find_same_socket(const ServerConfig                      &conf,
-                 std::vector<std::vector<ServerConfig> > &double_arr) {
-  std::vector<std::vector<ServerConfig> >::iterator it = double_arr.begin();
-  for (; it != double_arr.end(); it++) {
+                 std::vector<std::vector<ServerConfig> > &server_group) {
+  std::vector<std::vector<ServerConfig> >::iterator it = server_group.begin();
+  for (; it != server_group.end(); it++) {
     // 先頭の要素と一致すれば良い
     if (is_same_socket(conf, (*it)[0]))
       break;
@@ -28,23 +28,23 @@ create_socket_map(const std::vector<ServerConfig> &server_list) {
   socket_list_type                          res;
 
   // tmpにlistenディレクティブが共通するServerConfigのリストを作る
-  std::vector<std::vector<ServerConfig> >   double_arr;
+  std::vector<std::vector<ServerConfig> >   server_group;
   std::vector<ServerConfig>::const_iterator sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
     std::vector<std::vector<ServerConfig> >::iterator it =
-        find_same_socket(*sl_it, double_arr);
-    if (it != double_arr.end()) {
+        find_same_socket(*sl_it, server_group);
+    if (it != server_group.end()) {
       // TODO: server_nameが同じ場合追加しない。
       (*it).push_back(*sl_it);
     } else {
-      double_arr.push_back(std::vector<ServerConfig>());
-      double_arr.back().push_back(*sl_it);
+      server_group.push_back(std::vector<ServerConfig>());
+      server_group.back().push_back(*sl_it);
     }
   }
 
-  // double_arrからsocketを開いて、fdをkeyにしたmapにする。
-  std::vector<std::vector<ServerConfig> >::iterator it = double_arr.begin();
-  for (; it != double_arr.end(); it++) {
+  // server_groupからsocketを開いて、fdをkeyにしたmapにする。
+  std::vector<std::vector<ServerConfig> >::iterator it = server_group.begin();
+  for (; it != server_group.end(); it++) {
     // ここでSocketがスコープ抜けるとlitenfdがcloseされる
     // Socketをコピーしてもコピー元がcloseする
     // => 別関数で最後にclose or
