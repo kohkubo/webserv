@@ -22,7 +22,6 @@ static const char *get_config_file_path(int argc, char **argv) {
 int main(int argc, char **argv) {
   const char *config_file_path = get_config_file_path(argc, argv);
   // ServerConfig server_config    = read_config_file(config_file_path);
-  // server_io_multiplexing(server_config);
   (void)config_file_path;
   std::vector<ServerConfig> server_list;
   server_list.push_back(ServerConfig());
