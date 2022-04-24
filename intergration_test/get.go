@@ -9,8 +9,7 @@ import (
 )
 
 // デフォルトで作成されるリクエスト
-// リクエスト:
-//  http.NewRequest("GET", "http://localhost:5001", nil)
+// リクエスト: GET http://localhost:5001
 // 中身:
 //  GET / HTTP/1.1
 //  Host: localhost:5001
