@@ -8,8 +8,7 @@
 #define DELIMITER "\v\r\f\t\n {};"
 #define SKIP      "\v\r\f\t\n "
 
-std::vector<ServerConfig>
-read_config_file(const char *config_file_path) {
+std::vector<ServerConfig> read_config_file(const char *config_file_path) {
   std::string               contents = read_file_tostring(config_file_path);
   std::vector<std::string>  config_tokens = tokenize(contents, DELIMITER, SKIP);
   std::vector<ServerConfig> server_list;

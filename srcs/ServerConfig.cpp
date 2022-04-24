@@ -74,10 +74,9 @@ ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
 
 std::vector<std::string>::iterator
 ServerConfig::__parse_server_name(std::vector<std::string>::iterator pos,
-                           std::vector<std::string>::iterator end) {
+                                  std::vector<std::string>::iterator end) {
   pos++;
-  for (; pos != end && *pos != ";"; pos++)
-  {
+  for (; pos != end && *pos != ";"; pos++) {
     server_name_.push_back(*pos);
   }
   if (pos == end || *pos != ";")
