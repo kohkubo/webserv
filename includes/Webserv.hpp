@@ -1,7 +1,9 @@
 #ifndef INCLUDES_WEBSERV_HPP
 #define INCLUDES_WEBSERV_HPP
 
-void server();
-void server_io_multiplexing();
+#include "ServerConfig.hpp"
+
+ServerConfig read_config_file(const char *config_file_path);
+void         server_io_multiplexing(const ServerConfig &server_config);
 
 #endif /* INCLUDES_WEBSERV_HPP */

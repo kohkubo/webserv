@@ -1,5 +1,4 @@
 #include "util.hpp"
-#include "Lexer.hpp"
 #include <fstream>
 #include <limits>
 #include <sstream>
@@ -22,7 +21,7 @@ bool is_file_exists(const char *path) {
   struct stat file_info;
 
   if (stat(path, &file_info) == -1) {
-    std::cout << "is_file_exists" << std::endl;
+    std::cout << "error: is_file_exists" << std::endl;
     return false; // TODO: エラーを呼び出し元に通知
   }
   if ((file_info.st_mode & S_IFMT) == S_IFREG)
@@ -34,7 +33,7 @@ bool is_file_exists(const char *path) {
 std::string read_file_tostring(const char *path) {
   std::ifstream file(path);
   if (file.fail()) {
-    std::cout << "read_file_tostring" << std::endl;
+    std::cout << "error: read_file_tostring" << std::endl;
     return ""; // TODO: エラーを呼び出し元に通知
   }
   std::stringstream buffer;
@@ -75,9 +74,9 @@ bool is_uint8(const std::string &token) {
 }
 
 bool is_ip(const std::string &token) {
-  Lexer                 l(token, ".");
-  Lexer::token_iterator it    = l.begin();
-  size_t                count = 0;
+  std::vector<std::string>           l     = tokenize(token, ".", "");
+  std::vector<std::string>::iterator it    = l.begin();
+  size_t                             count = 0;
   for (; it != l.end(); it++, count++) {
     if (!is_uint8(*it))
       return false;

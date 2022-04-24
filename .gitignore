@@ -10,6 +10,8 @@
 !*.html
 !*.txt
 !*.go
+!*.mod
+!*.conf
 !.clang-format
 !.clang-tidy
 !Makefile

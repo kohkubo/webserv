@@ -8,12 +8,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "util.hpp"
 
 class Socket {
 public:
-  Socket(ServerConfig &config);
+  Socket(const ServerConfig &config);
   ~Socket();
   int get_listenfd() const { return __listenfd_; }
 
