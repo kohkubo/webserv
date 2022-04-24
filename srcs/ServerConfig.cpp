@@ -29,6 +29,8 @@ ServerConfig::parse(std::vector<std::string>::iterator pos,
       pos = __parse_listen(pos, end);
     } else if (*pos == "root") {
       pos = __parse_root(pos, end);
+    } else if (*pos == "server_name") {
+      pos = __parse_server_name(pos, end);
     } else {
       throw UnexpectedTokenException();
     }
@@ -68,4 +70,17 @@ ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
     throw UnexpectedTokenException("could not detect directive value.");
   root_ = *pos;
   return pos + 2;
+}
+
+std::vector<std::string>::iterator
+ServerConfig::__parse_server_name(std::vector<std::string>::iterator pos,
+                           std::vector<std::string>::iterator end) {
+  pos++;
+  for (; pos != end && *pos != ";"; pos++)
+  {
+    server_name_.push_back(*pos);
+  }
+  if (pos == end || *pos != ";")
+    throw UnexpectedTokenException("could not detect directive value.");
+  return pos + 1;
 }
