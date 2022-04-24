@@ -5,13 +5,11 @@
 TEST(http_test, create_response) {
   ServerConfig server_config;
   server_config.root_ = "../html/";
-  http_message_map      request_message;
-  request_message[METHOD] = "GET";
-  request_message[URL] = "/";
-  request_message[VERSION] = "HTTP/1.1";
-  request_message[HOST] = "localhost:5001";
-  request_message[USERAGENT] = "curl/7.79.1";
-  request_message[ACCEPT] = "*/*";
+  HttpMessage      request_message;
+  request_message.method_ = GET;
+  request_message.url_ = "/";
+  request_message.version_ = "HTTP/1.1";
+  request_message.host_ = "localhost";
   std::string expect             = "HTTP/1.1 200 OK\r\n"
                                    "Content-Length: 127\r\n"
                                    "Content-Type: text/html\r\n"
@@ -39,9 +37,9 @@ TEST(http_test, method_get) {
   ServerConfig server_config;
   server_config.root_ = "./tdata/";
   server_config.index_ = "test.txt";
-  http_message_map request_message;
+  HttpMessage request_message;
   http_message_map response_message;
-  request_message[URL] = "/";
+  request_message.url_ = "/";
   response_message     = method_get(server_config, request_message);
   EXPECT_EQ(response_message[STATUS], STATUS_OK);
   EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_OK);
@@ -54,7 +52,7 @@ TEST(http_test, method_get) {
 // テスト側からNOT_FOUNDページの中身について確認するのが難しいのでボディのテスト保留
 TEST(http_test, target_file_not_exist) {
   const ServerConfig server_config;
-  http_message_map request_message;
+  HttpMessage request_message;
   http_message_map response_message;
 
   response_message     = method_get(server_config, request_message);
