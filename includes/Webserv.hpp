@@ -5,8 +5,7 @@
 
 #include "ServerConfig.hpp"
 
-std::vector<ServerConfig>
-     read_server_configuration(const char *config_file_path);
+std::vector<ServerConfig> read_config_file(const char *config_file_path);
 void server_io_multiplexing(const ServerConfig &server_config);
 
 #endif /* INCLUDES_WEBSERV_HPP */

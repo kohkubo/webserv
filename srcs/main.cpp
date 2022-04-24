@@ -22,8 +22,7 @@ static const char *resolve_config_file(int argc, char **argv) {
 
 int main(int argc, char **argv) {
   const char               *config_file_path = resolve_config_file(argc, argv);
-  std::vector<ServerConfig> server_list =
-      read_server_configuration(config_file_path);
+  std::vector<ServerConfig> server_list = read_config_file(config_file_path);
   listen_event(server_list);
   return (0);
 }

@@ -5,8 +5,8 @@
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
 
-TEST(read_config_test, read_server) {
-  std::vector<ServerConfig> server_list = read_server_configuration(SAMPLE_CONF);
+TEST(read_config_file_test, simple_test) {
+  std::vector<ServerConfig> server_list = read_config_file(SAMPLE_CONF);
 
   EXPECT_EQ(server_list[0].listen_address_, "0.0.0.0");
   EXPECT_EQ(server_list[0].listen_port_, "5500");
