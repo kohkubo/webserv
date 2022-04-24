@@ -1,12 +1,13 @@
 #include <iostream>
 #include <stdlib.h>
+#include <vector>
 
 #include "ServerConfig.hpp"
 #include "Webserv.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 
-static const char *get_config_file_path(int argc, char **argv) {
+static const char *resolve_config_file(int argc, char **argv) {
   switch (argc) {
   case 1:
     return (DEFAULT_CONFIG_FILE_PATH);
@@ -19,8 +20,9 @@ static const char *get_config_file_path(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char  *config_file_path = get_config_file_path(argc, argv);
-  ServerConfig server_config    = read_config_file(config_file_path);
-  server_io_multiplexing(server_config);
+  const char               *config_file_path = resolve_config_file(argc, argv);
+  std::vector<ServerConfig> server_list =
+      read_server_configuration(config_file_path);
+  server_io_multiplexing(server_list[0]); // TODO: server_list本体を渡す
   return (0);
 }
