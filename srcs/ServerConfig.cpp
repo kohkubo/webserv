@@ -9,7 +9,8 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
     : logic_error(msg) {}
 
-ServerConfig::ServerConfig() : listen_address_("0.0.0.0"), listen_port_("80"), client_max_body_size_(0) {
+ServerConfig::ServerConfig()
+    : listen_address_("0.0.0.0"), listen_port_("80"), client_max_body_size_(0) {
   root_  = "./html/";
   index_ = "index.html";
 }
