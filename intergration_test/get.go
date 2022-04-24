@@ -29,7 +29,14 @@ func TestGet() {
 			uri:            "http://localhost:5001",
 			addFields:      nil,
 			wantStatusCode: http.StatusOK,
-			wantBody:       FileContents(index_html),
+			wantBody:       FileContents(HELLO_WORLD_PAGE),
+		},
+		{
+			name:           "no_such_file",
+			uri:            "http://localhost:5001/not_such_file",
+			addFields:      nil,
+			wantStatusCode: http.StatusNotFound,
+			wantBody:       FileContents(NOT_FOUND_PAGE),
 		},
 	}
 	fmt.Println("GET test")
