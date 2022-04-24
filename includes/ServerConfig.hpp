@@ -35,6 +35,9 @@ private:
   std::vector<std::string>::iterator
   __parse_root(std::vector<std::string>::iterator pos,
                std::vector<std::string>::iterator end);
+  std::vector<std::string>::iterator
+  __parse_server_name(std::vector<std::string>::iterator pos,
+                      std::vector<std::string>::iterator end);
 };
 
 #endif /* INCLUDES_SERVERCONFIG_HPP */
