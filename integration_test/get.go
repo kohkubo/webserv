@@ -38,12 +38,14 @@ func TestGet() {
 			wantBody:       FileContents(NOT_FOUND_PAGE),
 		},
 	}
-	fmt.Println("GET test")
+	fmt.Print("GET test ")
 	for _, tt := range tests {
 		tt := tt
 		func() {
+			fmt.Println("test start")
 			resp := NewRequest("GET", tt.uri, tt.addFields, nil)
 			defer resp.Body.Close()
+			defer fmt.Println("defer")
 			if resp.StatusCode != tt.wantStatusCode {
 				fmt.Printf("["+tt.name+" status]"+"actual: %v, expect: %v", resp.StatusCode, tt.wantStatusCode)
 			}
@@ -56,4 +58,5 @@ func TestGet() {
 			}
 		}()
 	}
+	fmt.Println("ok")
 }
