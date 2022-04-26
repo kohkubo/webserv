@@ -19,6 +19,7 @@ const (
 	UNKNOWN_ERROR_PAGE         = "../html/unknown_error.html"
 )
 
+// TODO: フィールドの編集ができるのか確認
 func main() {
 	TestGet()
 }
