@@ -8,6 +8,8 @@
 
 typedef std::map<std::string, std::string> http_message_map;
 
+// method
+enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 enum HttpStatusCode {
   OK                    = 200,
   BAD_REQUEST           = 400,
@@ -19,22 +21,43 @@ enum HttpStatusCode {
   NONE                  = 0
 };
 
+struct HttpMessage {
+  HttpMethod     method_;
+  std::string    url_;
+  std::string    path_;
+  std::string    version_;
+  std::string    host_;
+  std::string    status_;
+  std::string    phrase_;
+  std::string    body_;
+  HttpStatusCode status_code_;
+
+  HttpMessage() {
+    method_      = UNKNOWN;
+    status_code_ = NONE;
+    path_        = "";
+  }
+};
+
 /* key */
 // start line
-#define METHOD                 "METHOD"
-#define URL                    "URL"
-#define VERSION                "VERSION"
-#define STATUS                 "STATUS"
-#define PHRASE                 "PHRASE"
+#define METHOD                       "METHOD"
+#define URL                          "URL"
+#define VERSION                      "VERSION"
+#define STATUS                       "STATUS"
+#define PHRASE                       "PHRASE"
+#define PATH                         "PATH"
 // field
-#define HOST                   "Host"
-#define USERAGENT              "User-Agent"
-#define ACCEPT                 "Accept"
-#define CONTENT_LEN            "Content-Length"
-#define CONTENT_TYPE           "Content-Type"
-#define CONNECTION             "Connection"
+#define HOST                         "Host"
+#define USERAGENT                    "User-Agent"
+#define ACCEPT                       "Accept"
+#define CONTENT_LEN                  "Content-Length"
+#define CONTENT_TYPE                 "Content-Type"
+#define CONNECTION                   "Connection"
+// status code
+#define STATUS_CODE                  "status_code"
 // body
-#define BODY                   "BODY"
+#define BODY                         "BODY"
 /* value */
 #define VERSION_HTTP                 "HTTP/1.1"
 #define STATUS_OK                    "200"
@@ -63,17 +86,17 @@ enum HttpStatusCode {
 #define CONNECTION_CLOSE             "close"
 
 /* delimiter */
-#define CR                         "\r"
-#define LF                         "\n"
-#define CRLF                       "\r\n"
-#define SP                         " "
+#define CR                           "\r"
+#define LF                           "\n"
+#define CRLF                         "\r\n"
+#define SP                           " "
 
 void             http(int accfd);
-http_message_map receive_request(int accfd);
+HttpMessage      receive_request(int accfd);
 std::string      create_response(const ServerConfig &server_config,
-                                 http_message_map   &request_message);
+                                 HttpMessage        &request_message);
 
 http_message_map method_get(const ServerConfig &server_config,
-                            http_message_map   &request_message);
+                            HttpMessage        &request_message);
 
 #endif /* INCLUDES_HTTP_HPP */
