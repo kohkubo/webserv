@@ -1,9 +1,8 @@
 # Go parameters
-GOCMD=go
-GOBUILD=$(GOCMD) build
-GOCLEAN=$(GOCMD) clean
-GOTEST=$(GOCMD) test
-GOGET=$(GOCMD) get
+GOBUILD=go build
+GOCLEAN=go clean
+GOTEST=go test
+GOGET=go get
 BINARY_NAME=webtest
 BINARY_UNIX=$(BINARY_NAME)_unix
 
@@ -25,9 +24,3 @@ re: clean all
 .PHONY: run
 run: build
 	./$(BINARY_NAME)
-
-.PHONY: doc
-doc:
-	godoc -http=:6060
-
-#go doc -all converter
