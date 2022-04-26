@@ -4,7 +4,7 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
-BINARY_NAME=integration_test
+BINARY_NAME=webtest
 BINARY_UNIX=$(BINARY_NAME)_unix
 
 # Make rule

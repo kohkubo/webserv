@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 webserv="./webserv"
-testdir="./integration_test"
+testdir="./webtest"
 
 ($webserv > /dev/null 2>&1) &
 webserv_pid=`ps | grep webserv | sed '/grep/d' | awk '{print $1}'`
