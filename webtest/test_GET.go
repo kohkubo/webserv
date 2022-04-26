@@ -38,23 +38,29 @@ func testGET() {
 			wantBody:       FileContents(NOT_FOUND_PAGE),
 		},
 	}
-	fmt.Print("GET test ")
+	fmt.Println("GET test")
 	for _, tt := range tests {
 		tt := tt
 		func() {
+			fmt.Print("[ " + tt.name + " ] ")
+			var errorOccurred bool
 			resp := NewRequest("GET", tt.uri, tt.addFields, nil)
 			defer resp.Body.Close()
 			if resp.StatusCode != tt.wantStatusCode {
-				fmt.Printf("["+tt.name+" status]"+"actual: %v, expect: %v", resp.StatusCode, tt.wantStatusCode)
+				errorOccurred = true
+				fmt.Printf("actual_status: %v, expect_status: %v\n", resp.StatusCode, tt.wantStatusCode)
 			}
 			resposenseBody, err := io.ReadAll(resp.Body)
 			if err != nil {
 				log.Fatalf("fail to get read body: %v", err)
 			}
 			if bytes.Compare(resposenseBody, tt.wantBody) != 0 {
-				fmt.Printf("["+tt.name+" body]"+"actual: %v, expect: %v", resp.StatusCode, tt.wantStatusCode)
+				errorOccurred = true
+				fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tt.wantStatusCode)
+			}
+			if !errorOccurred {
+				fmt.Println(GREEN, "ok", RESET)
 			}
 		}()
 	}
-	fmt.Println("ok")
 }
