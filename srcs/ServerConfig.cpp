@@ -72,6 +72,7 @@ ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
   return pos + 2;
 }
 
+// TODO: parse_rootと同じ処理なのでまとめる?
 std::vector<std::string>::iterator
 ServerConfig::__parse_server_name(std::vector<std::string>::iterator pos,
                                   std::vector<std::string>::iterator end) {
