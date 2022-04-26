@@ -15,7 +15,7 @@ import (
 //  Host: localhost:5001
 //  User-Agent: Go-http-client/1.1
 //  Accept-Encoding: gzip
-func TestGet() {
+func testGET() {
 	tests := []struct {
 		name           string
 		uri            string
