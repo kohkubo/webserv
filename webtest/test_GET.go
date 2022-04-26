@@ -25,14 +25,14 @@ func testGET() {
 	}{
 		{
 			name:           "root",
-			uri:            "http://localhost:5001",
+			uri:            "http://localhost:5500",
 			addFields:      nil,
 			wantStatusCode: http.StatusOK,
 			wantBody:       FileContents(HELLO_WORLD_PAGE),
 		},
 		{
 			name:           "no_such_file",
-			uri:            "http://localhost:5001/not_such_file",
+			uri:            "http://localhost:5500/not_such_file",
 			addFields:      nil,
 			wantStatusCode: http.StatusNotFound,
 			wantBody:       FileContents(NOT_FOUND_PAGE),
