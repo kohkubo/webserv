@@ -76,10 +76,8 @@ std::vector<std::string>::iterator
 ServerConfig::__parse_server_name(std::vector<std::string>::iterator pos,
                                   std::vector<std::string>::iterator end) {
   pos++;
-  for (; pos != end && *pos != ";"; pos++) {
-    server_name_.push_back(*pos);
-  }
-  if (pos == end || *pos != ";")
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-  return pos + 1;
+  server_name_ = *pos;
+  return pos + 2;
 }

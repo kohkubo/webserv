@@ -153,6 +153,17 @@ TEST(server_config_test, server_name_except) {
   }
   {
     std::string              str = "server {\n"
+                                   "\n"
+                                   "server_name example.com example.net;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", " ");
+    ServerConfig             conf;
+    EXPECT_THROW(conf.parse(l.begin(), l.end()),
+                 ServerConfig::UnexpectedTokenException);
+  }
+  {
+    std::string              str = "server {\n"
                                    "server_name example.com;\n";
 
     std::vector<std::string> l   = tokenize(str, SPACES "{};", " \n");
@@ -171,17 +182,16 @@ TEST(server_config_test, parse_server_name) {
     std::vector<std::string> l   = tokenize(str, SPACES "{};", SPACES);
     ServerConfig             conf;
     conf.parse(l.begin(), l.end());
-    EXPECT_EQ(conf.server_name_[0], "example.com");
+    EXPECT_EQ(conf.server_name_, "example.com");
   }
   {
     std::string              str = "server {\n"
-                                   "server_name example.com example.net;\n"
+                                   "server_name    example.com    ;\n"
                                    "}\n";
 
     std::vector<std::string> l   = tokenize(str, SPACES "{};", SPACES);
     ServerConfig             conf;
     conf.parse(l.begin(), l.end());
-    EXPECT_EQ(conf.server_name_[0], "example.com");
-    EXPECT_EQ(conf.server_name_[1], "example.net");
+    EXPECT_EQ(conf.server_name_, "example.com");
   }
 }

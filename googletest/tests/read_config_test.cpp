@@ -10,8 +10,7 @@ TEST(read_config_test, simple_test) {
 
   EXPECT_EQ(server_list[0].listen_address_, "0.0.0.0");
   EXPECT_EQ(server_list[0].listen_port_, "5500");
-  EXPECT_EQ(server_list[0].server_name_[0], "example.com");
-  EXPECT_EQ(server_list[0].server_name_[1], "example.net");
+  EXPECT_EQ(server_list[0].server_name_, "example.com");
 
   EXPECT_EQ(server_list[1].listen_address_, "0.0.0.0");
   EXPECT_EQ(server_list[1].listen_port_, "5500");
@@ -19,5 +18,5 @@ TEST(read_config_test, simple_test) {
 
   EXPECT_EQ(server_list[2].listen_address_, "0.0.0.0");
   EXPECT_EQ(server_list[2].listen_port_, "5001");
-  EXPECT_EQ(server_list[0].server_name_[0], "example.com");
+  EXPECT_EQ(server_list[2].server_name_, "example.net");
 }
