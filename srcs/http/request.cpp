@@ -67,6 +67,7 @@ static std::string read_connected_fd(int accfd) {
   std::string recv_str      = "";
   ssize_t     read_size     = 0;
 
+  std::cout << "start recieving request....." << std::endl;
   do {
     read_size = recv(accfd, buf, sizeof(buf) - 1, 0);
     if (read_size == -1) {

@@ -35,6 +35,7 @@ void server_io_multiplexing(const ServerConfig &server_config) {
       }
       usleep(1000);
       http(accfd);
+      std::cout << "back from http" << std::endl;
     }
   }
   return;
