@@ -15,6 +15,7 @@
 !Makefile
 test
 !pre-push
+!client.c
 memo.md
 man
 
