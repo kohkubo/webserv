@@ -18,6 +18,8 @@ const (
 	UNKNOWN_ERROR_PAGE         = "../html/unknown_error.html"
 )
 
+// NewRequest: 引数で渡された情報を元にリクエストを作成します.
+// 現状詰め込み過ぎも気になって使うかわかりません.
 func NewRequest(method string, uri string, addFields map[string]string, body io.Reader) *http.Response {
 	req, err := http.NewRequest("GET", uri, body)
 	if err != nil {
@@ -34,6 +36,7 @@ func NewRequest(method string, uri string, addFields map[string]string, body io.
 	return resp
 }
 
+// FileContents: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
 func FileContents(fileName string) []byte {
 	file, err := os.Open(fileName)
 	if err != nil {
