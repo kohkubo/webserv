@@ -12,7 +12,7 @@
 !*.go
 !*.mod
 !*.conf
-!*.drawio
+!*.drawio.svg
 !.clang-format
 !.clang-tidy
 !Makefile
