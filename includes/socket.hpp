@@ -11,7 +11,6 @@
 #include "ServerConfig.hpp"
 #include "util.hpp"
 
-int              open_new_socket(const ServerConfig &config);
-struct addrinfo *getaddrinfo_via_serv(const ServerConfig &conf);
+int open_new_socket(const ServerConfig &config);
 
 #endif /* INCLUDES_SOCKET_HPP */

@@ -64,25 +64,9 @@ static void listen_passive_socket(int listen_fd) {
 }
 
 int open_new_socket(const ServerConfig &config) {
-  struct addrinfo *info      = getaddrinfo_via_serv(config);
-  int              listen_fd = get_listen_fd(info);
-  bind_socket(listen_fd, info);
+  int listen_fd = get_listen_fd(config.info_);
+  bind_socket(listen_fd, config.info_);
   listen_passive_socket(listen_fd);
-  freeaddrinfo(info);
+  freeaddrinfo(config.info_);
   return listen_fd;
-}
-
-struct addrinfo *getaddrinfo_via_serv(const ServerConfig &conf) {
-  struct addrinfo *info;
-  struct addrinfo  hints;
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family   = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  int error         = getaddrinfo(conf.listen_address_.c_str(),
-                                  conf.listen_port_.c_str(), &hints, &info);
-  if (error) {
-    std::cerr << "getaddrinfo: " << gai_strerror(error) << std::endl;
-    exit(EXIT_FAILURE);
-  }
-  return info;
 }

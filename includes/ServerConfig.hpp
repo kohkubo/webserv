@@ -2,8 +2,11 @@
 #define INCLUDES_SERVERCONFIG_HPP
 
 #include <map>
+#include <netdb.h>
 #include <stdexcept>
 #include <string>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <vector>
 
 class ServerConfig {
@@ -14,6 +17,7 @@ public:
   std::vector<std::string> server_name_;
   std::string              root_;
   std::string              index_;
+  struct addrinfo         *info_;
 
   // error_page;
 public:
@@ -34,8 +38,9 @@ private:
   __parse_listen(std::vector<std::string>::iterator pos,
                  std::vector<std::string>::iterator end);
   std::vector<std::string>::iterator
-  __parse_root(std::vector<std::string>::iterator pos,
-               std::vector<std::string>::iterator end);
+       __parse_root(std::vector<std::string>::iterator pos,
+                    std::vector<std::string>::iterator end);
+  void __set_getaddrinfo();
 };
 
 typedef std::vector<std::vector<ServerConfig> >   server_group_type;
