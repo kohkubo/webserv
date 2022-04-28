@@ -1,8 +1,8 @@
 #ifndef INCLUDES_PROCESS_HTTP_HPP
 #define INCLUDES_PROCESS_HTTP_HPP
 
-#include "ServerConfig.hpp"
 #include "Http.hpp"
+#include "ServerConfig.hpp"
 #include <map>
 #include <string>
 

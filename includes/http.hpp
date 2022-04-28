@@ -8,29 +8,29 @@
 typedef std::map<std::string, std::string> http_message_map;
 
 class Http {
-  public:
-    enum Method { GET, POST, DELETE, UNKNOWN };
-    enum StatusCode {
-      OK                    = 200,
-      BAD_REQUEST           = 400,
-      FORBIDDEN             = 403,
-      NOT_FOUND             = 404,
-      INTERNAL_SERVER_ERROR = 500,
-      NOT_IMPLEMENTED       = 501,
-      UNKNOWN_ERROR         = 520,
-      NONE                  = 0
-    };
+public:
+  enum Method { GET, POST, DELETE, UNKNOWN };
+  enum StatusCode {
+    OK                    = 200,
+    BAD_REQUEST           = 400,
+    FORBIDDEN             = 403,
+    NOT_FOUND             = 404,
+    INTERNAL_SERVER_ERROR = 500,
+    NOT_IMPLEMENTED       = 501,
+    UNKNOWN_ERROR         = 520,
+    NONE                  = 0
+  };
 };
 
 struct HttpMessage {
   Http::Method     method_;
-  std::string    url_;
-  std::string    path_;
-  std::string    version_;
-  std::string    host_;
-  std::string    status_;
-  std::string    phrase_;
-  std::string    body_;
+  std::string      url_;
+  std::string      path_;
+  std::string      version_;
+  std::string      host_;
+  std::string      status_;
+  std::string      phrase_;
+  std::string      body_;
   Http::StatusCode status_code_;
 
   HttpMessage() {
