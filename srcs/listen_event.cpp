@@ -69,7 +69,7 @@ void listen_event(const server_group_type &server_group) {
           }
           // FIXME: don't use sleep
           usleep(2000);
-          http(accfd);
+          process_http(accfd);
         }
       }
     }
