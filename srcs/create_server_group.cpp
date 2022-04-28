@@ -4,13 +4,16 @@
 
 static bool is_same_socket(const ServerConfig &serv_x,
                            const ServerConfig &serv_y) {
-  bool                res = false;
-  struct sockaddr_in *x =
-      reinterpret_cast<sockaddr_in *>(serv_x.info_->ai_addr);
-  struct sockaddr_in *y =
-      reinterpret_cast<sockaddr_in *>(serv_y.info_->ai_addr);
-  res = (x->sin_addr.s_addr == y->sin_addr.s_addr) &&
+  bool                res    = false;
+  struct addrinfo    *x_info = getaddrinfo_via_serv(serv_x);
+  struct addrinfo    *y_info = getaddrinfo_via_serv(serv_y);
+  struct sockaddr_in *x      = reinterpret_cast<sockaddr_in *>(x_info->ai_addr);
+  struct sockaddr_in *y      = reinterpret_cast<sockaddr_in *>(y_info->ai_addr);
+
+  res                        = (x->sin_addr.s_addr == y->sin_addr.s_addr) &&
         (x->sin_port == y->sin_port);
+  freeaddrinfo(x_info);
+  freeaddrinfo(y_info);
   return res;
 }
 

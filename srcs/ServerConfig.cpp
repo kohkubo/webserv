@@ -1,7 +1,4 @@
-#include <cstdlib>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
+#include <algorithm>
 
 #include "ServerConfig.hpp"
 #include "util.hpp"
@@ -16,10 +13,7 @@ ServerConfig::ServerConfig()
     : listen_address_("0.0.0.0"), listen_port_("80"), client_max_body_size_(0) {
   root_  = "./html/";
   index_ = "index.html";
-  info_  = NULL;
 }
-
-ServerConfig::~ServerConfig() { freeaddrinfo(info_); }
 
 std::vector<std::string>::iterator
 ServerConfig::parse(std::vector<std::string>::iterator pos,
@@ -62,7 +56,7 @@ ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
     }
     it++;
   }
-  __set_getaddrinfo();
+
   return pos + 2;
 }
 
@@ -74,18 +68,4 @@ ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
     throw UnexpectedTokenException("could not detect directive value.");
   root_ = *pos;
   return pos + 2;
-}
-
-void ServerConfig::__set_getaddrinfo() {
-  struct addrinfo hints;
-
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family   = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  int error = getaddrinfo(listen_address_.c_str(), listen_port_.c_str(), &hints,
-                          &info_);
-  if (error) {
-    std::cerr << "getaddrinfo: " << gai_strerror(error) << std::endl;
-    exit(EXIT_FAILURE);
-  }
 }
