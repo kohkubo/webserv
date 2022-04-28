@@ -1,4 +1,4 @@
-#include <algorithm>
+#include <cstdlib>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -17,6 +17,8 @@ ServerConfig::ServerConfig()
   root_  = "./html/";
   index_ = "index.html";
 }
+
+ServerConfig::~ServerConfig() { freeaddrinfo(info_); }
 
 std::vector<std::string>::iterator
 ServerConfig::parse(std::vector<std::string>::iterator pos,
@@ -57,10 +59,9 @@ ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
     } else if (is_ip(*it) || *it != ":") {
       listen_address_ = *it;
     }
-    __set_getaddrinfo();
     it++;
   }
-
+  __set_getaddrinfo();
   return pos + 2;
 }
 

@@ -67,6 +67,5 @@ int open_new_socket(const ServerConfig &config) {
   int listen_fd = get_listen_fd(config.info_);
   bind_socket(listen_fd, config.info_);
   listen_passive_socket(listen_fd);
-  freeaddrinfo(config.info_);
   return listen_fd;
 }

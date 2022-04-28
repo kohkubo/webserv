@@ -2,11 +2,8 @@
 #define INCLUDES_SERVERCONFIG_HPP
 
 #include <map>
-#include <netdb.h>
 #include <stdexcept>
 #include <string>
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <vector>
 
 class ServerConfig {
@@ -28,7 +25,7 @@ public:
 
 public:
   ServerConfig();
-  ~ServerConfig(){};
+  ~ServerConfig();
   std::vector<std::string>::iterator
   parse(std::vector<std::string>::iterator pos,
         std::vector<std::string>::iterator end);
