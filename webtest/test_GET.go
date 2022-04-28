@@ -15,6 +15,17 @@ import (
 //  Host: localhost:5001
 //  User-Agent: Go-http-client/1.1
 //  Accept-Encoding: gzip
+
+// コメントを入れる
+// 実際の例を書く(フィールドに追加するなど)
+// queryできるように
+// ヘッダの情報が書き換えられるか検証
+
+const (
+	protocol = "http"
+	host     = "localhost"
+)
+
 func testGET() {
 	tests := []struct {
 		name           string
