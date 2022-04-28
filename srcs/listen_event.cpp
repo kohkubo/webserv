@@ -1,5 +1,6 @@
 #include "event.hpp"
-#include "http.hpp"
+#include "Http.hpp"
+#include "process_http.hpp"
 #include "socket.hpp"
 #include "util.hpp"
 #include <sys/socket.h>

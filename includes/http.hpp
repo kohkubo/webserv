@@ -7,21 +7,23 @@
 
 typedef std::map<std::string, std::string> http_message_map;
 
-// method
-enum HttpMethod { GET, POST, DELETE, UNKNOWN };
-enum HttpStatusCode {
-  OK                    = 200,
-  BAD_REQUEST           = 400,
-  FORBIDDEN             = 403,
-  NOT_FOUND             = 404,
-  INTERNAL_SERVER_ERROR = 500,
-  NOT_IMPLEMENTED       = 501,
-  UNKNOWN_ERROR         = 520,
-  NONE                  = 0
+class Http {
+  public:
+    enum Method { GET, POST, DELETE, UNKNOWN };
+    enum StatusCode {
+      OK                    = 200,
+      BAD_REQUEST           = 400,
+      FORBIDDEN             = 403,
+      NOT_FOUND             = 404,
+      INTERNAL_SERVER_ERROR = 500,
+      NOT_IMPLEMENTED       = 501,
+      UNKNOWN_ERROR         = 520,
+      NONE                  = 0
+    };
 };
 
 struct HttpMessage {
-  HttpMethod     method_;
+  Http::Method     method_;
   std::string    url_;
   std::string    path_;
   std::string    version_;
@@ -29,11 +31,11 @@ struct HttpMessage {
   std::string    status_;
   std::string    phrase_;
   std::string    body_;
-  HttpStatusCode status_code_;
+  Http::StatusCode status_code_;
 
   HttpMessage() {
-    method_      = UNKNOWN;
-    status_code_ = NONE;
+    method_      = Http::UNKNOWN;
+    status_code_ = Http::NONE;
     path_        = "";
   }
 };
@@ -89,13 +91,5 @@ struct HttpMessage {
 #define LF                           "\n"
 #define CRLF                         "\r\n"
 #define SP                           " "
-
-void             process_http(int accfd);
-HttpMessage      receive_request(int accfd);
-std::string      create_response(const ServerConfig &server_config,
-                                 HttpMessage        &request_message);
-
-http_message_map method_get(const ServerConfig &server_config,
-                            HttpMessage        &request_message);
 
 #endif /* INCLUDES_HTTP_HPP */

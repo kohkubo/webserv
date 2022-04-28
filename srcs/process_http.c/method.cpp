@@ -1,20 +1,20 @@
 #include "ServerConfig.hpp"
-#include "http.hpp"
+#include "Http.hpp"
 #include "util.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <string>
 #include <unistd.h>
 
-static HttpStatusCode check_url(const char *target_url) {
+static Http::StatusCode check_url(const char *target_url) {
   if (is_file_exists(target_url)) {
     if (access(target_url, R_OK) == 0) {
-      return OK;
+      return Http::OK;
     } else {
-      return FORBIDDEN; // TODO: Permission error が 403なのか確かめてない
+      return Http::FORBIDDEN; // TODO: Permission error が 403なのか確かめてない
     }
   }
-  return NOT_FOUND;
+  return Http::NOT_FOUND;
 }
 
 static void set_response_body(http_message_map &response_message,
@@ -42,16 +42,16 @@ http_message_map method_get(const ServerConfig &server_config,
   std::string target_url = resolve_url(server_config, request_message.url_);
   http_message_map response_message;
   switch (check_url(target_url.c_str())) {
-  case OK:
+  case Http::OK:
     response_message[STATUS] = STATUS_OK;
     response_message[PHRASE] = PHRASE_STATUS_OK;
     break;
-  case FORBIDDEN:
+  case Http::FORBIDDEN:
     response_message[STATUS] = STATUS_FORBIDDEN;
     response_message[PHRASE] = PHRASE_STATUS_FORBIDDEN;
     target_url               = FORBIDDEN_PAGE;
     break;
-  case NOT_FOUND:
+  case Http::NOT_FOUND:
     response_message[STATUS] = STATUS_NOTFOUND;
     response_message[PHRASE] = PHRASE_STATUS_NOTFOUND;
     target_url               = NOT_FOUND_PAGE;

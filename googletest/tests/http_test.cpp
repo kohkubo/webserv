@@ -1,4 +1,4 @@
-#include "http.hpp"
+#include "Http.hpp"
 #include "ServerConfig.hpp"
 #include "gtest/gtest.h"
 
@@ -6,7 +6,7 @@ TEST(http_test, create_response) {
   ServerConfig server_config;
   server_config.root_ = "../html/";
   HttpMessage      request_message;
-  request_message.method_ = GET;
+  request_message.method_ = Http::GET;
   request_message.url_ = "/";
   request_message.version_ = "HTTP/1.1";
   request_message.host_ = "localhost";

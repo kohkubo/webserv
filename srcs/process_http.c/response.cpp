@@ -1,5 +1,6 @@
 #include "ServerConfig.hpp"
-#include "http.hpp"
+#include "Http.hpp"
+#include "process_http.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
@@ -63,12 +64,12 @@ std::string create_response(const ServerConfig &server_config,
   // }
   http_message_map response_message;
   switch (request_message.method_) {
-  case GET:
+  case Http::GET:
     response_message = method_get(server_config, request_message);
     break;
-  // case POST:
+  // case Http::POST:
   //   break;
-  // case DELETE:
+  // case Http::DELETE:
   //   break;
   default:
     break;

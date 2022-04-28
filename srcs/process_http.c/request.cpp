@@ -1,5 +1,5 @@
 #include "ServerConfig.hpp"
-#include "http.hpp"
+#include "Http.hpp"
 #include "util.hpp"
 #include <algorithm>
 #include <string>
@@ -33,17 +33,17 @@ static std::string parse_request_host(const std::string &request_line_host) {
   return request_line_host.substr(0, pos);
 }
 
-static HttpMethod parse_request_method(const std::string &method) {
+static Http::Method parse_request_method(const std::string &method) {
   if (method == "GET") {
-    return GET;
+    return Http::GET;
   }
   if (method == "POST") {
-    return POST;
+    return Http::POST;
   }
   if (method == "DELETE") {
-    return DELETE;
+    return Http::DELETE;
   }
-  return UNKNOWN;
+  return Http::UNKNOWN;
 }
 
 /*
@@ -96,7 +96,7 @@ HttpMessage receive_request(int accfd) {
   if (is_request_error(request_tokens)) {
     std::cout << "request error." << std::endl;
     HttpMessage request_message;
-    request_message.status_code_ = BAD_REQUEST;
+    request_message.status_code_ = Http::BAD_REQUEST;
     return request_message;
   }
   return parse_request_message(request_tokens);

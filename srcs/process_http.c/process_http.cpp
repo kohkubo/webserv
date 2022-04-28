@@ -1,4 +1,5 @@
-#include "http.hpp"
+#include "Http.hpp"
+#include "process_http.hpp"
 #include "ServerConfig.hpp"
 #include "util.hpp"
 #include <string>
