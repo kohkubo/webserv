@@ -59,7 +59,8 @@ func testGET() {
 			fmt.Print("[ " + tt.name + " ] ")
 
 			var wasErr bool
-			resp := Request("GET", protocol+"://"+host+":"+tt.port+tt.url, tt.addFields, nil)
+			uri := protocol + "://" + host + ":" + tt.port + tt.url
+			resp := Request("GET", uri, tt.addFields, nil)
 			defer resp.Body.Close()
 
 			// ステータスコードの確認
