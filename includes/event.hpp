@@ -4,8 +4,6 @@
 #include "ServerConfig.hpp"
 
 #include <map>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 void listen_event(const server_group_type &server_group);
 
