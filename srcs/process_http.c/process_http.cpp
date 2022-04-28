@@ -17,7 +17,7 @@ void send_response(int accfd, const std::string &message) {
 /*
  * リクエストを受けて, レスポンスを返すまでの処理
  */
-void http(int accfd) {
+void process_http(int accfd) {
   const ServerConfig server_config;
   HttpMessage        request_message = receive_request(accfd);
   std::string        response_message =
