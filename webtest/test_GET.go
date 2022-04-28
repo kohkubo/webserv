@@ -58,7 +58,7 @@ func testGET() {
 			url:  "/",
 			addFields: map[string]string{
 				CONTENT_TYPE:  "txt/html",
-				CONTENT_LEN:   "1", // bodyの大きさによって勝手に書き変わっているぽい
+				CONTENT_LEN:   "1", // これはbodyの大きさによって勝手に書き変わっているぽい
 				AUTHORIZATION: "aaa",
 			},
 			wantStatusCode: http.StatusOK,
