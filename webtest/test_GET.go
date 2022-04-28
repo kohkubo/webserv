@@ -8,9 +8,6 @@ import (
 	"net/http"
 )
 
-// queryできるように
-// 平行処理入れるか
-
 const (
 	protocol = "http"
 	host     = "localhost"
@@ -22,49 +19,54 @@ func testGET() {
 		name           string
 		port           string
 		url            string
-		addFields      map[string]string
+		addQuery       map[string]string // 追加パラメータ: 'URL?foo=bar'
+		addFields      map[string]string // 追加フィールド: 'Content-Type: txt/html'
 		wantStatusCode int
 		wantBody       []byte
 	}{
 		{
-			name:           "root",
+			name:           "root 5500",
 			port:           "5500",
 			url:            "/",
-			addFields:      nil,
 			wantStatusCode: http.StatusOK,
 			wantBody:       FileContents(HELLO_WORLD_PAGE),
 			//  Request:
-			//    GET /no_such_file HTTP/1.1
+			//    GET / HTTP/1.1
 			//    Host: localhost:5500
 			//    User-Agent: Go-http-client/1.1
 			//    Accept-Encoding: gzip
+		},
+		{
+			name:           "root 5001",
+			port:           "5001",
+			url:            "/",
+			wantStatusCode: http.StatusOK,
+			wantBody:       FileContents(HELLO_WORLD_PAGE),
 		},
 		{
 			name:           "no_such_file",
 			port:           "5500",
 			url:            "/no_such_file",
-			addFields:      nil,
+			wantStatusCode: http.StatusNotFound,
+			wantBody:       FileContents(NOT_FOUND_PAGE),
+		},
+		{
+			name: "add info",
+			port: "5500",
+			url:  "/",
+			addQuery: map[string]string{
+				"foo": "bar",
+				"ben": "johnson",
+			},
+			addFields: map[string]string{
+				CONTENT_TYPE:  "txt/html",
+				CONTENT_LEN:   "1", // 反映されなかった(?)
+				AUTHORIZATION: "aaa",
+			},
 			wantStatusCode: http.StatusNotFound,
 			wantBody:       FileContents(NOT_FOUND_PAGE),
 			//  Request:
-			//    GET /no_such_file HTTP/1.1
-			//    Host: localhost:5500
-			//    User-Agent: Go-http-client/1.1
-			//    Accept-Encoding: gzip
-		},
-		{
-			name: "add field",
-			port: "5500",
-			url:  "/",
-			addFields: map[string]string{
-				CONTENT_TYPE:  "txt/html",
-				CONTENT_LEN:   "1", // これはbodyの大きさによって勝手に書き変わっているぽい
-				AUTHORIZATION: "aaa",
-			},
-			wantStatusCode: http.StatusOK,
-			wantBody:       FileContents(HELLO_WORLD_PAGE),
-			//  Request:
-			//    GET / HTTP/1.1
+			//    GET /?ben=johnson&foo=bar HTTP/1.1
 			//    Host: localhost:5500
 			//    User-Agent: Go-http-client/1.1
 			//    Authorization: aaa
@@ -81,7 +83,7 @@ func testGET() {
 			var wasErr bool
 
 			// リクエスト, レスポンスの受け取り
-			resp := Request(http.MethodGet, tt.port, tt.url, tt.addFields, nil)
+			resp := Request(http.MethodGet, tt.port, tt.url, tt.addQuery, tt.addFields, nil)
 			defer resp.Body.Close()
 
 			// ステータスコードの確認
