@@ -1,8 +1,9 @@
 #include "Http.hpp"
+#include "process_http.hpp"
 #include "ServerConfig.hpp"
 #include "gtest/gtest.h"
 
-TEST(http_test, create_response) {
+TEST(process_http_test, create_response) {
   ServerConfig server_config;
   server_config.root_ = "../html/";
   HttpMessage      request_message;
@@ -33,7 +34,7 @@ TEST(http_test, create_response) {
 #define NO_PERMISSION_FILE "../googletest/tdata/no_permission.txt"
 #define NO_SUCH_FILE       "no such file"
 
-TEST(http_test, method_get) {
+TEST(process_http_test, method_get) {
   ServerConfig server_config;
   server_config.root_ = "./tdata/";
   server_config.index_ = "test.txt";
@@ -50,7 +51,7 @@ TEST(http_test, method_get) {
 
 // 今はget()の中でNOT_FOUNDページを挿入するようになっているため
 // テスト側からNOT_FOUNDページの中身について確認するのが難しいのでボディのテスト保留
-TEST(http_test, target_file_not_exist) {
+TEST(process_http_test, target_file_not_exist) {
   const ServerConfig server_config;
   HttpMessage request_message;
   http_message_map response_message;
