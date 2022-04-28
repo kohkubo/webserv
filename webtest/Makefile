@@ -23,4 +23,4 @@ re: clean all
 
 .PHONY: run
 run: build
-	./webtest.sh
+	zsh ./webtest.sh
