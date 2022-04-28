@@ -90,7 +90,7 @@ struct HttpMessage {
 #define CRLF                         "\r\n"
 #define SP                           " "
 
-void             http(int accfd);
+void             http_handler(int accfd);
 HttpMessage      receive_request(int accfd);
 std::string      create_response(const ServerConfig &server_config,
                                  HttpMessage        &request_message);
