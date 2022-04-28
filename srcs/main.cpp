@@ -1,10 +1,9 @@
-#include <iostream>
-#include <stdlib.h>
-#include <vector>
-
 #include "ServerConfig.hpp"
 #include "Webserv.hpp"
 #include "event.hpp"
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 

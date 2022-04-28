@@ -1,5 +1,3 @@
-#include <algorithm>
-
 #include "ServerConfig.hpp"
 #include "util.hpp"
 

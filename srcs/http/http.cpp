@@ -1,10 +1,9 @@
+#include "http.hpp"
+#include "ServerConfig.hpp"
+#include "util.hpp"
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
-
-#include "ServerConfig.hpp"
-#include "http.hpp"
-#include "util.hpp"
 
 /*
  * メッセージ書き込み
