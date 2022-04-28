@@ -12,6 +12,9 @@ deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
 # == path of googletest dir ==
 gtestdir := googletest
 
+# == path of webtest dir ==
+wtestdir := webtest
+
 .PHONY: all
 all: $(NAME)
 
@@ -24,6 +27,7 @@ $(objsdir)/%.o: $(srcsdir)/%.cpp
 
 .PHONY: test
 test:
+	$(MAKE) -C $(wtestdir) run
 	$(MAKE) -C $(gtestdir) run
 
 .PHONY: cav
@@ -51,6 +55,10 @@ setup_env:
 .PHONY: prepush
 prepush:
 	zsh .github/pre-push
+
+.PHONY: webtest
+webtest:
+	$(MAKE) -C $(wtestdir) run
 
 # 改修予定
 gbench	=	./test/benchmark

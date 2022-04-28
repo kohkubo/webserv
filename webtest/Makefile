@@ -23,4 +23,4 @@ re: clean all
 
 .PHONY: run
 run: build
-	./$(BINARY_NAME)
+	./webtest.sh

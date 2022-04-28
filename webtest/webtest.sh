@@ -1,10 +1,7 @@
 #!/bin/zsh
 
-webserv="./webserv"
-testdir="./webtest"
-
 # バックグラウンドでwebserv実行(出力が邪魔するので/dev/nullへ)
-($webserv > /dev/null 2>&1) &
+(cd ../ && ./webserv > /dev/null 2>&1) &
 
 # webservのプロセスIDを取得
 # ps | grep webserv で取得できるのは以下２つあるので, sedとか使ってます.
@@ -12,8 +9,8 @@ testdir="./webtest"
 #  2. webservをgrepするプロセス
 webserv_pid=`ps | grep webserv | sed '/grep/d' | awk '{print $1}'`
 
-# webtestディレクトリ内のgoのテストを走らせる
-make run -C $testdir
+# goのテストを走らせる
+./webtest
 
 # webservを終了させる
 kill $webserv_pid
