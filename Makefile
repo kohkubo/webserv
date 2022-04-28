@@ -27,12 +27,15 @@ $(objsdir)/%.o: $(srcsdir)/%.cpp
 
 .PHONY: test
 test:
-	$(MAKE) -C $(wtestdir) run
 	$(MAKE) -C $(gtestdir) run
 
 .PHONY: cav
 cav: $(objs)
 	$(MAKE) -C $(gtestdir) cav
+
+.PHONY: wtest
+wtest:
+	$(MAKE) -C $(wtestdir) run
 
 .PHONY: clean
 clean:
@@ -55,10 +58,6 @@ setup_env:
 .PHONY: prepush
 prepush:
 	zsh .github/pre-push
-
-.PHONY: webtest
-webtest:
-	$(MAKE) -C $(wtestdir) run
 
 # 改修予定
 gbench	=	./test/benchmark
