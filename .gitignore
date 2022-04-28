@@ -9,6 +9,7 @@
 !*.yml
 !*.html
 !*.txt
+!*.png
 !*.go
 !*.mod
 !*.conf
