@@ -39,14 +39,24 @@ const (
 )
 
 // Request: 引数で渡された情報を元にリクエストを作成します.
-func Request(method string, port string, url string, addFields map[string]string, body io.Reader) *http.Response {
+func Request(method, port, url string, addQuery, addFields map[string]string, body io.Reader) *http.Response {
 	req, err := http.NewRequest(method, PreURI+port+url, body)
 	if err != nil {
 		log.Fatalf("fail to send request: %v", err)
 	}
+
+	// URLパラメータ追加
+	q := req.URL.Query()
+	for key, value := range addQuery {
+		q.Add(key, value)
+	}
+	req.URL.RawQuery = q.Encode()
+
+	// ヘッダーフィールド追加
 	for key, value := range addFields {
 		req.Header.Add(key, value)
 	}
+
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
