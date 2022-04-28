@@ -59,8 +59,9 @@ func testGET() {
 		tt := tt
 		func() {
 			fmt.Print("[ " + tt.name + " ] ")
-
 			var wasErr bool
+
+			// リクエスト, レスポンスの受け取り
 			resp := Request("GET", tt.port, tt.url, tt.addFields, nil)
 			defer resp.Body.Close()
 
