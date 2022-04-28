@@ -30,7 +30,7 @@ func testGET() {
 			url:            "/",
 			wantStatusCode: http.StatusOK,
 			wantBody:       FileContents(HELLO_WORLD_PAGE),
-			//  Request:
+			//  Request(3,4行目はデフォルトで設定されたもの):
 			//    GET / HTTP/1.1
 			//    Host: localhost:5500
 			//    User-Agent: Go-http-client/1.1
