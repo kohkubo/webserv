@@ -8,16 +8,6 @@ import (
 	"net/http"
 )
 
-// デフォルトで作成されるリクエスト
-// リクエスト: GET http://localhost:5001
-// 中身:
-//  GET / HTTP/1.1
-//  Host: localhost:5001
-//  User-Agent: Go-http-client/1.1
-//  Accept-Encoding: gzip
-
-// コメントを入れる
-// 実際の例を書く(フィールドに追加するなど)
 // queryできるように
 // 平行処理入れるか
 
@@ -43,14 +33,43 @@ func testGET() {
 			addFields:      nil,
 			wantStatusCode: http.StatusOK,
 			wantBody:       FileContents(HELLO_WORLD_PAGE),
+			//  Request:
+			//    GET /no_such_file HTTP/1.1
+			//    Host: localhost:5500
+			//    User-Agent: Go-http-client/1.1
+			//    Accept-Encoding: gzip
 		},
 		{
 			name:           "no_such_file",
 			port:           "5500",
-			url:            "/not_such_file",
+			url:            "/no_such_file",
 			addFields:      nil,
 			wantStatusCode: http.StatusNotFound,
 			wantBody:       FileContents(NOT_FOUND_PAGE),
+			//  Request:
+			//    GET /no_such_file HTTP/1.1
+			//    Host: localhost:5500
+			//    User-Agent: Go-http-client/1.1
+			//    Accept-Encoding: gzip
+		},
+		{
+			name: "root",
+			port: "5500",
+			url:  "/",
+			addFields: map[string]string{
+				CONTENT_TYPE:  "txt/html",
+				CONTENT_LEN:   "1", // bodyの大きさによって勝手に書き変わっているぽい
+				AUTHORIZATION: "aaa",
+			},
+			wantStatusCode: http.StatusOK,
+			wantBody:       FileContents(HELLO_WORLD_PAGE),
+			//  Request:
+			//    GET / HTTP/1.1
+			//    Host: localhost:5500
+			//    User-Agent: Go-http-client/1.1
+			//    Authorization: aaa
+			//    Content-Type: txt/html
+			//    Accept-Encoding: gzip
 		},
 	}
 	// テスト実行
@@ -62,7 +81,7 @@ func testGET() {
 			var wasErr bool
 
 			// リクエスト, レスポンスの受け取り
-			resp := Request("GET", tt.port, tt.url, tt.addFields, nil)
+			resp := Request(http.MethodGet, tt.port, tt.url, tt.addFields, nil)
 			defer resp.Body.Close()
 
 			// ステータスコードの確認

@@ -25,12 +25,22 @@ const (
 )
 
 const (
-	preURI = "http://localhost:"
+	HOST          = "Host"
+	USERAGENT     = "User-Agent"
+	ACCEPT        = "Accept"
+	CONTENT_LEN   = "Content-Length"
+	CONTENT_TYPE  = "Content-Type"
+	CONNECTION    = "Connection"
+	AUTHORIZATION = "Authorization"
+)
+
+const (
+	PreURI = "http://localhost:"
 )
 
 // Request: 引数で渡された情報を元にリクエストを作成します.
 func Request(method string, port string, url string, addFields map[string]string, body io.Reader) *http.Response {
-	req, err := http.NewRequest(method, preURI+port+url, body)
+	req, err := http.NewRequest(method, PreURI+port+url, body)
 	if err != nil {
 		log.Fatalf("fail to send request: %v", err)
 	}
