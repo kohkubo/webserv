@@ -1,4 +1,5 @@
 BasedOnStyle: llvm
+Standard: Cpp03
 AlignAfterOpenBracket: Align
 # AlignArrayOfStructures: Right
 AlwaysBreakTemplateDeclarations: Yes

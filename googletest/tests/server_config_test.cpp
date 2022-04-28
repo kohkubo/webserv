@@ -1,9 +1,11 @@
 #include "gtest/gtest.h"
 
 #include "ServerConfig.hpp"
+#include "Webserv.hpp"
 #include "util.hpp"
 
-#define SPACES "\v\r\f\t\n "
+#define SAMPLE_CONF "../googletest/tdata/sample.conf"
+#define SPACES      "\v\r\f\t\n "
 
 TEST(server_config_test, server_exception) {
   {
@@ -194,4 +196,18 @@ TEST(server_config_test, parse_server_name) {
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.server_name_, "example.com");
   }
+}
+
+TEST(server_config_test, server_group_test) {
+  std::vector<ServerConfig> server_list  = read_config(SAMPLE_CONF);
+  server_group_type         server_group = create_server_group(server_list);
+
+  EXPECT_EQ(server_group[0][0].listen_address_, "0.0.0.0");
+  EXPECT_EQ(server_group[0][0].listen_port_, "5500");
+  EXPECT_EQ(server_group[0][1].listen_address_, "0.0.0.0");
+  EXPECT_EQ(server_group[0][1].listen_port_, "5500");
+  EXPECT_EQ(server_group[1][0].listen_address_, "0.0.0.0");
+  EXPECT_EQ(server_group[1][0].listen_port_, "5001");
+  EXPECT_EQ(server_group.size(), 2);
+  EXPECT_EQ(server_group[0].size(), 2);
 }

@@ -1,6 +1,7 @@
 #ifndef INCLUDES_SERVERCONFIG_HPP
 #define INCLUDES_SERVERCONFIG_HPP
 
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -39,5 +40,10 @@ private:
   __parse_server_name(std::vector<std::string>::iterator pos,
                       std::vector<std::string>::iterator end);
 };
+
+typedef std::vector<std::vector<ServerConfig> >   server_group_type;
+typedef std::map<int, std::vector<ServerConfig> > socket_list_type;
+
+server_group_type create_server_group(std::vector<ServerConfig> server_list);
 
 #endif /* INCLUDES_SERVERCONFIG_HPP */
