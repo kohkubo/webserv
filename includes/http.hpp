@@ -73,15 +73,6 @@ struct HttpMessage {
 #define PHRASE_STATUS_INTERNALSERVER "Internal Server Error"
 #define PHRASE_STATUS_NOTIMPLEMENTED "Not Implemented"
 #define PHRASE_STATUS_UNKNOWNERROR   "Unknown Error"
-#define HELLO_WORLD_PAGE             "./html/index.html"
-#define FORBIDDEN_PAGE               "./html/forbidden.html"
-#define NOT_FOUND_PAGE               "./html/not_found.html"
-#define BAD_REQUEST_PAGE             "./html/bad_request.html"
-#define NOT_IMPLEMENTED_PAGE         "./html/not_implemented.html"
-#define INTERNAL_SERVER_ERROR_PAGE   "./html/internal_server_error.html"
-#define UNKNOWN_ERROR_PAGE           "./html/unknown_error.html"
-#define ROOT                         "/"
-#define TEXT_HTML                    "text/html"
 #define CONNECTION_CLOSE             "close"
 
 /* delimiter */
