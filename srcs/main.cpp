@@ -1,9 +1,9 @@
-#include <iostream>
-#include <stdlib.h>
-#include <vector>
-
 #include "ServerConfig.hpp"
 #include "Webserv.hpp"
+#include "event.hpp"
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 
@@ -22,6 +22,7 @@ static const char *resolve_config_file(int argc, char **argv) {
 int main(int argc, char **argv) {
   const char               *config_file_path = resolve_config_file(argc, argv);
   std::vector<ServerConfig> server_list      = read_config(config_file_path);
-  server_io_multiplexing(server_list[0]); // TODO: server_list本体を渡す
+  server_group_type         server_group     = create_server_group(server_list);
+  listen_event(server_group);
   return (0);
 }

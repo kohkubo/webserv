@@ -1,9 +1,8 @@
+#include "ServerConfig.hpp"
+#include "http.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
-
-#include "ServerConfig.hpp"
-#include "http.hpp"
 
 /*
  * ステータスラインの要素は必須だが, 存在しなかった時のバリデートは現状してない

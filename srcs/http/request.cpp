@@ -1,11 +1,10 @@
+#include "ServerConfig.hpp"
+#include "http.hpp"
+#include "util.hpp"
 #include <algorithm>
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
-
-#include "ServerConfig.hpp"
-#include "http.hpp"
-#include "util.hpp"
 
 #define BUF_SIZE 1024
 

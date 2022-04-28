@@ -1,10 +1,9 @@
 #ifndef INCLUDES_HTTP_HPP
 #define INCLUDES_HTTP_HPP
 
+#include "ServerConfig.hpp"
 #include <map>
 #include <string>
-
-#include "ServerConfig.hpp"
 
 typedef std::map<std::string, std::string> http_message_map;
 

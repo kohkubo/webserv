@@ -1,9 +1,11 @@
 #include "gtest/gtest.h"
 
 #include "ServerConfig.hpp"
+#include "Webserv.hpp"
 #include "util.hpp"
 
-#define SPACES "\v\r\f\t\n "
+#define SAMPLE_CONF "../googletest/tdata/sample.conf"
+#define SPACES      "\v\r\f\t\n "
 
 TEST(server_config_test, server_exception) {
   {
@@ -137,4 +139,75 @@ TEST(server_config_test, parse_listen) {
     EXPECT_EQ(conf.listen_address_, "localhost");
     EXPECT_EQ(conf.listen_port_, "80");
   }
+}
+
+TEST(server_config_test, server_name_except) {
+  {
+    std::string              str = "server {\n"
+                                   "\n"
+                                   "server_name ;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", " ");
+    ServerConfig             conf;
+    EXPECT_THROW(conf.parse(l.begin(), l.end()),
+                 ServerConfig::UnexpectedTokenException);
+  }
+  {
+    std::string              str = "server {\n"
+                                   "\n"
+                                   "server_name example.com example.net;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", " ");
+    ServerConfig             conf;
+    EXPECT_THROW(conf.parse(l.begin(), l.end()),
+                 ServerConfig::UnexpectedTokenException);
+  }
+  {
+    std::string              str = "server {\n"
+                                   "server_name example.com;\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", " \n");
+    ServerConfig             conf;
+    EXPECT_THROW(conf.parse(l.begin(), l.end()),
+                 ServerConfig::UnexpectedTokenException);
+  }
+}
+
+TEST(server_config_test, parse_server_name) {
+  {
+    std::string              str = "server {\n"
+                                   "server_name example.com;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", SPACES);
+    ServerConfig             conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.server_name_, "example.com");
+  }
+  {
+    std::string              str = "server {\n"
+                                   "server_name    example.com    ;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", SPACES);
+    ServerConfig             conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.server_name_, "example.com");
+  }
+}
+
+TEST(server_config_test, server_group_test) {
+  std::vector<ServerConfig> server_list  = read_config(SAMPLE_CONF);
+  server_group_type         server_group = create_server_group(server_list);
+
+  EXPECT_EQ(server_group[0][0].listen_address_, "0.0.0.0");
+  EXPECT_EQ(server_group[0][0].listen_port_, "5500");
+  EXPECT_EQ(server_group[0][1].listen_address_, "0.0.0.0");
+  EXPECT_EQ(server_group[0][1].listen_port_, "5500");
+  EXPECT_EQ(server_group[1][0].listen_address_, "0.0.0.0");
+  EXPECT_EQ(server_group[1][0].listen_port_, "5001");
+  EXPECT_EQ(server_group.size(), 2);
+  EXPECT_EQ(server_group[0].size(), 2);
 }

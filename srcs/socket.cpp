@@ -1,4 +1,10 @@
 #include "socket.hpp"
+#include <cstdlib>
+#include <fcntl.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 /*
  * リスニングソケットを作成する

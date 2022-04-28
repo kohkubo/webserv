@@ -1,9 +1,8 @@
-#include <iostream>
-#include <stdlib.h>
-#include <vector>
-
 #include "ServerConfig.hpp"
 #include "util.hpp"
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 
 #define DELIMITER "\v\r\f\t\n {};"
 #define SKIP      "\v\r\f\t\n "
@@ -19,6 +18,8 @@ std::vector<ServerConfig> read_config(const char *config_file_path) {
         ServerConfig new_server;
         it = new_server.parse(it, config_tokens.end());
         server_list.push_back(new_server);
+      } else {
+        it++;
       }
     }
     return server_list;
