@@ -1,11 +1,10 @@
+#include "ServerConfig.hpp"
+#include "http.hpp"
+#include "util.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <string>
 #include <unistd.h>
-
-#include "ServerConfig.hpp"
-#include "http.hpp"
-#include "util.hpp"
 
 static HttpStatusCode check_url(const char *target_url) {
   if (is_file_exists(target_url)) {

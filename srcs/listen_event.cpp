@@ -1,13 +1,12 @@
+#include "event.hpp"
+#include "http.hpp"
+#include "socket.hpp"
+#include "util.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
 
 // TODO: delete!!!!!
 #include <unistd.h>
-
-#include "event.hpp"
-#include "http.hpp"
-#include "socket.hpp"
-#include "util.hpp"
 
 /*
 ** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持

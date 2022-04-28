@@ -2,7 +2,6 @@
 #define INCLUDES_EVENT_HPP
 
 #include "ServerConfig.hpp"
-
 #include <map>
 
 void listen_event(const server_group_type &server_group);

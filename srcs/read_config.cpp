@@ -1,9 +1,8 @@
+#include "ServerConfig.hpp"
+#include "util.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-
-#include "ServerConfig.hpp"
-#include "util.hpp"
 
 #define DELIMITER "\v\r\f\t\n {};"
 #define SKIP      "\v\r\f\t\n "
