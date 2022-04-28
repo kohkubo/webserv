@@ -1,9 +1,9 @@
 #ifndef INCLUDES_SOCKET_HPP
 #define INCLUDES_SOCKET_HPP
 
+#include <cstdlib>
 #include <fcntl.h>
 #include <netdb.h>
-#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>

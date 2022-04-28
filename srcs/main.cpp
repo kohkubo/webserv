@@ -1,5 +1,5 @@
+#include <cstdlib>
 #include <iostream>
-#include <stdlib.h>
 #include <vector>
 
 #include "ServerConfig.hpp"
