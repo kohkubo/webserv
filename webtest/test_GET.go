@@ -29,21 +29,24 @@ const (
 func testGET() {
 	tests := []struct {
 		name           string
-		uri            string
+		port           string
+		url            string
 		addFields      map[string]string
 		wantStatusCode int
 		wantBody       []byte
 	}{
 		{
 			name:           "root",
-			uri:            "http://localhost:5500",
+			port:           "5500",
+			url:            "/",
 			addFields:      nil,
 			wantStatusCode: http.StatusOK,
 			wantBody:       FileContents(HELLO_WORLD_PAGE),
 		},
 		{
 			name:           "no_such_file",
-			uri:            "http://localhost:5500/not_such_file",
+			port:           "5500",
+			url:            "/not_such_file",
 			addFields:      nil,
 			wantStatusCode: http.StatusNotFound,
 			wantBody:       FileContents(NOT_FOUND_PAGE),
@@ -54,22 +57,28 @@ func testGET() {
 		tt := tt
 		func() {
 			fmt.Print("[ " + tt.name + " ] ")
-			var errorOccurred bool
-			resp := NewRequest("GET", tt.uri, tt.addFields, nil)
+
+			var wasErr bool
+			resp := Request("GET", protocol+"://"+host+":"+tt.port+tt.url, tt.addFields, nil)
 			defer resp.Body.Close()
+
+			// ステータスコードの確認
 			if resp.StatusCode != tt.wantStatusCode {
-				errorOccurred = true
+				wasErr = true
 				fmt.Printf("actual_status: %v, expect_status: %v\n", resp.StatusCode, tt.wantStatusCode)
 			}
+
+			// ボディの確認
 			resposenseBody, err := io.ReadAll(resp.Body)
 			if err != nil {
 				log.Fatalf("fail to get read body: %v", err)
 			}
 			if bytes.Compare(resposenseBody, tt.wantBody) != 0 {
-				errorOccurred = true
+				wasErr = true
 				fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tt.wantStatusCode)
 			}
-			if !errorOccurred {
+
+			if !wasErr {
 				fmt.Println(GREEN, "ok", RESET)
 			}
 		}()

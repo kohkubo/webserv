@@ -24,9 +24,9 @@ const (
 	RESET = "\033[0m"
 )
 
-// NewRequest: 引数で渡された情報を元にリクエストを作成します.
+// Request: 引数で渡された情報を元にリクエストを作成します.
 // 現状詰め込み過ぎも気になって使うかわかりません.
-func NewRequest(method string, uri string, addFields map[string]string, body io.Reader) *http.Response {
+func Request(method string, uri string, addFields map[string]string, body io.Reader) *http.Response {
 	req, err := http.NewRequest("GET", uri, body)
 	if err != nil {
 		log.Fatalf("fail to send request: %v", err)
