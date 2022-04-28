@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # バックグラウンドでwebserv実行(出力が邪魔するので/dev/nullへ)
 (cd ../ && ./webserv > /dev/null 2>&1) &
