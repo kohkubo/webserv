@@ -24,10 +24,13 @@ const (
 	RESET = "\033[0m"
 )
 
+const (
+	preURI = "http://localhost:"
+)
+
 // Request: 引数で渡された情報を元にリクエストを作成します.
-// 現状詰め込み過ぎも気になって使うかわかりません.
-func Request(method string, uri string, addFields map[string]string, body io.Reader) *http.Response {
-	req, err := http.NewRequest(method, uri, body)
+func Request(method string, port string, url string, addFields map[string]string, body io.Reader) *http.Response {
+	req, err := http.NewRequest(method, preURI+port+url, body)
 	if err != nil {
 		log.Fatalf("fail to send request: %v", err)
 	}

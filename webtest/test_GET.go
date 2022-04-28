@@ -27,6 +27,7 @@ const (
 )
 
 func testGET() {
+	// tests: テストケース
 	tests := []struct {
 		name           string
 		port           string
@@ -52,6 +53,7 @@ func testGET() {
 			wantBody:       FileContents(NOT_FOUND_PAGE),
 		},
 	}
+	// テスト実行
 	fmt.Println("GET test")
 	for _, tt := range tests {
 		tt := tt
@@ -59,8 +61,7 @@ func testGET() {
 			fmt.Print("[ " + tt.name + " ] ")
 
 			var wasErr bool
-			uri := protocol + "://" + host + ":" + tt.port + tt.url
-			resp := Request("GET", uri, tt.addFields, nil)
+			resp := Request("GET", tt.port, tt.url, tt.addFields, nil)
 			defer resp.Body.Close()
 
 			// ステータスコードの確認
