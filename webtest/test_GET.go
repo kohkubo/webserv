@@ -53,7 +53,7 @@ func testGET() {
 			//    Accept-Encoding: gzip
 		},
 		{
-			name: "root",
+			name: "add field",
 			port: "5500",
 			url:  "/",
 			addFields: map[string]string{
