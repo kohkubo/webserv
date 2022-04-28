@@ -29,6 +29,8 @@ ServerConfig::parse(std::vector<std::string>::iterator pos,
       pos = __parse_listen(pos, end);
     } else if (*pos == "root") {
       pos = __parse_root(pos, end);
+    } else if (*pos == "server_name") {
+      pos = __parse_server_name(pos, end);
     } else {
       throw UnexpectedTokenException();
     }
@@ -67,5 +69,16 @@ ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
   root_ = *pos;
+  return pos + 2;
+}
+
+// TODO: parse_rootと同じ処理なのでまとめる?
+std::vector<std::string>::iterator
+ServerConfig::__parse_server_name(std::vector<std::string>::iterator pos,
+                                  std::vector<std::string>::iterator end) {
+  pos++;
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
+    throw UnexpectedTokenException("could not detect directive value.");
+  server_name_ = *pos;
   return pos + 2;
 }

@@ -141,6 +141,63 @@ TEST(server_config_test, parse_listen) {
   }
 }
 
+TEST(server_config_test, server_name_except) {
+  {
+    std::string              str = "server {\n"
+                                   "\n"
+                                   "server_name ;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", " ");
+    ServerConfig             conf;
+    EXPECT_THROW(conf.parse(l.begin(), l.end()),
+                 ServerConfig::UnexpectedTokenException);
+  }
+  {
+    std::string              str = "server {\n"
+                                   "\n"
+                                   "server_name example.com example.net;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", " ");
+    ServerConfig             conf;
+    EXPECT_THROW(conf.parse(l.begin(), l.end()),
+                 ServerConfig::UnexpectedTokenException);
+  }
+  {
+    std::string              str = "server {\n"
+                                   "server_name example.com;\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", " \n");
+    ServerConfig             conf;
+    EXPECT_THROW(conf.parse(l.begin(), l.end()),
+                 ServerConfig::UnexpectedTokenException);
+  }
+}
+
+TEST(server_config_test, parse_server_name) {
+  {
+    std::string              str = "server {\n"
+                                   "server_name example.com;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", SPACES);
+    ServerConfig             conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.server_name_, "example.com");
+  }
+  {
+    std::string              str = "server {\n"
+                                   "server_name    example.com    ;\n"
+                                   "}\n";
+
+    std::vector<std::string> l   = tokenize(str, SPACES "{};", SPACES);
+    ServerConfig             conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.server_name_, "example.com");
+  }
+}
+
 TEST(server_config_test, server_group_test) {
   std::vector<ServerConfig> server_list  = read_config(SAMPLE_CONF);
   server_group_type         server_group = create_server_group(server_list);
