@@ -1,5 +1,6 @@
 #include "ServerConfig.hpp"
 #include "http.hpp"
+#include "request_parse.hpp"
 #include "util.hpp"
 #include <algorithm>
 #include <string>
@@ -9,7 +10,7 @@
 #define BUF_SIZE 1024
 
 // TODO: Requestのエラーについて、未調査です。Getにおいては、Hostだけで良さそう
-bool is_request_error(std::vector<std::string> &request_tokens) {
+static bool is_request_error(std::vector<std::string> &request_tokens) {
   if (request_tokens.size() < 5) {
     return true;
   }
@@ -19,45 +20,17 @@ bool is_request_error(std::vector<std::string> &request_tokens) {
   return false;
 }
 
-// example.com -> example.com
-// localhost:8080 -> localhost
-// Host - HTTP | MDN
-// https://developer.mozilla.org/ja/docs/Web/HTTP/Headers/Host
-// Host: <host>:<port>
-// tokenize関数を使う予定でしたが、findが使えることに気づいたので、そちらを利用しています。
-static std::string parse_request_host(const std::string &request_line_host) {
-  std::string::size_type pos = request_line_host.find(':');
-  if (pos == std::string::npos) {
-    return request_line_host;
-  }
-  return request_line_host.substr(0, pos);
-}
-
-static HttpMethod parse_request_method(const std::string &method) {
-  if (method == "GET") {
-    return GET;
-  }
-  if (method == "POST") {
-    return POST;
-  }
-  if (method == "DELETE") {
-    return DELETE;
-  }
-  return UNKNOWN;
-}
-
 /*
  * 超安易パース
  * 必須情報のみを取得しています。
  */
 static HttpMessage
 parse_request_message(std::vector<std::string> &request_tokens) {
-  std::vector<std::string>::iterator it = request_tokens.begin();
-  HttpMessage                        request_message;
-  request_message.method_  = parse_request_method(*it); // "GET"
-  request_message.url_     = *(++it); // "example.com/test/test"
-  request_message.version_ = *(++it); // "HTTP/1.1"
-  request_message.host_    = parse_request_host(*(++it)); // "example.com"
+  HttpMessage request_message;
+  parse_request_method_line(request_message, request_tokens);
+  parse_request_host(request_message, request_tokens);
+  parse_request_content_length(request_message, request_tokens);
+  parse_request_body(request_message, request_tokens);
   return request_message;
 }
 
@@ -92,7 +65,7 @@ static std::string read_connected_fd(int accfd) {
  */
 HttpMessage receive_request(int accfd) {
   std::vector<std::string> request_tokens =
-      tokenize(read_connected_fd(accfd), SEPARATOR, SEPARATOR);
+      tokenize(read_connected_fd(accfd), SEPARATOR, " ");
   if (is_request_error(request_tokens)) {
     std::cout << "request error." << std::endl;
     HttpMessage request_message;
