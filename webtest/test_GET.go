@@ -11,7 +11,6 @@ const (
 	host     = "localhost"
 )
 
-// TODO: フィールドの編集ができるのか確認, setとか？
 func testGET() {
 	tests := []testcase.TestCase{
 		{ // base test
