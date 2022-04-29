@@ -20,7 +20,7 @@ const (
 	RESET = "\033[0m"
 )
 
-func (tc TestCase) Do() {
+func (tc *TestCase) Do() {
 	fmt.Print("[ " + tc.Name + " ] ")
 	var wasErr bool
 
