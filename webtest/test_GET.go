@@ -11,10 +11,7 @@ const (
 	host     = "localhost"
 )
 
-// addFieldsについて
-//   "Content-Length"など(おそらく)内部でbodyの長さによって書き変わっていて, 反映されないものもある
-//   Request structのContent-Length変数が設定されていることは確認した
-
+// TODO: フィールドの編集ができるのか確認, setとか？
 func testGET() {
 	// tests: テストケース
 	tests := []struct {
