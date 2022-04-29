@@ -38,7 +38,7 @@ const (
 	PreURI = "http://localhost:"
 )
 
-// http.Clientの説明にグローバルで参照すべきと書いてあった(詳しくは分からん)
+// http.Clientの説明にグローバルで使用すべきと書いてあった(詳しくは分からん)
 // 毎度作り直すことによる弊害の推測:
 //   作ることのオーバヘッド
 //   接続のキャッシュ情報が捨てられることによるリーク
@@ -62,6 +62,7 @@ func Request(method, port, url string, addQuery, addFields map[string]string, bo
 	for key, value := range addFields {
 		req.Header.Add(key, value)
 	}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatalf("fail to get response: %v", err)
