@@ -38,7 +38,7 @@ func testGET() {
 		{
 			Name: "add query field",
 			Port: PORT_5001,
-			Url:  ROOT,
+			Url:  "/hogehoge",
 			AddQuery: map[string]string{
 				"foo": "bar",
 				"ben": "johnson",
@@ -52,8 +52,8 @@ func testGET() {
 			WantBody:       FileContents(NOT_FOUND_PAGE),
 
 			// リクエスト内容:
-			//   GET /?ben=johnson&foo=bar HTTP/1.1
-			//   Host: localhost:5500
+			//   GET /hogehoge?ben=johnson&foo=bar HTTP/1.1
+			//   Host: localhost:5001
 			//   User-Agent: Go-http-client/1.1
 			//   Authorization: aaa
 			//   Content-Type: txt/html
