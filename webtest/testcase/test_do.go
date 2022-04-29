@@ -32,7 +32,7 @@ func (tc *TestCase) Do() {
 	// リクエスト and レスポンス受け取り
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("fail to send request: %v", err)
+		log.Fatalf("fail to send request or get response: %v", err)
 	}
 	defer resp.Body.Close()
 
@@ -47,9 +47,11 @@ func (tc *TestCase) Do() {
 	if err != nil {
 		log.Fatalf("fail to get read body: %v", err)
 	}
-	if bytes.Compare(resposenseBody, tc.WantBody) != 0 {
-		wasErr = true
-		fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tc.WantStatusCode)
+	if tc.WantBody != nil {
+		if bytes.Compare(resposenseBody, tc.WantBody) != 0 {
+			wasErr = true
+			fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tc.WantStatusCode)
+		}
 	}
 
 	if !wasErr {

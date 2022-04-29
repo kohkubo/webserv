@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-// FileContents: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
-func FileContents(fileName string) []byte {
+// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
+func FileToBytes(fileName string) []byte {
 	file, err := os.Open(fileName)
 	if err != nil {
 		log.Fatalf("FileBytes: %v", err)

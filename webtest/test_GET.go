@@ -8,12 +8,12 @@ import (
 
 func testGET() {
 	tests := []testcase.TestCase{
-		{ // base test
-			Name:           "5500 root",
+		{ // sample test
+			Name:           "sample",
 			Port:           PORT_5500,
 			Url:            ROOT,
 			WantStatusCode: http.StatusOK,
-			WantBody:       FileContents(HELLO_WORLD_PAGE),
+			WantBody:       FileToBytes(HELLO_WORLD_PAGE),
 
 			// リクエスト内容:
 			//   GET / HTTP/1.1
@@ -26,14 +26,14 @@ func testGET() {
 			Port:           PORT_5001,
 			Url:            ROOT,
 			WantStatusCode: http.StatusOK,
-			WantBody:       FileContents(HELLO_WORLD_PAGE),
+			WantBody:       FileToBytes(HELLO_WORLD_PAGE),
 		},
 		{
 			Name:           "no_such_file",
 			Port:           PORT_5500,
 			Url:            NO_SUCH_FILE,
 			WantStatusCode: http.StatusNotFound,
-			WantBody:       FileContents(NOT_FOUND_PAGE),
+			WantBody:       FileToBytes(NOT_FOUND_PAGE),
 		},
 		{
 			Name: "add query field",
@@ -49,7 +49,7 @@ func testGET() {
 				AUTHORIZATION: "aaa",
 			},
 			WantStatusCode: http.StatusNotFound,
-			WantBody:       FileContents(NOT_FOUND_PAGE),
+			WantBody:       FileToBytes(NOT_FOUND_PAGE),
 
 			// リクエスト内容:
 			//   GET /hogehoge?ben=johnson&foo=bar HTTP/1.1
