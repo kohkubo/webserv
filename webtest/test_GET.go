@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"webtest/testcase"
 )
 
 const (
@@ -79,17 +80,17 @@ func testGET() {
 	fmt.Println("GET test")
 	for _, tt := range tests {
 		tt := tt
-		tc := testCase{
-			name:           tt.name,
-			method:         http.MethodGet,
-			port:           tt.port,
-			url:            tt.url,
-			body:           nil,
-			addQuery:       tt.addQuery,
-			addFields:      tt.addFields,
-			wantStatusCode: tt.wantStatusCode,
-			wantBody:       tt.wantBody,
+		tc := testcase.TestCase{
+			Name:           tt.name,
+			Method:         http.MethodGet,
+			Port:           tt.port,
+			Url:            tt.url,
+			Body:           nil,
+			AddQuery:       tt.addQuery,
+			AddFields:      tt.addFields,
+			WantStatusCode: tt.wantStatusCode,
+			WantBody:       tt.wantBody,
 		}
-		Do(tc)
+		tc.Do()
 	}
 }
