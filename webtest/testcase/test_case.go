@@ -10,6 +10,9 @@ const (
 	PreURI = "http://localhost:"
 )
 
+// addFieldsについて
+//   "Content-Length"など(おそらく)内部でbodyの長さによって書き変わっていて, 反映されないものもある
+//   Request structのContent-Length変数が設定されていることは確認した
 type TestCase struct {
 	Name           string
 	Method         string
