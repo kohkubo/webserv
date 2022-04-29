@@ -35,7 +35,7 @@ func testGET() {
 			WantStatusCode: http.StatusNotFound,
 			WantBody:       FileToBytes(NOT_FOUND_PAGE),
 		},
-		{
+		{ // sample test: パラメータやフィールドをつけてみた
 			Name: "add query field",
 			Port: PORT_5001,
 			Url:  "/hogehoge",
