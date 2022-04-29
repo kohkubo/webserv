@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-#include <iostream>
-
 class ServerConfig {
 public:
   std::string listen_address_;
