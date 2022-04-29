@@ -1,13 +1,11 @@
-package main
+package testcase
 
 import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
 
 // http.Clientの説明にグローバルで使用すべきと書いてあった(詳しくは分からん)
@@ -22,8 +20,8 @@ const (
 	RESET = "\033[0m"
 )
 
-func Do(tc testCase) {
-	fmt.Print("[ " + tc.name + " ] ")
+func (tc TestCase) Do() {
+	fmt.Print("[ " + tc.Name + " ] ")
 	var wasErr bool
 
 	req, err := tc.NewRequest()
@@ -39,9 +37,9 @@ func Do(tc testCase) {
 	defer resp.Body.Close()
 
 	// ステータスコードの確認
-	if resp.StatusCode != tc.wantStatusCode {
+	if resp.StatusCode != tc.WantStatusCode {
 		wasErr = true
-		fmt.Printf("actual_status: %v, expect_status: %v\n", resp.StatusCode, tc.wantStatusCode)
+		fmt.Printf("actual_status: %v, expect_status: %v\n", resp.StatusCode, tc.WantStatusCode)
 	}
 
 	// ボディの確認
@@ -49,26 +47,12 @@ func Do(tc testCase) {
 	if err != nil {
 		log.Fatalf("fail to get read body: %v", err)
 	}
-	if bytes.Compare(resposenseBody, tc.wantBody) != 0 {
+	if bytes.Compare(resposenseBody, tc.WantBody) != 0 {
 		wasErr = true
-		fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tc.wantStatusCode)
+		fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tc.WantStatusCode)
 	}
 
 	if !wasErr {
 		fmt.Println(GREEN, "ok", RESET)
 	}
-}
-
-// FileContents: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
-func FileContents(fileName string) []byte {
-	file, err := os.Open(fileName)
-	if err != nil {
-		log.Fatalf("FileBytes: %v", err)
-	}
-	defer file.Close()
-	srcBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Fatalf("FileBytes: %v", err)
-	}
-	return srcBytes
 }
