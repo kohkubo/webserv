@@ -25,7 +25,7 @@ type TestCase struct {
 	WantBody       []byte
 }
 
-func (t TestCase) NewRequest() (*http.Request, error) {
+func (t *TestCase) NewRequest() (*http.Request, error) {
 	req, err := http.NewRequest(t.Method, PreURI+t.Port+t.Url, t.Body)
 	if err != nil {
 		return nil, fmt.Errorf("fail to send request: %v", err)

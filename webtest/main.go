@@ -1,5 +1,12 @@
 package main
 
+const (
+	ROOT         = "/"
+	NO_SUCH_FILE = "/no_such_file"
+	PORT_5500    = "5500"
+	PORT_5001    = "5001"
+)
+
 // Resouse pass
 const (
 	HELLO_WORLD_PAGE           = "../html/index.html"

@@ -13,81 +13,64 @@ const (
 
 // TODO: フィールドの編集ができるのか確認, setとか？
 func testGET() {
-	// tests: テストケース
-	tests := []struct {
-		name           string
-		port           string
-		url            string
-		addQuery       map[string]string // 追加パラメータ: 'URL?foo=bar'
-		addFields      map[string]string // 追加フィールド: 'Content-Type: txt/html'
-		wantStatusCode int
-		wantBody       []byte
-	}{
-		{
-			name:           "root 5500",
-			port:           "5500",
-			url:            "/",
-			wantStatusCode: http.StatusOK,
-			wantBody:       FileContents(HELLO_WORLD_PAGE),
-			//  Request(3,4行目はデフォルトで設定されたもの):
-			//    GET / HTTP/1.1
-			//    Host: localhost:5500
-			//    User-Agent: Go-http-client/1.1
-			//    Accept-Encoding: gzip
+	tests := []testcase.TestCase{
+		{ // base test
+			Name:           "root 5500",
+			Port:           PORT_5500,
+			Url:            ROOT,
+			WantStatusCode: http.StatusOK,
+			WantBody:       FileContents(HELLO_WORLD_PAGE),
+
+			// リクエスト内容:
+			//   GET / HTTP/1.1
+			//   Host: localhost:5500
+			//   User-Agent: Go-http-client/1.1
+			//   Accept-Encoding: gzip
 		},
 		{
-			name:           "root 5001",
-			port:           "5001",
-			url:            "/",
-			wantStatusCode: http.StatusOK,
-			wantBody:       FileContents(HELLO_WORLD_PAGE),
+			Name:           "root 5001",
+			Port:           PORT_5001,
+			Url:            ROOT,
+			WantStatusCode: http.StatusOK,
+			WantBody:       FileContents(HELLO_WORLD_PAGE),
 		},
 		{
-			name:           "no_such_file",
-			port:           "5500",
-			url:            "/no_such_file",
-			wantStatusCode: http.StatusNotFound,
-			wantBody:       FileContents(NOT_FOUND_PAGE),
+			Name:           "no_such_file",
+			Port:           PORT_5500,
+			Url:            NO_SUCH_FILE,
+			WantStatusCode: http.StatusNotFound,
+			WantBody:       FileContents(NOT_FOUND_PAGE),
 		},
 		{
-			name: "add info",
-			port: "5500",
-			url:  "/",
-			addQuery: map[string]string{
+			Name: "add info",
+			Port: PORT_5001,
+			Url:  ROOT,
+			AddQuery: map[string]string{
 				"foo": "bar",
 				"ben": "johnson",
 			},
-			addFields: map[string]string{
+			AddFields: map[string]string{
 				CONTENT_TYPE:  "txt/html",
-				CONTENT_LEN:   "1", // 反映されなかった(?)
+				CONTENT_LEN:   "1", // bodyと矛盾して反映されないぽい
 				AUTHORIZATION: "aaa",
 			},
-			wantStatusCode: http.StatusNotFound,
-			wantBody:       FileContents(NOT_FOUND_PAGE),
-			//  Request:
-			//    GET /?ben=johnson&foo=bar HTTP/1.1
-			//    Host: localhost:5500
-			//    User-Agent: Go-http-client/1.1
-			//    Authorization: aaa
-			//    Content-Type: txt/html
-			//    Accept-Encoding: gzip
+			WantStatusCode: http.StatusNotFound,
+			WantBody:       FileContents(NOT_FOUND_PAGE),
+
+			// リクエスト内容:
+			//   GET /?ben=johnson&foo=bar HTTP/1.1
+			//   Host: localhost:5500
+			//   User-Agent: Go-http-client/1.1
+			//   Authorization: aaa
+			//   Content-Type: txt/html
+			//   Accept-Encoding: gzip
 		},
 	}
 	// テスト実行
 	fmt.Println("GET test")
-	for _, tt := range tests {
-		tt := tt
-		tc := testcase.TestCase{
-			Name:           tt.name,
-			Method:         http.MethodGet,
-			Port:           tt.port,
-			Url:            tt.url,
-			Body:           nil,
-			AddQuery:       tt.addQuery,
-			AddFields:      tt.addFields,
-			WantStatusCode: tt.wantStatusCode,
-			WantBody:       tt.wantBody,
-		}
-		tc.Do()
+	for _, t := range tests {
+		t := t
+		t.Method = http.MethodGet
+		t.Do()
 	}
 }
