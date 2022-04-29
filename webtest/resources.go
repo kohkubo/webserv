@@ -38,6 +38,12 @@ const (
 	PreURI = "http://localhost:"
 )
 
+// http.Clientの説明にグローバルで参照すべきと書いてあった(詳しくは分からん)
+// 毎度作り直すことによる弊害の推測:
+//   作ることのオーバヘッド
+//   接続のキャッシュ情報が捨てられることによるリーク
+var client = &http.Client{}
+
 // Request: 引数で渡された情報を元にリクエストを作成します.
 func Request(method, port, url string, addQuery, addFields map[string]string, body io.Reader) *http.Response {
 	req, err := http.NewRequest(method, PreURI+port+url, body)
@@ -56,8 +62,6 @@ func Request(method, port, url string, addQuery, addFields map[string]string, bo
 	for key, value := range addFields {
 		req.Header.Add(key, value)
 	}
-
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatalf("fail to get response: %v", err)
