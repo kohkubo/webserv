@@ -6,15 +6,10 @@ import (
 	"webtest/testcase"
 )
 
-const (
-	protocol = "http"
-	host     = "localhost"
-)
-
 func testGET() {
 	tests := []testcase.TestCase{
 		{ // base test
-			Name:           "root 5500",
+			Name:           "5500 root",
 			Port:           PORT_5500,
 			Url:            ROOT,
 			WantStatusCode: http.StatusOK,
@@ -27,7 +22,7 @@ func testGET() {
 			//   Accept-Encoding: gzip
 		},
 		{
-			Name:           "root 5001",
+			Name:           "5001 root",
 			Port:           PORT_5001,
 			Url:            ROOT,
 			WantStatusCode: http.StatusOK,
@@ -41,7 +36,7 @@ func testGET() {
 			WantBody:       FileContents(NOT_FOUND_PAGE),
 		},
 		{
-			Name: "add info",
+			Name: "add query field",
 			Port: PORT_5001,
 			Url:  ROOT,
 			AddQuery: map[string]string{
