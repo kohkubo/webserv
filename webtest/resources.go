@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -34,41 +35,73 @@ const (
 	AUTHORIZATION = "Authorization"
 )
 
-const (
-	PreURI = "http://localhost:"
-)
-
 // http.Clientの説明にグローバルで使用すべきと書いてあった(詳しくは分からん)
 // 毎度作り直すことによる弊害の推測:
 //   作ることのオーバヘッド
 //   接続のキャッシュ情報が捨てられることによるリーク
 var client = &http.Client{}
 
-// Request: 引数で渡された情報を元にリクエストを作成します.
-func Request(method, port, url string, addQuery, addFields map[string]string, body io.Reader) *http.Response {
-	req, err := http.NewRequest(method, PreURI+port+url, body)
+const (
+	PreURI = "http://localhost:"
+)
+
+type testCase struct {
+	name           string
+	method         string
+	port           string
+	url            string
+	body           io.Reader
+	addQuery       map[string]string // 追加パラメータ:e.g. ["foo"]="bar" ('URL?foo=bar')
+	addFields      map[string]string // 追加フィールド:e.g. ["Content-Type"]="txt/html"
+	wantStatusCode int
+	wantBody       []byte
+}
+
+func (t testCase) NewRequest() (*http.Request, error) {
+	req, err := http.NewRequest(t.method, PreURI+t.port+t.url, t.body)
 	if err != nil {
-		log.Fatalf("fail to send request: %v", err)
+		return nil, fmt.Errorf("fail to send request: %v", err)
 	}
 
 	// URLパラメータ追加
 	q := req.URL.Query()
-	for key, value := range addQuery {
+	for key, value := range t.addQuery {
 		q.Add(key, value)
 	}
 	req.URL.RawQuery = q.Encode()
 
 	// ヘッダーフィールド追加
-	for key, value := range addFields {
+	for key, value := range t.addFields {
 		req.Header.Add(key, value)
 	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatalf("fail to get response: %v", err)
-	}
-	return resp
+	return req, nil
 }
+
+//// Request: 引数で渡された情報を元にリクエストを作成します.
+//func Request(method, port, url string, addQuery, addFields map[string]string, body io.Reader) *http.Response {
+//	req, err := http.NewRequest(method, PreURI+port+url, body)
+//	if err != nil {
+//		log.Fatalf("fail to send request: %v", err)
+//	}
+
+//	// URLパラメータ追加
+//	q := req.URL.Query()
+//	for key, value := range addQuery {
+//		q.Add(key, value)
+//	}
+//	req.URL.RawQuery = q.Encode()
+
+//	// ヘッダーフィールド追加
+//	for key, value := range addFields {
+//		req.Header.Add(key, value)
+//	}
+
+//	resp, err := client.Do(req)
+//	if err != nil {
+//		log.Fatalf("fail to get response: %v", err)
+//	}
+//	return resp
+//}
 
 // FileContents: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
 func FileContents(fileName string) []byte {

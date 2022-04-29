@@ -82,33 +82,54 @@ func testGET() {
 	fmt.Println("GET test")
 	for _, tt := range tests {
 		tt := tt
-		func() {
-			fmt.Print("[ " + tt.name + " ] ")
-			var wasErr bool
+		tc := testCase{
+			name:           tt.name,
+			method:         http.MethodGet,
+			port:           tt.port,
+			url:            tt.url,
+			body:           nil,
+			addQuery:       tt.addQuery,
+			addFields:      tt.addFields,
+			wantStatusCode: tt.wantStatusCode,
+			wantBody:       tt.wantBody,
+		}
+		test(tc)
+	}
+}
 
-			// リクエスト, レスポンスの受け取り
-			resp := Request(http.MethodGet, tt.port, tt.url, tt.addQuery, tt.addFields, nil)
-			defer resp.Body.Close()
+func test(tc testCase) {
+	fmt.Print("[ " + tc.name + " ] ")
+	var wasErr bool
 
-			// ステータスコードの確認
-			if resp.StatusCode != tt.wantStatusCode {
-				wasErr = true
-				fmt.Printf("actual_status: %v, expect_status: %v\n", resp.StatusCode, tt.wantStatusCode)
-			}
+	req, err := tc.NewRequest()
+	if err != nil {
+		log.Fatalf("failt to create request: %v", err)
+	}
 
-			// ボディの確認
-			resposenseBody, err := io.ReadAll(resp.Body)
-			if err != nil {
-				log.Fatalf("fail to get read body: %v", err)
-			}
-			if bytes.Compare(resposenseBody, tt.wantBody) != 0 {
-				wasErr = true
-				fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tt.wantStatusCode)
-			}
+	// リクエスト and レスポンス受け取り
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("fail to send request: %v", err)
+	}
+	defer resp.Body.Close()
 
-			if !wasErr {
-				fmt.Println(GREEN, "ok", RESET)
-			}
-		}()
+	// ステータスコードの確認
+	if resp.StatusCode != tc.wantStatusCode {
+		wasErr = true
+		fmt.Printf("actual_status: %v, expect_status: %v\n", resp.StatusCode, tc.wantStatusCode)
+	}
+
+	// ボディの確認
+	resposenseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("fail to get read body: %v", err)
+	}
+	if bytes.Compare(resposenseBody, tc.wantBody) != 0 {
+		wasErr = true
+		fmt.Printf("actual_body: %v, expect_body: %v\n", resp.StatusCode, tc.wantStatusCode)
+	}
+
+	if !wasErr {
+		fmt.Println(GREEN, "ok", RESET)
 	}
 }
