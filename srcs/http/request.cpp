@@ -40,7 +40,7 @@ static std::string read_connected_fd(int accfd) {
   ssize_t     read_size     = 0;
 
   do {
-    read_size = recv(accfd, buf, sizeof(buf) - 1, 0);
+    read_size = recv(accfd, buf, sizeof(buf) - 1, MSG_DONTWAIT);
     if (read_size == -1) {
       error_log_with_errno("read() failed.");
       close(accfd);
