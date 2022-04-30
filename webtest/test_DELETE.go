@@ -22,7 +22,7 @@ func testDELETE() {
 		},
 	}
 	// テスト実行
-	fmt.Println("GET test")
+	fmt.Println("DELETE test")
 	for _, t := range tests {
 		t := t
 		t.Method = http.MethodDelete

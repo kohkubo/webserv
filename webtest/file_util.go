@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -18,4 +20,8 @@ func FileToBytes(fileName string) []byte {
 		log.Fatalf("FileBytes: %v", err)
 	}
 	return srcBytes
+}
+
+func FileToReader(fileName string) io.Reader {
+	return bytes.NewReader(FileToBytes(fileName))
 }
