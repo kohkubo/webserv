@@ -20,7 +20,7 @@ create_socket_map(const server_group_type &server_group) {
 
   server_group_type::const_iterator it = server_group.begin();
   for (; it != server_group.end(); it++) {
-    int new_socket = open_new_socket((*it)[0]);
+    int new_socket = open_new_socket(*((*it)[0]));
     res.insert(std::make_pair(new_socket, *it));
   }
   return res;
