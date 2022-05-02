@@ -1,5 +1,5 @@
-#include "../ServerConfig.hpp"
-#include "../util.hpp"
+#include "../config/ServerConfig.hpp"
+#include "../util/util.hpp"
 #include "request.hpp"
 #include "response.hpp"
 #include <string>

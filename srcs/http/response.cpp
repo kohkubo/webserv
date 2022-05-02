@@ -1,4 +1,4 @@
-#include "../ServerConfig.hpp"
+#include "../config/ServerConfig.hpp"
 #include "HttpMessage.hpp"
 #include "const_delimiter.hpp"
 #include "const_response_key_map.hpp"

@@ -1,6 +1,6 @@
-#include "ServerConfig.hpp"
-#include "tokenize.hpp"
-#include "util.hpp"
+#include "../config/ServerConfig.hpp"
+#include "../util/tokenize.hpp"
+#include "../util/util.hpp"
 
 #define SPACES "\v\r\f\t\n "
 

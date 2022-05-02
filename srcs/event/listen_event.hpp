@@ -1,7 +1,7 @@
 #ifndef SRCS_EVENT_HPP
 #define SRCS_EVENT_HPP
 
-#include "ServerConfig.hpp"
+#include "../config/ServerConfig.hpp"
 #include <map>
 #include <sys/types.h>
 

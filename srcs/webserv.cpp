@@ -1,6 +1,6 @@
-#include "ServerConfig.hpp"
-#include "listen_event.hpp"
-#include "read_config.hpp"
+#include "config/ServerConfig.hpp"
+#include "config/read_config.hpp"
+#include "event/listen_event.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <vector>

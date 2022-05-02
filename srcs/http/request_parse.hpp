@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../ServerConfig.hpp"
+#include "../config/ServerConfig.hpp"
 #include "HttpMessage.hpp"
 
 void parse_request_method_line(HttpMessage              &request_message,

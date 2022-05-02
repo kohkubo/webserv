@@ -1,4 +1,4 @@
-#include "ServerConfig.hpp"
+#include "../config/ServerConfig.hpp"
 #include "socket.hpp"
 #include <netdb.h>
 #include <sys/socket.h>

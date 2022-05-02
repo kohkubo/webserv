@@ -1,6 +1,6 @@
-#include "../ServerConfig.hpp"
-#include "../tokenize.hpp"
-#include "../util.hpp"
+#include "../config/ServerConfig.hpp"
+#include "../util/tokenize.hpp"
+#include "../util/util.hpp"
 #include "request_parse.hpp"
 #include <algorithm>
 #include <string>
