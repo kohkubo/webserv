@@ -1,5 +1,5 @@
-#include "../config/ServerConfig.hpp"
-#include "socket.hpp"
+#include "../event/socket.hpp"
+#include "ServerConfig.hpp"
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
