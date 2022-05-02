@@ -56,6 +56,7 @@ func (tc *TestCase) Do() {
 	if !wasErr {
 		fmt.Println(GREEN, "ok", RESET)
 	} else {
+		fmt.Println(RED, "error", RESET)
 		os.Exit(1)
 	}
 }
