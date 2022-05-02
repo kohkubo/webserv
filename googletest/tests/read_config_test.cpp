@@ -1,6 +1,6 @@
 #include <vector>
-#include "ServerConfig.hpp"
-#include "read_config.hpp"
+#include "config/ServerConfig.hpp"
+#include "config/read_config.hpp"
 #include "gtest/gtest.h"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"

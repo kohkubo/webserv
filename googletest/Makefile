@@ -4,7 +4,7 @@ SHELL := /bin/bash
 CXX := clang++
 CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=undefined -fsanitize=address
 LIBS := -lpthread -lgtest_main -lgtest
-INCLUDES := -I./includes -I../srcs/http -I../srcs/util -I../srcs/config -I../srcs/event
+INCLUDES := -I./includes -I../srcs
 LIBINCLUDES = -L./$(LIBDIR)
 
 ifeq ($(shell uname), Linux)

@@ -1,7 +1,7 @@
 #ifndef SRCS_HTTP_METHOD_HPP
 #define SRCS_HTTP_METHOD_HPP
 
-#include "../config/ServerConfig.hpp"
+#include "config/ServerConfig.hpp"
 #include "HttpMessage.hpp"
 #include "const_response_key_map.hpp"
 

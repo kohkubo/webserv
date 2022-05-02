@@ -1,5 +1,5 @@
-#include "../config/ServerConfig.hpp"
-#include "../util/util.hpp"
+#include "config/ServerConfig.hpp"
+#include "util/util.hpp"
 #include "HttpMessage.hpp"
 #include "const_html_filename.hpp"
 #include "const_response_key_map.hpp"

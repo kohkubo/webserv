@@ -1,6 +1,6 @@
-#include "../config/ServerConfig.hpp"
-#include "../util/tokenize.hpp"
-#include "../util/util.hpp"
+#include "config/ServerConfig.hpp"
+#include "util/tokenize.hpp"
+#include "util/util.hpp"
 #include "HttpMessage.hpp"
 #include <algorithm>
 #include <cstdlib>
