@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "../config/ServerConfig.hpp"
 #include "HttpMessage.hpp"
+#include "config/ServerConfig.hpp"
 
 void parse_request_method_line(HttpMessage              &request_message,
                                std::vector<std::string> &request_tokens);
