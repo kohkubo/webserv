@@ -1,7 +1,7 @@
-#include "ServerConfig.hpp"
-#include "http.hpp"
+#include "config/ServerConfig.hpp"
 #include "request_parse.hpp"
-#include "util.hpp"
+#include "util/tokenize.hpp"
+#include "util/util.hpp"
 #include <algorithm>
 #include <string>
 #include <sys/socket.h>
@@ -78,7 +78,7 @@ HttpMessage receive_request(int accfd) {
   if (is_request_error(request_tokens)) {
     std::cout << "request error." << std::endl;
     HttpMessage request_message;
-    request_message.status_code_ = BAD_REQUEST;
+    request_message.status_code_ = BAD_REQUEST_400;
     return request_message;
   }
   return parse_request_message(request_tokens);

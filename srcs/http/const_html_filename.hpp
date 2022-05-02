@@ -1,5 +1,5 @@
-#ifndef INCLUDES_CONSTANT_RESOURCE_HPP
-#define INCLUDES_CONSTANT_RESOURCE_HPP
+#ifndef SRCS_HTTP_CONST_HTML_FILENAME_HPP
+#define SRCS_HTTP_CONST_HTML_FILENAME_HPP
 
 #include <string>
 
@@ -14,4 +14,4 @@ const std::string UNKNOWN_ERROR_PAGE = "./html/unknown_error.html";
 const std::string ROOT               = "/";
 const std::string TEXT_HTML          = "text/html";
 
-#endif /* INCLUDES_CONSTANT_RESOURCE_HPP */
+#endif /* SRCS_HTTP_CONST_HTML_FILENAME_HPP */

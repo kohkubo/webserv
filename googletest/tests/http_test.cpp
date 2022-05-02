@@ -1,6 +1,10 @@
-#include "http.hpp"
-#include "ServerConfig.hpp"
 #include "gtest/gtest.h"
+#include "http/method.hpp"
+#include "http/HttpMessage.hpp"
+#include "http/const_response_key_map.hpp"
+#include "http/const_status_phrase.hpp"
+#include "http/response.hpp"
+#include "config/ServerConfig.hpp"
 
 TEST(http_test, create_response) {
   ServerConfig server_config;
@@ -41,8 +45,7 @@ TEST(http_test, method_get) {
   http_message_map response_message;
   request_message.url_ = "/";
   response_message     = method_get(server_config, request_message);
-  EXPECT_EQ(response_message[STATUS], STATUS_OK);
-  EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_OK);
+  EXPECT_EQ(response_message[STATUS_PHRASE], STATUS_200_PHRASE);
   EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   EXPECT_EQ(response_message[CONTENT_LEN],
             std::to_string((strlen(TEST_CONTENT))));
@@ -56,8 +59,7 @@ TEST(http_test, target_file_not_exist) {
   http_message_map response_message;
 
   response_message     = method_get(server_config, request_message);
-  EXPECT_EQ(response_message[STATUS], STATUS_NOTFOUND);
-  EXPECT_EQ(response_message[PHRASE], PHRASE_STATUS_NOTFOUND);
+  EXPECT_EQ(response_message[STATUS_PHRASE], STATUS_404_PHRASE);
   // EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   // EXPECT_EQ(response_message[CONTENT_LEN],
   // std::to_string((strlen(TEST_CONTENT))));

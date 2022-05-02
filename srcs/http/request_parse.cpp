@@ -1,12 +1,12 @@
+#include "HttpMessage.hpp"
+#include "config/ServerConfig.hpp"
+#include "util/tokenize.hpp"
+#include "util/util.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "ServerConfig.hpp"
-#include "http.hpp"
-#include "util.hpp"
 
 static HttpMethod parse_request_method(const std::string &method) {
   if (method == "GET") {

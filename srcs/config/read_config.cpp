@@ -1,5 +1,6 @@
-#include "ServerConfig.hpp"
-#include "util.hpp"
+#include "config/ServerConfig.hpp"
+#include "util/tokenize.hpp"
+#include "util/util.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <vector>

@@ -1,6 +1,7 @@
-#include "http.hpp"
-#include "ServerConfig.hpp"
-#include "util.hpp"
+#include "config/ServerConfig.hpp"
+#include "request.hpp"
+#include "response.hpp"
+#include "util/util.hpp"
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -8,7 +9,7 @@
 /*
  * メッセージ書き込み
  */
-void send_response(int accfd, const std::string &message) {
+static void send_response(int accfd, const std::string &message) {
   send(accfd, message.c_str(), message.size(), 0);
   std::cout << "send_response()" << std::endl;
   std::cout << message << std::endl;

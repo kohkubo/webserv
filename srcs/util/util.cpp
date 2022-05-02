@@ -1,4 +1,5 @@
 #include "util.hpp"
+#include "tokenize.hpp"
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
@@ -32,6 +33,7 @@ bool is_file_exists(const char *path) {
 std::string read_file_tostring(const char *path) {
   std::ifstream file(path);
   if (file.fail()) {
+    std::cout << path << " is not found." << std::endl;
     std::cout << "error: read_file_tostring" << std::endl;
     return ""; // TODO: エラーを呼び出し元に通知
   }
