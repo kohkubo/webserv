@@ -11,6 +11,9 @@ webserv_pid=`ps | grep webserv | sed '/grep/d' | awk '{print $1}'`
 
 # goのテストを走らせる
 ./webtest
+status=$?
 
 # webservを終了させる
 kill $webserv_pid
+
+exit $status

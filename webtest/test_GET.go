@@ -48,7 +48,7 @@ func testGET() {
 				CONTENT_LEN:   "1", // bodyと矛盾して反映されないぽい
 				AUTHORIZATION: "aaa",
 			},
-			WantStatusCode: http.StatusNotFound,
+			WantStatusCode: http.StatusOK,
 			WantBody:       FileContents(NOT_FOUND_PAGE),
 
 			// リクエスト内容:
