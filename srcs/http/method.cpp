@@ -28,19 +28,19 @@ static void set_response_body(http_message_map &response_message,
   response_message[CONTENT_TYPE] = TEXT_HTML;
 }
 
-static std::string resolve_url(const ServerConfig &server_config,
+static std::string resolve_url(const ServerConfig *server_config,
                                const std::string   request_url) {
   if (request_url == "/") {
-    return server_config.root_ + "/" + server_config.index_;
+    return server_config->root_ + "/" + server_config->index_;
   } else {
-    return server_config.root_ + "/" + request_url;
+    return server_config->root_ + "/" + request_url;
   }
 }
 
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map method_get(const ServerConfig &server_config,
+http_message_map method_get(const ServerConfig *server_config,
                             HttpMessage        &request_message) {
   std::string target_url = resolve_url(server_config, request_message.url_);
   http_message_map response_message;

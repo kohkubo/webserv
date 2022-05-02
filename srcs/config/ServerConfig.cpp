@@ -2,6 +2,10 @@
 #include "../util/tokenize.hpp"
 #include "../util/util.hpp"
 
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #define SPACES "\v\r\f\t\n "
 
 ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
@@ -13,6 +17,8 @@ ServerConfig::ServerConfig()
   root_  = "./html/";
   index_ = "index.html";
 }
+
+ServerConfig::~ServerConfig() { freeaddrinfo(addrinfo_); }
 
 std::vector<std::string>::iterator
 ServerConfig::parse(std::vector<std::string>::iterator pos,
@@ -57,7 +63,7 @@ ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
     }
     it++;
   }
-
+  __set_getaddrinfo();
   return pos + 2;
 }
 
@@ -80,4 +86,18 @@ ServerConfig::__parse_server_name(std::vector<std::string>::iterator pos,
     throw UnexpectedTokenException("could not detect directive value.");
   server_name_ = *pos;
   return pos + 2;
+}
+
+void ServerConfig::__set_getaddrinfo() {
+  struct addrinfo hints;
+
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family   = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  int error = getaddrinfo(listen_address_.c_str(), listen_port_.c_str(), &hints,
+                          &addrinfo_);
+  if (error) {
+    std::cerr << "getaddrinfo: " << gai_strerror(error) << std::endl;
+    exit(EXIT_FAILURE);
+  }
 }
