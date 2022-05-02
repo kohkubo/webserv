@@ -1,12 +1,11 @@
+#include "../ServerConfig.hpp"
+#include "../util.hpp"
+#include "HttpMessage.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "ServerConfig.hpp"
-#include "http.hpp"
-#include "util.hpp"
 
 static HttpMethod parse_request_method(const std::string &method) {
   if (method == "GET") {

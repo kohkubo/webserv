@@ -1,5 +1,5 @@
-#ifndef INCLUDES_EVENT_HPP
-#define INCLUDES_EVENT_HPP
+#ifndef SRCS_EVENT_HPP
+#define SRCS_EVENT_HPP
 
 #include "ServerConfig.hpp"
 #include <map>
@@ -18,4 +18,4 @@ int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
   return max_fd;
 }
 
-#endif /* INCLUDES_EVENT_HPP */
+#endif /* SRCS_EVENT_HPP */

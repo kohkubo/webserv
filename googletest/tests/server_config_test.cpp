@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "ServerConfig.hpp"
-#include "Webserv.hpp"
+#include "read_config.hpp"
 #include "util.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"

@@ -1,5 +1,5 @@
-#ifndef INCLUDES_UTIL_HPP
-#define INCLUDES_UTIL_HPP
+#ifndef SRCS_UTIL_HPP
+#define SRCS_UTIL_HPP
 
 #include <cerrno>
 #include <cstring>
@@ -32,4 +32,4 @@ std::string to_string(T val) {
   return ss.str();
 }
 
-#endif /* INCLUDES_UTIL_HPP */
+#endif /* SRCS_UTIL_HPP */
