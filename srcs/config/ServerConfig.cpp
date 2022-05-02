@@ -2,6 +2,7 @@
 #include "util/tokenize.hpp"
 #include "util/util.hpp"
 
+#include <cstdlib>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
