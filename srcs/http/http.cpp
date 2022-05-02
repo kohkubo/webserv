@@ -1,7 +1,7 @@
 #include "config/ServerConfig.hpp"
-#include "util/util.hpp"
 #include "request.hpp"
 #include "response.hpp"
+#include "util/util.hpp"
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
