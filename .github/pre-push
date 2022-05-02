@@ -4,8 +4,8 @@ set -eux
 
 echo "Running pre-push hook"
 if [ "$(uname)" = 'Darwin' ]; then
-  clang-format -i -style=file `find srcs includes -type f` && clang-tidy `find srcs includes -type f` -- -I./includes
+  clang-format -i -style=file `find srcs includes -type f` && clang-tidy `find srcs includes -type f` -- -I./srcs
 elif [ "$(uname)" = 'Linux' ]; then
-  clang-format-13 -i -style=file `find srcs includes -type f` && clang-tidy-12 `find srcs includes -type f` -- -I./includes
+  clang-format-13 -i -style=file `find srcs includes -type f` && clang-tidy-12 `find srcs includes -type f` -- -I./srcs
 fi
 exit $?

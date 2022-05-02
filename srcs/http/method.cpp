@@ -1,9 +1,9 @@
-#include "../config/ServerConfig.hpp"
-#include "../util/util.hpp"
 #include "HttpMessage.hpp"
+#include "config/ServerConfig.hpp"
 #include "const_html_filename.hpp"
 #include "const_response_key_map.hpp"
 #include "const_status_phrase.hpp"
+#include "util/util.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <string>

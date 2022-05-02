@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 
-#include "ServerConfig.hpp"
-#include "read_config.hpp"
-#include "tokenize.hpp"
-#include "util.hpp"
+#include "config/ServerConfig.hpp"
+#include "config/read_config.hpp"
+#include "util/tokenize.hpp"
+#include "util/util.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
 #define SPACES      "\v\r\f\t\n "

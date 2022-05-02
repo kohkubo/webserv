@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
-#include "method.hpp"
-#include "HttpMessage.hpp"
-#include "const_response_key_map.hpp"
-#include "const_status_phrase.hpp"
-#include "response.hpp"
-#include "ServerConfig.hpp"
+#include "http/method.hpp"
+#include "http/HttpMessage.hpp"
+#include "http/const_response_key_map.hpp"
+#include "http/const_status_phrase.hpp"
+#include "http/response.hpp"
+#include "config/ServerConfig.hpp"
 
 TEST(http_test, create_response) {
   ServerConfig server_config;

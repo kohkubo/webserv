@@ -2,7 +2,7 @@ NAME = webserv
 CXX = clang++
 CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g
 
-includes = ./includes
+includes = srcs
 srcsdir = srcs
 objsdir = objs
 srcs = $(shell find $(srcsdir) -name "*.cpp" -type f)
