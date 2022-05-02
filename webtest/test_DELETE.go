@@ -26,6 +26,6 @@ func testDELETE() {
 	for _, t := range tests {
 		t := t
 		t.Method = http.MethodDelete
-		//t.Do() // おそらく今はwevservの返答が変なのでエラー出てる
+		//t.Do() // おそらくwevservの返答が未完成なのが理由でエラー出てる
 	}
 }

@@ -38,6 +38,6 @@ func testPOST() {
 	for _, t := range tests {
 		t := t
 		t.Method = http.MethodPost
-		//t.Do() // おそらく今はwevservの返答が変なのでエラー出てる
+		//t.Do() // おそらくwevservの返答が未完成なのが理由でエラー出てる
 	}
 }

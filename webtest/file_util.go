@@ -22,6 +22,7 @@ func FileToBytes(fileName string) []byte {
 	return srcBytes
 }
 
+// FileToReader: fileNameの中身をリクエストで送信するbodyの型(io.Reader)にして返します。
 func FileToReader(fileName string) io.Reader {
 	return bytes.NewReader(FileToBytes(fileName))
 }

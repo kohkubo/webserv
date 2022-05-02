@@ -8,7 +8,7 @@ const (
 	PORT_5001    = "5001"
 )
 
-// Resouse pass
+// Resourse pass
 const (
 	HELLO_WORLD_PAGE           = "../html/index.html"
 	FORBIDDEN_PAGE             = "../html/forbidden.html"
@@ -19,7 +19,7 @@ const (
 	UNKNOWN_ERROR_PAGE         = "../html/unknown_error.html"
 )
 
-// Field name
+// Http message field name
 const (
 	HOST          = "Host"
 	USERAGENT     = "User-Agent"

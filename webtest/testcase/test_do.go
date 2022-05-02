@@ -8,18 +8,17 @@ import (
 	"net/http"
 )
 
-// http.Clientの説明にグローバルで使用すべきと書いてあった(詳しくは分からん)
-// 毎度作り直すことによる弊害の推測:
-//   作ることのオーバヘッド
-//   接続のキャッシュ情報が捨てられることによるリーク
-var client = &http.Client{}
-
 const (
 	RED   = "\033[31m"
 	GREEN = "\033[32m"
 	RESET = "\033[0m"
 )
 
+// note
+// Clientは追加項目がなければDefaltClientを使う.
+// 理由は内部でTCPコネクションを管理するRoundTripperを使用しているため.
+// RoundTripperは通信の際リソースをキャッシュしていて, 複数から利用されると上手く解放できずリークする.
+// Client{}を新たに宣言してもDefaultTransportを使用するので問題はないが, 必要がなければやめる.
 func (tc *TestCase) Do() {
 	fmt.Print("[ " + tc.Name + " ] ")
 	var wasErr bool
@@ -30,7 +29,7 @@ func (tc *TestCase) Do() {
 	}
 
 	// リクエスト and レスポンス受け取り
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalf("fail to send request or get response: %v", err)
 	}
