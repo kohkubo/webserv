@@ -1,4 +1,5 @@
 #include "ServerConfig.hpp"
+#include "constant/resource.hpp"
 #include "http.hpp"
 #include "util.hpp"
 #include <cstdlib>
