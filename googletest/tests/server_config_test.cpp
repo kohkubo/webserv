@@ -2,6 +2,7 @@
 
 #include "ServerConfig.hpp"
 #include "read_config.hpp"
+#include "tokenize.hpp"
 #include "util.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"

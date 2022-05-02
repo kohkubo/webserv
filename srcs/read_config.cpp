@@ -1,4 +1,5 @@
 #include "ServerConfig.hpp"
+#include "tokenize.hpp"
 #include "util.hpp"
 #include <cstdlib>
 #include <iostream>

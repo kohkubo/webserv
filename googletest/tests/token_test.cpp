@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "util.hpp"
+#include "tokenize.hpp"
 
 #include <iostream>
 #include <string>
