@@ -21,20 +21,30 @@ enum HttpStatusCode {
 };
 
 struct HttpMessage {
-  HttpMethod     method_;
-  std::string    url_;
-  std::string    path_;
-  std::string    version_;
-  std::string    host_;
-  std::string    status_;
-  std::string    phrase_;
-  std::string    body_;
-  HttpStatusCode status_code_;
+  HttpMethod                         method_;
+  std::string                        url_;
+  std::string                        path_;
+  std::string                        version_;
+  std::string                        host_;
+  std::string                        status_;
+  std::string                        phrase_;
+  size_t                             content_length_;
+  std::string                        body_;
+  // TODO: values_ CGIにわたす形式に合わせる。仮置でmap
+  std::map<std::string, std::string> values_;
+  HttpStatusCode                     status_code_;
 
   HttpMessage() {
-    method_      = UNKNOWN;
-    status_code_ = NONE;
-    path_        = "";
+    method_         = UNKNOWN;
+    url_            = "";
+    path_           = "";
+    version_        = "";
+    host_           = "";
+    status_         = "";
+    phrase_         = "";
+    content_length_ = 0;
+    body_           = "";
+    status_code_    = NONE;
   }
 };
 
