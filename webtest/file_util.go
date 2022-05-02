@@ -1,13 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 )
 
-// FileContents: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
-func FileContents(fileName string) []byte {
+// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
+func FileToBytes(fileName string) []byte {
 	file, err := os.Open(fileName)
 	if err != nil {
 		log.Fatalf("FileBytes: %v", err)
@@ -18,4 +20,9 @@ func FileContents(fileName string) []byte {
 		log.Fatalf("FileBytes: %v", err)
 	}
 	return srcBytes
+}
+
+// FileToReader: fileNameの中身をリクエストで送信するbodyの型(io.Reader)にして返します。
+func FileToReader(fileName string) io.Reader {
+	return bytes.NewReader(FileToBytes(fileName))
 }
