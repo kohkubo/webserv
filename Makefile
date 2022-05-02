@@ -27,7 +27,6 @@ $(objsdir)/%.o: $(srcsdir)/%.cpp
 
 .PHONY: test
 test:
-	$(MAKE) -C $(wtestdir) run
 	$(MAKE) -C $(gtestdir) run
 
 .PHONY: cav
@@ -35,7 +34,7 @@ cav: $(objs)
 	$(MAKE) -C $(gtestdir) cav
 
 .PHONY: wtest
-wtest:
+wtest: $(NAME)
 	$(MAKE) -C $(wtestdir) run
 
 .PHONY: clean
