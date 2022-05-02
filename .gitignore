@@ -9,9 +9,11 @@
 !*.yml
 !*.html
 !*.txt
+!*.png
 !*.go
 !*.mod
 !*.conf
+!*.drawio.svg
 !.clang-format
 !.clang-tidy
 !Makefile
