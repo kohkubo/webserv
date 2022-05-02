@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 // http.Clientの説明にグローバルで使用すべきと書いてあった(詳しくは分からん)
@@ -54,5 +55,8 @@ func (tc *TestCase) Do() {
 
 	if !wasErr {
 		fmt.Println(GREEN, "ok", RESET)
+	} else {
+		fmt.Println(RED, "error", RESET)
+		os.Exit(1)
 	}
 }
