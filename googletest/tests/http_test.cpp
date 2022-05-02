@@ -7,8 +7,8 @@
 #include "config/ServerConfig.hpp"
 
 TEST(http_test, create_response) {
-  ServerConfig server_config;
-  server_config.root_ = "../html/";
+  ServerConfig *server_config = new ServerConfig();
+  server_config->root_ = "../html/";
   HttpMessage      request_message;
   request_message.method_ = GET;
   request_message.url_ = "/";
@@ -38,9 +38,9 @@ TEST(http_test, create_response) {
 #define NO_SUCH_FILE       "no such file"
 
 TEST(http_test, method_get) {
-  ServerConfig server_config;
-  server_config.root_ = "./tdata/";
-  server_config.index_ = "test.txt";
+  ServerConfig *server_config = new ServerConfig();
+  server_config->root_ = "./tdata/";
+  server_config->index_ = "test.txt";
   HttpMessage request_message;
   http_message_map response_message;
   request_message.url_ = "/";
@@ -54,7 +54,7 @@ TEST(http_test, method_get) {
 // 今はget()の中でNOT_FOUNDページを挿入するようになっているため
 // テスト側からNOT_FOUNDページの中身について確認するのが難しいのでボディのテスト保留
 TEST(http_test, target_file_not_exist) {
-  const ServerConfig server_config;
+  const ServerConfig *server_config = new ServerConfig();
   HttpMessage request_message;
   http_message_map response_message;
 
