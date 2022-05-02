@@ -8,12 +8,12 @@
 
 class ServerConfig {
 public:
-  std::string listen_address_;
-  std::string listen_port_;
-  int         client_max_body_size_;
-  std::string server_name_;
-  std::string root_;
-  std::string index_;
+  std::string      listen_address_;
+  std::string      listen_port_;
+  int              client_max_body_size_;
+  std::string      server_name_;
+  std::string      root_;
+  std::string      index_;
   struct addrinfo *addrinfo_;
 
   // error_page;
