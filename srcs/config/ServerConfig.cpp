@@ -17,6 +17,7 @@ ServerConfig::ServerConfig()
     : listen_address_("0.0.0.0"), listen_port_("80"), client_max_body_size_(0) {
   root_  = "./html/";
   index_ = "index.html";
+  addrinfo_ = NULL;
 }
 
 ServerConfig::~ServerConfig() { freeaddrinfo(addrinfo_); }
