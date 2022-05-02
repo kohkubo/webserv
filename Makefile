@@ -12,8 +12,8 @@ deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
 # == path of googletest dir ==
 gtestdir := googletest
 
-# == path of webtest dir ==
-wtestdir := webtest
+# == path of integration_test dir ==
+itestdir := integration_test
 
 .PHONY: all
 all: $(NAME)
@@ -33,9 +33,9 @@ test:
 cav: $(objs)
 	$(MAKE) -C $(gtestdir) cav
 
-.PHONY: wtest
-wtest: $(NAME)
-	$(MAKE) -C $(wtestdir) run
+.PHONY: itest
+itest: $(NAME)
+	$(MAKE) -C $(itestdir) run
 
 .PHONY: clean
 clean:

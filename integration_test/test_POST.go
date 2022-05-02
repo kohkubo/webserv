@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"integration_test/testcase"
 	"net/http"
-	"webtest/testcase"
 )
 
 // TODO: ヘッダの情報が書き換えられるか検証
