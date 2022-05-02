@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Basic Web Page</title>
+</head>
+
+<body>
+    Form!!!!!!
+    <form action="html/cgi.sh" method="post">
+        <p>
+            name: <input type="text" name="name" size="40">
+        </p>
+        <p>
+            sex: <input type="radio" name="sex" value="male">male
+            <input type="radio" name="sex" value="female">female
+        </p>
+        <p>
+            blood: <select name="blood">
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="O">O</option>
+                <option value="AB">AB</option>
+            </select>
+        </p>
+        <p>
+            text: <br>
+            <textarea name="text" rows="4" cols="40"></textarea>
+        </p>
+        <input type="file" name="example" accept="image/jpeg, image/png">
+        <p>
+            <input type="submit" value="submit"><input type="reset" value="reset">
+        </p>
+    </form>
+</body>
+
+</html>
