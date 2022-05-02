@@ -1,4 +1,4 @@
-#include "config/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 #include "util/tokenize.hpp"
 #include "util/util.hpp"
 #include <cstdlib>
