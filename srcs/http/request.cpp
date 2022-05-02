@@ -39,21 +39,30 @@ static std::string read_connected_fd(int accfd) {
   std::string recv_str      = "";
   ssize_t     read_size     = 0;
 
+  std::cout << "start recieving request....." << std::endl;
+  fd_set readfds;
+  FD_ZERO(&readfds);
+  FD_SET(accfd, &readfds);
   do {
-    read_size = recv(accfd, buf, sizeof(buf) - 1, MSG_DONTWAIT);
-    if (read_size == -1) {
-      error_log_with_errno("read() failed.");
-      close(accfd);
-      // accfd = -1;
-      break;
+    int ret = select(accfd + 1, &readfds, NULL, NULL, NULL);
+    std::cout << "threwed select" << std::endl;
+    if (ret == -1) {
+      error_log_with_errno("select() failed. readfds.");
+      read_size = 1;
     }
-    if (read_size > 0) {
-      recv_str.append(buf);
+    if (ret && FD_ISSET(accfd, &readfds)) {
+      std::cout << "you can read" << std::endl;
+      read_size = recv(accfd, buf, sizeof(buf) - 1, 0);
+      if (read_size == -1) {
+        error_log_with_errno("read() failed.");
+        exit(1);
+      }
+      if (read_size > 0) {
+        recv_str.append(buf);
+        break;
+      }
     }
-    if (is_match_suffix_string(recv_str, "\r\n\r\n")) {
-      break;
-    }
-  } while (read_size > 0);
+  } while (read_size != 0);
   std::cout << "receive_request()" << std::endl;
   std::cout << recv_str << std::endl;
   return recv_str;
