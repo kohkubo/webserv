@@ -1,5 +1,5 @@
-#ifndef INCLUDES_SERVERCONFIG_HPP
-#define INCLUDES_SERVERCONFIG_HPP
+#ifndef SRCS_SERVERCONFIG_HPP
+#define SRCS_SERVERCONFIG_HPP
 
 #include <map>
 #include <stdexcept>
@@ -47,4 +47,4 @@ typedef std::map<int, std::vector<const ServerConfig *> > socket_list_type;
 server_group_type
 create_server_group(const std::vector<ServerConfig> &server_list);
 
-#endif /* INCLUDES_SERVERCONFIG_HPP */
+#endif /* SRCS_SERVERCONFIG_HPP */

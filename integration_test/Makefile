@@ -3,7 +3,7 @@ GOBUILD=go build
 GOCLEAN=go clean
 GOTEST=go test
 GOGET=go get
-BINARY_NAME=webtest
+BINARY_NAME=integration_test
 BINARY_UNIX=$(BINARY_NAME)_unix
 
 # Make rule
@@ -23,4 +23,4 @@ re: clean all
 
 .PHONY: run
 run: build
-	bash ./webtest.sh
+	bash ./run.sh

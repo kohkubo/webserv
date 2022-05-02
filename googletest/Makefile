@@ -4,7 +4,7 @@ SHELL := /bin/bash
 CXX := clang++
 CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=undefined -fsanitize=address
 LIBS := -lpthread -lgtest_main -lgtest
-INCLUDES := -I./includes -I../includes
+INCLUDES := -I./includes -I../srcs
 LIBINCLUDES = -L./$(LIBDIR)
 
 ifeq ($(shell uname), Linux)
@@ -14,7 +14,7 @@ endif
 LIBDIR := lib
 SRCDIR := ../srcs
 OBJDIR := objs
-MAIN_FILE := main.cpp
+MAIN_FILE := webserv.cpp
 SRCFILE := $(filter-out %$(MAIN_FILE),$(shell find $(SRCDIR) -name "*.cpp" -type f))
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.o))
 DEPS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.d))

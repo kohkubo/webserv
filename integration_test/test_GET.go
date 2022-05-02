@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"integration_test/testcase"
 	"net/http"
-	"webtest/testcase"
 )
 
 func testGET() {

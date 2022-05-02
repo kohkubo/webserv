@@ -1,13 +1,13 @@
 #include "limits.h"
-#include "util.hpp"
+#include "util/util.hpp"
 #include "gtest/gtest.h"
 #include <fstream>
 
-#define TEST_FILE      "../googletest/tdata/test.txt"
-#define TEST_CONTENT   "test"
-#define EMPTY_FILE     "../googletest/tdata/empty.txt"
-#define NO_PERMISSION_FILE  "../googletest/tdata/no_permission.txt"
-#define NO_SUCH_FILE   "no such file"
+#define TEST_FILE          "../googletest/tdata/test.txt"
+#define TEST_CONTENT       "test"
+#define EMPTY_FILE         "../googletest/tdata/empty.txt"
+#define NO_PERMISSION_FILE "../googletest/tdata/no_permission.txt"
+#define NO_SUCH_FILE       "no such file"
 
 TEST(util_test, test_is_match_suffix_string) {
   std::string str    = "abcdefg";
@@ -80,16 +80,17 @@ TEST(util_test, test_is_digits) {
   EXPECT_EQ(is_digits("hello"), false);
 }
 
-TEST(util_test, test_read_file_tostring){
+TEST(util_test, test_read_file_tostring) {
+  std::cout << "test_read_file_tostring" << std::endl;
   EXPECT_EQ(read_file_tostring(TEST_FILE), TEST_CONTENT);
   EXPECT_EQ(read_file_tostring(EMPTY_FILE), "");
   EXPECT_EQ(read_file_tostring(NO_SUCH_FILE), ""); // TODO: エラーを拾う
   //ファイルに読み込み権限がないとNO_SUCH_FILEと同じ挙動です。
 }
 
-TEST(util_test, test_is_file_exists){
-    EXPECT_TRUE(is_file_exists(TEST_FILE));
-    EXPECT_TRUE(is_file_exists(EMPTY_FILE));
-    EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
-    //ファイルに読み込み権限がないとtrueが返ります。
+TEST(util_test, test_is_file_exists) {
+  EXPECT_TRUE(is_file_exists(TEST_FILE));
+  EXPECT_TRUE(is_file_exists(EMPTY_FILE));
+  EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
+  //ファイルに読み込み権限がないとtrueが返ります。
 }

@@ -1,5 +1,8 @@
-#include "ServerConfig.hpp"
-#include "http.hpp"
+#include "HttpMessage.hpp"
+#include "config/ServerConfig.hpp"
+#include "const_delimiter.hpp"
+#include "const_response_key_map.hpp"
+#include "method.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
@@ -11,8 +14,7 @@
 static std::string reponse_startline(http_message_map &response_message) {
   return \
     response_message[VERSION] + SP + \
-    response_message[STATUS] + SP + \
-    response_message[PHRASE] + \
+    response_message[STATUS_PHRASE] + \
     CRLF;
 }
 // clang-format on
@@ -27,10 +29,10 @@ static std::string response_header(http_message_map &response_message,
 // clang-format off
 static std::string response_headers(http_message_map &response_message) {
   return \
-    response_header(response_message, HOST) + \
-    response_header(response_message, CONTENT_LEN) + \
-    response_header(response_message, CONTENT_TYPE) + \
-    response_header(response_message, CONNECTION);
+    response_header(response_message, "Host") + \
+    response_header(response_message, "Content-Length") + \
+    response_header(response_message, "Content-Type") + \
+    response_header(response_message, "Connection");
 }
 // clang-format on
 
