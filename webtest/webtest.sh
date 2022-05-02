@@ -13,4 +13,4 @@ webserv_pid=`ps | grep webserv | sed '/grep/d' | awk '{print $1}'`
 #./webtest
 
 # webservを終了させる
-kill $webserv_pid
+#kill $webserv_pid
