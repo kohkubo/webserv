@@ -14,11 +14,13 @@ ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     : logic_error(msg) {}
 
 ServerConfig::ServerConfig()
-    : listen_address_("0.0.0.0"), listen_port_("80"), client_max_body_size_(0) {
-  root_     = "./html/";
-  index_    = "index.html";
-  addrinfo_ = NULL;
-}
+    : listen_address_("0.0.0.0")
+    , listen_port_("80")
+    , client_max_body_size_(0)
+    , server_name_("")
+    , root_("./html/")
+    , index_("index.html")
+    , addrinfo_(NULL) {}
 
 ServerConfig::ServerConfig(const ServerConfig &other) { *this = other; }
 
