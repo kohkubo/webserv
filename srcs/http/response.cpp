@@ -2,6 +2,7 @@
 #include "config/ServerConfig.hpp"
 #include "const_delimiter.hpp"
 #include "const_response_key_map.hpp"
+#include "delete_method.hpp"
 #include "method.hpp"
 #include <iostream>
 #include <string>
@@ -68,9 +69,10 @@ std::string create_response(const ServerConfig &server_config,
   case GET:
     response_message = method_get(server_config, request_message);
     break;
+  case DELETE:
+    response_message = method_delete(server_config, request_message);
+    break;
   // case POST:
-  //   break;
-  // case DELETE:
   //   break;
   default:
     break;
