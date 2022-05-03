@@ -26,6 +26,8 @@ public:
 public:
   ServerConfig();
   ~ServerConfig();
+  ServerConfig(const ServerConfig &other);
+  ServerConfig &operator=(const ServerConfig &other);
   std::vector<std::string>::iterator
   parse(std::vector<std::string>::iterator pos,
         std::vector<std::string>::iterator end);
