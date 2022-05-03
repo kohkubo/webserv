@@ -1,4 +1,5 @@
 #include "config/ServerConfig.hpp"
+#include "http/const_delimiter.hpp"
 #include "request_parse.hpp"
 #include "util/tokenize.hpp"
 #include "util/util.hpp"
@@ -54,7 +55,6 @@ static bool is_request_error(std::vector<std::string> &request_tokens) {
   return false;
 }
 
-#define SEPARATOR " \r\n"
 /*
  * メッセージ読み込み
  */
