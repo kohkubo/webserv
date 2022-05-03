@@ -26,14 +26,27 @@ create_socket_map(const server_group_type &server_group) {
   return res;
 }
 
+#include <map>
+
+struct Connection {
+  int         socket_fd_;
+  std::string data_;
+
+  Connection(int socket_fd) : socket_fd_(socket_fd) {}
+};
+
+typedef std::map<int, Connection> connection_list_type;
+
 // socket_fd + connection_fdをreadfdsに加える。
-static fd_set create_readfds(const socket_list_type &socket_list, int &nfds) {
+static fd_set create_readfds(const socket_list_type &socket_list, const connection_list_type &connection_list, int &nfds) {
   int    res;
   fd_set readfds;
 
   nfds = -1;
   FD_ZERO(&readfds);
   res  = set_fd_list(&readfds, socket_list);
+  nfds = std::max(nfds, res);
+  res  = set_fd_list(&readfds, connection_list);
   nfds = std::max(nfds, res);
   return readfds;
 }
@@ -47,11 +60,12 @@ static void close_all_socket(const socket_list_type &socket_list) {
 
 void listen_event(const server_group_type &server_group) {
   socket_list_type socket_list = create_socket_map(server_group);
+  connection_list_type connection_list;
 
   timeval          timeout     = {.tv_sec = 0, .tv_usec = 0};
   while (1) {
     int    nfds;
-    fd_set readfds = create_readfds(socket_list, nfds);
+    fd_set readfds = create_readfds(socket_list, connection_list, nfds);
 
     int    ret     = select(nfds + 1, &readfds, NULL, NULL, &timeout);
     if (ret == -1) {
