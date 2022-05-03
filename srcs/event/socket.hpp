@@ -1,10 +1,9 @@
-#ifndef SRCS_SOCKET_HPP
-#define SRCS_SOCKET_HPP
+#ifndef SRCS_EVENT_SOCKET_HPP
+#define SRCS_EVENT_SOCKET_HPP
 
 #include "config/ServerConfig.hpp"
 #include "util/util.hpp"
 
-int              open_new_socket(const ServerConfig &config);
-struct addrinfo *getaddrinfo_via_serv(const ServerConfig &conf);
+int open_new_socket(const ServerConfig *config);
 
-#endif /* SRCS_SOCKET_HPP */
+#endif /* SRCS_EVENT_SOCKET_HPP */
