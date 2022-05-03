@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 /*
 ** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持
@@ -60,7 +61,7 @@ void listen_event(const server_group_type &server_group) {
     int    ret     = select(nfds + 1, &readfds, NULL, NULL, &timeout);
     if (ret == -1) {
       error_log_with_errno("select() failed. readfds.");
-      continue;
+      exit(EXIT_FAILURE);
     }
     // TODO: retの数処理を行ったら打ち切り
     if (ret) {
@@ -79,6 +80,7 @@ void listen_event(const server_group_type &server_group) {
         }
       }
       // TODO: eraseでiteratorを受け取るのはc++11から
+      // TODO: connection内にstringを受け取る
       connection_list_type::iterator cit = connection_list.begin();
       while (cit != connection_list.end()) {
         int accfd = cit->first;
