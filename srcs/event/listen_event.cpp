@@ -76,15 +76,38 @@ void listen_event(const server_group_type &server_group) {
     if (ret) {
       socket_list_type::iterator it = socket_list.begin();
       for (; it != socket_list.end(); it++) {
-        if (FD_ISSET(it->first, &readfds)) {
-          int accfd = accept(it->first, (struct sockaddr *)NULL, NULL);
+        int listen_fd = it->first;
+        if (FD_ISSET(listen_fd, &readfds)) {
+          std::cout << "FD_ISSET listen_fd:" << listen_fd << std::endl;
+          int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
+          std::cout << "accepted fd:" << accfd << std::endl;
           if (accfd == -1) {
-            continue;
+            error_log_with_errno("accept()) failed.");
+            exit(EXIT_FAILURE);
           }
-          // FIXME: don't use sleep
-          http(accfd);
+          connection_list.insert(std::make_pair(accfd, Connection(listen_fd)));
         }
       }
+      connection_list_type::iterator cit = connection_list.begin();
+      connection_list_type::iterator to_erase = connection_list.end();
+      for (; cit != connection_list.end(); cit++) {
+        std::cout << "~~~~~~~~~~~~~>" << std::endl;
+        int accfd = cit->first;
+        if (FD_ISSET(accfd, &readfds)) {
+          std::cout << "FD_ISSET accfd:" << accfd << std::endl;
+          http(accfd);
+          to_erase = cit;
+        }
+        std::cout << "----------->" << std::endl;
+        std::cout << ">>>>>>>>>>>>>" << std::endl;
+      }
+      if (to_erase != connection_list.end()) {
+          std::cout << "free accfd:" << to_erase->first << std::endl;
+          FD_CLR(to_erase->first, &readfds);
+          close(to_erase->first);
+          connection_list.erase(to_erase);
+      }
+      std::cout << ".............>" << std::endl;
     }
   }
   // tmp
