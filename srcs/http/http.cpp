@@ -1,5 +1,6 @@
 #include "config/ServerConfig.hpp"
 #include "request.hpp"
+#include "request_parse.hpp"
 #include "response.hpp"
 #include "util/util.hpp"
 #include <string>
@@ -20,10 +21,10 @@ static void send_response(int accfd, const std::string &message) {
  */
 void http(int accfd) {
   // TODO: 適切なServerConfigが渡される。
-  const ServerConfig server_config   = ServerConfig();
-
-  HttpMessage        request_message = receive_request(accfd);
-  std::string        response_message =
+  const ServerConfig       server_config  = ServerConfig();
+  std::vector<std::string> request_tokens = receive_request(accfd);
+  HttpMessage request_message = parse_request_message(request_tokens);
+  std::string response_message =
       create_response(server_config, request_message);
   send_response(accfd, response_message);
 }
@@ -34,7 +35,7 @@ void http(int accfd) {
 receive_massageはリクエストとbodyが全て読み込まれた状態。
 （リクエスト、bodyを別々に持ったほうが良いかも。要検討）
 
-recieve_request -> accfdからの読み込み std::string
+recieve_request -> accfdからの読み込み、トークンとして返す std::vector<str>
 parse_request_message -> messageをパース HttpMessage
 create_response_message -> パースしたメッセージからレスポンスを生成 std::string
 send_response -> レスポンスを送信

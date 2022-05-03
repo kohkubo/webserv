@@ -2,7 +2,8 @@
 #define SRCS_HTTP_REQUEST_HPP
 
 #include "HttpMessage.hpp"
+#include <vector>
 
-HttpMessage receive_request(int accfd);
+std::vector<std::string> receive_request(int accfd);
 
 #endif /* SRCS_HTTP_REQUEST_HPP */

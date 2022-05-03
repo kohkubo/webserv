@@ -9,6 +9,14 @@
 #include <string>
 #include <unistd.h>
 
+// TODO: Requestのエラーについて、未調査です。Getにおいては、Hostだけで良さそう
+bool is_request_error(HttpMessage &request_message) {
+  if (request_message.host_ == "") {
+    return true;
+  }
+  return false;
+}
+
 static HttpStatusCode check_url(const char *target_url) {
   if (is_file_exists(target_url)) {
     if (access(target_url, R_OK) == 0) {
@@ -42,8 +50,16 @@ static std::string resolve_url(const ServerConfig &server_config,
  */
 http_message_map method_get(const ServerConfig &server_config,
                             HttpMessage        &request_message) {
-  std::string target_url = resolve_url(server_config, request_message.url_);
   http_message_map response_message;
+  // リクエストのエラー 判定はここがよさそう。
+  // メソッドごとのエラー判定と共通のエラーで分けてもいいかも
+  // hostは共通かな
+  if (is_request_error(request_message)) {
+    std::cout << "request error." << std::endl;
+    response_message[PATH] = BAD_REQUEST_PAGE;
+    return response_message;
+  }
+  std::string target_url = resolve_url(server_config, request_message.url_);
   switch (check_url(target_url.c_str())) {
   case OK_200:
     response_message[STATUS_PHRASE] = STATUS_200_PHRASE;
