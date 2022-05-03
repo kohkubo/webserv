@@ -9,30 +9,6 @@
 
 #define BUF_SIZE 1024
 
-// TODO: Requestのエラーについて、未調査です。Getにおいては、Hostだけで良さそう
-static bool is_request_error(token_vector &request_tokens) {
-  if (request_tokens.size() < 5) {
-    return true;
-  }
-  if (std::count(request_tokens.begin(), request_tokens.end(), "Host:") != 1) {
-    return true;
-  }
-  return false;
-}
-
-/*
- * 超安易パース
- * 必須情報のみを取得しています。
- */
-static HttpMessage parse_request_message(token_vector &request_tokens) {
-  HttpMessage request_message;
-  parse_request_method_line(request_message, request_tokens);
-  parse_request_host(request_message, request_tokens);
-  parse_request_content_length(request_message, request_tokens);
-  parse_request_body(request_message, request_tokens);
-  return request_message;
-}
-
 static std::string read_connected_fd(int accfd) {
   char        buf[BUF_SIZE] = {};
   std::string recv_str      = "";
@@ -67,6 +43,17 @@ static std::string read_connected_fd(int accfd) {
   return recv_str;
 }
 
+// TODO: Requestのエラーについて、未調査です。Getにおいては、Hostだけで良さそう
+static bool is_request_error(std::vector<std::string> &request_tokens) {
+  if (request_tokens.size() < 5) {
+    return true;
+  }
+  if (std::count(request_tokens.begin(), request_tokens.end(), "Host:") != 1) {
+    return true;
+  }
+  return false;
+}
+
 #define SEPARATOR " \r\n"
 /*
  * メッセージ読み込み
@@ -74,6 +61,9 @@ static std::string read_connected_fd(int accfd) {
 HttpMessage receive_request(int accfd) {
   token_vector request_tokens =
       tokenize(read_connected_fd(accfd), SEPARATOR, " ");
+  // errorハンドリングはここではないほうがよさそう。
+  // methodごとのエラーハンドリング？
+
   if (is_request_error(request_tokens)) {
     std::cout << "request error." << std::endl;
     HttpMessage request_message;
