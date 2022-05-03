@@ -20,6 +20,22 @@ ServerConfig::ServerConfig()
   addrinfo_ = NULL;
 }
 
+ServerConfig::ServerConfig(const ServerConfig &other) { *this = other; }
+
+ServerConfig &ServerConfig::operator=(const ServerConfig &other) {
+  if (this == &other) {
+    return *this;
+  }
+  listen_address_       = other.listen_address_;
+  listen_port_          = other.listen_port_;
+  client_max_body_size_ = other.client_max_body_size_;
+  server_name_          = other.server_name_;
+  root_                 = other.root_;
+  index_                = other.index_;
+  __set_getaddrinfo();
+  return *this;
+}
+
 ServerConfig::~ServerConfig() { freeaddrinfo(addrinfo_); }
 
 std::vector<std::string>::iterator

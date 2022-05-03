@@ -56,7 +56,7 @@ static std::string response_message_to_string(http_message_map &response_message
 }
 // clang-format on
 
-std::string create_response(const ServerConfig *server_config,
+std::string create_response(const ServerConfig &server_config,
                             HttpMessage        &request_message) {
   // if (request_message.status_code_ == BAD_REQUEST) {
   //   /* BAD_REQUEST処理 */

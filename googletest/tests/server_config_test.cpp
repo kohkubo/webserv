@@ -200,8 +200,8 @@ TEST(server_config_test, parse_server_name) {
 }
 
 TEST(server_config_test, server_group_test) {
-  std::vector<const ServerConfig *> server_list  = read_config(SAMPLE_CONF);
-  server_group_type         server_group = create_server_group(server_list);
+  server_list_type  server_list  = read_config(SAMPLE_CONF);
+  server_group_type server_group = create_server_group(server_list);
 
   EXPECT_EQ(server_group[0][0]->listen_address_, "0.0.0.0");
   EXPECT_EQ(server_group[0][0]->listen_port_, "5500");
