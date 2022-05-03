@@ -2,11 +2,11 @@
 #include "http/http.hpp"
 #include "socket.hpp"
 #include "util/util.hpp"
-#include "Connection.hpp"
+#include <map>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 /*
 ** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持
@@ -15,6 +15,8 @@
 ** connection_listのvalueとしてsocketfd、受信したstringをもった構造が欲しい
 ** pollingするときに二つのmapのkeyをreadfdsに加える。
 */
+
+typedef std::map<int, int> connection_list_type; // <accetpted fd, listen fd>
 
 static socket_list_type
 create_socket_map(const server_group_type &server_group) {
@@ -29,7 +31,9 @@ create_socket_map(const server_group_type &server_group) {
 }
 
 // socket_fd + connection_fdをreadfdsに加える。
-static fd_set create_readfds(const socket_list_type &socket_list, const connection_list_type &connection_list, int &nfds) {
+static fd_set create_readfds(const socket_list_type     &socket_list,
+                             const connection_list_type &connection_list,
+                             int                        &nfds) {
   int    res;
   fd_set readfds;
 
@@ -49,13 +53,11 @@ static void close_all_socket(const socket_list_type &socket_list) {
   }
 }
 
-#include <vector>
-
 void listen_event(const server_group_type &server_group) {
-  socket_list_type socket_list = create_socket_map(server_group);
+  socket_list_type     socket_list = create_socket_map(server_group);
   connection_list_type connection_list;
 
-  timeval          timeout     = {.tv_sec = 0, .tv_usec = 0};
+  timeval              timeout = {.tv_sec = 0, .tv_usec = 0};
   while (1) {
     int    nfds;
     fd_set readfds = create_readfds(socket_list, connection_list, nfds);
@@ -71,34 +73,24 @@ void listen_event(const server_group_type &server_group) {
       for (; it != socket_list.end(); it++) {
         int listen_fd = it->first;
         if (FD_ISSET(listen_fd, &readfds)) {
-          std::cout << "FD_ISSET listen_fd:" << listen_fd << std::endl;
           int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
-          std::cout << "accepted fd:" << accfd << std::endl;
           if (accfd == -1) {
             error_log_with_errno("accept()) failed.");
             exit(EXIT_FAILURE);
           }
-          connection_list.insert(std::make_pair(accfd, Connection(listen_fd)));
+          connection_list.insert(std::make_pair(accfd, listen_fd));
         }
       }
-      // TODO: connection内にstringを受け取る
       connection_list_type::iterator cit = connection_list.begin();
-      typedef std::vector<connection_list_type::iterator> erase_vector_type;
-      erase_vector_type to_erase;
-      for (; cit != connection_list.end() ; cit++) {
+      while (cit != connection_list.end()) {
         int accfd = cit->first;
         if (FD_ISSET(accfd, &readfds)) {
-          std::cout << "FD_ISSET accfd:" << accfd << std::endl;
           http(accfd);
-          to_erase.push_back(cit);
+          close(accfd); // tmp
+          connection_list.erase(cit++);
+        } else {
+          cit++;
         }
-      }
-      erase_vector_type::iterator eit = to_erase.begin();
-      for (; eit != to_erase.end(); eit++) {
-        int accfd = (*eit)->first;
-        FD_CLR(accfd, &readfds);
-        close(accfd); // tmp
-        connection_list.erase(*eit);
       }
     }
   }
