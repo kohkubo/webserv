@@ -32,6 +32,7 @@ TEST(http_test, create_response) {
                              "    </body>\n"
                              "</html>";
   EXPECT_EQ(create_response(server_config, request_message), expect);
+  delete server_config;
 }
 
 #define TEST_FILE          "../googletest/tdata/test.txt"
@@ -52,12 +53,13 @@ TEST(http_test, method_get) {
   EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   EXPECT_EQ(response_message[CONTENT_LEN],
             std::to_string((strlen(TEST_CONTENT))));
+  delete server_config;
 }
 
 // 今はget()の中でNOT_FOUNDページを挿入するようになっているため
 // テスト側からNOT_FOUNDページの中身について確認するのが難しいのでボディのテスト保留
 TEST(http_test, target_file_not_exist) {
-  ServerConfig *server_config = new ServerConfig();
+  ServerConfig    *server_config = new ServerConfig();
 
   HttpMessage      request_message;
   http_message_map response_message;
@@ -67,4 +69,5 @@ TEST(http_test, target_file_not_exist) {
   // EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   // EXPECT_EQ(response_message[CONTENT_LEN],
   // std::to_string((strlen(TEST_CONTENT))));
+  delete server_config;
 }
