@@ -49,6 +49,8 @@ static void close_all_socket(const socket_list_type &socket_list) {
   }
 }
 
+#include <vector>
+
 void listen_event(const server_group_type &server_group) {
   socket_list_type socket_list = create_socket_map(server_group);
   connection_list_type connection_list;
@@ -79,20 +81,24 @@ void listen_event(const server_group_type &server_group) {
           connection_list.insert(std::make_pair(accfd, Connection(listen_fd)));
         }
       }
-      // TODO: eraseでiteratorを受け取るのはc++11から
       // TODO: connection内にstringを受け取る
       connection_list_type::iterator cit = connection_list.begin();
-      while (cit != connection_list.end()) {
+      typedef std::vector<connection_list_type::iterator> erase_vector_type;
+      erase_vector_type to_erase;
+      for (; cit != connection_list.end() ; cit++) {
         int accfd = cit->first;
         if (FD_ISSET(accfd, &readfds)) {
           std::cout << "FD_ISSET accfd:" << accfd << std::endl;
           http(accfd);
-          FD_CLR(accfd, &readfds);
-          close(accfd);
-          cit = connection_list.erase(cit);
-        } else {
-          cit++;
+          to_erase.push_back(cit);
         }
+      }
+      erase_vector_type::iterator eit = to_erase.begin();
+      for (; eit != to_erase.end(); eit++) {
+        int accfd = (*eit)->first;
+        FD_CLR(accfd, &readfds);
+        close(accfd); // tmp
+        connection_list.erase(*eit);
       }
     }
   }
