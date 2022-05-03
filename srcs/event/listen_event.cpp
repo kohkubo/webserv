@@ -2,6 +2,7 @@
 #include "http/http.hpp"
 #include "socket.hpp"
 #include "util/util.hpp"
+#include "Connection.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -25,17 +26,6 @@ create_socket_map(const server_group_type &server_group) {
   }
   return res;
 }
-
-#include <map>
-
-struct Connection {
-  int         socket_fd_;
-  std::string data_;
-
-  Connection(int socket_fd) : socket_fd_(socket_fd) {}
-};
-
-typedef std::map<int, Connection> connection_list_type;
 
 // socket_fd + connection_fdをreadfdsに加える。
 static fd_set create_readfds(const socket_list_type &socket_list, const connection_list_type &connection_list, int &nfds) {
@@ -88,26 +78,20 @@ void listen_event(const server_group_type &server_group) {
           connection_list.insert(std::make_pair(accfd, Connection(listen_fd)));
         }
       }
+      // TODO: eraseでiteratorを受け取るのはc++11から
       connection_list_type::iterator cit = connection_list.begin();
-      connection_list_type::iterator to_erase = connection_list.end();
-      for (; cit != connection_list.end(); cit++) {
-        std::cout << "~~~~~~~~~~~~~>" << std::endl;
+      while (cit != connection_list.end()) {
         int accfd = cit->first;
         if (FD_ISSET(accfd, &readfds)) {
           std::cout << "FD_ISSET accfd:" << accfd << std::endl;
           http(accfd);
-          to_erase = cit;
+          FD_CLR(accfd, &readfds);
+          close(accfd);
+          cit = connection_list.erase(cit);
+        } else {
+          cit++;
         }
-        std::cout << "----------->" << std::endl;
-        std::cout << ">>>>>>>>>>>>>" << std::endl;
       }
-      if (to_erase != connection_list.end()) {
-          std::cout << "free accfd:" << to_erase->first << std::endl;
-          FD_CLR(to_erase->first, &readfds);
-          close(to_erase->first);
-          connection_list.erase(to_erase);
-      }
-      std::cout << ".............>" << std::endl;
     }
   }
   // tmp
