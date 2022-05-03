@@ -27,3 +27,16 @@ void http(int accfd) {
       create_response(server_config, request_message);
   send_response(accfd, response_message);
 }
+
+/*
+
+とりあえず、の流れ
+receive_massageはリクエストとbodyが全て読み込まれた状態。
+（リクエスト、bodyを別々に持ったほうが良いかも。要検討）
+
+recieve_request -> accfdからの読み込み std::string
+parse_request_message -> messageをパース HttpMessage
+create_response_message -> パースしたメッセージからレスポンスを生成 std::string
+send_response -> レスポンスを送信
+
+*/
