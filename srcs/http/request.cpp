@@ -10,7 +10,7 @@
 #define BUF_SIZE 1024
 
 // TODO: Requestのエラーについて、未調査です。Getにおいては、Hostだけで良さそう
-static bool is_request_error(std::vector<std::string> &request_tokens) {
+static bool is_request_error(token_vector &request_tokens) {
   if (request_tokens.size() < 5) {
     return true;
   }
@@ -24,8 +24,7 @@ static bool is_request_error(std::vector<std::string> &request_tokens) {
  * 超安易パース
  * 必須情報のみを取得しています。
  */
-static HttpMessage
-parse_request_message(std::vector<std::string> &request_tokens) {
+static HttpMessage parse_request_message(token_vector &request_tokens) {
   HttpMessage request_message;
   parse_request_method_line(request_message, request_tokens);
   parse_request_host(request_message, request_tokens);
@@ -73,7 +72,7 @@ static std::string read_connected_fd(int accfd) {
  * メッセージ読み込み
  */
 HttpMessage receive_request(int accfd) {
-  std::vector<std::string> request_tokens =
+  token_vector request_tokens =
       tokenize(read_connected_fd(accfd), SEPARATOR, " ");
   if (is_request_error(request_tokens)) {
     std::cout << "request error." << std::endl;

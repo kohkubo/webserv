@@ -5,13 +5,13 @@
 #include <iostream>
 #include <vector>
 
-std::vector<ServerConfig> read_config(const char *config_file_path) {
-  std::string              contents = read_file_tostring(config_file_path);
-  std::vector<std::string> config_tokens =
+server_list_type read_config(const char *config_file_path) {
+  std::string  contents = read_file_tostring(config_file_path);
+  token_vector config_tokens =
       tokenize(contents, CONFIG_DELIMITER, CONFIG_SKIP);
-  std::vector<ServerConfig> server_list;
+  server_list_type server_list;
   try {
-    std::vector<std::string>::iterator it = config_tokens.begin();
+    token_iterator it = config_tokens.begin();
     while (it != config_tokens.end()) {
       if (*it == "server") {
         ServerConfig new_server = ServerConfig();
