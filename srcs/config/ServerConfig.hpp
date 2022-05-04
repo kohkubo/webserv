@@ -23,7 +23,6 @@ public:
   std::vector<std::string>   limit_except_;
   struct addrinfo           *addrinfo_;
 
-
   // error_page;
 public:
   class UnexpectedTokenException : public std::logic_error {

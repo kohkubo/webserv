@@ -40,7 +40,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other) {
   index_                = other.index_;
   error_pages_          = other.error_pages_;
   autoindex_            = other.autoindex_;
-  limit_except_        = other.limit_except_;
+  limit_except_         = other.limit_except_;
   __set_getaddrinfo();
   return *this;
 }
