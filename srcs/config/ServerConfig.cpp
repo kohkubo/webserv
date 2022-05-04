@@ -2,6 +2,7 @@
 #include "util/tokenize.hpp"
 #include "util/util.hpp"
 
+#include <map>
 #include <cstdlib>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -48,6 +49,7 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
     token_iterator head = pos;
     // clang-format off
     pos = __parse_listen(pos, end);
+    pos = __parse_error_page(pos, end);
     pos = __parse_string_directive("root", root_, pos, end);
     pos = __parse_string_directive("server_name", server_name_, pos, end);
     // clang-format on
@@ -79,6 +81,18 @@ token_iterator ServerConfig::__parse_listen(token_iterator pos,
   }
   __set_getaddrinfo();
   return pos + 2;
+}
+
+// TODO: エラー処理
+token_iterator ServerConfig::__parse_error_page(token_iterator pos,
+                                                token_iterator end) {
+  if (*pos != "error_page")
+    return pos;
+  pos++;
+  if (pos == end || pos + 2 == end || *(pos + 2) != ";")
+    throw UnexpectedTokenException("could not detect directive value.");
+  error_pages_.insert(std::make_pair(std::atoi((*pos).c_str()), *(pos + 1)));
+  return pos + 3;
 }
 
 token_iterator ServerConfig::__parse_string_directive(std::string    key,

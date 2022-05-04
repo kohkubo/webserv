@@ -12,13 +12,14 @@
 
 class ServerConfig {
 public:
-  std::string      listen_address_;
-  std::string      listen_port_;
-  int              client_max_body_size_;
-  std::string      server_name_;
-  std::string      root_;
-  std::string      index_;
-  struct addrinfo *addrinfo_;
+  std::string                listen_address_;
+  std::string                listen_port_;
+  int                        client_max_body_size_;
+  std::string                server_name_;
+  std::string                root_;
+  std::string                index_;
+  std::map<int, std::string> error_pages_;
+  struct addrinfo           *addrinfo_;
 
   // error_page;
 public:
@@ -37,6 +38,7 @@ public:
 private:
   void           __set_getaddrinfo();
   token_iterator __parse_listen(token_iterator pos, token_iterator end);
+  token_iterator __parse_error_page(token_iterator pos, token_iterator end);
   token_iterator __parse_string_directive(std::string key, std::string &value,
                                           token_iterator pos,
                                           token_iterator end);
