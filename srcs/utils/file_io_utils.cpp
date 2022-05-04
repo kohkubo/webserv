@@ -1,20 +1,10 @@
-#include "util.hpp"
+#include "utils/file_io_utils.hpp"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
-  if (str.length() < suffix.length()) {
-    return false;
-  }
-  if (str.compare(str.length() - suffix.length(), suffix.length(), suffix) ==
-      0) {
-    return true;
-  }
-  return false;
-}
 
 bool is_file_exists(const char *path) {
   struct stat file_info;

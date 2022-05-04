@@ -2,7 +2,7 @@
 #define SRCS_EVENT_SOCKET_HPP
 
 #include "config/ServerConfig.hpp"
-#include "utils/util.hpp"
+#include "utils/utils.hpp"
 
 int open_new_socket(const ServerConfig &config);
 

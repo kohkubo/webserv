@@ -13,8 +13,6 @@ inline void error_log_with_errno(const std::string &msg) {
 }
 
 bool is_match_suffix_string(const std::string &str, const std::string &suffix);
-bool is_file_exists(const char *path);
-std::string read_file_tostring(const char *file_path);
 
 template <typename T>
 std::string to_string(T val) {
