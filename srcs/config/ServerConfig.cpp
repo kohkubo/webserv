@@ -44,9 +44,7 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
   pos++;
   if (*pos++ != "{")
     throw UnexpectedTokenException("server directive does not have context.");
-  while (pos != end) {
-    if (pos == end || *pos == "}")
-      break;
+  while (pos != end && *pos != "}") {
     token_iterator head = pos;
     pos = __parse_listen(pos, end);
     pos = __parse_string_directive("root", root_, pos, end);
@@ -57,8 +55,7 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
-  pos++;
-  return pos;
+  return ++pos;
 }
 
 token_iterator ServerConfig::__parse_listen(token_iterator pos,
