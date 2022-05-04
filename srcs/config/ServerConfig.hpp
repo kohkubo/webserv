@@ -37,8 +37,9 @@ public:
 private:
   void           __set_getaddrinfo();
   token_iterator __parse_listen(token_iterator pos, token_iterator end);
-  token_iterator __parse_root(token_iterator pos, token_iterator end);
-  token_iterator __parse_server_name(token_iterator pos, token_iterator end);
+  token_iterator __parse_string_directive(std::string key, std::string &value,
+                                          token_iterator pos,
+                                          token_iterator end);
 };
 
 typedef std::vector<ServerConfig>                         server_list_type;

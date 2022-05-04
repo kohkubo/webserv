@@ -51,9 +51,9 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
     if (*pos == "listen") {
       pos = __parse_listen(pos, end);
     } else if (*pos == "root") {
-      pos = __parse_root(pos, end);
+      pos = __parse_string_directive("root", root_, pos, end);
     } else if (*pos == "server_name") {
-      pos = __parse_server_name(pos, end);
+      pos = __parse_string_directive("server_name", server_name_, pos, end);
     } else {
       throw UnexpectedTokenException();
     }
@@ -84,22 +84,14 @@ token_iterator ServerConfig::__parse_listen(token_iterator pos,
   return pos + 2;
 }
 
-token_iterator ServerConfig::__parse_root(token_iterator pos,
-                                          token_iterator end) {
+token_iterator ServerConfig::__parse_string_directive(std::string    key,
+                                                      std::string   &value,
+                                                      token_iterator pos,
+                                                      token_iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-  root_ = *pos;
-  return pos + 2;
-}
-
-// TODO: parse_rootと同じ処理なのでまとめる?
-token_iterator ServerConfig::__parse_server_name(token_iterator pos,
-                                                 token_iterator end) {
-  pos++;
-  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directive value.");
-  server_name_ = *pos;
+  value = *pos;
   return pos + 2;
 }
 
