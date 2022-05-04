@@ -1,8 +1,8 @@
 #include "event/listen_event.hpp"
 #include "http/http.hpp"
 #include "socket.hpp"
-#include "util/util.hpp"
-#include <stdlib.h>
+#include "utils/util.hpp"
+#include <cstdlib>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>

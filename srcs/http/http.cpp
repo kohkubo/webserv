@@ -2,7 +2,7 @@
 #include "request.hpp"
 #include "request_parse.hpp"
 #include "response.hpp"
-#include "util/util.hpp"
+#include "utils/util.hpp"
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>

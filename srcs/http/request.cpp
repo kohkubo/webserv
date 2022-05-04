@@ -1,7 +1,7 @@
 #include "config/ServerConfig.hpp"
 #include "http/const_delimiter.hpp"
-#include "util/tokenize.hpp"
-#include "util/util.hpp"
+#include "utils/tokenize.hpp"
+#include "utils/util.hpp"
 #include <cstdlib>
 #include <string>
 #include <sys/socket.h>

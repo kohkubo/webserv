@@ -3,7 +3,7 @@
 
 #include "HttpMessage.hpp"
 #include "config/ServerConfig.hpp"
-#include "util/tokenize.hpp"
+#include "utils/tokenize.hpp"
 #include <vector>
 
 HttpMessage parse_request_message(token_vector &request_tokens);
