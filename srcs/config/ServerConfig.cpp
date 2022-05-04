@@ -42,19 +42,16 @@ ServerConfig::~ServerConfig() { freeaddrinfo(addrinfo_); }
 
 token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
   pos++;
-  if (*pos != "{")
+  if (*pos++ != "{")
     throw UnexpectedTokenException("server directive does not have context.");
-  pos++;
   while (pos != end) {
     if (pos == end || *pos == "}")
       break;
-    if (*pos == "listen") {
-      pos = __parse_listen(pos, end);
-    } else if (*pos == "root") {
-      pos = __parse_string_directive("root", root_, pos, end);
-    } else if (*pos == "server_name") {
-      pos = __parse_string_directive("server_name", server_name_, pos, end);
-    } else {
+    token_iterator head = pos;
+    pos = __parse_listen(pos, end);
+    pos = __parse_string_directive("root", root_, pos, end);
+    pos = __parse_string_directive("server_name", server_name_, pos, end);
+    if (pos == head) {
       throw UnexpectedTokenException();
     }
   }
@@ -66,10 +63,11 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
 
 token_iterator ServerConfig::__parse_listen(token_iterator pos,
                                             token_iterator end) {
+  if (*pos != "listen")
+    return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-
   token_vector   l  = tokenize(*pos, ": ", " ");
   token_iterator it = l.begin();
   while (it != l.end()) {
@@ -88,6 +86,8 @@ token_iterator ServerConfig::__parse_string_directive(std::string    key,
                                                       std::string   &value,
                                                       token_iterator pos,
                                                       token_iterator end) {
+  if (*pos != key)
+    return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
