@@ -18,4 +18,7 @@ int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
   return max_fd;
 }
 
+typedef std::map<int, int> connection_list_type; // <accetpted fd, listen fd>
+typedef connection_list_type::iterator connection_list_iterator;
+
 #endif /* SRCS_EVENT_LISTEN_EVENT_HPP */
