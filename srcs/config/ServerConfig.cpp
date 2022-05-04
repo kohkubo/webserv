@@ -40,9 +40,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other) {
 
 ServerConfig::~ServerConfig() { freeaddrinfo(addrinfo_); }
 
-std::vector<std::string>::iterator
-ServerConfig::parse(std::vector<std::string>::iterator pos,
-                    std::vector<std::string>::iterator end) {
+token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
   pos++;
   if (*pos != "{")
     throw UnexpectedTokenException("server directive does not have context.");
@@ -66,15 +64,14 @@ ServerConfig::parse(std::vector<std::string>::iterator pos,
   return pos;
 }
 
-std::vector<std::string>::iterator
-ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
-                             std::vector<std::string>::iterator end) {
+token_iterator ServerConfig::__parse_listen(token_iterator pos,
+                                            token_iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
 
-  std::vector<std::string>           l  = tokenize(*pos, ": ", " ");
-  std::vector<std::string>::iterator it = l.begin();
+  token_vector   l  = tokenize(*pos, ": ", " ");
+  token_iterator it = l.begin();
   while (it != l.end()) {
     if (is_digits(*it)) {
       listen_port_ = *it;
@@ -87,9 +84,8 @@ ServerConfig::__parse_listen(std::vector<std::string>::iterator pos,
   return pos + 2;
 }
 
-std::vector<std::string>::iterator
-ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
-                           std::vector<std::string>::iterator end) {
+token_iterator ServerConfig::__parse_root(token_iterator pos,
+                                          token_iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
@@ -98,9 +94,8 @@ ServerConfig::__parse_root(std::vector<std::string>::iterator pos,
 }
 
 // TODO: parse_rootと同じ処理なのでまとめる?
-std::vector<std::string>::iterator
-ServerConfig::__parse_server_name(std::vector<std::string>::iterator pos,
-                                  std::vector<std::string>::iterator end) {
+token_iterator ServerConfig::__parse_server_name(token_iterator pos,
+                                                 token_iterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
