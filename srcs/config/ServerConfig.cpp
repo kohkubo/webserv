@@ -65,7 +65,7 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
     pos = __parse_map_directive("return", return_, pos, end);
     // clang-format on
     if (pos == head) {
-      throw UnexpectedTokenException();
+      throw UnexpectedTokenException("parse server directive failed.");
     }
   }
   if (pos == end)
@@ -130,6 +130,7 @@ token_iterator ServerConfig::__parse_sizet_directive(std::string    key,
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
   // TODO: size_tに変換できるやり方ちゃんと調査
+  // TODO: エラー処理
   value = std::atol((*pos).c_str());
   return pos + 2;
 }
@@ -161,12 +162,12 @@ ServerConfig::__parse_vector_directive(std::string               key,
   pos++;
   if (pos == end)
     throw UnexpectedTokenException("could not detect directive value.");
-  size_t i = 0;
   for (; pos != end && *pos != ";"; pos++) {
     value.push_back(*pos);
-    i++;
   }
-  return pos + i + 1;
+  if (pos == end)
+    throw UnexpectedTokenException("vector directive value is invalid.");
+  return pos + 1;
 }
 
 void ServerConfig::__set_getaddrinfo() {

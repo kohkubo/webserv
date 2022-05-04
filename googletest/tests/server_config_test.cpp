@@ -39,7 +39,7 @@ TEST(server_config_test, server_exception) {
   }
 }
 
-TEST(server_config_test, root_exception) {
+TEST(server_config_test, parse_string_derective_exception) {
   {
     std::string  str = "server {\n"
                        "root ;\n"
@@ -62,15 +62,27 @@ TEST(server_config_test, root_exception) {
   }
 }
 
-TEST(server_config_test, parse_root) {
-  std::string  str = "server {\n"
-                     "root /var/fuga;\n"
-                     "}\n";
+TEST(server_config_test, parse_string_derective) {
+  {
+    std::string  str = "server {\n"
+                       "server_name example.com;\n"
+                       "}\n";
 
-  token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-  ServerConfig conf;
-  conf.parse(l.begin(), l.end());
-  EXPECT_EQ(conf.root_, "/var/fuga");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    ServerConfig conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.server_name_, "example.com");
+  }
+  {
+    std::string  str = "server {\n"
+                       "server_name    example.com    ;\n"
+                       "}\n";
+
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    ServerConfig conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.server_name_, "example.com");
+  }
 }
 
 TEST(server_config_test, listen_except) {
@@ -141,55 +153,7 @@ TEST(server_config_test, parse_listen) {
   }
 }
 
-TEST(server_config_test, server_name_except) {
-  {
-    std::string  str = "server {\n"
-                       "\n"
-                       "server_name ;\n"
-                       "}\n";
-
-    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
-    EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
-  }
-  {
-    std::string  str = "server {\n"
-                       "\n"
-                       "server_name example.com example.net;\n"
-                       "}\n";
-
-    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
-    EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
-  }
-}
-
-TEST(server_config_test, parse_server_name) {
-  {
-    std::string  str = "server {\n"
-                       "server_name example.com;\n"
-                       "}\n";
-
-    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
-    conf.parse(l.begin(), l.end());
-    EXPECT_EQ(conf.server_name_, "example.com");
-  }
-  {
-    std::string  str = "server {\n"
-                       "server_name    example.com    ;\n"
-                       "}\n";
-
-    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
-    conf.parse(l.begin(), l.end());
-    EXPECT_EQ(conf.server_name_, "example.com");
-  }
-}
-
-TEST(server_config_test, parse_error_pase) {
+TEST(server_config_test, parse_map_directive) {
   {
     std::string  str = "server {\n"
                        "error_page 404 /404.html;\n"
@@ -201,6 +165,53 @@ TEST(server_config_test, parse_error_pase) {
     EXPECT_EQ(conf.error_pages_.size(), 2);
     EXPECT_EQ(conf.error_pages_[404], "/404.html");
     EXPECT_EQ(conf.error_pages_[500], "/500.html");
+  }
+}
+
+TEST(server_config_test, parse_boolean_directive) {
+  {
+    std::string  str = "server {\n"
+                       "autoindex on;\n"
+                       "}\n";
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    ServerConfig conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.autoindex_, true);
+  }
+  {
+    std::string  str = "server {\n"
+                       "autoindex off;\n"
+                       "}\n";
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    ServerConfig conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.autoindex_, false);
+  }
+}
+
+TEST(server_config_test, parse_sizet_directive) {
+  {
+    std::string  str = "server {\n"
+                       "client_max_body_size 1000;\n"
+                       "}\n";
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    ServerConfig conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.client_max_body_size_, 1000);
+  }
+}
+
+TEST(server_config_test, parse_vector_directive) {
+  {
+    std::string  str = "server {\n"
+                       "limit_except GET POST;\n"
+                       "}\n";
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    ServerConfig conf;
+    conf.parse(l.begin(), l.end());
+    // EXPECT_EQ(conf.limit_except_.size(), 2);
+    // EXPECT_EQ(conf.limit_except_[0], "GET");
+    // EXPECT_EQ(conf.limit_except_[1], "POST");
   }
 }
 
