@@ -8,8 +8,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#define SPACES "\v\r\f\t\n "
-
 ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
     : logic_error(msg) {}
