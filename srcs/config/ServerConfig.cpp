@@ -22,6 +22,7 @@ ServerConfig::ServerConfig()
     , root_("./html/")
     , index_("index.html")
     , error_pages_()
+    , return_()
     , autoindex_(true)
     , limit_except_()
     , addrinfo_(NULL) {}
@@ -39,6 +40,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other) {
   root_                 = other.root_;
   index_                = other.index_;
   error_pages_          = other.error_pages_;
+  return_               = other.return_;
   autoindex_            = other.autoindex_;
   limit_except_         = other.limit_except_;
   __set_getaddrinfo();
@@ -55,13 +57,14 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
     token_iterator head = pos;
     // clang-format off
     pos = __parse_listen(pos, end);
-    pos = __parse_error_page(pos, end);
     pos = __parse_string_directive("index", index_, pos, end);
     pos = __parse_string_directive("root", root_, pos, end);
     pos = __parse_string_directive("server_name", server_name_, pos, end);
     pos = __parse_vector_directive("limit_except", limit_except_, pos, end);
     pos = __parse_sizet_directive("client_max_body_size", client_max_body_size_, pos, end);
     pos = __parse_bool_directive("autoindex", autoindex_, pos, end);
+    pos = __parse_map_directive("error_page", error_pages_, pos, end);
+    pos = __parse_map_directive("return", return_, pos, end);
     // clang-format on
     if (pos == head) {
       throw UnexpectedTokenException();
@@ -93,15 +96,16 @@ token_iterator ServerConfig::__parse_listen(token_iterator pos,
   return pos + 2;
 }
 
-// TODO: エラー処理
-token_iterator ServerConfig::__parse_error_page(token_iterator pos,
-                                                token_iterator end) {
-  if (*pos != "error_page")
+token_iterator
+ServerConfig::__parse_map_directive(std::string                 key,
+                                    std::map<int, std::string> &value,
+                                    token_iterator pos, token_iterator end) {
+  if (*pos != key)
     return pos;
   pos++;
   if (pos == end || pos + 2 == end || *(pos + 2) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-  error_pages_.insert(std::make_pair(std::atoi((*pos).c_str()), *(pos + 1)));
+  value.insert(std::make_pair(std::atoi((*pos).c_str()), *(pos + 1)));
   return pos + 3;
 }
 

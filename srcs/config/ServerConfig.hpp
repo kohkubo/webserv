@@ -19,6 +19,7 @@ public:
   std::string                root_;
   std::string                index_;
   std::map<int, std::string> error_pages_;
+  std::map<int, std::string> return_;
   bool                       autoindex_;
   std::vector<std::string>   limit_except_;
   struct addrinfo           *addrinfo_;
@@ -40,7 +41,9 @@ public:
 private:
   void           __set_getaddrinfo();
   token_iterator __parse_listen(token_iterator pos, token_iterator end);
-  token_iterator __parse_error_page(token_iterator pos, token_iterator end);
+  token_iterator __parse_map_directive(std::string                 key,
+                                       std::map<int, std::string> &value,
+                                       token_iterator pos, token_iterator end);
   token_iterator __parse_string_directive(std::string key, std::string &value,
                                           token_iterator pos,
                                           token_iterator end);
