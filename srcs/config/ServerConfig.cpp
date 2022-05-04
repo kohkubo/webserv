@@ -46,9 +46,11 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
     throw UnexpectedTokenException("server directive does not have context.");
   while (pos != end && *pos != "}") {
     token_iterator head = pos;
+    // clang-format off
     pos = __parse_listen(pos, end);
     pos = __parse_string_directive("root", root_, pos, end);
     pos = __parse_string_directive("server_name", server_name_, pos, end);
+    // clang-format on
     if (pos == head) {
       throw UnexpectedTokenException();
     }
