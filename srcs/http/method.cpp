@@ -4,8 +4,6 @@
 #include "const_response_key_map.hpp"
 #include "const_status_phrase.hpp"
 #include "util/util.hpp"
-#include <cstdlib>
-#include <fstream>
 #include <string>
 #include <unistd.h>
 
