@@ -1,7 +1,7 @@
 #include "utils/parser_utils.hpp"
 #include "utils/tokenize.hpp"
 
-static bool is_uint8(const std::string &token) {
+bool is_uint8(const std::string &token) {
   if (token.size() == 1) {
     if (token[0] >= '0' && token[0] <= '9') {
       return true;

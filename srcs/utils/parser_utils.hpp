@@ -3,6 +3,7 @@
 
 #include <string>
 
+bool is_uint8(const std::string &token);
 bool is_ip(const std::string &token);
 bool is_digits(const std::string &token);
 

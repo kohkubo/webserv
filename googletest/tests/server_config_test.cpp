@@ -2,8 +2,7 @@
 
 #include "config/ServerConfig.hpp"
 #include "config/read_config.hpp"
-#include "util/tokenize.hpp"
-#include "util/util.hpp"
+#include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
 #define SPACES      "\v\r\f\t\n "

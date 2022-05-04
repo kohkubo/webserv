@@ -46,8 +46,9 @@ TEST(http_test, method_get) {
   server_config.index_       = "test.txt";
   HttpMessage      request_message;
   http_message_map response_message;
-  request_message.url_ = "/";
-  response_message     = method_get(server_config, request_message);
+  request_message.url_  = "/";
+  request_message.host_ = "localhost";
+  response_message      = method_get(server_config, request_message);
   EXPECT_EQ(response_message[STATUS_PHRASE], STATUS_200_PHRASE);
   EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   EXPECT_EQ(response_message[CONTENT_LEN],
@@ -62,7 +63,10 @@ TEST(http_test, target_file_not_exist) {
   HttpMessage      request_message;
   http_message_map response_message;
 
-  response_message = method_get(server_config, request_message);
+  request_message.url_  = "/no_such_file";
+  request_message.host_ = "localhost";
+
+  response_message      = method_get(server_config, request_message);
   EXPECT_EQ(response_message[STATUS_PHRASE], STATUS_404_PHRASE);
   // EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   // EXPECT_EQ(response_message[CONTENT_LEN],

@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "util/util.hpp"
-#include "util/tokenize.hpp"
+#include "utils/tokenize.hpp"
 
 #include <iostream>
 #include <string>
@@ -65,12 +64,12 @@ TEST(tokenize_test, delimiter) {
 }
 
 TEST(tokenize_test, config) {
-  std::string                        str  = R"(server {
-  listen 127.0.0.1:80;
-  location /hoge {
-    root /var/fuga;
-  }
-})";
+  std::string                        str  = "server {\n"
+                                            "  listen 127.0.0.1:80;\n"
+                                            "  location /hoge {\n"
+                                            "    root /var/fuga;\n"
+                                            "  }\n"
+                                            "}\n";
   std::vector<std::string>           test = tokenize(str, SPACES "{};", SPACES);
   std::vector<std::string>::iterator it   = test.begin();
   EXPECT_EQ(*it++, std::string("server"));
