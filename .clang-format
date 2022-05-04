@@ -7,3 +7,4 @@ AlignConsecutiveAssignments: AcrossEmptyLinesAndComments
 AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
 AlignConsecutiveDeclarations: AcrossEmptyLinesAndComments
 AlignConsecutiveMacros: AcrossEmptyLinesAndComments
+BreakConstructorInitializersBeforeComma: True
