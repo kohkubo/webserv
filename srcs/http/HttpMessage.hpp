@@ -31,18 +31,18 @@ struct HttpMessage {
   std::map<std::string, std::string> values_;
   HttpStatusCode                     status_code_;
 
-  HttpMessage() {
-    method_         = UNKNOWN;
-    url_            = "";
-    path_           = "";
-    version_        = "";
-    host_           = "";
-    status_         = "";
-    phrase_         = "";
-    content_length_ = 0;
-    body_           = "";
-    status_code_    = NONE;
-  }
+  HttpMessage()
+      : method_(UNKNOWN)
+      , url_("")
+      , path_("")
+      , version_("")
+      , host_("")
+      , status_("")
+      , phrase_("")
+      , content_length_(0)
+      , body_("")
+      , values_()
+      , status_code_(NONE) {}
 };
 
 #endif /* SRCS_HTTP_DEFINE_HPP */
