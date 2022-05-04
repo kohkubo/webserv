@@ -21,16 +21,16 @@ static HttpMethod parse_request_method(const std::string &method) {
   return UNKNOWN;
 }
 
-void parse_request_method_line(HttpMessage              &request_message,
-                               std::vector<std::string> &request_tokens) {
+void parse_request_method_line(HttpMessage  &request_message,
+                               token_vector &request_tokens) {
   request_message.method_  = parse_request_method(request_tokens[0]); // "GET"
   request_message.url_     = request_tokens[1]; // "example.com/test/test"
   request_message.version_ = request_tokens[2]; // "HTTP/1.1"
 }
 
-void parse_request_host(HttpMessage              &request_message,
-                        std::vector<std::string> &request_tokens) {
-  std::vector<std::string>::iterator it_host =
+void parse_request_host(HttpMessage  &request_message,
+                        token_vector &request_tokens) {
+  token_iterator it_host =
       std::find(request_tokens.begin(), request_tokens.end(), "Host:");
   if (it_host != request_tokens.end()) {
     std::string            request_line_host = *(it_host + 1);
@@ -43,9 +43,9 @@ void parse_request_host(HttpMessage              &request_message,
   }
 }
 
-void parse_request_content_length(HttpMessage              &request_message,
-                                  std::vector<std::string> &request_tokens) {
-  std::vector<std::string>::iterator it_content_len = std::find(
+void parse_request_content_length(HttpMessage  &request_message,
+                                  token_vector &request_tokens) {
+  token_iterator it_content_len = std::find(
       request_tokens.begin(), request_tokens.end(), "Content-Length:");
   if (it_content_len != request_tokens.end()) {
     // TODO: 98対応に書き換え必要
@@ -64,17 +64,17 @@ parse_request_value(std::string value) {
 
 // TODO: 今のところ Content-Type は無視している
 // TODO: 今のところ 一列でくるものと仮定
-void parse_request_body(HttpMessage              &request_message,
-                        std::vector<std::string> &request_tokens) {
+void parse_request_body(HttpMessage  &request_message,
+                        token_vector &request_tokens) {
   if (request_message.method_ != POST || request_message.content_length_ == 0) {
     return;
   }
-  for (std::vector<std::string>::iterator it = request_tokens.begin();
-       it != request_tokens.end(); ++it) {
+  for (token_iterator it = request_tokens.begin(); it != request_tokens.end();
+       ++it) {
     if (*it == "\r" && *(it + 1) == "\n" && *(it + 2) == "\r" &&
         *(it + 3) == "\n") {
-      std::vector<std::string> request_values = tokenize(*(it + 4), "&", "&");
-      for (std::vector<std::string>::iterator it_value = request_values.begin();
+      token_vector request_values = tokenize(*(it + 4), "&", "&");
+      for (token_iterator it_value = request_values.begin();
            it_value != request_values.end(); ++it_value) {
         // TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
         std::pair<std::string, std::string> value =
