@@ -16,8 +16,6 @@
 ** pollingするときに二つのmapのkeyをreadfdsに加える。
 */
 
-typedef std::map<int, int> connection_list_type; // <accetpted fd, listen fd>
-
 static socket_list_type
 create_socket_map(const server_group_type &server_group) {
   socket_list_type                  res;
@@ -55,7 +53,7 @@ static void close_all_socket(const socket_list_type &socket_list) {
 
 void listen_event(const server_group_type &server_group) {
   socket_list_type     socket_list = create_socket_map(server_group);
-  connection_list_type connection_list;
+  connection_list_type connection_list; // accfdとsocketとの対応関係持つ
 
   timeval              timeout = {.tv_sec = 0, .tv_usec = 0};
   while (1) {
@@ -69,6 +67,7 @@ void listen_event(const server_group_type &server_group) {
     }
     // TODO: retの数処理を行ったら打ち切り
     if (ret) {
+      /* 接続要求のあったsocket探す -> accept -> connection_listに追加 */
       socket_list_type::iterator it = socket_list.begin();
       for (; it != socket_list.end(); it++) {
         int listen_fd = it->first;
@@ -81,7 +80,9 @@ void listen_event(const server_group_type &server_group) {
           connection_list.insert(std::make_pair(accfd, listen_fd));
         }
       }
-      connection_list_type::iterator cit = connection_list.begin();
+      /* 読み込み可能なaccfd探す -> http -> connection_listから削除 */
+      // TODO: httpでのread処理もこのloopで行う
+      connection_list_iterator cit = connection_list.begin();
       while (cit != connection_list.end()) {
         int accfd = cit->first;
         if (FD_ISSET(accfd, &readfds)) {
