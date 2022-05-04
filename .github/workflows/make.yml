@@ -19,7 +19,8 @@ jobs:
     - name: make_test
       run: |
         make -C ./googletest
-        ./googletest/tester
+        cd ./googletest
+        ./tester
 
   gtest_mac:
     runs-on: macos-10.15
@@ -28,7 +29,8 @@ jobs:
     - name: make_test_mac
       run: |
         make -C ./googletest
-        ./googletest/tester
+        cd ./googletest
+        ./tester
 
   itest:
     runs-on: ubuntu-latest
