@@ -164,15 +164,6 @@ TEST(server_config_test, server_name_except) {
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
   }
-  {
-    std::string              str = "server {\n"
-                                   "server_name example.com;\n";
-
-    std::vector<std::string> l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig             conf;
-    EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
-  }
 }
 
 TEST(server_config_test, parse_server_name) {
