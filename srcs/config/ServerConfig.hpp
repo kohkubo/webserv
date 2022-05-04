@@ -14,12 +14,15 @@ class ServerConfig {
 public:
   std::string                listen_address_;
   std::string                listen_port_;
-  int                        client_max_body_size_;
+  size_t                     client_max_body_size_;
   std::string                server_name_;
   std::string                root_;
   std::string                index_;
   std::map<int, std::string> error_pages_;
+  bool                       autoindex_;
+  std::vector<std::string>   limit_except_;
   struct addrinfo           *addrinfo_;
+
 
   // error_page;
 public:
@@ -42,6 +45,15 @@ private:
   token_iterator __parse_string_directive(std::string key, std::string &value,
                                           token_iterator pos,
                                           token_iterator end);
+  token_iterator __parse_sizet_directive(std::string key, size_t &value,
+                                         token_iterator pos,
+                                         token_iterator end);
+  token_iterator __parse_bool_directive(std::string key, bool &value,
+                                        token_iterator pos, token_iterator end);
+  token_iterator __parse_vector_directive(std::string               key,
+                                          std::vector<std::string> &value,
+                                          token_iterator            pos,
+                                          token_iterator            end);
 };
 
 typedef std::vector<ServerConfig>                         server_list_type;

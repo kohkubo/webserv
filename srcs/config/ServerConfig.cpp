@@ -21,6 +21,9 @@ ServerConfig::ServerConfig()
     , server_name_("")
     , root_("./html/")
     , index_("index.html")
+    , error_pages_()
+    , autoindex_(true)
+    , limit_except_()
     , addrinfo_(NULL) {}
 
 ServerConfig::ServerConfig(const ServerConfig &other) { *this = other; }
@@ -35,6 +38,9 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other) {
   server_name_          = other.server_name_;
   root_                 = other.root_;
   index_                = other.index_;
+  error_pages_          = other.error_pages_;
+  autoindex_            = other.autoindex_;
+  limit_except_        = other.limit_except_;
   __set_getaddrinfo();
   return *this;
 }
@@ -50,8 +56,12 @@ token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
     // clang-format off
     pos = __parse_listen(pos, end);
     pos = __parse_error_page(pos, end);
+    pos = __parse_string_directive("index", index_, pos, end);
     pos = __parse_string_directive("root", root_, pos, end);
     pos = __parse_string_directive("server_name", server_name_, pos, end);
+    pos = __parse_vector_directive("limit_except", limit_except_, pos, end);
+    pos = __parse_sizet_directive("client_max_body_size", client_max_body_size_, pos, end);
+    pos = __parse_bool_directive("autoindex", autoindex_, pos, end);
     // clang-format on
     if (pos == head) {
       throw UnexpectedTokenException();
@@ -106,6 +116,55 @@ token_iterator ServerConfig::__parse_string_directive(std::string    key,
     throw UnexpectedTokenException("could not detect directive value.");
   value = *pos;
   return pos + 2;
+}
+
+token_iterator ServerConfig::__parse_sizet_directive(std::string    key,
+                                                     size_t        &value,
+                                                     token_iterator pos,
+                                                     token_iterator end) {
+  if (*pos != key)
+    return pos;
+  pos++;
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
+    throw UnexpectedTokenException("could not detect directive value.");
+  // TODO: size_tに変換できるやり方ちゃんと調査
+  value = std::atol((*pos).c_str());
+  return pos + 2;
+}
+
+token_iterator ServerConfig::__parse_bool_directive(std::string    key,
+                                                    bool          &value,
+                                                    token_iterator pos,
+                                                    token_iterator end) {
+  if (*pos != key)
+    return pos;
+  pos++;
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
+    throw UnexpectedTokenException("could not detect directive value.");
+  if (*pos == "on")
+    value = true;
+  else if (*pos == "off")
+    value = false;
+  else
+    throw UnexpectedTokenException("bool directive value is invalid.");
+  return pos + 2;
+}
+
+token_iterator
+ServerConfig::__parse_vector_directive(std::string               key,
+                                       std::vector<std::string> &value,
+                                       token_iterator pos, token_iterator end) {
+  if (*pos != key)
+    return pos;
+  pos++;
+  if (pos == end)
+    throw UnexpectedTokenException("could not detect directive value.");
+  size_t i = 0;
+  for (; pos != end && *pos != ";"; pos++) {
+    value.push_back(*pos);
+    i++;
+  }
+  return pos + i + 1;
 }
 
 void ServerConfig::__set_getaddrinfo() {
