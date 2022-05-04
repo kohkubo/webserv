@@ -1,5 +1,5 @@
-#ifndef SRCS_SERVERCONFIG_HPP
-#define SRCS_SERVERCONFIG_HPP
+#ifndef SRCS_CONFIG_SERVERCONFIG_HPP
+#define SRCS_CONFIG_SERVERCONFIG_HPP
 
 #include "util/tokenize.hpp"
 #include <map>
@@ -48,4 +48,4 @@ typedef std::map<int, std::vector<const ServerConfig *> > socket_list_type;
 
 server_group_type create_server_group(const server_list_type &server_list);
 
-#endif /* SRCS_SERVERCONFIG_HPP */
+#endif /* SRCS_CONFIG_SERVERCONFIG_HPP */
