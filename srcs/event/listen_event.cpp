@@ -2,7 +2,6 @@
 #include "http/http.hpp"
 #include "socket.hpp"
 #include "util/util.hpp"
-#include <map>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
