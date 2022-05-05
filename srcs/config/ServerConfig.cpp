@@ -166,7 +166,7 @@ ServerConfig::__parse_vector_directive(std::string               key,
     value.push_back(*pos);
     i++;
   }
-  return pos + i + 1;
+  return pos + 1;
 }
 
 void ServerConfig::__set_getaddrinfo() {

@@ -204,6 +204,23 @@ TEST(server_config_test, parse_error_pase) {
   }
 }
 
+TEST(server_config_test, parse_limit_except) {
+  {
+    std::string  str = "server {\n"
+                       "limit_except  GET POST;\n"
+                       "error_page 404 /404.html;\n"
+                       "error_page 500 /500.html;\n"
+                       "}\n";
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    ServerConfig conf;
+    conf.parse(l.begin(), l.end());
+    EXPECT_EQ(conf.limit_except_[0], "GET");
+    EXPECT_EQ(conf.limit_except_[1], "POST");
+    EXPECT_EQ(conf.error_pages_[404], "/404.html");
+    EXPECT_EQ(conf.error_pages_[500], "/500.html");
+  }
+}
+
 TEST(server_config_test, server_group_test) {
   server_list_type  server_list  = read_config(SAMPLE_CONF);
   server_group_type server_group = create_server_group(server_list);
