@@ -65,7 +65,7 @@ std::string create_response(const ServerConfig &server_config,
     response_message = method_get(server_config, request_message);
     break;
   case DELETE:
-    response_message = method_delete(server_config, request_message);
+    response_message = delete_method_handler(server_config, request_message);
     break;
   // case POST:
   //   break;

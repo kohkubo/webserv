@@ -55,9 +55,10 @@ http_message_map method_get(const ServerConfig &server_config,
   // hostは共通かな
   if (is_request_error(request_message)) {
     std::cout << "request error." << std::endl;
-    response_message[PATH] = BAD_REQUEST_PAGE;
+    response_message[STATUS_PHRASE] = STATUS_400_PHRASE;
     return response_message;
   }
+
   std::string target_filepath =
       resolve_url(server_config, request_message.url_);
   switch (check_url(target_filepath.c_str())) {
