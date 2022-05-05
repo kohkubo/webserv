@@ -1,8 +1,10 @@
 #include "http/method/delete_method.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
+#include "utils/file_io_utils.hpp"
 #include "utils/http_parser_utils.hpp"
 #include <iostream>
+#include <unistd.h>
 
 static bool has_body(const HttpMessage &request_message) {
   // TODO: chunked
@@ -19,13 +21,19 @@ response_to_bad_request(const HttpMessage &request_message) {
 
 http_message_map delete_method_handler(const ServerConfig &server_config,
                                        HttpMessage        &request_message) {
-  http_message_map response_message;
   if (has_body(request_message)) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
     return response_to_bad_request(request_message);
   }
-
-  std::string target_filepath =
+  http_message_map response_message;
+  std::string      target_filepath =
       resolve_url(server_config, request_message.url_);
+  if (!is_file_exists(target_filepath.c_str())) {
+    std::cerr << "target file is not found" << std::endl;
+    response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
+    // return 404
+  }
+  // if (access(target_filepath.c_str(), R_OK) == 0) {
+  // }
   return response_message;
 }
