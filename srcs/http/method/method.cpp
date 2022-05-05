@@ -18,14 +18,13 @@ bool is_request_error(HttpMessage &request_message) {
 }
 
 static HttpStatusCode check_url(const std::string &target_filepath) {
-  if (is_file_exists(target_filepath)) {
-    if (check_access(target_filepath, R_OK)) {
-      return OK_200;
-    } else {
-      return FORBIDDEN_403; // TODO: Permission error が 403なのか確かめてない
-    }
+  if (!is_file_exists(target_filepath)) {
+    return NOT_FOUND_404;
   }
-  return NOT_FOUND_404;
+  if (!check_access(target_filepath, R_OK)) {
+    return FORBIDDEN_403; // TODO: Permission error が 403なのか確かめてない
+  }
+  return OK_200;
 }
 
 /*
