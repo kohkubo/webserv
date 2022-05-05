@@ -17,9 +17,9 @@ bool is_request_error(HttpMessage &request_message) {
   return false;
 }
 
-static HttpStatusCode check_url(const char *target_filepath) {
+static HttpStatusCode check_url(const std::string &target_filepath) {
   if (is_file_exists(target_filepath)) {
-    if (access(target_filepath, R_OK) == 0) {
+    if (check_access(target_filepath, R_OK)) {
       return OK_200;
     } else {
       return FORBIDDEN_403; // TODO: Permission error が 403なのか確かめてない
@@ -45,7 +45,7 @@ http_message_map method_get(const ServerConfig &server_config,
 
   std::string target_filepath =
       resolve_url(server_config, request_message.url_);
-  switch (check_url(target_filepath.c_str())) {
+  switch (check_url(target_filepath)) {
   case OK_200:
     response_message[STATUS_PHRASE] = STATUS_200_PHRASE;
     break;

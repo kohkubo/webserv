@@ -34,7 +34,7 @@ http_message_map delete_method_handler(const ServerConfig &server_config,
     std::cerr << "target file is not found" << std::endl;
     response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
     target_filepath                 = NOT_FOUND_PAGE;
-  } else if (access(target_filepath.c_str(), W_OK) == 0) {
+  } else if (check_access(target_filepath, W_OK)) {
     response_message[STATUS_PHRASE] = STATUS_403_PHRASE;
     target_filepath                 = FORBIDDEN_PAGE;
   } else if (remove_file(target_filepath)) {
