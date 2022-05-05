@@ -1,7 +1,7 @@
 #ifndef SRCS_SERVERCONFIG_HPP
 #define SRCS_SERVERCONFIG_HPP
 
-#include "util/tokenize.hpp"
+#include "utils/tokenize.hpp"
 #include <map>
 #include <stdexcept>
 #include <string>
