@@ -2,8 +2,7 @@
 
 #include "config/ServerConfig.hpp"
 #include "config/read_config.hpp"
-#include "util/tokenize.hpp"
-#include "util/util.hpp"
+#include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
 
@@ -172,7 +171,6 @@ TEST(server_config_test, parse_boolean_directive) {
   {
     std::string  str = "server {\n"
                        "autoindex on;\n"
-                       "}\n";
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
@@ -209,9 +207,9 @@ TEST(server_config_test, parse_vector_directive) {
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
-    // EXPECT_EQ(conf.limit_except_.size(), 2);
-    // EXPECT_EQ(conf.limit_except_[0], "GET");
-    // EXPECT_EQ(conf.limit_except_[1], "POST");
+    EXPECT_EQ(conf.limit_except_.size(), 2);
+    EXPECT_EQ(conf.limit_except_[0], "GET");
+    EXPECT_EQ(conf.limit_except_[1], "POST");
   }
 }
 

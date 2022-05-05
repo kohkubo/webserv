@@ -1,7 +1,8 @@
 #include "event/listen_event.hpp"
 #include "http/http.hpp"
 #include "socket.hpp"
-#include "util/util.hpp"
+#include "utils/utils.hpp"
+#include <cstdlib>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -27,13 +28,17 @@ create_socket_map(const server_group_type &server_group) {
 }
 
 // socket_fd + connection_fdをreadfdsに加える。
-static fd_set create_readfds(const socket_list_type &socket_list, int &nfds) {
+static fd_set create_readfds(const socket_list_type     &socket_list,
+                             const connection_list_type &connection_list,
+                             int                        &nfds) {
   int    res;
   fd_set readfds;
 
   nfds = -1;
   FD_ZERO(&readfds);
   res  = set_fd_list(&readfds, socket_list);
+  nfds = std::max(nfds, res);
+  res  = set_fd_list(&readfds, connection_list);
   nfds = std::max(nfds, res);
   return readfds;
 }
@@ -46,29 +51,45 @@ static void close_all_socket(const socket_list_type &socket_list) {
 }
 
 void listen_event(const server_group_type &server_group) {
-  socket_list_type socket_list = create_socket_map(server_group);
+  socket_list_type     socket_list = create_socket_map(server_group);
+  connection_list_type connection_list; // accfdとsocketとの対応関係持つ
 
-  timeval          timeout     = {.tv_sec = 0, .tv_usec = 0};
+  timeval              timeout = {.tv_sec = 0, .tv_usec = 0};
   while (1) {
     int    nfds;
-    fd_set readfds = create_readfds(socket_list, nfds);
+    fd_set readfds = create_readfds(socket_list, connection_list, nfds);
 
     int    ret     = select(nfds + 1, &readfds, NULL, NULL, &timeout);
     if (ret == -1) {
       error_log_with_errno("select() failed. readfds.");
-      continue;
+      exit(EXIT_FAILURE);
     }
     // TODO: retの数処理を行ったら打ち切り
     if (ret) {
+      /* 接続要求のあったsocket探す -> accept -> connection_listに追加 */
       socket_list_type::iterator it = socket_list.begin();
       for (; it != socket_list.end(); it++) {
-        if (FD_ISSET(it->first, &readfds)) {
-          int accfd = accept(it->first, (struct sockaddr *)NULL, NULL);
+        int listen_fd = it->first;
+        if (FD_ISSET(listen_fd, &readfds)) {
+          int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
           if (accfd == -1) {
-            continue;
+            error_log_with_errno("accept()) failed.");
+            exit(EXIT_FAILURE);
           }
-          // FIXME: don't use sleep
+          connection_list.insert(std::make_pair(accfd, listen_fd));
+        }
+      }
+      /* 読み込み可能なaccfd探す -> http -> connection_listから削除 */
+      // TODO: httpでのread処理もこのloopで行う
+      connection_list_iterator cit = connection_list.begin();
+      while (cit != connection_list.end()) {
+        int accfd = cit->first;
+        if (FD_ISSET(accfd, &readfds)) {
           http(accfd);
+          close(accfd); // tmp
+          connection_list.erase(cit++);
+        } else {
+          cit++;
         }
       }
     }
