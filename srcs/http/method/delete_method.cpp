@@ -1,6 +1,7 @@
 #include "http/method/delete_method.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
+#include "utils/http_parser_utils.hpp"
 #include <iostream>
 
 static bool has_body(const HttpMessage &request_message) {
@@ -20,9 +21,10 @@ http_message_map delete_method_handler(const ServerConfig &server_config,
   http_message_map response_message;
   if (has_body(request_message)) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
-    response_message = response_to_bad_request(request_message);
+    return response_to_bad_request(request_message);
   }
-  (void)server_config;
-  (void)request_message;
+
+  std::string target_filepath =
+      resolve_url(server_config, request_message.url_);
   return response_message;
 }
