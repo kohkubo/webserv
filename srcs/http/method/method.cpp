@@ -1,8 +1,8 @@
-#include "HttpMessage.hpp"
 #include "config/ServerConfig.hpp"
-#include "const_html_filename.hpp"
-#include "const_response_key_map.hpp"
-#include "const_status_phrase.hpp"
+#include "http/HttpMessage.hpp"
+#include "http/const/const_html_filename.hpp"
+#include "http/const/const_response_key_map.hpp"
+#include "http/const/const_status_phrase.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 #include <string>

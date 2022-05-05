@@ -1,9 +1,9 @@
-#include "HttpMessage.hpp"
 #include "config/ServerConfig.hpp"
-#include "const_delimiter.hpp"
-#include "const_response_key_map.hpp"
-#include "delete_method.hpp"
-#include "method.hpp"
+#include "http/HttpMessage.hpp"
+#include "http/const/const_delimiter.hpp"
+#include "http/const/const_response_key_map.hpp"
+#include "http/method/delete_method.hpp"
+#include "http/method/method.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
