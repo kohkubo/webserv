@@ -1,4 +1,5 @@
 #include "http/method/delete_method.hpp"
+#include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "utils/file_io_utils.hpp"
@@ -32,13 +33,17 @@ http_message_map delete_method_handler(const ServerConfig &server_config,
   if (!is_file_exists(target_filepath.c_str())) {
     std::cerr << "target file is not found" << std::endl;
     response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
-    // return 404
+    target_filepath                 = NOT_FOUND_PAGE;
   } else if (access(target_filepath.c_str(), W_OK) == 0) {
     response_message[STATUS_PHRASE] = STATUS_403_PHRASE;
+    target_filepath                 = FORBIDDEN_PAGE;
   } else if (remove_file(target_filepath)) {
     response_message[STATUS_PHRASE] = STATUS_204_PHRASE;
+    return response_message;
   } else {
     response_message[STATUS_PHRASE] = STATUS_500_PHRASE;
+    target_filepath                 = INTERNAL_SERVER_ERROR_PAGE;
   }
+  set_response_body(response_message, target_filepath.c_str());
   return response_message;
 }

@@ -1,4 +1,7 @@
 #include "utils/http_parser_utils.hpp"
+#include "http/const/const_html_filename.hpp"
+#include "utils/file_io_utils.hpp"
+#include "utils/utils.hpp"
 
 // TODO: location
 std::string resolve_url(const ServerConfig &server_config,
@@ -8,4 +11,12 @@ std::string resolve_url(const ServerConfig &server_config,
   } else {
     return server_config.root_ + "/" + request_url;
   }
+}
+
+void set_response_body(http_message_map &response_message,
+                       const char       *target_filepath) {
+  std::string content            = read_file_tostring(target_filepath);
+  response_message[BODY]         = content;
+  response_message[CONTENT_LEN]  = to_string(content.size());
+  response_message[CONTENT_TYPE] = TEXT_HTML;
 }

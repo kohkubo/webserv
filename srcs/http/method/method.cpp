@@ -28,14 +28,6 @@ static HttpStatusCode check_url(const char *target_filepath) {
   return NOT_FOUND_404;
 }
 
-static void set_response_body(http_message_map &response_message,
-                              const char       *target_filepath) {
-  std::string content            = read_file_tostring(target_filepath);
-  response_message[BODY]         = content;
-  response_message[CONTENT_LEN]  = to_string(content.size());
-  response_message[CONTENT_TYPE] = TEXT_HTML;
-}
-
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
