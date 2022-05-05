@@ -2,7 +2,7 @@
 #include "http/HttpMessage.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
-#include "http/method/method.hpp"
+#include "http/method/get_method.hpp"
 #include "http/response/response.hpp"
 #include "utils/http_parser_utils.hpp"
 #include "gtest/gtest.h"

@@ -23,8 +23,8 @@ void set_status_and_path(http_message_map   &response_message,
       STATUS_501_PHRASE, STATUS_520_PHRASE,
   };
   const std::string default_error_page_path[] = {
-      NULL,                       // 200
-      NULL,                       // 204
+      "",                         // 200
+      "",                         // 204
       BAD_REQUEST_PAGE,           // 400
       FORBIDDEN_PAGE,             // 403
       NOT_FOUND_PAGE,             // 404

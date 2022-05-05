@@ -46,23 +46,9 @@ http_message_map method_get(const ServerConfig &server_config,
     return response_message;
   }
 
-  switch (check_url(target_filepath)) {
-  case OK_200:
-    response_message[STATUS_PHRASE] = STATUS_200_PHRASE;
-    response_message[PATH]          = target_filepath;
-    break;
-  case FORBIDDEN_403:
-    response_message[STATUS_PHRASE] = STATUS_403_PHRASE;
-    response_message[PATH]          = FORBIDDEN_PAGE;
-    break;
-  case NOT_FOUND_404:
-    response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
-    response_message[PATH]          = NOT_FOUND_PAGE;
-    break;
-  default:
-    response_message[STATUS_PHRASE] = STATUS_520_PHRASE;
-    response_message[PATH]          = UNKNOWN_ERROR_PAGE;
-    break;
-  }
+  HttpStatusCode code = check_url(target_filepath);
+  set_status_and_path(response_message, server_config, code);
+  if (code == OK_200)
+    response_message[PATH] = target_filepath;
   return response_message;
 }

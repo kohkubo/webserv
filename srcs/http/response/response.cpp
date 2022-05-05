@@ -3,12 +3,11 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/method/delete_method.hpp"
-#include "http/method/method.hpp"
+#include "http/method/get_method.hpp"
 #include "utils/http_parser_utils.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
-
 /*
  * ステータスラインの要素は必須だが, 存在しなかった時のバリデートは現状してない
  */
