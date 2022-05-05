@@ -36,7 +36,7 @@ http_message_map method_get(const ServerConfig &server_config,
   http_message_map response_message;
   // リクエストのエラー 判定はここがよさそう。
   // メソッドごとのエラー判定と共通のエラーで分けてもいいかも
-  // hostは共通かな
+  // hostは共通かな -> hostのエラーチェックはloopの段階でvalidateされる
   if (is_request_error(request_message)) {
     std::cout << "request error." << std::endl;
     response_message[STATUS_PHRASE] = STATUS_400_PHRASE;
