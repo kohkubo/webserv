@@ -6,6 +6,6 @@
 #include "http/const/const_response_key_map.hpp"
 
 std::string resolve_url(const ServerConfig &server_config,
-                        const std::string   request_url);
+                        const std::string  &request_url);
 
 #endif /* SRCS_UTILS_HTTP_PARSER_UTILS */

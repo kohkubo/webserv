@@ -18,18 +18,17 @@ bool is_request_error(HttpMessage &request_message) {
 }
 
 static HttpStatusCode check_url(const std::string &target_filepath) {
-  if (is_file_exists(target_filepath)) {
-    if (check_access(target_filepath, R_OK)) {
-      return OK_200;
-    } else {
-      return FORBIDDEN_403; // TODO: Permission error が 403なのか確かめてない
-    }
+  if (!is_file_exists(target_filepath)) {
+    return NOT_FOUND_404;
   }
-  return NOT_FOUND_404;
+  if (!check_access(target_filepath, R_OK)) {
+    return FORBIDDEN_403; // TODO: Permission error が 403なのか確かめてない
+  }
+  return OK_200;
 }
 
-static void set_response_body(http_message_map &response_message,
-                              const char       *target_filepath) {
+static void set_response_body(http_message_map  &response_message,
+                              const std::string &target_filepath) {
   std::string content            = read_file_tostring(target_filepath);
   response_message[BODY]         = content;
   response_message[CONTENT_LEN]  = to_string(content.size());
@@ -69,6 +68,6 @@ http_message_map method_get(const ServerConfig &server_config,
     target_filepath                 = UNKNOWN_ERROR_PAGE;
     break;
   }
-  set_response_body(response_message, target_filepath.c_str());
+  set_response_body(response_message, target_filepath);
   return response_message;
 }
