@@ -4,6 +4,7 @@
 #include "http/const/const_response_key_map.hpp"
 #include "http/method/delete_method.hpp"
 #include "http/method/method.hpp"
+#include "utils/http_parser_utils.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
@@ -74,5 +75,7 @@ std::string create_response(const ServerConfig &server_config,
   }
   response_message[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
   response_message[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
+
+  set_response_body(response_message);
   return response_message_to_string(response_message);
 }
