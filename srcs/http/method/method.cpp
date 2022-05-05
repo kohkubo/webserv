@@ -61,6 +61,6 @@ http_message_map method_get(const ServerConfig &server_config,
     target_filepath                 = UNKNOWN_ERROR_PAGE;
     break;
   }
-  set_response_body(response_message, target_filepath.c_str());
+  set_response_body(response_message, target_filepath);
   return response_message;
 }

@@ -13,8 +13,8 @@ std::string resolve_url(const ServerConfig &server_config,
   }
 }
 
-void set_response_body(http_message_map &response_message,
-                       const char       *target_filepath) {
+void set_response_body(http_message_map  &response_message,
+                       const std::string &target_filepath) {
   std::string content            = read_file_tostring(target_filepath);
   response_message[BODY]         = content;
   response_message[CONTENT_LEN]  = to_string(content.size());
