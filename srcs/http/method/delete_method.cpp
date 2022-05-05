@@ -13,6 +13,7 @@ static http_message_map
 response_to_bad_request(const HttpMessage &request_message) {
   http_message_map response_message;
   response_message[STATUS_PHRASE] = STATUS_400_PHRASE;
+  (void)request_message;
   return response_message;
 }
 
