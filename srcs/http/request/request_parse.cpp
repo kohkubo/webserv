@@ -1,5 +1,5 @@
-#include "HttpMessage.hpp"
 #include "config/ServerConfig.hpp"
+#include "http/HttpMessage.hpp"
 #include "util/tokenize.hpp"
 #include "util/util.hpp"
 #include <algorithm>
@@ -21,15 +21,15 @@ static HttpMethod parse_request_method(const std::string &method) {
   return UNKNOWN;
 }
 
-void parse_request_method_line(HttpMessage  &request_message,
-                               token_vector &request_tokens) {
+static void parse_request_method_line(HttpMessage  &request_message,
+                                      token_vector &request_tokens) {
   request_message.method_  = parse_request_method(request_tokens[0]); // "GET"
   request_message.url_     = request_tokens[1]; // "example.com/test/test"
   request_message.version_ = request_tokens[2]; // "HTTP/1.1"
 }
 
-void parse_request_host(HttpMessage  &request_message,
-                        token_vector &request_tokens) {
+static void parse_request_host(HttpMessage  &request_message,
+                               token_vector &request_tokens) {
   token_iterator it_host =
       std::find(request_tokens.begin(), request_tokens.end(), "Host:");
   if (it_host != request_tokens.end()) {
@@ -43,8 +43,8 @@ void parse_request_host(HttpMessage  &request_message,
   }
 }
 
-void parse_request_content_length(HttpMessage  &request_message,
-                                  token_vector &request_tokens) {
+static void parse_request_content_length(HttpMessage  &request_message,
+                                         token_vector &request_tokens) {
   token_iterator it_content_len = std::find(
       request_tokens.begin(), request_tokens.end(), "Content-Length:");
   if (it_content_len != request_tokens.end()) {
@@ -64,8 +64,8 @@ parse_request_value(std::string value) {
 
 // TODO: 今のところ Content-Type は無視している
 // TODO: 今のところ 一列でくるものと仮定
-void parse_request_body(HttpMessage  &request_message,
-                        token_vector &request_tokens) {
+static void parse_request_body(HttpMessage  &request_message,
+                               token_vector &request_tokens) {
   if (request_message.method_ != POST || request_message.content_length_ == 0) {
     return;
   }
@@ -84,4 +84,17 @@ void parse_request_body(HttpMessage  &request_message,
       break;
     }
   }
+}
+
+/*
+ * 超安易パース
+ * 必須情報のみを取得しています。
+ */
+HttpMessage parse_request_message(token_vector &request_tokens) {
+  HttpMessage request_message;
+  parse_request_method_line(request_message, request_tokens);
+  parse_request_host(request_message, request_tokens);
+  parse_request_content_length(request_message, request_tokens);
+  parse_request_body(request_message, request_tokens);
+  return request_message;
 }

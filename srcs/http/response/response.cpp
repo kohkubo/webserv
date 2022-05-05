@@ -1,8 +1,9 @@
-#include "HttpMessage.hpp"
 #include "config/ServerConfig.hpp"
-#include "const_delimiter.hpp"
-#include "const_response_key_map.hpp"
-#include "method.hpp"
+#include "http/HttpMessage.hpp"
+#include "http/const/const_delimiter.hpp"
+#include "http/const/const_response_key_map.hpp"
+#include "http/method/delete_method.hpp"
+#include "http/method/method.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
@@ -58,19 +59,15 @@ static std::string response_message_to_string(http_message_map &response_message
 
 std::string create_response(const ServerConfig &server_config,
                             HttpMessage        &request_message) {
-  // if (request_message.status_code_ == BAD_REQUEST) {
-  //   /* BAD_REQUEST処理 */
-  //   response_message[PATH] = BAD_REQUEST_PAGE;
-  //   return response_message_to_string(response_message);
-  // }
   http_message_map response_message;
   switch (request_message.method_) {
   case GET:
     response_message = method_get(server_config, request_message);
     break;
+  case DELETE:
+    response_message = method_delete(server_config, request_message);
+    break;
   // case POST:
-  //   break;
-  // case DELETE:
   //   break;
   default:
     break;
