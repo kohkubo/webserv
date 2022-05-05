@@ -27,47 +27,42 @@ static HttpStatusCode check_url(const std::string &target_filepath) {
   return OK_200;
 }
 
-static void set_response_body(http_message_map  &response_message,
-                              const std::string &target_filepath) {
-  std::string content            = read_file_tostring(target_filepath);
-  response_message[BODY]         = content;
-  response_message[CONTENT_LEN]  = to_string(content.size());
-  response_message[CONTENT_TYPE] = TEXT_HTML;
-}
-
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
 http_message_map method_get(const ServerConfig &server_config,
                             HttpMessage        &request_message) {
   http_message_map response_message;
+  std::string      target_filepath =
+      resolve_url(server_config, request_message.url_);
+
   // リクエストのエラー 判定はここがよさそう。
   // メソッドごとのエラー判定と共通のエラーで分けてもいいかも
-  // hostは共通かな
+  // hostは共通かな -> hostのエラーチェックはloopの段階でvalidateされる
   if (is_request_error(request_message)) {
     std::cout << "request error." << std::endl;
-    response_message[PATH] = BAD_REQUEST_PAGE;
+    response_message[STATUS_PHRASE] = STATUS_400_PHRASE;
+    response_message[PATH]          = BAD_REQUEST_PAGE;
     return response_message;
   }
-  std::string target_filepath =
-      resolve_url(server_config, request_message.url_);
+
   switch (check_url(target_filepath)) {
   case OK_200:
     response_message[STATUS_PHRASE] = STATUS_200_PHRASE;
+    response_message[PATH]          = target_filepath;
     break;
   case FORBIDDEN_403:
     response_message[STATUS_PHRASE] = STATUS_403_PHRASE;
-    target_filepath                 = FORBIDDEN_PAGE;
+    response_message[PATH]          = FORBIDDEN_PAGE;
     break;
   case NOT_FOUND_404:
     response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
-    target_filepath                 = NOT_FOUND_PAGE;
+    response_message[PATH]          = NOT_FOUND_PAGE;
     break;
   default:
     response_message[STATUS_PHRASE] = STATUS_520_PHRASE;
-    target_filepath                 = UNKNOWN_ERROR_PAGE;
+    response_message[PATH]          = UNKNOWN_ERROR_PAGE;
     break;
   }
-  set_response_body(response_message, target_filepath);
   return response_message;
 }
