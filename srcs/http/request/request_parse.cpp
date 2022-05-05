@@ -1,5 +1,5 @@
-#include "http/HttpMessage.hpp"
 #include "config/ServerConfig.hpp"
+#include "http/HttpMessage.hpp"
 #include "util/tokenize.hpp"
 #include "util/util.hpp"
 #include <algorithm>
