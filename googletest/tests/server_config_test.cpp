@@ -170,7 +170,8 @@ TEST(server_config_test, parse_map_directive) {
 TEST(server_config_test, parse_boolean_directive) {
   {
     std::string  str = "server {\n"
-                       "autoindex on;\n";
+                       "autoindex on;\n"
+                       "}\n";
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
