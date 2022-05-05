@@ -5,5 +5,6 @@
 
 bool        is_file_exists(const char *path);
 std::string read_file_tostring(const char *file_path);
+bool        remove_file(std::string file_path);
 
 #endif /* SRCS_UTILS_FILE_IO_UTILS_HPP */

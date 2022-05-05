@@ -28,12 +28,17 @@ http_message_map delete_method_handler(const ServerConfig &server_config,
   http_message_map response_message;
   std::string      target_filepath =
       resolve_url(server_config, request_message.url_);
+  // TODO: 相対パス等バリデーション
   if (!is_file_exists(target_filepath.c_str())) {
     std::cerr << "target file is not found" << std::endl;
     response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
     // return 404
+  } else if (access(target_filepath.c_str(), W_OK) == 0) {
+    response_message[STATUS_PHRASE] = STATUS_403_PHRASE;
+  } else if (remove_file(target_filepath)) {
+    response_message[STATUS_PHRASE] = STATUS_204_PHRASE;
+  } else {
+    response_message[STATUS_PHRASE] = STATUS_500_PHRASE;
   }
-  // if (access(target_filepath.c_str(), R_OK) == 0) {
-  // }
   return response_message;
 }
