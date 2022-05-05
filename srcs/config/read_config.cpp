@@ -5,12 +5,10 @@
 #include <iostream>
 #include <vector>
 
-#define DELIMITER "\v\r\f\t\n {};"
-#define SKIP      "\v\r\f\t\n "
-
 server_list_type read_config(const char *config_file_path) {
-  std::string      contents      = read_file_tostring(config_file_path);
-  token_vector     config_tokens = tokenize(contents, DELIMITER, SKIP);
+  std::string  contents = read_file_tostring(config_file_path);
+  token_vector config_tokens =
+      tokenize(contents, CONFIG_DELIMITER, CONFIG_SKIP);
   server_list_type server_list;
   try {
     token_iterator it = config_tokens.begin();
