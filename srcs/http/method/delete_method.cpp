@@ -23,14 +23,14 @@ response_to_bad_request(const HttpMessage &request_message) {
 
 http_message_map delete_method_handler(const ServerConfig &server_config,
                                        HttpMessage        &request_message) {
+  http_message_map response_message;
+  // TODO: 相対パス等バリデーション
+  std::string      target_filepath =
+      resolve_url(server_config, request_message.url_);
   if (has_body(request_message)) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
     return response_to_bad_request(request_message);
   }
-  // TODO: 相対パス等バリデーション
-  http_message_map response_message;
-  std::string      target_filepath =
-      resolve_url(server_config, request_message.url_);
   if (!is_file_exists(target_filepath.c_str())) {
     std::cerr << "target file is not found" << std::endl;
     response_message[STATUS_PHRASE] = STATUS_404_PHRASE;

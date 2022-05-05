@@ -1,5 +1,6 @@
 #include "utils/http_parser_utils.hpp"
 #include "http/const/const_html_filename.hpp"
+#include "http/const/const_status_phrase.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
@@ -13,18 +14,13 @@ std::string resolve_url(const ServerConfig &server_config,
   }
 }
 
-void set_response_body(http_message_map  &response_message,
-                       const std::string &target_filepath) {
-  std::string content            = read_file_tostring(target_filepath);
+void set_response_body(http_message_map &response_message) {
+  if (response_message[STATUS_PHRASE] == STATUS_204_PHRASE ||
+      response_message[STATUS_PHRASE] == STATUS_304_PHRASE) {
+    return;
+  }
+  std::string content            = read_file_tostring(response_message[PATH]);
   response_message[BODY]         = content;
   response_message[CONTENT_LEN]  = to_string(content.size());
   response_message[CONTENT_TYPE] = TEXT_HTML;
 }
-
-// 引数に渡したステータスコードのenumによってステータスフレーズとbody（必要に応じて）をセットする関数？
-// static void set_body_with_phrase(http_message_map  &response_message,
-//                                  const std::string &file_path) {
-//   if (response_message[STATUS_PHRASE] == STATUS_200_PHRASE) {
-
-//   }
-// }

@@ -42,28 +42,27 @@ http_message_map method_get(const ServerConfig &server_config,
   if (is_request_error(request_message)) {
     std::cout << "request error." << std::endl;
     response_message[STATUS_PHRASE] = STATUS_400_PHRASE;
-    // TODO: target -> response_message[PATH]
-    target_filepath                 = BAD_REQUEST_PAGE;
+    response_message[PATH]          = BAD_REQUEST_PAGE;
     return response_message;
   }
 
   switch (check_url(target_filepath)) {
   case OK_200:
     response_message[STATUS_PHRASE] = STATUS_200_PHRASE;
+    response_message[PATH]          = target_filepath;
     break;
   case FORBIDDEN_403:
     response_message[STATUS_PHRASE] = STATUS_403_PHRASE;
-    target_filepath                 = FORBIDDEN_PAGE;
+    response_message[PATH]          = FORBIDDEN_PAGE;
     break;
   case NOT_FOUND_404:
     response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
-    target_filepath                 = NOT_FOUND_PAGE;
+    response_message[PATH]          = NOT_FOUND_PAGE;
     break;
   default:
     response_message[STATUS_PHRASE] = STATUS_520_PHRASE;
-    target_filepath                 = UNKNOWN_ERROR_PAGE;
+    response_message[PATH]          = UNKNOWN_ERROR_PAGE;
     break;
   }
-  set_response_body(response_message, target_filepath);
   return response_message;
 }
