@@ -2,7 +2,7 @@
 
 // TODO: location
 std::string resolve_url(const ServerConfig &server_config,
-                        const std::string   request_url) {
+                        const std::string  &request_url) {
   if (request_url == "/") {
     return server_config.root_ + "/" + server_config.index_;
   } else {
