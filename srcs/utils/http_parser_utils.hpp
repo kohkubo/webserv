@@ -1,5 +1,5 @@
-#ifndef SRCS_UTILS_HTTP_PARSER_UTILS
-#define SRCS_UTILS_HTTP_PARSER_UTILS
+#ifndef SRCS_UTILS_HTTP_PARSER_UTILS_HPP
+#define SRCS_UTILS_HTTP_PARSER_UTILS_HPP
 
 #include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
@@ -10,4 +10,4 @@ std::string resolve_url(const ServerConfig &server_config,
 
 void        set_response_body(http_message_map &response_message);
 
-#endif /* SRCS_UTILS_HTTP_PARSER_UTILS */
+#endif /* SRCS_UTILS_HTTP_PARSER_UTILS_HPP */
