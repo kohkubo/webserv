@@ -5,14 +5,13 @@
 #include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
-#define SPACES      "\v\r\f\t\n "
 
 TEST(server_config_test, server_exception) {
   {
     std::string  str = "server \n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " ");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -21,7 +20,7 @@ TEST(server_config_test, server_exception) {
     std::string  str = "server {\n"
                        "\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " ");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -32,7 +31,7 @@ TEST(server_config_test, server_exception) {
                        "server {\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " ");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -45,7 +44,7 @@ TEST(server_config_test, root_exception) {
                        "root ;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " ");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -55,7 +54,7 @@ TEST(server_config_test, root_exception) {
                        "root 80\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " ");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -67,7 +66,7 @@ TEST(server_config_test, parse_root) {
                      "root /var/fuga;\n"
                      "}\n";
 
-  token_vector l   = tokenize(str, SPACES "{};", " \n");
+  token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
   ServerConfig conf;
   conf.parse(l.begin(), l.end());
   EXPECT_EQ(conf.root_, "/var/fuga");
@@ -79,7 +78,7 @@ TEST(server_config_test, listen_except) {
                        "listen 888\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " \n");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -89,7 +88,7 @@ TEST(server_config_test, listen_except) {
                        "listen ;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " \n");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -102,7 +101,7 @@ TEST(server_config_test, parse_listen) {
                        "listen 888;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " \n");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_port_, "888");
@@ -112,7 +111,7 @@ TEST(server_config_test, parse_listen) {
                        "listen 192.168.0.1;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " \n");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_address_, "192.168.0.1");
@@ -122,7 +121,7 @@ TEST(server_config_test, parse_listen) {
                        "listen 192.168.0.1:80;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " \n");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_address_, "192.168.0.1");
@@ -133,7 +132,7 @@ TEST(server_config_test, parse_listen) {
                        "listen localhost:80;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " \n");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_address_, "localhost");
@@ -148,7 +147,7 @@ TEST(server_config_test, server_name_except) {
                        "server_name ;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " ");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -159,16 +158,7 @@ TEST(server_config_test, server_name_except) {
                        "server_name example.com example.net;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", " ");
-    ServerConfig conf;
-    EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
-  }
-  {
-    std::string  str = "server {\n"
-                       "server_name example.com;\n";
-
-    token_vector l   = tokenize(str, SPACES "{};", " \n");
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
                  ServerConfig::UnexpectedTokenException);
@@ -181,7 +171,7 @@ TEST(server_config_test, parse_server_name) {
                        "server_name example.com;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", SPACES);
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.server_name_, "example.com");
@@ -191,7 +181,7 @@ TEST(server_config_test, parse_server_name) {
                        "server_name    example.com    ;\n"
                        "}\n";
 
-    token_vector l   = tokenize(str, SPACES "{};", SPACES);
+    token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     ServerConfig conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.server_name_, "example.com");

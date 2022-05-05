@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+#define CONFIG_DELIMITER "\v\r\f\t\n {};"
+#define CONFIG_SKIP      "\v\r\f\t\n "
+
 class ServerConfig {
 public:
   std::string      listen_address_;
