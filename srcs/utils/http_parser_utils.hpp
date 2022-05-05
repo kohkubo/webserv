@@ -6,7 +6,7 @@
 #include "http/const/const_response_key_map.hpp"
 
 std::string resolve_url(const ServerConfig &server_config,
-                        const std::string   request_url);
+                        const std::string  &request_url);
 
 void        set_status_and_path(http_message_map   &response_message,
                                 const ServerConfig &server_config,
