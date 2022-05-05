@@ -16,6 +16,7 @@ static http_message_map
 response_to_bad_request(const HttpMessage &request_message) {
   http_message_map response_message;
   response_message[STATUS_PHRASE] = STATUS_400_PHRASE;
+  response_message[PATH]          = BAD_REQUEST_PAGE;
   (void)request_message;
   return response_message;
 }
@@ -26,24 +27,27 @@ http_message_map delete_method_handler(const ServerConfig &server_config,
     std::cerr << "DELETE with body is unsupported" << std::endl;
     return response_to_bad_request(request_message);
   }
+  // TODO: 相対パス等バリデーション
   http_message_map response_message;
   std::string      target_filepath =
       resolve_url(server_config, request_message.url_);
-  // TODO: 相対パス等バリデーション
   if (!is_file_exists(target_filepath.c_str())) {
     std::cerr << "target file is not found" << std::endl;
     response_message[STATUS_PHRASE] = STATUS_404_PHRASE;
-    target_filepath                 = NOT_FOUND_PAGE;
-  } else if (check_access(target_filepath, W_OK)) {
+    response_message[PATH]          = NOT_FOUND_PAGE;
+    return response_message;
+  }
+  if (!check_access(target_filepath, W_OK)) {
+    std::cerr << "process can not delete target file" << std::endl;
     response_message[STATUS_PHRASE] = STATUS_403_PHRASE;
-    target_filepath                 = FORBIDDEN_PAGE;
-  } else if (remove_file(target_filepath)) {
+    response_message[PATH]          = FORBIDDEN_PAGE;
+    return response_message;
+  }
+  if (remove_file(target_filepath)) {
     response_message[STATUS_PHRASE] = STATUS_204_PHRASE;
     return response_message;
-  } else {
-    response_message[STATUS_PHRASE] = STATUS_500_PHRASE;
-    target_filepath                 = INTERNAL_SERVER_ERROR_PAGE;
   }
-  set_response_body(response_message, target_filepath.c_str());
+  response_message[STATUS_PHRASE] = STATUS_500_PHRASE;
+  response_message[PATH]          = INTERNAL_SERVER_ERROR_PAGE;
   return response_message;
 }

@@ -74,5 +74,9 @@ std::string create_response(const ServerConfig &server_config,
   }
   response_message[VERSION]    = VERSION_HTTP;     // TODO: 別関数に実装
   response_message[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
+
+  // responseに設定された、file_path, status_codeと
+  // request_methodからbodyを設定する。
+  // set_response_body(response_message, target_filepath);
   return response_message_to_string(response_message);
 }
