@@ -1,9 +1,9 @@
 #include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
-#include "http/const_response_key_map.hpp"
-#include "http/const_status_phrase.hpp"
-#include "http/method.hpp"
-#include "http/response.hpp"
+#include "http/const/const_response_key_map.hpp"
+#include "http/const/const_status_phrase.hpp"
+#include "http/method/method.hpp"
+#include "http/response/response.hpp"
 #include "gtest/gtest.h"
 #include <netdb.h>
 #include <sys/socket.h>

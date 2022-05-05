@@ -1,7 +1,7 @@
 #include "config/ServerConfig.hpp"
-#include "request.hpp"
-#include "request_parse.hpp"
-#include "response.hpp"
+#include "http/request/request.hpp"
+#include "http/request/request_parse.hpp"
+#include "http/response/response.hpp"
 #include "util/util.hpp"
 #include <string>
 #include <sys/socket.h>
