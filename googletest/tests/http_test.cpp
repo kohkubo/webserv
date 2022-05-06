@@ -73,6 +73,26 @@ TEST(http_test, create_response_info_get_403) {
   EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
 }
 
+TEST(http_test, create_response_info_delete_normal) {
+  ServerConfig server_config = ServerConfig();
+  server_config.root_        = "../html";
+  server_config.index_       = "index.html";
+  HttpMessage request_info;
+  request_info.method_  = DELETE;
+  request_info.url_     = "/delete_target.html";
+  request_info.version_ = "HTTP/1.1";
+  request_info.host_    = "localhost";
+
+  system("touch ../html/delete_target.html");
+
+  http_message_map response_info =
+      create_response_info(server_config, request_info);
+
+  EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_204_PHRASE);
+  EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
+  EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
+}
+
 TEST(http_test, make_message_string) {
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html/";
