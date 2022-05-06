@@ -3,11 +3,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <map>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-
-#define SPACES "\v\r\f\t\n "
 
 ServerConfig::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
@@ -20,6 +19,10 @@ ServerConfig::ServerConfig()
     , server_name_("")
     , root_("./html/")
     , index_("index.html")
+    , error_pages_()
+    , return_()
+    , autoindex_(true)
+    , limit_except_()
     , addrinfo_(NULL) {}
 
 ServerConfig::ServerConfig(const ServerConfig &other) { *this = other; }
@@ -34,6 +37,10 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other) {
   server_name_          = other.server_name_;
   root_                 = other.root_;
   index_                = other.index_;
+  error_pages_          = other.error_pages_;
+  return_               = other.return_;
+  autoindex_            = other.autoindex_;
+  limit_except_         = other.limit_except_;
   __set_getaddrinfo();
   return *this;
 }
@@ -42,34 +49,37 @@ ServerConfig::~ServerConfig() { freeaddrinfo(addrinfo_); }
 
 token_iterator ServerConfig::parse(token_iterator pos, token_iterator end) {
   pos++;
-  if (*pos != "{")
+  if (*pos++ != "{")
     throw UnexpectedTokenException("server directive does not have context.");
-  pos++;
-  while (pos != end) {
-    if (pos == end || *pos == "}")
-      break;
-    if (*pos == "listen") {
-      pos = __parse_listen(pos, end);
-    } else if (*pos == "root") {
-      pos = __parse_root(pos, end);
-    } else if (*pos == "server_name") {
-      pos = __parse_server_name(pos, end);
-    } else {
-      throw UnexpectedTokenException();
+  while (pos != end && *pos != "}") {
+    token_iterator head = pos;
+    // clang-format off
+    pos = __parse_listen(pos, end);
+    pos = __parse_string_directive("index", index_, pos, end);
+    pos = __parse_string_directive("root", root_, pos, end);
+    pos = __parse_string_directive("server_name", server_name_, pos, end);
+    pos = __parse_vector_directive("limit_except", limit_except_, pos, end);
+    pos = __parse_sizet_directive("client_max_body_size", client_max_body_size_, pos, end);
+    pos = __parse_bool_directive("autoindex", autoindex_, pos, end);
+    pos = __parse_map_directive("error_page", error_pages_, pos, end);
+    pos = __parse_map_directive("return", return_, pos, end);
+    // clang-format on
+    if (pos == head) {
+      throw UnexpectedTokenException("parse server directive failed.");
     }
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
-  pos++;
-  return pos;
+  return ++pos;
 }
 
 token_iterator ServerConfig::__parse_listen(token_iterator pos,
                                             token_iterator end) {
+  if (*pos != "listen")
+    return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-
   token_vector   l  = tokenize(*pos, ": ", " ");
   token_iterator it = l.begin();
   while (it != l.end()) {
@@ -84,23 +94,80 @@ token_iterator ServerConfig::__parse_listen(token_iterator pos,
   return pos + 2;
 }
 
-token_iterator ServerConfig::__parse_root(token_iterator pos,
-                                          token_iterator end) {
+token_iterator
+ServerConfig::__parse_map_directive(std::string                 key,
+                                    std::map<int, std::string> &value,
+                                    token_iterator pos, token_iterator end) {
+  if (*pos != key)
+    return pos;
+  pos++;
+  if (pos == end || pos + 2 == end || *(pos + 2) != ";")
+    throw UnexpectedTokenException("could not detect directive value.");
+  value.insert(std::make_pair(std::atoi((*pos).c_str()), *(pos + 1)));
+  return pos + 3;
+}
+
+token_iterator ServerConfig::__parse_string_directive(std::string    key,
+                                                      std::string   &value,
+                                                      token_iterator pos,
+                                                      token_iterator end) {
+  if (*pos != key)
+    return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-  root_ = *pos;
+  value = *pos;
   return pos + 2;
 }
 
-// TODO: parse_rootと同じ処理なのでまとめる?
-token_iterator ServerConfig::__parse_server_name(token_iterator pos,
-                                                 token_iterator end) {
+token_iterator ServerConfig::__parse_sizet_directive(std::string    key,
+                                                     size_t        &value,
+                                                     token_iterator pos,
+                                                     token_iterator end) {
+  if (*pos != key)
+    return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-  server_name_ = *pos;
+  // TODO: size_tに変換できるやり方ちゃんと調査
+  // TODO: エラー処理
+  value = std::atol((*pos).c_str());
   return pos + 2;
+}
+
+token_iterator ServerConfig::__parse_bool_directive(std::string    key,
+                                                    bool          &value,
+                                                    token_iterator pos,
+                                                    token_iterator end) {
+  if (*pos != key)
+    return pos;
+  pos++;
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
+    throw UnexpectedTokenException("could not detect directive value.");
+  if (*pos == "on")
+    value = true;
+  else if (*pos == "off")
+    value = false;
+  else
+    throw UnexpectedTokenException("bool directive value is invalid.");
+  return pos + 2;
+}
+
+token_iterator
+ServerConfig::__parse_vector_directive(std::string               key,
+                                       std::vector<std::string> &value,
+                                       token_iterator pos, token_iterator end) {
+  if (*pos != key)
+    return pos;
+  pos++;
+  if (pos == end)
+    throw UnexpectedTokenException("could not detect directive value.");
+  for (; pos != end && *pos != ";"; pos++) {
+    value.push_back(*pos);
+  }
+  if (pos == end)
+    throw UnexpectedTokenException("vector directive value is invalid.");
+  return pos + 1;
 }
 
 void ServerConfig::__set_getaddrinfo() {
