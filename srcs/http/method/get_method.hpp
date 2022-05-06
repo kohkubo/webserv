@@ -6,6 +6,6 @@
 #include "http/const/const_response_key_map.hpp"
 
 http_message_map method_get(const ServerConfig &server_config,
-                            HttpMessage        &request_message);
+                            HttpMessage        &request_info);
 
 #endif /* SRCS_HTTP_METHOD_GET_METHOD_HPP */
