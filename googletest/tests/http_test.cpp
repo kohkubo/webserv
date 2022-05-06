@@ -11,7 +11,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-TEST(http_test, create_response_info) {
+TEST(http_test, create_response_info_get_normal) {
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html";
   server_config.index_       = "index.html";
@@ -30,7 +30,7 @@ TEST(http_test, create_response_info) {
   EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
 }
 
-TEST(http_test, create_response_info_404) {
+TEST(http_test, create_response_info_get_404) {
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html";
   server_config.index_       = "index.html";
@@ -50,7 +50,7 @@ TEST(http_test, create_response_info_404) {
   EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
 }
 
-TEST(http_test, create_response_info_403) {
+TEST(http_test, create_response_info_get_403) {
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html";
   server_config.index_       = "index.html";
