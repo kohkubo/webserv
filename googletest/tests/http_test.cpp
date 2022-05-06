@@ -5,13 +5,29 @@
 #include "http/const/const_status_phrase.hpp"
 #include "http/method/get_method.hpp"
 #include "http/response/response.hpp"
+#include "utils/file_io_utils.hpp"
 #include "utils/http_parser_utils.hpp"
+#include "utils/utils.hpp"
 #include "gtest/gtest.h"
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
 TEST(http_test, create_response_info_get_normal) {
+  std::string  expect        = "HTTP/1.1 200 OK\r\n"
+                               "Content-Length: 127\r\n"
+                               "Content-Type: text/html\r\n"
+                               "Connection: close\r\n"
+                               "\r\n"
+                               "<!DOCTYPE html>\n"
+                               "<html>\n"
+                               "    <head>\n"
+                               "        <title>Basic Web Page</title>\n"
+                               "    </head>\n"
+                               "    <body>\n"
+                               "Hello World!\n"
+                               "    </body>\n"
+                               "</html>";
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html";
   server_config.index_       = "index.html";
@@ -28,6 +44,10 @@ TEST(http_test, create_response_info_get_normal) {
   EXPECT_EQ(response_info[PATH], "../html/index.html");
   EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
   EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
+
+  std::string response_message = make_message_string(response_info);
+
+  EXPECT_EQ(response_message, expect);
 }
 
 TEST(http_test, create_response_info_get_400) {
@@ -92,6 +112,8 @@ TEST(http_test, create_response_info_get_403) {
 }
 
 TEST(http_test, create_response_info_delete_normal) {
+  std::string  expect        = "HTTP/1.1 204 No Content\r\n"
+                               "Connection: close\r\n\r\n";
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html";
   server_config.index_       = "index.html";
@@ -109,6 +131,10 @@ TEST(http_test, create_response_info_delete_normal) {
   EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_204_PHRASE);
   EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
   EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
+
+  std::string response_message = make_message_string(response_info);
+
+  EXPECT_EQ(response_message, expect);
 }
 
 TEST(http_test, create_response_info_delete_404) {
@@ -172,35 +198,6 @@ TEST(http_test, create_response_info_delete_400) {
   EXPECT_EQ(response_info[PATH], BAD_REQUEST_PAGE);
   EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
   EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
-}
-
-TEST(http_test, make_message_string) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html/";
-  HttpMessage request_info;
-  request_info.method_    = GET;
-  request_info.url_       = "/";
-  request_info.version_   = "HTTP/1.1";
-  request_info.host_      = "localhost";
-  std::string      expect = "HTTP/1.1 200 OK\r\n"
-                            "Content-Length: 127\r\n"
-                            "Content-Type: text/html\r\n"
-                            "Connection: close\r\n"
-                            "\r\n"
-                            "<!DOCTYPE html>\n"
-                            "<html>\n"
-                            "    <head>\n"
-                            "        <title>Basic Web Page</title>\n"
-                            "    </head>\n"
-                            "    <body>\n"
-                            "Hello World!\n"
-                            "    </body>\n"
-                            "</html>";
-
-  http_message_map response_info =
-      create_response_info(server_config, request_info);
-  std::string response_message = make_message_string(response_info);
-  EXPECT_EQ(response_message, expect);
 }
 
 #define TEST_FILE          "../googletest/tdata/test.txt"
