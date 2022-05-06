@@ -1,5 +1,6 @@
 #include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
+#include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/method/get_method.hpp"
@@ -11,6 +12,68 @@
 #include <sys/types.h>
 
 TEST(http_test, create_response_info) {
+  ServerConfig server_config = ServerConfig();
+  server_config.root_        = "../html";
+  server_config.index_       = "index.html";
+  HttpMessage request_info;
+  request_info.method_  = GET;
+  request_info.url_     = "/";
+  request_info.version_ = "HTTP/1.1";
+  request_info.host_    = "localhost";
+
+  http_message_map response_info =
+      create_response_info(server_config, request_info);
+
+  EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_200_PHRASE);
+  EXPECT_EQ(response_info[PATH], "../html/index.html");
+  EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
+  EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
+}
+
+TEST(http_test, create_response_info_404) {
+  ServerConfig server_config = ServerConfig();
+  server_config.root_        = "../html";
+  server_config.index_       = "index.html";
+  HttpMessage request_info;
+  request_info.method_  = GET;
+  request_info.url_     = "/hogehoge.html";
+  request_info.version_ = "HTTP/1.1";
+  request_info.host_    = "localhost";
+
+  http_message_map response_info =
+      create_response_info(server_config, request_info);
+  // testerとwebservが実行される階層が違うため、constの相対パスが想定とずれる。
+
+  EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_404_PHRASE);
+  EXPECT_EQ(response_info[PATH], NOT_FOUND_PAGE);
+  EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
+  EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
+}
+
+TEST(http_test, create_response_info_403) {
+  ServerConfig server_config = ServerConfig();
+  server_config.root_        = "../html";
+  server_config.index_       = "index.html";
+  HttpMessage request_info;
+  request_info.method_  = GET;
+  request_info.url_     = "/000.html";
+  request_info.version_ = "HTTP/1.1";
+  request_info.host_    = "localhost";
+
+  system("chmod 000 ../html/000.html");
+
+  http_message_map response_info =
+      create_response_info(server_config, request_info);
+
+  system("chmod 644 ../html/000.html");
+
+  EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_403_PHRASE);
+  EXPECT_EQ(response_info[PATH], FORBIDDEN_PAGE);
+  EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
+  EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
+}
+
+TEST(http_test, make_message_string) {
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html/";
   HttpMessage request_info;

@@ -7,6 +7,7 @@
 // TODO: location
 std::string resolve_url(const ServerConfig &server_config,
                         const std::string  &request_url) {
+  // TODO: rootの末尾に/入ってるとき
   if (request_url == "/") {
     return server_config.root_ + "/" + server_config.index_;
   } else {
