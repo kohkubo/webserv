@@ -4,6 +4,7 @@
 #include "http/const/const_status_phrase.hpp"
 #include "http/method/method.hpp"
 #include "http/response/response.hpp"
+#include "utils/http_parser_utils.hpp"
 #include "gtest/gtest.h"
 #include <netdb.h>
 #include <sys/socket.h>
@@ -49,6 +50,7 @@ TEST(http_test, method_get) {
   request_message.url_  = "/";
   request_message.host_ = "localhost";
   response_message      = method_get(server_config, request_message);
+  set_response_body(response_message);
   EXPECT_EQ(response_message[STATUS_PHRASE], STATUS_200_PHRASE);
   EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   EXPECT_EQ(response_message[CONTENT_LEN],
