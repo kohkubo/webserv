@@ -30,6 +30,24 @@ TEST(http_test, create_response_info_get_normal) {
   EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
 }
 
+TEST(http_test, create_response_info_get_400) {
+  ServerConfig server_config = ServerConfig();
+  server_config.root_        = "../html";
+  server_config.index_       = "index.html";
+  HttpMessage request_info;
+  request_info.method_  = GET;
+  request_info.url_     = "/";
+  request_info.version_ = "HTTP/1.1";
+
+  http_message_map response_info =
+      create_response_info(server_config, request_info);
+
+  EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_400_PHRASE);
+  EXPECT_EQ(response_info[PATH], BAD_REQUEST_PAGE);
+  EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
+  EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
+}
+
 TEST(http_test, create_response_info_get_404) {
   ServerConfig server_config = ServerConfig();
   server_config.root_        = "../html";
