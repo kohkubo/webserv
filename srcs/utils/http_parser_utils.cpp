@@ -14,6 +14,33 @@ std::string resolve_url(const ServerConfig &server_config,
   }
 }
 
+void set_status_and_path(http_message_map   &response_message,
+                         const ServerConfig &server_config,
+                         HttpStatusCode      code) {
+  const std::string error_response_status[] = {
+      STATUS_200_PHRASE, STATUS_204_PHRASE, STATUS_400_PHRASE,
+      STATUS_403_PHRASE, STATUS_404_PHRASE, STATUS_500_PHRASE,
+      STATUS_501_PHRASE, STATUS_520_PHRASE,
+  };
+  const std::string default_error_page_path[] = {
+      "",                         // 200
+      "",                         // 204
+      BAD_REQUEST_PAGE,           // 400
+      FORBIDDEN_PAGE,             // 403
+      NOT_FOUND_PAGE,             // 404
+      INTERNAL_SERVER_ERROR_PAGE, // 500
+      NOT_IMPLEMENTED_PAGE,       // 501
+      UNKNOWN_ERROR_PAGE,         // 520
+  };
+
+  // TODO: serverConfigのerror_pageみる
+  (void)server_config;
+
+  response_message[STATUS_PHRASE] = error_response_status[code];
+  if (!(code == OK_200 || code == NO_CONTENT_204))
+    response_message[PATH] = default_error_page_path[code];
+}
+
 void set_response_body(http_message_map &response_message) {
   if (response_message[STATUS_PHRASE] == STATUS_204_PHRASE ||
       response_message[STATUS_PHRASE] == STATUS_304_PHRASE) {

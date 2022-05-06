@@ -1,4 +1,6 @@
 #include "utils/file_io_utils.hpp"
+#include "utils/utils.hpp"
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -32,6 +34,15 @@ std::string read_file_tostring(const std::string &path) {
   // その他のエラーケースに関しても再現が困難なので現状エラー確認なし.
   file.close();
   return buffer.str();
+}
+
+bool remove_file(const std::string &file_path) {
+  int ret = std::remove(file_path.c_str());
+  if (ret == -1) {
+    error_log_with_errno("remove_file");
+    return false;
+  }
+  return true;
 }
 
 bool check_access(const std::string &file_path, int mode) {

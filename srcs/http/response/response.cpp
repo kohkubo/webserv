@@ -3,12 +3,11 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/method/delete_method.hpp"
-#include "http/method/method.hpp"
+#include "http/method/get_method.hpp"
 #include "utils/http_parser_utils.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
-
 /*
  * ステータスラインの要素は必須だが, 存在しなかった時のバリデートは現状してない
  */
@@ -66,7 +65,7 @@ std::string create_response(const ServerConfig &server_config,
     response_message = method_get(server_config, request_message);
     break;
   case DELETE:
-    response_message = method_delete(server_config, request_message);
+    response_message = delete_method_handler(server_config, request_message);
     break;
   // case POST:
   //   break;
