@@ -22,7 +22,7 @@ static HttpStatusCode delete_target_file(const HttpMessage &request_info,
     std::cerr << "target file is not found" << std::endl;
     return NOT_FOUND_404;
   }
-  if (!check_access(target_filepath, W_OK)) {
+  if (!is_accessible(target_filepath, W_OK)) {
     std::cerr << "process can not delete target file" << std::endl;
     return FORBIDDEN_403;
   }

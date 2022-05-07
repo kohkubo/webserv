@@ -45,6 +45,6 @@ bool remove_file(const std::string &file_path) {
   return true;
 }
 
-bool check_access(const std::string &file_path, int mode) {
+bool is_accessible(const std::string &file_path, int mode) {
   return access(file_path.c_str(), mode) == 0;
 }
