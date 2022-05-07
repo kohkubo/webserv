@@ -1,4 +1,5 @@
 #include "config/ServerConfig.hpp"
+#include "http/const/const_response_key_map.hpp"
 #include "http/request/request.hpp"
 #include "http/request/request_parse.hpp"
 #include "http/response/response.hpp"
@@ -23,9 +24,10 @@ void http(int accfd) {
   // TODO: 適切なServerConfigが渡される。
   const ServerConfig       server_config  = ServerConfig();
   std::vector<std::string> request_tokens = receive_request(accfd);
-  HttpMessage request_message = parse_request_message(request_tokens);
-  std::string response_message =
-      create_response(server_config, request_message);
+  HttpMessage              request_info = parse_request_message(request_tokens);
+  http_message_map         response_info =
+      create_response_info(server_config, request_info);
+  std::string response_message = make_message_string(response_info);
   send_response(accfd, response_message);
 }
 

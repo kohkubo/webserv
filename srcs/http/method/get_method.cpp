@@ -10,8 +10,8 @@
 #include <unistd.h>
 
 // TODO: Requestのエラーについて、未調査です。Getにおいては、Hostだけで良さそう
-bool is_request_error(HttpMessage &request_message) {
-  if (request_message.host_ == "") {
+bool is_request_error(HttpMessage &request_info) {
+  if (request_info.host_ == "") {
     return true;
   }
   return false;
@@ -31,24 +31,23 @@ static HttpStatusCode check_url(const std::string &target_filepath) {
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
 http_message_map method_get(const ServerConfig &server_config,
-                            HttpMessage        &request_message) {
-  http_message_map response_message;
-  std::string      target_filepath =
-      resolve_url(server_config, request_message.url_);
+                            HttpMessage        &request_info) {
+  http_message_map response_info;
+  std::string target_filepath = resolve_url(server_config, request_info.url_);
 
   // リクエストのエラー 判定はここがよさそう。
   // メソッドごとのエラー判定と共通のエラーで分けてもいいかも
   // hostは共通かな -> hostのエラーチェックはloopの段階でvalidateされる
-  if (is_request_error(request_message)) {
+  if (is_request_error(request_info)) {
     std::cout << "request error." << std::endl;
-    response_message[STATUS_PHRASE] = STATUS_400_PHRASE;
-    response_message[PATH]          = BAD_REQUEST_PAGE;
-    return response_message;
+    response_info[STATUS_PHRASE] = STATUS_400_PHRASE;
+    response_info[PATH]          = BAD_REQUEST_PAGE;
+    return response_info;
   }
 
   HttpStatusCode code = check_url(target_filepath);
-  set_status_and_path(response_message, server_config, code);
+  set_status_and_path(response_info, server_config, code);
   if (code == OK_200)
-    response_message[PATH] = target_filepath;
-  return response_message;
+    response_info[PATH] = target_filepath;
+  return response_info;
 }

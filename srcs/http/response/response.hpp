@@ -3,8 +3,11 @@
 
 #include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
+#include "http/const/const_response_key_map.hpp"
 
-std::string create_response(const ServerConfig &server_config,
-                            HttpMessage        &request_message);
+http_message_map create_response_info(const ServerConfig &server_config,
+                                      HttpMessage        &request_info);
+
+std::string      make_message_string(http_message_map &response_info);
 
 #endif /* SRCS_HTTP_RESPONSE_HPP */
