@@ -29,8 +29,8 @@ find_same_socket(const ServerConfig &conf, server_group_type &server_group) {
 
 // tmpにlistenディレクティブが共通するServerConfigのリストを作る
 server_group_type create_server_group(const server_list_type &server_list) {
-  server_group_type                         server_group;
-  std::vector<ServerConfig>::const_iterator sl_it = server_list.begin();
+  server_group_type                server_group;
+  server_list_type::const_iterator sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
     server_group_type::iterator it = find_same_socket(*sl_it, server_group);
     if (it != server_group.end()) {
