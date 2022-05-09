@@ -1,6 +1,5 @@
 #include "http/const/const_delimiter.hpp"
-#include "http/method/delete_method.hpp"
-#include "http/method/get_method.hpp"
+#include "http/method/method.hpp"
 #include "utils/http_parser_utils.hpp"
 #include <iostream>
 #include <string>
