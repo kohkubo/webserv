@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "config/ServerConfig.hpp"
+#include "config/config.hpp"
 #include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
