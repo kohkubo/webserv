@@ -44,6 +44,10 @@ http_message_map method_get(const ServerConfig &server_config,
     response_info[PATH]          = BAD_REQUEST_PAGE;
     return response_info;
   }
+  if (is_minus_depth(request_info.url_)) {
+    set_status_and_path(response_info, server_config, NOT_FOUND_404);
+    return response_info;
+  }
 
   HttpStatusCode code = check_url(target_filepath);
   set_status_and_path(response_info, server_config, code);

@@ -1,5 +1,6 @@
 #include "utils/config_parser_utils.hpp"
 #include "utils/file_io_utils.hpp"
+#include "utils/http_parser_utils.hpp"
 #include "utils/utils.hpp"
 #include "gtest/gtest.h"
 #include <fstream>
@@ -95,4 +96,17 @@ TEST(util_test, test_is_file_exists) {
   EXPECT_TRUE(is_file_exists(EMPTY_FILE));
   EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
   //ファイルに読み込み権限がないとtrueが返ります。
+}
+
+TEST(util_test, is_minus_depth_test) {
+  EXPECT_TRUE(is_minus_depth("../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("hoge/../../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/hoge/../../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("/hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("hoge/../hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
 }
