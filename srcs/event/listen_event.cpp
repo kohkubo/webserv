@@ -27,7 +27,7 @@ create_socket_map(const server_group_type &server_group) {
   return res;
 }
 
-// socket_fd + connection_fdをreadfdsに加える。
+// pollに渡すpollfd構造体の配列作成
 static struct pollfd *create_pollfds(const struct pollfd *old_pfds,
                              const socket_list_type     &socket_list,
                              const connection_list_type &connection_list,
@@ -51,27 +51,26 @@ static void close_all_socket(const socket_list_type &socket_list) {
 }
 
 void listen_event(const server_group_type &server_group) {
-  socket_list_type     socket_list = create_socket_map(server_group);
-  connection_list_type connection_list; // accfdとsocketとの対応関係持つ
+  socket_list_type     socket_list = create_socket_map(server_group); // listen_fdとserver_groupの関係を管理
+  connection_list_type connection_list;                               // connection_fdとliste_fdの関係を管理
 
   struct pollfd *pfds = NULL;
   while (1) {
     int    nfds_listen = socket_list.size();
     int    nfds_connect = connection_list.size();
-    int    nfds = nfds_listen + nfds_connect;// TODO: overflow可能性確認
+    int    nfds = nfds_listen + nfds_connect;// TODO: 合計の最大値が幾つになるか確認
     pfds = create_pollfds(pfds, socket_list, connection_list, nfds);
 
     int    ret     = poll(pfds, nfds, 0);
     if (ret == -1) {
-      error_log_with_errno("poll() failed. readfds.");
+      error_log_with_errno("poll() failed");
       exit(EXIT_FAILURE);
     }
     for (int i = 0; i < nfds && 0 < ret; i++) {
-      // TODO: POLLIN以外も確認
       if (pfds[i].revents & POLLIN) {
         std::cout << "POLLIN fd: " << pfds[i].fd << std::endl;
         if (i < nfds_listen) {
-          /* listenしているfd accept -> connection_listに追加 */
+          /* listen_fdがPOLLIN -> accept -> connection_listに追加 */
           // TODO: 現状同じlisten_fdが2回acceptする, そして放置していると二回目のacceptがPOLLINになる
           int accfd = accept(pfds[i].fd, (struct sockaddr *)NULL, NULL);
           if (accfd == -1) {
