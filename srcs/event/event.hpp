@@ -4,6 +4,7 @@
 #include "config/ServerConfig.hpp"
 #include <map>
 #include <sys/types.h>
+#include <poll.h>
 
 int  open_new_socket(const ServerConfig &config);
 void listen_event(const server_group_type &server_group);
@@ -20,10 +21,12 @@ int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
 }
 
 template <typename T>
-void set_fd_list(struct pollfd *readfds, const std::map<int, T> &list) {
+void set_fd_list(struct pollfd *pfds, int start_idx, const std::map<int, T> &list) {
   typename std::map<int, T>::const_iterator it     = list.begin();
   for (; it != list.end(); it++) {
-    FD_SET(it->first, readfds);
+    pfds[start_idx].fd = it->first;
+    pfds[start_idx].events = POLLIN;
+    start_idx++;
   }
 }
 

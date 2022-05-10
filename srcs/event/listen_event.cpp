@@ -6,6 +6,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <poll.h>
+
+// TODO: selectがなくなったことによるinclude変更あり？
 
 /*
 ** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持
@@ -44,14 +47,15 @@ static fd_set create_readfds(const socket_list_type     &socket_list,
 }
 
 // socket_fd + connection_fdをreadfdsに加える。
-static struct pollfd create_readfds(const struct pollfd *old_pfds,
+static struct pollfd create_pollfds(const struct pollfd *old_pfds,
                              const socket_list_type     &socket_list,
                              const connection_list_type &connection_list,
                              const int                        &nfds) {
   struct pollfd *new_pfds = realloc(old_pfds, sizeof(struct pollfd) * nfds);
   memset(new_pfds, 0, sizeof(new_pfds));
-
-  return readfds;
+  set_fd_list(new_pfds, 0, socket_list);
+  set_fd_list(new_pfds, socket_list.size(), connection_list);
+  return new_pfds;
 }
 
 static void close_all_socket(const socket_list_type &socket_list) {
@@ -66,9 +70,10 @@ void listen_event(const server_group_type &server_group) {
   connection_list_type connection_list; // accfdとsocketとの対応関係持つ
 
   timeval              timeout = {.tv_sec = 0, .tv_usec = 0};
+  struct pollfd *pfds;
   while (1) {
     int    nfds = socket_list.size() + connection_list.size();// overflow可能性確認
-    struct pollfd *pfds = create_readfds(socket_list, connection_list, nfds);
+    pfds = create_pollfds(pfds, socket_list, connection_list, nfds);
 
     int    ret     = select(nfds + 1, &readfds, NULL, NULL, &timeout);
     if (ret == -1) {
@@ -107,4 +112,5 @@ void listen_event(const server_group_type &server_group) {
   }
   // tmp
   close_all_socket(socket_list);
+  // TODO: close_all_socket(connection_list);
 }
