@@ -16,8 +16,7 @@ jobs:
       id: review
       with:
         config_file: '.clang-tidy'
-        include: "./srcs/*.hpp"
-        exclude: "googletest/*"
+        exclude: "googletest/tests/*.cpp"
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
