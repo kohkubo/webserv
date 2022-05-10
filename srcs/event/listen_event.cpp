@@ -3,9 +3,9 @@
 #include "http/http.hpp"
 #include "utils/utils.hpp"
 #include <cstdlib>
+#include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <poll.h>
 
 /*
 ** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持
@@ -28,11 +28,12 @@ create_socket_map(const server_group_type &server_group) {
 }
 
 // pollに渡すpollfd構造体の配列作成
-static struct pollfd *create_pollfds(const struct pollfd *old_pfds,
-                             const socket_list_type     &socket_list,
-                             const connection_list_type &connection_list,
-                             const int                        &nfds) {
-  struct pollfd *new_pfds = (struct pollfd *)realloc((void *)old_pfds, sizeof(struct pollfd) * nfds);
+static struct pollfd *
+create_pollfds(const struct pollfd        *old_pfds,
+               const socket_list_type     &socket_list,
+               const connection_list_type &connection_list, const int &nfds) {
+  struct pollfd *new_pfds =
+      (struct pollfd *)realloc((void *)old_pfds, sizeof(struct pollfd) * nfds);
   if (new_pfds == NULL) {
     error_log_with_errno("realloc");
     exit(EXIT_FAILURE);
@@ -51,17 +52,19 @@ static void close_all_socket(const socket_list_type &socket_list) {
 }
 
 void listen_event(const server_group_type &server_group) {
-  socket_list_type     socket_list = create_socket_map(server_group); // listen_fdとserver_groupの関係を管理
-  connection_list_type connection_list;                               // connection_fdとliste_fdの関係を管理
+  socket_list_type socket_list =
+      create_socket_map(server_group); // listen_fdとserver_groupの関係を管理
+  connection_list_type connection_list; // connection_fdとliste_fdの関係を管理
 
-  struct pollfd *pfds = NULL;
+  struct pollfd       *pfds = NULL;
   while (1) {
-    int    nfds_listen = socket_list.size();
-    int    nfds_connect = connection_list.size();
-    int    nfds = nfds_listen + nfds_connect;// TODO: 合計の最大値が幾つになるか確認
-    pfds = create_pollfds(pfds, socket_list, connection_list, nfds);
+    int nfds_listen  = socket_list.size();
+    int nfds_connect = connection_list.size();
+    int nfds =
+        nfds_listen + nfds_connect; // TODO: 合計の最大値が幾つになるか確認
+    pfds         = create_pollfds(pfds, socket_list, connection_list, nfds);
 
-    int    n_events     = poll(pfds, nfds, 0);
+    int n_events = poll(pfds, nfds, 0);
     if (n_events == -1) {
       error_log_with_errno("poll() failed");
       exit(EXIT_FAILURE);
@@ -76,7 +79,8 @@ void listen_event(const server_group_type &server_group) {
             error_log_with_errno("accept()) failed.");
             exit(EXIT_FAILURE);
           }
-          std::cout << "listen fd: " << pfds[i].fd << " connection fd: " << accfd << std::endl;
+          std::cout << "listen fd: " << pfds[i].fd
+                    << " connection fd: " << accfd << std::endl;
           connection_list.insert(std::make_pair(accfd, pfds[i].fd));
         } else {
           /* connection_fdがPOLLIN -> http -> connection_listから削除 */
@@ -89,7 +93,7 @@ void listen_event(const server_group_type &server_group) {
       } else if (pfds[i].revents & (POLLERR | POLLIN)) {
         std::cout << ((pfds[i].revents & POLLERR) ? "POLLERR" : "")
                   << ((pfds[i].revents & POLLIN) ? "POLLIN" : "")
-                  << " fd: " <<  pfds[i].fd << std::endl;
+                  << " fd: " << pfds[i].fd << std::endl;
         exit(EXIT_FAILURE); // tmp
       }
     }

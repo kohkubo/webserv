@@ -11,11 +11,12 @@ void listen_event(const server_group_type &server_group);
 // pollに渡すpollfd構造体の配列の各要素をセット
 // 現状, 各fdが待つイベントはPOLLIN(読み出し可能なデータがあるか)で固定
 template <typename T>
-void set_fd_list(struct pollfd *pfds, const int start_idx, const std::map<int, T> &list) {
-  int idx = start_idx;
-  typename std::map<int, T>::const_iterator it     = list.begin();
+void set_fd_list(struct pollfd *pfds, const int start_idx,
+                 const std::map<int, T> &list) {
+  int                                       idx = start_idx;
+  typename std::map<int, T>::const_iterator it  = list.begin();
   for (; it != list.end(); it++) {
-    pfds[idx].fd = it->first;
+    pfds[idx].fd     = it->first;
     pfds[idx].events = POLLIN;
     idx++;
   }
