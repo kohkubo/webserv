@@ -30,29 +30,33 @@ create_socket_map(const server_group_type &server_group) {
   return res;
 }
 
-// socket_fd + connection_fdをreadfdsに加える。
-static fd_set create_readfds(const socket_list_type     &socket_list,
-                             const connection_list_type &connection_list,
-                             int                        &nfds) {
-  int    res;
-  fd_set readfds;
+//// socket_fd + connection_fdをreadfdsに加える。
+//static fd_set create_readfds(const socket_list_type     &socket_list,
+//                             const connection_list_type &connection_list,
+//                             int                        &nfds) {
+//  int    res;
+//  fd_set readfds;
 
-  nfds = -1;
-  FD_ZERO(&readfds);
-  res  = set_fd_list(&readfds, socket_list);
-  nfds = std::max(nfds, res);
-  res  = set_fd_list(&readfds, connection_list);
-  nfds = std::max(nfds, res);
-  return readfds;
-}
+//  nfds = -1;
+//  FD_ZERO(&readfds);
+//  res  = set_fd_list(&readfds, socket_list);
+//  nfds = std::max(nfds, res);
+//  res  = set_fd_list(&readfds, connection_list);
+//  nfds = std::max(nfds, res);
+//  return readfds;
+//}
 
 // socket_fd + connection_fdをreadfdsに加える。
-static struct pollfd create_pollfds(const struct pollfd *old_pfds,
+static struct pollfd *create_pollfds(const struct pollfd *old_pfds,
                              const socket_list_type     &socket_list,
                              const connection_list_type &connection_list,
                              const int                        &nfds) {
-  struct pollfd *new_pfds = realloc(old_pfds, sizeof(struct pollfd) * nfds);
-  memset(new_pfds, 0, sizeof(new_pfds));
+  struct pollfd *new_pfds = (struct pollfd *)realloc((void *)old_pfds, sizeof(struct pollfd) * nfds);
+  if (new_pfds == NULL) {
+    error_log_with_errno("realloc");
+    exit(EXIT_FAILURE);
+  }
+  memset(new_pfds, 0, sizeof(struct pollfd) * nfds);
   set_fd_list(new_pfds, 0, socket_list);
   set_fd_list(new_pfds, socket_list.size(), connection_list);
   return new_pfds;
@@ -69,44 +73,41 @@ void listen_event(const server_group_type &server_group) {
   socket_list_type     socket_list = create_socket_map(server_group);
   connection_list_type connection_list; // accfdとsocketとの対応関係持つ
 
-  timeval              timeout = {.tv_sec = 0, .tv_usec = 0};
-  struct pollfd *pfds;
+  struct pollfd *pfds = NULL;
   while (1) {
-    int    nfds = socket_list.size() + connection_list.size();// overflow可能性確認
+    int    nfds_listen = socket_list.size();
+    int    nfds_connect = connection_list.size();
+    int    nfds = nfds_listen + nfds_connect;// TODO: overflow可能性確認
     pfds = create_pollfds(pfds, socket_list, connection_list, nfds);
 
-    int    ret     = select(nfds + 1, &readfds, NULL, NULL, &timeout);
+    int    ret     = poll(pfds, nfds, 0);
     if (ret == -1) {
       error_log_with_errno("select() failed. readfds.");
       exit(EXIT_FAILURE);
     }
     // TODO: retの数処理を行ったら打ち切り
-    if (ret) {
-      /* 接続要求のあったsocket探す -> accept -> connection_listに追加 */
-      socket_list_type::iterator it = socket_list.begin();
-      for (; it != socket_list.end(); it++) {
-        int listen_fd = it->first;
-        if (FD_ISSET(listen_fd, &readfds)) {
-          int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
+    for (int i = 0; i < nfds && 0 < ret; i++) {
+      if (pfds[i].revents & POLLIN) {
+        std::cout << "POLLIN fd: " << pfds[i].fd << std::endl;
+        if (pfds[i].fd < nfds_listen) { // listenしているfd accept -> connection_listに追加
+          int accfd = accept(pfds[i].fd, (struct sockaddr *)NULL, NULL);
           if (accfd == -1) {
             error_log_with_errno("accept()) failed.");
             exit(EXIT_FAILURE);
           }
-          connection_list.insert(std::make_pair(accfd, listen_fd));
+          connection_list.insert(std::make_pair(accfd, pfds[i].fd));
+        } else { // connection_fd -> http -> connection_listから削除
+          http(pfds[i].fd);
+          close(pfds[i].fd); // tmp
+          connection_list.erase(pfds[i].fd);
         }
-      }
-      /* 読み込み可能なaccfd探す -> http -> connection_listから削除 */
-      // TODO: httpでのread処理もこのloopで行う
-      connection_list_iterator cit = connection_list.begin();
-      while (cit != connection_list.end()) {
-        int accfd = cit->first;
-        if (FD_ISSET(accfd, &readfds)) {
-          http(accfd);
-          close(accfd); // tmp
-          connection_list.erase(cit++);
-        } else {
-          cit++;
-        }
+        ret--;
+      } else if (pfds[i].revents & POLLERR) {
+        std::cout << "POLLERR fd: " << pfds[i].fd << std::endl;
+        exit(EXIT_FAILURE);
+      } else if (pfds[i].revents & POLLHUP) {
+        std::cout << "POLLHUP fd: " << pfds[i].fd << std::endl;
+        exit(EXIT_FAILURE);
       }
     }
   }
