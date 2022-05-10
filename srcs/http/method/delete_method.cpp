@@ -38,7 +38,10 @@ static HttpStatusCode delete_target_file(const HttpMessage &request_info,
 http_message_map delete_method_handler(const ServerConfig &server_config,
                                        HttpMessage        &request_info) {
   http_message_map response_info;
-  // TODO: 相対パス等バリデーション
+  if (is_minus_depth(request_info.url_)) {
+    set_status_and_path(response_info, server_config, NOT_FOUND_404);
+    return response_info;
+  }
   std::string target_filepath = resolve_url(server_config, request_info.url_);
 
   HttpStatusCode code = delete_target_file(request_info, target_filepath);
