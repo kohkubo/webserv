@@ -1,10 +1,11 @@
-#ifndef SRCS_EVENT_LISTEN_EVENT_HPP
-#define SRCS_EVENT_LISTEN_EVENT_HPP
+#ifndef SRCS_EVENT_EVENT_HPP
+#define SRCS_EVENT_EVENT_HPP
 
 #include "config/ServerConfig.hpp"
 #include <map>
 #include <sys/types.h>
 
+int  open_new_socket(const ServerConfig &config);
 void listen_event(const server_group_type &server_group);
 
 template <typename T>
@@ -21,4 +22,4 @@ int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
 typedef std::map<int, int> connection_list_type; // <accetpted fd, listen fd>
 typedef connection_list_type::iterator connection_list_iterator;
 
-#endif /* SRCS_EVENT_LISTEN_EVENT_HPP */
+#endif /* SRCS_EVENT_EVENT_HPP */

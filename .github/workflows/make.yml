@@ -5,29 +5,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: make
-      run: make -m
-
   gtest:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: make_test
       run: |
-        make -C ./googletest
-        cd ./googletest
-        ./tester
-
-  gtest_mac:
-    runs-on: macos-10.15
-    steps:
-    - uses: actions/checkout@v3
-    - name: make_test_mac
-      run: |
+        make -m
         make -C ./googletest
         cd ./googletest
         ./tester
@@ -37,11 +21,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: make_itest
-      run: make itest
-
-  itest_mac:
-    runs-on: macos-10.15
-    steps:
-    - uses: actions/checkout@v3
-    - name: make_itest_mac
       run: make itest

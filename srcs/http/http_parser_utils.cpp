@@ -1,5 +1,7 @@
-#include "utils/http_parser_utils.hpp"
+#include "config/ServerConfig.hpp"
+#include "http/HttpMessage.hpp"
 #include "http/const/const_html_filename.hpp"
+#include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
@@ -51,4 +53,21 @@ void set_response_body(http_message_map &response_info) {
   response_info[BODY]         = content;
   response_info[CONTENT_LEN]  = to_string(content.size());
   response_info[CONTENT_TYPE] = TEXT_HTML;
+}
+
+bool is_minus_depth(std::string url) {
+  token_vector   tokens = tokenize(url, "/", "/");
+  token_iterator it     = tokens.begin();
+
+  for (long depth = 0; it != tokens.end(); it++) {
+    if (*it == "..") {
+      depth--;
+    } else if (*it != ".") {
+      depth++;
+    }
+    if (depth < 0) {
+      return true;
+    }
+  }
+  return false;
 }

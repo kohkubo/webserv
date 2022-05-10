@@ -3,8 +3,8 @@
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
+#include "http/http_parser_utils.hpp"
 #include "utils/file_io_utils.hpp"
-#include "utils/http_parser_utils.hpp"
 #include "utils/utils.hpp"
 #include <string>
 #include <unistd.h>
@@ -42,6 +42,10 @@ http_message_map method_get(const ServerConfig &server_config,
     std::cout << "request error." << std::endl;
     response_info[STATUS_PHRASE] = STATUS_400_PHRASE;
     response_info[PATH]          = BAD_REQUEST_PAGE;
+    return response_info;
+  }
+  if (is_minus_depth(request_info.url_)) {
+    set_status_and_path(response_info, server_config, NOT_FOUND_404);
     return response_info;
   }
 
