@@ -62,6 +62,7 @@ typedef std::vector<ServerConfig>                         server_list_type;
 typedef std::vector<std::vector<const ServerConfig *> >   server_group_type;
 typedef std::map<int, std::vector<const ServerConfig *> > socket_list_type;
 
+server_list_type  read_config(const char *config_file_path);
 server_group_type create_server_group(const server_list_type &server_list);
 
 #endif /* SRCS_CONFIG_SERVERCONFIG_HPP */
