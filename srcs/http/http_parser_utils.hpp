@@ -14,4 +14,6 @@ void        set_status_and_path(http_message_map   &response_info,
 
 void        set_response_body(http_message_map &response_info);
 
+bool        is_minus_depth(std::string url);
+
 #endif /* SRCS_UTILS_HTTP_PARSER_UTILS_HPP */
