@@ -1,4 +1,5 @@
 #include "config/ServerConfig.hpp"
+#include "config/config.hpp"
 #include "gtest/gtest.h"
 #include <vector>
 
