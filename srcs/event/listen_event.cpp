@@ -86,10 +86,10 @@ void listen_event(const server_group_type &server_group) {
       while (cit != connection_list.end()) {
         int accfd = cit->first;
         if (FD_ISSET(accfd, &readfds)) {
+          std::cout << "read from fd: " << accfd << std::endl;
           http(accfd);
           close(accfd); // tmp
           connection_list.erase(cit++);
-          std::cout << "after http and closed fd: " << accfd << std::endl;
         } else {
           cit++;
         }
