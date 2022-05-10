@@ -61,12 +61,12 @@ void listen_event(const server_group_type &server_group) {
     int    nfds = nfds_listen + nfds_connect;// TODO: 合計の最大値が幾つになるか確認
     pfds = create_pollfds(pfds, socket_list, connection_list, nfds);
 
-    int    ret     = poll(pfds, nfds, 0);
-    if (ret == -1) {
+    int    n_events     = poll(pfds, nfds, 0);
+    if (n_events == -1) {
       error_log_with_errno("poll() failed");
       exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < nfds && 0 < ret; i++) {
+    for (int i = 0; i < nfds && 0 < n_events; i++) {
       if (pfds[i].revents & POLLIN) {
         std::cout << "POLLIN fd: " << pfds[i].fd << std::endl;
         if (i < nfds_listen) {
@@ -85,7 +85,7 @@ void listen_event(const server_group_type &server_group) {
           close(pfds[i].fd); // tmp
           connection_list.erase(pfds[i].fd);
         }
-        ret--;
+        n_events--;
       } else if (pfds[i].revents & (POLLERR | POLLIN)) {
         std::cout << ((pfds[i].revents & POLLERR) ? "POLLERR" : "")
                   << ((pfds[i].revents & POLLIN) ? "POLLIN" : "")
