@@ -4,11 +4,8 @@
 #include "utils/utils.hpp"
 #include <cstdlib>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <poll.h>
-
-// TODO: selectがなくなったことによるinclude変更あり？
 
 /*
 ** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持
@@ -29,22 +26,6 @@ create_socket_map(const server_group_type &server_group) {
   }
   return res;
 }
-
-//// socket_fd + connection_fdをreadfdsに加える。
-//static fd_set create_readfds(const socket_list_type     &socket_list,
-//                             const connection_list_type &connection_list,
-//                             int                        &nfds) {
-//  int    res;
-//  fd_set readfds;
-
-//  nfds = -1;
-//  FD_ZERO(&readfds);
-//  res  = set_fd_list(&readfds, socket_list);
-//  nfds = std::max(nfds, res);
-//  res  = set_fd_list(&readfds, connection_list);
-//  nfds = std::max(nfds, res);
-//  return readfds;
-//}
 
 // socket_fd + connection_fdをreadfdsに加える。
 static struct pollfd *create_pollfds(const struct pollfd *old_pfds,
@@ -82,21 +63,26 @@ void listen_event(const server_group_type &server_group) {
 
     int    ret     = poll(pfds, nfds, 0);
     if (ret == -1) {
-      error_log_with_errno("select() failed. readfds.");
+      error_log_with_errno("poll() failed. readfds.");
       exit(EXIT_FAILURE);
     }
-    // TODO: retの数処理を行ったら打ち切り
     for (int i = 0; i < nfds && 0 < ret; i++) {
+      // TODO: POLLIN以外も確認
       if (pfds[i].revents & POLLIN) {
         std::cout << "POLLIN fd: " << pfds[i].fd << std::endl;
-        if (pfds[i].fd < nfds_listen) { // listenしているfd accept -> connection_listに追加
+        if (i < nfds_listen) {
+          /* listenしているfd accept -> connection_listに追加 */
+          // TODO: 現状同じlisten_fdが2回acceptする, そして放置していると二回目のacceptがPOLLINになる
           int accfd = accept(pfds[i].fd, (struct sockaddr *)NULL, NULL);
           if (accfd == -1) {
             error_log_with_errno("accept()) failed.");
             exit(EXIT_FAILURE);
           }
+          std::cout << "listen fd: " << pfds[i].fd << " connection fd: " << accfd << std::endl;
           connection_list.insert(std::make_pair(accfd, pfds[i].fd));
-        } else { // connection_fd -> http -> connection_listから削除
+        } else {
+          /* connection_fd -> http -> connection_listから削除 */
+          std::cout << "http fd: " << pfds[i].fd << std::endl;
           http(pfds[i].fd);
           close(pfds[i].fd); // tmp
           connection_list.erase(pfds[i].fd);
@@ -104,10 +90,10 @@ void listen_event(const server_group_type &server_group) {
         ret--;
       } else if (pfds[i].revents & POLLERR) {
         std::cout << "POLLERR fd: " << pfds[i].fd << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); // tmp
       } else if (pfds[i].revents & POLLHUP) {
         std::cout << "POLLHUP fd: " << pfds[i].fd << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); // tmp
       }
     }
   }
