@@ -5,7 +5,7 @@
 #include <map>
 #include <sys/types.h>
 
-int  open_new_socket(const ServerConfig &config);
+int  open_new_socket(const ServerConfig &__config);
 void listen_event(const server_group_type &server_group);
 
 template <typename T>
