@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "config/ServerConfig.hpp"
+#include "config/config.hpp"
 #include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
@@ -225,4 +226,5 @@ TEST(server_config_test, server_group_test) {
   EXPECT_EQ(server_group[1][0]->listen_port_, "5001");
   EXPECT_EQ(server_group.size(), 2);
   EXPECT_EQ(server_group[0].size(), 2);
+  EXPECT_EQ(server_group[1].size(), 1);
 }
