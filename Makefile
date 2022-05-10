@@ -51,10 +51,6 @@ fclean: clean
 .PHONY: re
 re: fclean all
 
-.PHONY: setup_env
-setup_env:
-	cp .github/pre-push ./.git/hooks/
-
 .PHONY: prepush
 prepush:
 	zsh .github/pre-push
