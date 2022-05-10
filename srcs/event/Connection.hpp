@@ -4,6 +4,7 @@
 #include <deque>
 #include <string>
 #include <sys/types.h>
+#include <vector>
 
 /*
   確立されたtcpコネクションからは接続が閉じられない限り、
@@ -14,20 +15,24 @@
   receivingのときはリクエストの受信が終わっていない、received_data_へ追記。
   それ以外の時は、新しいRequestを追加。
   受信したデータが一つ以上のリクエストを含むときの処理も必要
+
+  レスポンスを返す順番はリクエストを受けた順番。
 */
 
 enum RequestState {
-  RECEIVING,
+  RECEIVING_HEADER,
+  RECEIVING_BODY,
   PENDING,
   PROCESSING,
   SENDING,
 };
 
 struct Request {
-  RequestState state_;
-  std::string  received_data_;
-  ssize_t      send_count_;
-  std::string  response_;
+  RequestState      state_;
+  std::vector<char> request_header_;
+  std::vector<char> request_body_;
+  ssize_t           send_count_;
+  std::vector<char> response_;
 };
 
 struct Connection {
@@ -37,7 +42,12 @@ struct Connection {
   Connection(int fd)
       : socket_fd_(fd) {}
   ~Connection();
-  is_new_request();
+  bool is_new_request() const {
+    if (request_queue_.empty())
+      return true;
+    return !(request_queue_.back().state_ == RECEIVING_HEADER ||
+             request_queue_.back().state_ == RECEIVING_BODY);
+  }
 };
 
 #endif /* SRCS_EVENT_CONNECTION */
