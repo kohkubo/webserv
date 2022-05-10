@@ -43,6 +43,17 @@ static fd_set create_readfds(const socket_list_type     &socket_list,
   return readfds;
 }
 
+// socket_fd + connection_fdをreadfdsに加える。
+static struct pollfd create_readfds(const struct pollfd *old_pfds,
+                             const socket_list_type     &socket_list,
+                             const connection_list_type &connection_list,
+                             const int                        &nfds) {
+  struct pollfd *new_pfds = realloc(old_pfds, sizeof(struct pollfd) * nfds);
+  memset(new_pfds, 0, sizeof(new_pfds));
+
+  return readfds;
+}
+
 static void close_all_socket(const socket_list_type &socket_list) {
   socket_list_type::const_iterator it = socket_list.begin();
   for (; it != socket_list.end(); it++) {
@@ -56,8 +67,8 @@ void listen_event(const server_group_type &server_group) {
 
   timeval              timeout = {.tv_sec = 0, .tv_usec = 0};
   while (1) {
-    int    nfds;
-    fd_set readfds = create_readfds(socket_list, connection_list, nfds);
+    int    nfds = socket_list.size() + connection_list.size();// overflow可能性確認
+    struct pollfd *pfds = create_readfds(socket_list, connection_list, nfds);
 
     int    ret     = select(nfds + 1, &readfds, NULL, NULL, &timeout);
     if (ret == -1) {

@@ -18,6 +18,14 @@ int set_fd_list(fd_set *readfds, const std::map<int, T> &list) {
   return max_fd;
 }
 
+template <typename T>
+void set_fd_list(struct pollfd *readfds, const std::map<int, T> &list) {
+  typename std::map<int, T>::const_iterator it     = list.begin();
+  for (; it != list.end(); it++) {
+    FD_SET(it->first, readfds);
+  }
+}
+
 typedef std::map<int, int> connection_list_type; // <accetpted fd, listen fd>
 typedef connection_list_type::iterator connection_list_iterator;
 
