@@ -77,6 +77,7 @@ void listen_event(const server_group_type &server_group) {
             exit(EXIT_FAILURE);
           }
           connection_list.insert(std::make_pair(accfd, listen_fd));
+          std::cout << "listen_fd: " << listen_fd << " connection_fd: " << accfd << std::endl;
         }
       }
       /* 読み込み可能なaccfd探す -> http -> connection_listから削除 */
@@ -88,6 +89,7 @@ void listen_event(const server_group_type &server_group) {
           http(accfd);
           close(accfd); // tmp
           connection_list.erase(cit++);
+          std::cout << "after http and closed fd: " << accfd << std::endl;
         } else {
           cit++;
         }
