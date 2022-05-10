@@ -71,7 +71,6 @@ void listen_event(const server_group_type &server_group) {
         std::cout << "POLLIN fd: " << pfds[i].fd << std::endl;
         if (i < nfds_listen) {
           /* listen_fdがPOLLIN -> accept -> connection_listに追加 */
-          // TODO: 現状同じlisten_fdが2回acceptする, そして放置していると二回目のacceptがPOLLINになる
           int accfd = accept(pfds[i].fd, (struct sockaddr *)NULL, NULL);
           if (accfd == -1) {
             error_log_with_errno("accept()) failed.");
@@ -80,18 +79,17 @@ void listen_event(const server_group_type &server_group) {
           std::cout << "listen fd: " << pfds[i].fd << " connection fd: " << accfd << std::endl;
           connection_list.insert(std::make_pair(accfd, pfds[i].fd));
         } else {
-          /* connection_fd -> http -> connection_listから削除 */
-          std::cout << "http fd: " << pfds[i].fd << std::endl;
+          /* connection_fdがPOLLIN -> http -> connection_listから削除 */
+          std::cout << "read from fd: " << pfds[i].fd << std::endl;
           http(pfds[i].fd);
           close(pfds[i].fd); // tmp
           connection_list.erase(pfds[i].fd);
         }
         ret--;
-      } else if (pfds[i].revents & POLLERR) {
-        std::cout << "POLLERR fd: " << pfds[i].fd << std::endl;
-        exit(EXIT_FAILURE); // tmp
-      } else if (pfds[i].revents & POLLHUP) {
-        std::cout << "POLLHUP fd: " << pfds[i].fd << std::endl;
+      } else if (pfds[i].revents & (POLLERR | POLLIN)) {
+        std::cout << ((pfds[i].revents & POLLERR) ? "POLLERR" : "")
+                  << ((pfds[i].revents & POLLIN) ? "POLLIN" : "")
+                  << " fd: " <<  pfds[i].fd << std::endl;
         exit(EXIT_FAILURE); // tmp
       }
     }
