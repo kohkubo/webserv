@@ -62,6 +62,7 @@ static void connect_fd(int listen_fd, connection_list_type &connection_list) {
   connection_list.insert(std::make_pair(accfd, listen_fd));
 }
 
+// そもそもpollを使う意味について
 static void process_http(int                   connection_fd,
                          connection_list_type &connection_list) {
   std::cout << "read from fd: " << connection_fd << std::endl;
