@@ -51,6 +51,24 @@ static void close_all_socket(const socket_list_type &socket_list) {
   }
 }
 
+static void connect_fd(int listen_fd, connection_list_type &connection_list) {
+  int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
+  if (accfd == -1) {
+    error_log_with_errno("accept()) failed.");
+    exit(EXIT_FAILURE);
+  }
+  std::cout << "listen fd: " << listen_fd
+            << " connection fd: " << accfd << std::endl;
+  connection_list.insert(std::make_pair(accfd, listen_fd));
+}
+
+static void process_http(int connection_fd, connection_list_type &connection_list) {
+  std::cout << "read from fd: " << connection_fd << std::endl;
+  http(connection_fd);
+  close(connection_fd); // tmp
+  connection_list.erase(connection_fd);
+}
+
 void listen_event(const server_group_type &server_group) {
   socket_list_type socket_list =
       create_socket_map(server_group); // listen_fdとserver_groupの関係を管理
@@ -59,46 +77,34 @@ void listen_event(const server_group_type &server_group) {
   struct pollfd       *pfds = NULL;
   while (1) {
     int nfds_listen  = socket_list.size();
-    int nfds_connect = connection_list.size();
-    int nfds =
-        nfds_listen + nfds_connect; // TODO: 合計の最大値が幾つになるか確認
+    int nfds_connection = connection_list.size();
+    int nfds = nfds_listen + nfds_connection;
     pfds         = create_pollfds(pfds, socket_list, connection_list, nfds);
 
-    int n_events = poll(pfds, nfds, 0);
-    if (n_events == -1) {
+    int nready = poll(pfds, nfds, 0);
+    if (nready == -1) {
       error_log_with_errno("poll() failed");
       exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < nfds && 0 < n_events; i++) {
-      if (pfds[i].revents & POLLIN) {
-        std::cout << "POLLIN fd: " << pfds[i].fd << std::endl;
-        if (i < nfds_listen) {
-          /* listen_fdがPOLLIN -> accept -> connection_listに追加 */
-          int accfd = accept(pfds[i].fd, (struct sockaddr *)NULL, NULL);
-          if (accfd == -1) {
-            error_log_with_errno("accept()) failed.");
-            exit(EXIT_FAILURE);
+    for (int i = 0; i < nfds && 0 < nready; i++) {
+      if (pfds[i].revents != 0) {
+        std::cout << ((pfds[i].revents & POLLIN) ? "POLLIN " : "")
+                  << ((pfds[i].revents & POLLPRI) ? "POLLPRI " : "")
+                  << ((pfds[i].revents & POLLOUT) ? "POLLOUT " : "")
+                  << ((pfds[i].revents & POLLERR) ? "POLLERR " : "")
+                  << ((pfds[i].revents & POLLHUP) ? "POLLHUP " : "")
+                  << ((pfds[i].revents & POLLNVAL) ? "POLLNVAL " : "")
+                  << "fd: " << pfds[i].fd << std::endl;
+        if (pfds[i].revents & POLLIN) {
+          /* 処理するfdの種類は現状index番号の範囲で判別している */
+          if (i < nfds_listen) {
+            connect_fd(pfds[i].fd, connection_list);
+          } else {
+            process_http(pfds[i].fd, connection_list);
           }
-          std::cout << "listen fd: " << pfds[i].fd
-                    << " connection fd: " << accfd << std::endl;
-          connection_list.insert(std::make_pair(accfd, pfds[i].fd));
-        } else {
-          /* connection_fdがPOLLIN -> http -> connection_listから削除 */
-          std::cout << "read from fd: " << pfds[i].fd << std::endl;
-          http(pfds[i].fd);
-          close(pfds[i].fd); // tmp
-          connection_list.erase(pfds[i].fd);
+          nready--;
         }
-        n_events--;
-      } else if (pfds[i].revents != 0) {
-        /* manに載っている他のフラグをいくつかピックアップ */
-        std::cout << ((pfds[i].revents & POLLERR) ? "POLLERR" : "")
-                  << ((pfds[i].revents & POLLHUP) ? "POLLHUP" : "")
-                  << ((pfds[i].revents & POLLPRI) ? "POLLPRI" : "")
-                  << ((pfds[i].revents & POLLOUT) ? "POLLOUT" : "")
-                  << ((pfds[i].revents & POLLNVAL) ? "POLLNVAL" : "")
-                  << " fd: " << pfds[i].fd << std::endl;
-        exit(EXIT_FAILURE); // tmp
+        // TODO: POLLIN以外の対処
       }
     }
   }
