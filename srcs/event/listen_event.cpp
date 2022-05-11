@@ -90,9 +90,13 @@ void listen_event(const server_group_type &server_group) {
           connection_list.erase(pfds[i].fd);
         }
         n_events--;
-      } else if (pfds[i].revents & (POLLERR | POLLIN)) {
+      } else if (pfds[i].revents != 0) {
+        /* manに載っている他のフラグをいくつかピックアップ */
         std::cout << ((pfds[i].revents & POLLERR) ? "POLLERR" : "")
-                  << ((pfds[i].revents & POLLIN) ? "POLLIN" : "")
+                  << ((pfds[i].revents & POLLHUP) ? "POLLHUP" : "")
+                  << ((pfds[i].revents & POLLPRI) ? "POLLPRI" : "")
+                  << ((pfds[i].revents & POLLOUT) ? "POLLOUT" : "")
+                  << ((pfds[i].revents & POLLNVAL) ? "POLLNVAL" : "")
                   << " fd: " << pfds[i].fd << std::endl;
         exit(EXIT_FAILURE); // tmp
       }
