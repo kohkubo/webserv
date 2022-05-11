@@ -100,6 +100,7 @@ void listen_event(const server_group_type &server_group) {
                   << "fd: " << pfds[i].fd << std::endl;
         if (pfds[i].revents & POLLIN) {
           /* 処理するfdの種類は現状index番号の範囲で判別している */
+          // TODO: connectionがclose()された時もPOLLINとなる, recvで読み込み0byte, 対応
           if (i < nfds_listen) {
             connect_fd(pfds[i].fd, connection_list);
           } else {
