@@ -63,6 +63,7 @@ static void connect_fd(int listen_fd, connection_list_type &connection_list) {
 }
 
 // そもそもpollを使う意味について
+// issueについて
 static void process_http(int                   connection_fd,
                          connection_list_type &connection_list) {
   std::cout << "read from fd: " << connection_fd << std::endl;
