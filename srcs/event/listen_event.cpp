@@ -57,12 +57,13 @@ static void connect_fd(int listen_fd, connection_list_type &connection_list) {
     error_log_with_errno("accept()) failed.");
     exit(EXIT_FAILURE);
   }
-  std::cout << "listen fd: " << listen_fd
-            << " connection fd: " << accfd << std::endl;
+  std::cout << "listen fd: " << listen_fd << " connection fd: " << accfd
+            << std::endl;
   connection_list.insert(std::make_pair(accfd, listen_fd));
 }
 
-static void process_http(int connection_fd, connection_list_type &connection_list) {
+static void process_http(int                   connection_fd,
+                         connection_list_type &connection_list) {
   std::cout << "read from fd: " << connection_fd << std::endl;
   http(connection_fd);
   close(connection_fd); // tmp
@@ -76,10 +77,10 @@ void listen_event(const server_group_type &server_group) {
 
   struct pollfd       *pfds = NULL;
   while (1) {
-    int nfds_listen  = socket_list.size();
+    int nfds_listen     = socket_list.size();
     int nfds_connection = connection_list.size();
-    int nfds = nfds_listen + nfds_connection;
-    pfds         = create_pollfds(pfds, socket_list, connection_list, nfds);
+    int nfds            = nfds_listen + nfds_connection;
+    pfds       = create_pollfds(pfds, socket_list, connection_list, nfds);
 
     int nready = poll(pfds, nfds, 0);
     if (nready == -1) {
