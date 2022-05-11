@@ -36,24 +36,30 @@ while (it != data.end())
 
 // std::string(std::vector<char>)でnull文字交じりのstring作れるかも
 
-static std::vector<char> receive_data(int accfd) {
+static std::string receive_data(int accfd) {
   const int buf_size      = 1024;
   char      buf[buf_size] = {};
   ssize_t   rc            = recv(accfd, buf, buf_size - 1, MSG_DONTWAIT);
   if (rc == -1) {
     error_log_with_errno("recv() failed.");
-    return std::vector<char>();
+    return std::string();
   }
-  return std::vector<char>(buf, buf + rc);
+  // TODO: rc == 0 => connection close
+  return std::string(buf);
 }
 
 // ヘッダーの区切り(rnrn）を探す
-static bool find_header_delim(std::vector<char> &data) { return true; }
+static bool find_header_delim(std::string &data) {
+  const std::string delim("\r\n\r\n");
+  if (data.find(delim) != std::string::npos)
+    return true;
+  return false;
+}
 
-void        connection_handler(int accfd, const Connection &tcp,
-                               const socket_list_type &socket_list) {
+void connection_handler(int accfd, const connection_list_type &tcp,
+                        const socket_list_type &socket_list) {
   // TODO: 適切なServerConfigを選択する。
   (void)socket_list;
 
-  std::vector<char> data = receive_data(accfd);
+  std::string data = receive_data(accfd);
 }

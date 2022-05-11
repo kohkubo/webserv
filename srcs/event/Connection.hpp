@@ -2,6 +2,7 @@
 #define SRCS_EVENT_CONNECTION
 
 #include <deque>
+#include <map>
 #include <string>
 #include <sys/types.h>
 #include <vector>
@@ -27,12 +28,13 @@ enum RequestState {
   SENDING,
 };
 
+// TODO: string -> vector<char>
 struct Request {
-  RequestState      state_;
-  std::vector<char> request_header_;
-  std::vector<char> request_body_;
-  ssize_t           send_count_;
-  std::vector<char> response_;
+  RequestState state_;
+  std::string  request_header_;
+  std::string  request_body_;
+  ssize_t      send_count_;
+  std::string  response_;
 };
 
 struct Connection {
@@ -49,5 +51,7 @@ struct Connection {
              request_queue_.back().state_ == RECEIVING_BODY);
   }
 };
+
+typedef std::map<int, Connection> connection_list_type;
 
 #endif /* SRCS_EVENT_CONNECTION */
