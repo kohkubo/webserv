@@ -1,5 +1,5 @@
-#ifndef SRCS_UTILS_HTTP_PARSER_UTILS_HPP
-#define SRCS_UTILS_HTTP_PARSER_UTILS_HPP
+#ifndef SRCS_HTTP_HTTP_PARSER_UTILS_HPP
+#define SRCS_HTTP_HTTP_PARSER_UTILS_HPP
 
 #include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
@@ -16,4 +16,4 @@ void        set_response_body(http_message_map &response_info);
 
 bool        is_minus_depth(std::string url);
 
-#endif /* SRCS_UTILS_HTTP_PARSER_UTILS_HPP */
+#endif /* SRCS_HTTP_HTTP_PARSER_UTILS_HPP */

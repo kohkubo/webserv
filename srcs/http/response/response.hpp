@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_HPP
-#define SRCS_HTTP_RESPONSE_HPP
+#ifndef SRCS_HTTP_RESPONSE_RESPONSE_HPP
+#define SRCS_HTTP_RESPONSE_RESPONSE_HPP
 
 #include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
@@ -10,4 +10,4 @@ http_message_map create_response_info(const ServerConfig &server_config,
 
 std::string      make_message_string(http_message_map &response_info);
 
-#endif /* SRCS_HTTP_RESPONSE_HPP */
+#endif /* SRCS_HTTP_RESPONSE_RESPONSE_HPP */

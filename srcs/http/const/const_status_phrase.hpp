@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_CONST_STATUS_PHRASE_HPP
-#define SRCS_HTTP_CONST_STATUS_PHRASE_HPP
+#ifndef SRCS_HTTP_CONST_CONST_STATUS_PHRASE_HPP
+#define SRCS_HTTP_CONST_CONST_STATUS_PHRASE_HPP
 
 #include <string>
 
@@ -41,4 +41,4 @@ const std::string STATUS_505_PHRASE = "505 HTTP Version Not Supported";
 const std::string STATUS_507_PHRASE = "507 Insufficient Storage";
 const std::string STATUS_520_PHRASE = "520 Unknown Error";
 
-#endif /* SRCS_HTTP_CONST_STATUS_PHRASE_HPP */
+#endif /* SRCS_HTTP_CONST_CONST_STATUS_PHRASE_HPP */
