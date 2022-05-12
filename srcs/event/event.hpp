@@ -16,13 +16,13 @@ typedef std::vector<struct pollfd>::iterator pollfds_type_iterator;
 // pollに渡すpollfd構造体の配列の各要素をセット
 // 現状, 各fdが待つイベントはPOLLIN(読み出し可能なデータがあるか)で固定
 template <typename T>
-void set_fd_list(pollfds_type &pollfds, const std::map<int, T> &list) {
+void set_pollfds(pollfds_type &pollfds, const std::map<int, T> &list) {
   typename std::map<int, T>::const_iterator it = list.begin();
   for (; it != list.end(); it++) {
-    struct pollfd new_pfds;
-    new_pfds.fd     = it->first;
-    new_pfds.events = POLLIN;
-    pollfds.push_back(new_pfds);
+    struct pollfd new_pfd;
+    new_pfd.fd     = it->first;
+    new_pfd.events = POLLIN;
+    pollfds.push_back(new_pfd);
   }
 }
 
