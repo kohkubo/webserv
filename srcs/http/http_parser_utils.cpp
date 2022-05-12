@@ -3,6 +3,7 @@
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
+#include "http/response/response.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
@@ -44,14 +45,20 @@ void set_status_and_path(http_message_map   &response_info,
     response_info[PATH] = default_error_page_path[code];
 }
 
+static std::string response_body_content(const std::string &path) {
+  if (is_match_suffix_string(path, ".sh")) {
+    return read_file_tostring_cgi(path);
+  }
+  return read_file_tostring(path);
+}
+
 void set_response_body(http_message_map &response_info) {
   if (response_info[STATUS_PHRASE] == STATUS_204_PHRASE ||
       response_info[STATUS_PHRASE] == STATUS_304_PHRASE) {
     return;
   }
-  std::string content         = read_file_tostring(response_info[PATH]);
-  response_info[BODY]         = content;
-  response_info[CONTENT_LEN]  = to_string(content.size());
+  response_info[BODY]         = response_body_content(response_info[PATH]);
+  response_info[CONTENT_LEN]  = to_string(response_info[BODY].size());
   response_info[CONTENT_TYPE] = TEXT_HTML;
 }
 
