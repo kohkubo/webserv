@@ -1,6 +1,7 @@
 #ifndef SRCS_EVENT_CONNECTION
 #define SRCS_EVENT_CONNECTION
 
+#include "http/HttpMessage.hpp"
 #include <deque>
 #include <map>
 #include <string>
@@ -21,10 +22,11 @@
 */
 
 enum RequestState {
+  NO_REQUEST,
   RECEIVING_HEADER,
   RECEIVING_BODY,
   PENDING,
-  PROCESSING,
+  WAITING,
   SENDING,
 };
 
@@ -32,24 +34,30 @@ enum RequestState {
 struct Request {
   RequestState state_;
   std::string  request_header_;
+  HttpMessage  request_info_;
   std::string  request_body_;
   ssize_t      send_count_;
   std::string  response_;
+
+  Request()
+      : state_(RECEIVING_HEADER) {}
 };
 
 struct Connection {
   int                 socket_fd_;
   std::deque<Request> request_queue_;
+  std::string         buffer_;
 
   Connection(int fd)
       : socket_fd_(fd) {}
   ~Connection();
-  bool is_new_request() const {
+
+  RequestState get_last_state() {
     if (request_queue_.empty())
-      return true;
-    return !(request_queue_.back().state_ == RECEIVING_HEADER ||
-             request_queue_.back().state_ == RECEIVING_BODY);
+      return NO_REQUEST;
+    return request_queue_.back().state_;
   }
+  void parse_buffer(const std::string &data);
 };
 
 typedef std::map<int, Connection> connection_list_type;
