@@ -23,19 +23,19 @@ std::string Connection::cut_buffer(std::size_t len) {
 }
 
 void Connection::parse_buffer(const std::string &data) {
-  std::size_t       pos;
-  token_vector      header_tokens;
-  const std::string header_delim = "\r\n\r\n";
+  std::size_t  pos;
+  token_vector header_tokens;
+
   buffer_.append(data);
   while (1) {
     Request &request = request_queue_.back();
     switch (get_last_state()) {
     case RECEIVING_HEADER:
-      pos = buffer_.find(header_delim);
+      pos = buffer_.find(HEADER_SP);
       if (pos == std::string::npos) {
         return;
       }
-      request.request_header_ = cut_buffer(pos + header_delim.size());
+      request.request_header_ = cut_buffer(pos + HEADER_SP.size());
       request.request_info_   = parse_request_header(request.request_header_);
       if (request.request_info_.is_expected_body()) {
         request.state_ = RECEIVING_BODY;
