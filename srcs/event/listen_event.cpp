@@ -34,6 +34,15 @@ static void close_all_socket(const socket_list_type &socket_list) {
   }
 }
 
+static pollfds_type
+create_pollfds(const socket_list_type     &socket_list,
+               const connection_list_type &connection_list) {
+  pollfds_type pollfds;
+  set_pollfds(pollfds, socket_list);
+  set_pollfds(pollfds, connection_list);
+  return pollfds;
+}
+
 static void put_events_info(int fd, short revents) {
   // clang-format off
   std::cout << ((revents & POLLIN) ? "POLLIN " : "")
@@ -47,28 +56,36 @@ static void put_events_info(int fd, short revents) {
   // clang-format on
 }
 
-static void connect_fd(int listen_fd, pollfds_type &pollfds,
-                       connection_list_type &connection_list) {
-  int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
-  if (accfd == -1) {
+// tmp
+// listen_fdのaccept(), 各データ構造に新規データを追加
+static void do_connection(int listen_fd, pollfds_type &pollfds,
+                          connection_list_type &connection_list) {
+  int connection_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
+  if (connection_fd == -1) {
     error_log_with_errno("accept()) failed.");
     exit(EXIT_FAILURE);
   }
   std::cout << "listen fd: " << listen_fd << std::endl;
-  std::cout << "connection fd: " << accfd << std::endl;
+  std::cout << "connection fd: " << connection_fd << std::endl;
 
-  // 各データへconnection_fdの追加
-  connection_list.insert(std::make_pair(accfd, listen_fd));
+  connection_list.insert(std::make_pair(connection_fd, listen_fd));
   struct pollfd new_pfd;
-  new_pfd.fd     = accfd;
+  new_pfd.fd     = connection_fd;
   new_pfd.events = POLLIN;
   pollfds.push_back(new_pfd);
 }
 
-static void http_wrapper(int connection_fd) {
-  std::cout << "read from fd: " << connection_fd << std::endl;
-  http(connection_fd);
-  close(connection_fd); // tmp
+// tmp
+// connection_fdをhttpに渡す, 各データ構造から不要データを削除
+static pollfds_type_iterator do_http(pollfds_type_iterator it,
+                                     pollfds_type         &pollfds,
+                                     connection_list_type &connection_list) {
+  std::cout << "read from fd: " << it->fd << std::endl;
+  http(it->fd);
+  close(it->fd); // tmp
+
+  connection_list.erase(it->fd);
+  return pollfds.erase(it);
 }
 
 void listen_event(const server_group_type &server_group) {
@@ -76,9 +93,7 @@ void listen_event(const server_group_type &server_group) {
       create_socket_map(server_group); // listen_fdとserver_groupの関係を管理
   connection_list_type connection_list; // connection_fdとliste_fdの関係を管理
 
-  pollfds_type         pollfds;
-  set_pollfds(pollfds, socket_list);
-  set_pollfds(pollfds, connection_list);
+  pollfds_type         pollfds = create_pollfds(socket_list, connection_list);
   while (1) {
     int nready = poll(&pollfds[0], pollfds.size(), 0);
     if (nready == -1) {
@@ -92,12 +107,10 @@ void listen_event(const server_group_type &server_group) {
         if (it->revents & POLLIN) {
           int is_listen_fd = socket_list.count(it->fd);
           if (is_listen_fd) {
-            connect_fd(it->fd, pollfds, connection_list);
+            do_connection(it->fd, pollfds, connection_list);
           } else {
-            http_wrapper(it->fd);
-            connection_list.erase(it->fd);
-            it = pollfds.erase(it);
-            continue; // it++を避けるため
+            it = do_http(it, pollfds, connection_list);
+            continue; // 既にitは次のイテレータなので
           }
           nready--;
         }
