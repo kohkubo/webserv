@@ -47,7 +47,8 @@ static void put_events_info(int fd, short revents) {
   // clang-format on
 }
 
-static int accept_wrapper(int listen_fd) {
+static void connect_fd(int listen_fd, pollfds_type &pollfds,
+                       connection_list_type &connection_list) {
   int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
   if (accfd == -1) {
     error_log_with_errno("accept()) failed.");
@@ -55,20 +56,19 @@ static int accept_wrapper(int listen_fd) {
   }
   std::cout << "listen fd: " << listen_fd << std::endl;
   std::cout << "connection fd: " << accfd << std::endl;
-  return accfd;
+
+  // 各データへconnection_fdの追加
+  connection_list.insert(std::make_pair(accfd, listen_fd));
+  struct pollfd new_pfd;
+  new_pfd.fd     = accfd;
+  new_pfd.events = POLLIN;
+  pollfds.push_back(new_pfd);
 }
 
 static void http_wrapper(int connection_fd) {
   std::cout << "read from fd: " << connection_fd << std::endl;
   http(connection_fd);
   close(connection_fd); // tmp
-}
-
-static void add_pollfd(pollfds_type &pollfds, int connection_fd) {
-  struct pollfd new_pfd;
-  new_pfd.fd     = connection_fd;
-  new_pfd.events = POLLIN;
-  pollfds.push_back(new_pfd);
 }
 
 void listen_event(const server_group_type &server_group) {
@@ -92,9 +92,7 @@ void listen_event(const server_group_type &server_group) {
         if (it->revents & POLLIN) {
           int is_listen_fd = socket_list.count(it->fd);
           if (is_listen_fd) {
-            int connection_fd = accept_wrapper(it->fd);
-            connection_list.insert(std::make_pair(connection_fd, it->fd));
-            add_pollfd(pollfds, connection_fd);
+            connect_fd(it->fd, pollfds, connection_list);
           } else {
             http_wrapper(it->fd);
             connection_list.erase(it->fd);
