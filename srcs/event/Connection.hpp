@@ -34,10 +34,10 @@ enum RequestState {
 struct Request {
   RequestState state_;
   std::string  request_header_;
-  HttpMessage  request_info_;
   std::string  request_body_;
-  ssize_t      send_count_;
+  HttpMessage  request_info_;
   std::string  response_;
+  ssize_t      send_count_;
 
   Request()
       : state_(RECEIVING_HEADER) {}
@@ -48,16 +48,19 @@ struct Connection {
   std::deque<Request> request_queue_;
   std::string         buffer_;
 
+  Connection()
+      : socket_fd_(-1) {}
   Connection(int fd)
       : socket_fd_(fd) {}
-  ~Connection();
+  ~Connection() {}
 
   RequestState get_last_state() {
     if (request_queue_.empty())
       return NO_REQUEST;
     return request_queue_.back().state_;
   }
-  void parse_buffer(const std::string &data);
+  void        parse_buffer(const std::string &data);
+  std::string cut_buffer(std::size_t len);
 };
 
 typedef std::map<int, Connection> connection_list_type;

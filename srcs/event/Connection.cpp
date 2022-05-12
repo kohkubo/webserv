@@ -9,16 +9,26 @@
   4, リクエストがあり、キューの最後のリクエストがbodyを受信中
  */
 
+// bufferを指定したlen切り出してstringとして返す関数。
+std::string Connection::cut_buffer(std::size_t len) {
+  std::string res = buffer_.substr(0, len);
+  buffer_         = buffer_.substr(len);
+  return res;
+}
+
 void Connection::parse_buffer(const std::string &data) {
+  std::size_t       pos;
+  const std::string header_delim("\r\n\r\n");
   buffer_.append(data);
   while (1) {
     Request &request = request_queue_.back();
     switch (get_last_state()) {
     case RECEIVING_HEADER:
-      if (buffer_.find("\r\n\r\n") == std::string::npos) {
+      pos = buffer_.find(header_delim);
+      if (pos == std::string::npos) {
         return;
       }
-      // bufferをheaderの区切り文字まで切り出して、headerに格納。
+      request.request_header_ = cut_buffer(pos + header_delim.size());
       // headerをパース
       if (request.request_info_.is_expected_body()) {
         request.state_ = RECEIVING_BODY;
@@ -31,8 +41,8 @@ void Connection::parse_buffer(const std::string &data) {
       if (buffer_.size() < request.request_info_.content_length_) {
         return;
       }
-      // bufferをcontentLength分切り出して、bodyに格納。
-      request.state_ = PENDING;
+      request.request_body_ = cut_buffer(request.request_info_.content_length_);
+      request.state_        = PENDING;
       break;
     default:
       request_queue_.push_back(Request());
