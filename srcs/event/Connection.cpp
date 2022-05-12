@@ -2,7 +2,7 @@
 #include "config/ServerConfig.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "http/const/const_response_key_map.hpp"
-#include "http/request/request.hpp"
+#include "http/request/request_parse.hpp"
 #include "http/response/response.hpp"
 #include "utils/tokenize.hpp"
 
@@ -36,7 +36,7 @@ void Connection::parse_buffer(const std::string &data) {
         return;
       }
       request.request_header_ = cut_buffer(pos + HEADER_SP.size());
-      request.request_info_   = parse_request_header(request.request_header_);
+      parse_request_header(request.request_info_, request.request_header_);
       if (request.request_info_.is_expected_body()) {
         request.state_ = RECEIVING_BODY;
       } else {
@@ -49,8 +49,8 @@ void Connection::parse_buffer(const std::string &data) {
         return;
       }
       request.request_body_ = cut_buffer(request.request_info_.content_length_);
-      // TODO: bodyのパース
-      request.state_        = PENDING;
+      parse_request_body(request.request_info_, request.request_body_);
+      request.state_ = PENDING;
       break;
     default:
       request_queue_.push_back(Request());

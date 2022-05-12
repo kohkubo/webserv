@@ -63,8 +63,10 @@ parse_request_value(std::string value) {
 
 // TODO: 今のところ Content-Type は無視している
 // TODO: 今のところ 一列でくるものと仮定
-static void parse_request_body(HttpMessage  &request_info,
-                               token_vector &request_tokens) {
+void parse_request_body(HttpMessage       &request_info,
+                        const std::string &request_string) {
+  std::vector<std::string> request_tokens =
+      tokenize(request_string, SEPARATOR, " ");
   if (request_info.method_ != POST || request_info.content_length_ == 0) {
     return;
   }
@@ -89,12 +91,11 @@ static void parse_request_body(HttpMessage  &request_info,
  * 超安易パース
  * 必須情報のみを取得しています。
  */
-HttpMessage parse_request_header(const std::string &request_string) {
+void parse_request_header(HttpMessage       &request_info,
+                          const std::string &request_string) {
   std::vector<std::string> request_tokens =
       tokenize(request_string, SEPARATOR, " ");
-  HttpMessage request_info;
   parse_request_method_line(request_info, request_tokens);
   parse_request_host(request_info, request_tokens);
   parse_request_content_length(request_info, request_tokens);
-  return request_info;
 }
