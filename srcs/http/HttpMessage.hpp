@@ -44,6 +44,11 @@ struct HttpMessage {
       , body_("")
       , values_()
       , status_code_(NONE) {}
+
+  bool is_expected_body() {
+    // TODO: chunked
+    return content_length_ != 0;
+  }
 };
 
 #endif /* SRCS_HTTP_DEFINE_HPP */
