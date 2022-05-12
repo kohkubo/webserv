@@ -37,7 +37,7 @@ std::string read_file_tostring_cgi(const std::string &path) {
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
     char *const argv[] = {(char *)"", (char *)path.c_str(), NULL};
-    char *const env[]  = {(char *)"", (char *)"TEST=webserv_cgi_test", NULL};
+    char *const env[]  = {(char *)"TEST=webserv_cgi_test", NULL};
     execve("/bin/sh", argv, env);
     exit(0);
   }
