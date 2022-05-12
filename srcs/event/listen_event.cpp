@@ -2,7 +2,6 @@
 #include "event/Connection.hpp"
 #include "event/connection_handler.hpp"
 #include "event/event.hpp"
-#include "http/http.hpp"
 #include "utils/utils.hpp"
 #include <cstdlib>
 #include <poll.h>
