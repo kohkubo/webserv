@@ -28,7 +28,6 @@ enum RequestState {
   RECEIVING_HEADER, // リクエストはheaderを読み取り中。
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
   PENDING, // リクエストの読み取りは完了。レスポンスの生成待ち。
-  WAITING, // レスポンスの生成は完了。送信待ち。
   SENDING, // レスポンスの送信中。
 };
 
@@ -64,7 +63,7 @@ struct Connection {
 
   bool is_waiting_send() const {
     RequestState state = request_queue_.front().state_;
-    return state == WAITING || state == SENDING;
+    return state == SENDING;
   }
 
   void        parse_buffer(const std::string &data);

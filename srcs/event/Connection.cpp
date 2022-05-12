@@ -70,6 +70,7 @@ void Connection::make_response(
       http_message_map response_info =
           create_response_info(proper_conf, (*it).request_info_);
       (*it).response_ = make_message_string(response_info);
+      (*it).state_    = SENDING;
     }
   }
 }

@@ -22,7 +22,4 @@ void set_fd_list(struct pollfd *pfds, const int start_idx,
   }
 }
 
-typedef std::map<int, int> connection_list_type; // <accetpted fd, listen fd>
-typedef connection_list_type::iterator connection_list_iterator;
-
 #endif /* SRCS_EVENT_EVENT_HPP */

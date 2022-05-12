@@ -40,5 +40,7 @@ void connection_send_handler(int accfd, connection_list_type &connection_list) {
   if (request.send_count_ == (ssize_t)request.response_.size()) {
     // TODO: 送信完了したrequestがconnection:closeだったら、Connectionを削除。
     connection.request_queue_.pop_front();
+    // tmp
+    connection_list.erase(accfd);
   }
 }
