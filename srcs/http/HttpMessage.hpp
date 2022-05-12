@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_DEFINE_HPP
-#define SRCS_HTTP_DEFINE_HPP
+#ifndef SRCS_HTTP_HTTPMESSAGE_HPP
+#define SRCS_HTTP_HTTPMESSAGE_HPP
 
 #include <map>
 #include <string>
@@ -51,4 +51,4 @@ struct HttpMessage {
   }
 };
 
-#endif /* SRCS_HTTP_DEFINE_HPP */
+#endif /* SRCS_HTTP_HTTPMESSAGE_HPP */
