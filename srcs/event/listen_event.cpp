@@ -7,14 +7,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-/*
-** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持
-** 実際のリクエストはaccfdから受け取る。->accfdからどのsocketの通信か判別する必要あり。
-** std::map connection_list<accfd,socketfd>>（もしくは類似の構造）
-** connection_listのvalueとしてsocketfd、受信したstringをもった構造が欲しい
-** pollingするときに二つのmapのkeyをreadfdsに加える。
-*/
-
 static socket_list_type
 create_socket_map(const server_group_type &server_group) {
   socket_list_type                  res;
