@@ -89,17 +89,6 @@ static void parse_request_body(HttpMessage  &request_info,
  * 超安易パース
  * 必須情報のみを取得しています。
  */
-HttpMessage parse_request_message(const std::string &request_string) {
-  std::vector<std::string> request_tokens =
-      tokenize(request_string, SEPARATOR, " ");
-  HttpMessage request_info;
-  parse_request_method_line(request_info, request_tokens);
-  parse_request_host(request_info, request_tokens);
-  parse_request_content_length(request_info, request_tokens);
-  parse_request_body(request_info, request_tokens);
-  return request_info;
-}
-
 HttpMessage parse_request_header(const std::string &request_string) {
   std::vector<std::string> request_tokens =
       tokenize(request_string, SEPARATOR, " ");

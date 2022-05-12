@@ -49,6 +49,7 @@ void Connection::parse_buffer(const std::string &data) {
         return;
       }
       request.request_body_ = cut_buffer(request.request_info_.content_length_);
+      // TODO: bodyのパース
       request.state_        = PENDING;
       break;
     default:
