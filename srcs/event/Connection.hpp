@@ -61,6 +61,12 @@ struct Connection {
       return NO_REQUEST;
     return request_queue_.back().state_;
   }
+
+  bool is_waiting_send() const {
+    RequestState state = request_queue_.front().state_;
+    return state == WAITING || state == SENDING;
+  }
+
   void        parse_buffer(const std::string &data);
   std::string cut_buffer(std::size_t len);
   void make_response(const std::vector<const ServerConfig *> &server_list);
