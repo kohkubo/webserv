@@ -1,4 +1,7 @@
 #include "event/Connection.hpp"
+#include "http/const/const_delimiter.hpp"
+#include "http/request/request.hpp"
+#include "utils/tokenize.hpp"
 
 /*
   コネクションが持つリクエストのキューの状態として、、、
@@ -18,7 +21,8 @@ std::string Connection::cut_buffer(std::size_t len) {
 
 void Connection::parse_buffer(const std::string &data) {
   std::size_t       pos;
-  const std::string header_delim("\r\n\r\n");
+  token_vector      header_tokens;
+  const std::string header_delim = "\r\n\r\n";
   buffer_.append(data);
   while (1) {
     Request &request = request_queue_.back();
@@ -29,7 +33,8 @@ void Connection::parse_buffer(const std::string &data) {
         return;
       }
       request.request_header_ = cut_buffer(pos + header_delim.size());
-      // headerをパース
+      header_tokens         = tokenize(request.request_header_, SEPARATOR, " ");
+      request.request_info_ = parse_request_message(header_tokens);
       if (request.request_info_.is_expected_body()) {
         request.state_ = RECEIVING_BODY;
       } else {
