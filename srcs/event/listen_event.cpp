@@ -34,6 +34,19 @@ static void close_all_socket(const socket_list_type &socket_list) {
   }
 }
 
+static void print_fd_revents(int fd, short revents) {
+  // clang-format off
+  std::cout << ((revents & POLLIN) ? "POLLIN " : "")
+            << ((revents & POLLPRI) ? "POLLPRI " : "")
+            << ((revents & POLLOUT) ? "POLLOUT " : "")
+            << ((revents & POLLERR) ? "POLLERR " : "")
+            << ((revents & POLLHUP) ? "POLLHUP " : "")
+            << ((revents & POLLNVAL) ? "POLLNVAL " : "")
+            << "fd: " << fd
+            << std::endl;
+  // clang-format on
+}
+
 static int accept_wrapper(int listen_fd) {
   int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
   if (accfd == -1) {
@@ -75,16 +88,10 @@ void listen_event(const server_group_type &server_group) {
       error_log_with_errno("poll() failed");
       exit(EXIT_FAILURE);
     }
-    for (pollfds_type_iterator it = pollfds.begin();
-         it != pollfds.end() && 0 < nready;) {
+    pollfds_type_iterator it = pollfds.begin();
+    for (; it != pollfds.end() && 0 < nready;) {
       if (it->revents != 0) {
-        std::cout << ((it->revents & POLLIN) ? "POLLIN " : "")
-                  << ((it->revents & POLLPRI) ? "POLLPRI " : "")
-                  << ((it->revents & POLLOUT) ? "POLLOUT " : "")
-                  << ((it->revents & POLLERR) ? "POLLERR " : "")
-                  << ((it->revents & POLLHUP) ? "POLLHUP " : "")
-                  << ((it->revents & POLLNVAL) ? "POLLNVAL " : "")
-                  << "fd: " << it->fd << std::endl;
+        print_fd_revents(it->fd, it->revents);
         if (it->revents & POLLIN) {
           int is_listen_fd = socket_list.count(it->fd);
           if (is_listen_fd) {
@@ -99,7 +106,7 @@ void listen_event(const server_group_type &server_group) {
             http_wrapper(it->fd);
             connection_list.erase(it->fd);
             it = pollfds.erase(it);
-            continue;
+            continue; // it++を避けるため
           }
           nready--;
         }
