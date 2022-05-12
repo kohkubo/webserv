@@ -34,7 +34,7 @@ static void close_all_socket(const socket_list_type &socket_list) {
   }
 }
 
-static void print_fd_revents(int fd, short revents) {
+static void put_events_info(int fd, short revents) {
   // clang-format off
   std::cout << ((revents & POLLIN) ? "POLLIN " : "")
             << ((revents & POLLPRI) ? "POLLPRI " : "")
@@ -80,12 +80,6 @@ void listen_event(const server_group_type &server_group) {
   set_pollfds(pollfds, socket_list);
   set_pollfds(pollfds, connection_list);
   while (1) {
-    // for (pollfds_type_iterator it = pollfds.begin(); it != pollfds.end();
-    //      it++) {
-    //   std::cout << "~~~>fd: " << it->fd << std::endl;
-    //   std::cout << "~~~>events: " << it->events << std::endl;
-    //   std::cout << "~~~>reventsf: " << it->revents << std::endl;
-    // }
     int nready = poll(&pollfds[0], pollfds.size(), 0);
     if (nready == -1) {
       error_log_with_errno("poll() failed");
@@ -94,7 +88,7 @@ void listen_event(const server_group_type &server_group) {
     pollfds_type_iterator it = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready;) {
       if (it->revents) {
-        print_fd_revents(it->fd, it->revents);
+        put_events_info(it->fd, it->revents);
         if (it->revents & POLLIN) {
           int is_listen_fd = socket_list.count(it->fd);
           if (is_listen_fd) {
