@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <vector>
 
+typedef class ServerConfig ServerConfig;
+
 /*
   確立されたtcpコネクションからは接続が閉じられない限り、
   複数のリクエストが連続して送信されてくる可能性がある。
@@ -61,6 +63,7 @@ struct Connection {
   }
   void        parse_buffer(const std::string &data);
   std::string cut_buffer(std::size_t len);
+  void make_response(const std::vector<const ServerConfig *> &server_list);
 };
 
 typedef std::map<int, Connection> connection_list_type;

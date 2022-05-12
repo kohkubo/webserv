@@ -1,6 +1,9 @@
 #include "event/Connection.hpp"
+#include "config/ServerConfig.hpp"
 #include "http/const/const_delimiter.hpp"
+#include "http/const/const_response_key_map.hpp"
 #include "http/request/request.hpp"
+#include "http/response/response.hpp"
 #include "utils/tokenize.hpp"
 
 /*
@@ -51,6 +54,22 @@ void Connection::parse_buffer(const std::string &data) {
     default:
       request_queue_.push_back(Request());
       break;
+    }
+  }
+}
+
+// キューの中にあるresponse生成待ちのrequestのresponseを生成する。
+void Connection::make_response(
+    const std::vector<const ServerConfig *> &server_list) {
+  (void)server_list;
+  ServerConfig                  proper_conf;
+  std::deque<Request>::iterator it = request_queue_.begin();
+  for (; it != request_queue_.end(); it++) {
+    if ((*it).state_ == PENDING) {
+      // TODO: リクエストに対して正しいserverconfを選択する。
+      http_message_map response_info =
+          create_response_info(proper_conf, (*it).request_info_);
+      (*it).response_ = make_message_string(response_info);
     }
   }
 }
