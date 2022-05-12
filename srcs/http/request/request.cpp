@@ -1,6 +1,4 @@
 #include "config/ServerConfig.hpp"
-#include "http/const/const_delimiter.hpp"
-#include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 #include <cstdlib>
 #include <string>
@@ -31,10 +29,4 @@ static std::string read_connected_fd(int accfd) {
   return recv_str;
 }
 
-/*
- * メッセージ読み込み
- */
-// read_connected_fdに変更が入りそうなので一旦放置
-std::vector<std::string> receive_request(int accfd) {
-  return tokenize(read_connected_fd(accfd), SEPARATOR, " ");
-}
+std::string receive_request(int accfd) { return read_connected_fd(accfd); }

@@ -33,8 +33,7 @@ void Connection::parse_buffer(const std::string &data) {
         return;
       }
       request.request_header_ = cut_buffer(pos + header_delim.size());
-      header_tokens         = tokenize(request.request_header_, SEPARATOR, " ");
-      request.request_info_ = parse_request_message(header_tokens);
+      request.request_info_   = parse_request_message(request.request_header_);
       if (request.request_info_.is_expected_body()) {
         request.state_ = RECEIVING_BODY;
       } else {

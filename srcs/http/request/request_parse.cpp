@@ -1,5 +1,6 @@
 #include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
+#include "http/const/const_delimiter.hpp"
 #include "utils/tokenize.hpp"
 #include <algorithm>
 #include <map>
@@ -88,7 +89,9 @@ static void parse_request_body(HttpMessage  &request_info,
  * 超安易パース
  * 必須情報のみを取得しています。
  */
-HttpMessage parse_request_message(token_vector &request_tokens) {
+HttpMessage parse_request_message(const std::string &request_string) {
+  std::vector<std::string> request_tokens =
+      tokenize(request_string, SEPARATOR, " ");
   HttpMessage request_info;
   parse_request_method_line(request_info, request_tokens);
   parse_request_host(request_info, request_tokens);

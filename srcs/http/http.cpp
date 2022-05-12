@@ -21,10 +21,10 @@ static void send_response(int accfd, const std::string &message) {
  */
 void http(int accfd) {
   // TODO: 適切なServerConfigが渡される。
-  const ServerConfig       server_config  = ServerConfig();
-  std::vector<std::string> request_tokens = receive_request(accfd);
-  HttpMessage              request_info = parse_request_message(request_tokens);
-  http_message_map         response_info =
+  const ServerConfig server_config  = ServerConfig();
+  std::string        request_string = receive_request(accfd);
+  HttpMessage        request_info   = parse_request_message(request_string);
+  http_message_map   response_info =
       create_response_info(server_config, request_info);
   std::string response_message = make_message_string(response_info);
   send_response(accfd, response_message);
