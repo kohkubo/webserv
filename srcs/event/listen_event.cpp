@@ -28,6 +28,7 @@ create_socket_map(const server_group_type &server_group) {
 }
 
 // pollに渡すpollfd構造体の配列作成
+// TODO: vectorでやる, 最初の要素のアドレス渡せば良い
 static struct pollfd *
 create_pollfds(const struct pollfd        *old_pfds,
                const socket_list_type     &socket_list,
@@ -62,8 +63,6 @@ static void connect_fd(int listen_fd, connection_list_type &connection_list) {
   connection_list.insert(std::make_pair(accfd, listen_fd));
 }
 
-// pollを使うことになった経緯について確認, 監視fdの数の無制限
-// cgiはひとまず指定されたら実行するようにしている？
 static void process_http(int                   connection_fd,
                          connection_list_type &connection_list) {
   std::cout << "read from fd: " << connection_fd << std::endl;
@@ -100,7 +99,8 @@ void listen_event(const server_group_type &server_group) {
                   << "fd: " << pfds[i].fd << std::endl;
         if (pfds[i].revents & POLLIN) {
           // TMP: 処理するfdの種類はindex番号の範囲で判別している
-          // TODO: connectionがclose()された時もPOLLINとなる->recvで読み込み0byte->対応
+          // TODO:
+          // connectionがclose()された時もPOLLINとなる->recvで読み込み0byte->対応
           if (i < nfds_listen) {
             connect_fd(pfds[i].fd, connection_list);
           } else {
