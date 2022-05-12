@@ -22,12 +22,12 @@
 */
 
 enum RequestState {
-  NO_REQUEST,
-  RECEIVING_HEADER,
-  RECEIVING_BODY,
-  PENDING,
-  WAITING,
-  SENDING,
+  NO_REQUEST,       // Connectionはリクエストを持たない。
+  RECEIVING_HEADER, // リクエストはheaderを読み取り中。
+  RECEIVING_BODY,   // リクエストはbodyを読み取り中。
+  PENDING, // リクエストの読み取りは完了。レスポンスの生成待ち。
+  WAITING, // レスポンスの生成は完了。送信待ち。
+  SENDING, // レスポンスの送信中。
 };
 
 // TODO: string -> vector<char>
