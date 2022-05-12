@@ -34,29 +34,21 @@ static void close_all_socket(const socket_list_type &socket_list) {
   }
 }
 
-static void connect_fd(pollfds_type_iterator it, pollfds_type pollfds,
-                       connection_list_type &connection_list) {
-  int accfd = accept(it->fd, (struct sockaddr *)NULL, NULL);
+static int accept_wrapper(int listen_fd) {
+  int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
   if (accfd == -1) {
     error_log_with_errno("accept()) failed.");
     exit(EXIT_FAILURE);
   }
-  std::cout << "listen fd: " << it->fd << std::endl;
+  std::cout << "listen fd: " << listen_fd << std::endl;
   std::cout << "connection fd: " << accfd << std::endl;
-  struct pollfd p;
-  p.fd     = accfd;
-  p.events = POLLIN;
-  pollfds.push_back(p);
-  connection_list.insert(std::make_pair(accfd, it->fd));
+  return accfd;
 }
 
-static void process_http(pollfds_type_iterator it, pollfds_type &pollfds,
-                         connection_list_type &connection_list) {
-  std::cout << "read from fd: " << it->fd << std::endl;
-  http(it->fd);
-  close(it->fd); // tmp
-  pollfds.erase(it);
-  connection_list.erase(it->fd);
+static void http_wrapper(int connection_fd) {
+  std::cout << "read from fd: " << connection_fd << std::endl;
+  http(connection_fd);
+  close(connection_fd); // tmp
 }
 
 void listen_event(const server_group_type &server_group) {
@@ -67,24 +59,24 @@ void listen_event(const server_group_type &server_group) {
   pollfds_type         pollfds;
   set_fd_list(pollfds, socket_list);
   set_fd_list(pollfds, connection_list);
-  int cnt = 0;
+  // int cnt = 0;
   while (1) {
-    for (pollfds_type_iterator it = pollfds.begin(); it != pollfds.end();
-         it++) {
-      std::cout << "~~~>fd: " << it->fd << std::endl;
-      std::cout << "~~~>events: " << it->events << std::endl;
-      std::cout << "~~~>reventsf: " << it->revents << std::endl;
-    }
-    if (cnt == 2) {
-      exit(0);
-    }
+    // for (pollfds_type_iterator it = pollfds.begin(); it != pollfds.end();
+    //      it++) {
+    //   std::cout << "~~~>fd: " << it->fd << std::endl;
+    //   std::cout << "~~~>events: " << it->events << std::endl;
+    //   std::cout << "~~~>reventsf: " << it->revents << std::endl;
+    // }
+    // if (cnt == 2) {
+    //   exit(0);
+    // }
     int nready = poll(&pollfds[0], pollfds.size(), 0);
     if (nready == -1) {
       error_log_with_errno("poll() failed");
       exit(EXIT_FAILURE);
     }
     for (pollfds_type_iterator it = pollfds.begin();
-         it != pollfds.end() && 0 < nready; it++) {
+         it != pollfds.end() && 0 < nready;) {
       if (it->revents != 0) {
         std::cout << ((it->revents & POLLIN) ? "POLLIN " : "")
                   << ((it->revents & POLLPRI) ? "POLLPRI " : "")
@@ -96,15 +88,24 @@ void listen_event(const server_group_type &server_group) {
         if (it->revents & POLLIN) {
           int is_listen_fd = socket_list.count(it->fd);
           if (is_listen_fd) {
-            connect_fd(it, pollfds, connection_list);
-            cnt++;
+            int           connection_fd = accept_wrapper(it->fd);
+            struct pollfd p;
+            p.fd      = connection_fd;
+            p.events  = POLLIN;
+            p.revents = 0;
+            pollfds.push_back(p);
+            connection_list.insert(std::make_pair(connection_fd, it->fd));
           } else {
-            process_http(it, pollfds, connection_list);
+            http_wrapper(it->fd);
+            connection_list.erase(it->fd);
+            it = pollfds.erase(it);
+            continue;
           }
           nready--;
         }
-        // TODO: POLLIN以外の対処
+        // TODO: POLLIN以外の処理
       }
+      it++;
     }
   }
   // tmp
