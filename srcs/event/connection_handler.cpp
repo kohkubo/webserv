@@ -18,8 +18,9 @@ static std::string receive_data(int accfd) {
   return std::string(buf);
 }
 
-void connection_handler(int accfd, connection_list_type &connection_list,
-                        const socket_list_type &socket_list) {
+void connection_receive_handler(int                     accfd,
+                                connection_list_type   &connection_list,
+                                const socket_list_type &socket_list) {
   // TODO: 適切なServerConfigを選択する。
   (void)socket_list;
 
@@ -28,4 +29,18 @@ void connection_handler(int accfd, connection_list_type &connection_list,
   connection.parse_buffer(data);
   // pendingのリクエストをすべてレスポンス作成に渡す。(pending->wating)　cgiのstateひつようかも
   // listen_eventでレスポンスを送信キューに追加する。
+}
+
+void connection_send_handler(int accfd, connection_list_type &connection_list) {
+  Connection &connection = connection_list[accfd];
+  Request    &request    = connection.request_queue_.front();
+  ssize_t     sc =
+      send(accfd, request.response_.c_str() + request.send_count_,
+           request.response_.size() - request.send_count_, MSG_DONTWAIT);
+
+  request.send_count_ += sc;
+  if (request.send_count_ == request.response_.size()) {
+    // 送信完了したrequestがconnection:closeだったら、Connectionを削除。
+    connection.request_queue_.pop_front();
+  }
 }
