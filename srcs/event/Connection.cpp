@@ -17,8 +17,8 @@
 
 // bufferを指定したlen切り出してstringとして返す関数。
 std::string Connection::cut_buffer(std::size_t len) {
-  std::string res = buffer_.substr(0, len);
-  buffer_         = buffer_.substr(len);
+  std::string res = __buffer_.substr(0, len);
+  __buffer_       = __buffer_.substr(len);
   return res;
 }
 
@@ -26,14 +26,12 @@ void Connection::parse_buffer(const std::string &data) {
   std::size_t  pos;
   token_vector header_tokens;
 
-  buffer_.append(data);
+  __buffer_.append(data);
   while (1) {
-    if (request_queue_.empty())
-      request_queue_.push_back(Request());
-    Request &request = request_queue_.back();
+    Request &request = get_last_request();
     switch (get_last_state()) {
     case RECEIVING_HEADER:
-      pos = buffer_.find(HEADER_SP);
+      pos = __buffer_.find(HEADER_SP);
       if (pos == std::string::npos) {
         return;
       }
@@ -47,7 +45,7 @@ void Connection::parse_buffer(const std::string &data) {
       break;
     case RECEIVING_BODY:
       // TODO: chunkedのサイズ判定
-      if (buffer_.size() < request.info_.content_length_) {
+      if (__buffer_.size() < request.info_.content_length_) {
         return;
       }
       request.body_ = cut_buffer(request.info_.content_length_);
@@ -55,7 +53,7 @@ void Connection::parse_buffer(const std::string &data) {
       request.state_ = PENDING;
       break;
     default:
-      request_queue_.push_back(Request());
+      __request_queue_.push_back(Request());
       break;
     }
   }
@@ -66,8 +64,8 @@ void Connection::make_response(
     const std::vector<const ServerConfig *> &server_list) {
   (void)server_list;
   ServerConfig                  proper_conf;
-  std::deque<Request>::iterator it = request_queue_.begin();
-  for (; it != request_queue_.end(); it++) {
+  std::deque<Request>::iterator it = __request_queue_.begin();
+  for (; it != __request_queue_.end(); it++) {
     if ((*it).state_ == PENDING) {
       // TODO: リクエストに対して正しいserverconfを選択する。
       http_message_map response_info =

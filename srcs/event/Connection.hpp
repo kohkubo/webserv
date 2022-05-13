@@ -45,10 +45,13 @@ struct Request {
       , send_count_(0) {}
 };
 
-struct Connection {
-  int                 socket_fd_;
-  std::deque<Request> request_queue_;
-  std::string         buffer_;
+class Connection {
+private:
+  std::deque<Request> __request_queue_;
+  std::string         __buffer_;
+
+public:
+  int socket_fd_;
 
   Connection()
       : socket_fd_(-1) {}
@@ -56,16 +59,30 @@ struct Connection {
       : socket_fd_(fd) {}
   ~Connection() {}
 
+  Request &get_last_request() {
+    if (__request_queue_.empty())
+      __request_queue_.push_back(Request());
+    return __request_queue_.back();
+  }
+
+  Request &get_front_request() {
+    if (__request_queue_.empty())
+      __request_queue_.push_back(Request());
+    return __request_queue_.front();
+  }
+
+  void         erase_front_req() { __request_queue_.pop_front(); }
+
   RequestState get_last_state() {
-    if (request_queue_.empty())
+    if (__request_queue_.empty())
       return NO_REQUEST;
-    return request_queue_.back().state_;
+    return __request_queue_.back().state_;
   }
 
   bool is_waiting_send() const {
-    if (request_queue_.empty())
+    if (__request_queue_.empty())
       return false;
-    RequestState state = request_queue_.front().state_;
+    RequestState state = __request_queue_.front().state_;
     return state == SENDING;
   }
 
