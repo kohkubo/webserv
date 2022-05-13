@@ -26,7 +26,7 @@ static void create_pollfds(pollfds_type               &pollfds,
   set_pollfds(pollfds, connection_list);
 }
 
-static void put_events_info(int fd, short revents) {
+static void debug_put_events_info(int fd, short revents) {
   // clang-format off
   std::cout << ((revents & POLLIN) ? "POLLIN " : "")
             << ((revents & POLLPRI) ? "POLLPRI " : "")
