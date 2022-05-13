@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <poll.h>
 #include <sys/socket.h>
-#include <unistd.h>
 
 static socket_list_type
 create_socket_map(const server_group_type &server_group) {
@@ -25,13 +24,6 @@ static void create_pollfds(pollfds_type               &pollfds,
   pollfds.clear();
   set_pollfds(pollfds, socket_list);
   set_pollfds(pollfds, connection_list);
-}
-
-static void close_all_socket(const socket_list_type &socket_list) {
-  socket_list_type::const_iterator it = socket_list.begin();
-  for (; it != socket_list.end(); it++) {
-    close(it->first);
-  }
 }
 
 static void put_events_info(int fd, short revents) {
@@ -78,8 +70,7 @@ void listen_event(const server_group_type &server_group) {
       if (it->revents) {
         put_events_info(it->fd, it->revents);
         if (it->revents & POLLIN) {
-          // TMP:
-          // socket_listの要素かどうかでlisten_fdかconnection_fdか判別している
+          // TMP: socket_listの要素かどうかでfdを区別
           int listen_flg = socket_list.count(it->fd);
           if (listen_flg) {
             int connection_fd = xaccept(it->fd);
@@ -96,6 +87,7 @@ void listen_event(const server_group_type &server_group) {
       }
     }
   }
-  close_all_socket(socket_list); // tmp
-  // TODO: close_all_socket(connection_list);
+  // TMP
+  close_all_socket(socket_list);
+  close_all_socket(connection_list);
 }
