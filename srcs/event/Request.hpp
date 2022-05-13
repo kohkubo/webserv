@@ -18,8 +18,6 @@ enum RequestState {
 // TODO: string -> vector<char>
 
 struct Request {
-private:
-  ssize_t __send_count_;
 
 public:
   RequestState state_;
@@ -28,6 +26,10 @@ public:
   HttpMessage  info_;
   std::string  response_;
 
+private:
+  ssize_t __send_count_;
+
+public:
   Request()
       : state_(RECEIVING_HEADER)
       , __send_count_(0) {}
