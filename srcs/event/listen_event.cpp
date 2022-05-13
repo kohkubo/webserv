@@ -107,7 +107,6 @@ void listen_event(const server_group_type &server_group) {
           }
         }
         if (pfds[i].revents & POLLOUT) {
-          std::cout << "can write: " << pfds[i].fd << std::endl;
           connection_send_handler(pfds[i].fd, connection_list);
         }
         nready--;
