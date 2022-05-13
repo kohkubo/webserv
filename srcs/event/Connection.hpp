@@ -44,7 +44,7 @@ public:
     return __request_queue_.back().state_;
   }
 
-  bool is_waiting_send() const {
+  bool is_sending() const {
     if (__request_queue_.empty())
       return false;
     RequestState state = __request_queue_.front().state_;

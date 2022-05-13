@@ -33,7 +33,7 @@ static void set_connection_fd(struct pollfd *pfds, int idx,
   connection_list_type::const_iterator it = connection_list.begin();
   for (; it != connection_list.end(); it++) {
     pfds[idx].fd = it->first;
-    if (it->second.is_waiting_send()) {
+    if (it->second.is_sending()) {
       pfds[idx].events = POLLIN | POLLOUT;
     } else {
       pfds[idx].events = POLLIN;
