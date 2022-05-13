@@ -63,7 +63,7 @@ struct Connection {
 
   bool is_waiting_send() const {
     if (request_queue_.empty())
-      return NO_REQUEST;
+      return false;
     RequestState state = request_queue_.front().state_;
     return state == SENDING;
   }
