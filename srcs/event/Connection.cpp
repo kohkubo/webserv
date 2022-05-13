@@ -28,6 +28,8 @@ void Connection::parse_buffer(const std::string &data) {
 
   buffer_.append(data);
   while (1) {
+    if (request_queue_.empty())
+      request_queue_.push_back(Request());
     Request &request = request_queue_.back();
     switch (get_last_state()) {
     case RECEIVING_HEADER:
