@@ -7,9 +7,10 @@
 // std::string(std::vector<char>)でnull文字交じりのstring作れるかも
 
 static std::string receive_data(int accfd) {
-  const int buf_size      = 1024;
+  const int buf_size      = 10;
   char      buf[buf_size] = {};
   ssize_t   rc            = recv(accfd, buf, buf_size - 1, MSG_DONTWAIT);
+  buf[rc]                 = '\0';
   if (rc == -1) {
     error_log_with_errno("recv() failed.");
     return std::string();
