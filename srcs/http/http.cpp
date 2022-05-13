@@ -21,6 +21,7 @@ static void send_response(int accfd, const std::string &message) {
  */
 void http(int accfd) {
   // TODO: 適切なServerConfigが渡される。
+  std::cout << "http read from fd: " << accfd << std::endl;
   const ServerConfig       server_config  = ServerConfig();
   std::vector<std::string> request_tokens = receive_request(accfd);
   HttpMessage              request_info = parse_request_message(request_tokens);
