@@ -3,20 +3,20 @@
 #include "utils/utils.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 // std::string(std::vector<char>)でnull文字交じりのstring作れるかも
 
 static std::string receive_data(int accfd) {
-  const int buf_size      = 10;
-  char      buf[buf_size] = {};
-  ssize_t   rc            = recv(accfd, buf, buf_size - 1, MSG_DONTWAIT);
-  buf[rc]                 = '\0';
+  const int         buf_size = 1;
+  std::vector<char> buf(buf_size);
+  ssize_t           rc = recv(accfd, &buf[0], buf_size, MSG_DONTWAIT);
   if (rc == -1) {
     error_log_with_errno("recv() failed.");
     return std::string();
   }
   // TODO: rc == 0 => connection close
-  return std::string(buf);
+  return std::string(buf.begin(), buf.begin() + rc);
 }
 
 void connection_receive_handler(int                   accfd,
@@ -42,6 +42,7 @@ void connection_send_handler(int accfd, connection_list_type &connection_list) {
     // TODO: 送信完了したrequestがconnection:closeだったら、Connectionを削除。
     connection.request_queue_.pop_front();
     // tmp
+    close(accfd);
     connection_list.erase(accfd);
   }
 }
