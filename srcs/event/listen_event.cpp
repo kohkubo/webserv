@@ -35,7 +35,7 @@ create_pollfds(const socket_list_type     &socket_list,
   return pollfds;
 }
 
-static void put_events_info(int fd, short revents) {
+static void debug_put_events_info(int fd, short revents) {
   // clang-format off
   std::cout << ((revents & POLLIN) ? "POLLIN " : "")
             << ((revents & POLLPRI) ? "POLLPRI " : "")
@@ -50,7 +50,7 @@ static void put_events_info(int fd, short revents) {
 
 // tmp
 // listen_fdのaccept(), 各データ構造に新規データを追加
-static void do_connection(int listen_fd, pollfds_type &pollfds,
+static void set_accept_fd(int listen_fd, pollfds_type &pollfds,
                           connection_list_type &connection_list) {
   int connection_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
   if (connection_fd == -1) {
@@ -69,9 +69,9 @@ static void do_connection(int listen_fd, pollfds_type &pollfds,
 
 // tmp
 // connection_fdをhttpに渡す, 各データ構造から不要データを削除
-static pollfds_type_iterator do_http(pollfds_type_iterator it,
-                                     pollfds_type         &pollfds,
-                                     connection_list_type &connection_list) {
+static pollfds_type_iterator
+execute_connect_fd(pollfds_type_iterator it, pollfds_type &pollfds,
+                   connection_list_type &connection_list) {
   std::cout << "read from fd: " << it->fd << std::endl;
   http(it->fd);
   close(it->fd); // tmp
@@ -95,13 +95,13 @@ void listen_event(const server_group_type &server_group) {
     pollfds_type_iterator it = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready;) {
       if (it->revents) {
-        put_events_info(it->fd, it->revents);
+        debug_put_events_info(it->fd, it->revents);
         if (it->revents & POLLIN) {
           int is_listen_fd = socket_list.count(it->fd);
           if (is_listen_fd) {
-            do_connection(it->fd, pollfds, connection_list);
+            set_accept_fd(it->fd, pollfds, connection_list);
           } else {
-            it = do_http(it, pollfds, connection_list);
+            it = execute_connect_fd(it, pollfds, connection_list);
             continue; // 既にitは次のイテレータなので
           }
           nready--;
