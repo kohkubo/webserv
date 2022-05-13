@@ -98,7 +98,7 @@ void listen_event(const server_group_type &server_group) {
       exit(EXIT_FAILURE);
     }
     pollfds_type_iterator it = pollfds.begin();
-    for (; it != pollfds.end() && 0 < nready;) {
+    for (; it != pollfds.end() && 0 < nready; it++) {
       if (it->revents) {
         put_events_info(it->fd, it->revents);
         if (it->revents & POLLIN) {
@@ -108,11 +108,11 @@ void listen_event(const server_group_type &server_group) {
           } else {
             do_http(it, connection_list);
           }
-          nready--;
         }
         // TODO: POLLIN以外の処理
+        // nreadyはpollfdsでreventにフラグが立ってる要素数
+        nready--;
       }
-      it++;
     }
   }
   // tmp
