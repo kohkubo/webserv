@@ -33,17 +33,15 @@ void      connection_receive_handler(int                   accfd,
 void connection_send_handler(int accfd, connection_list_type &connection_list) {
   Connection &connection = connection_list[accfd];
   Request    &request    = connection.get_front_request();
-  ssize_t     sc =
-      send(accfd, request.response_.c_str() + request.send_count_,
-           request.response_.size() - request.send_count_, MSG_DONTWAIT);
-
-  request.send_count_ += sc;
-  // FIXME: c style cast
-  if (request.send_count_ == (ssize_t)request.response_.size()) {
-    connection.erase_front_req();
+  request.send_response(accfd);
+  if (request.is_send_completed()) {
     // tmp
     // TODO: 送信完了したrequestがconnection:closeだったら、Connectionを削除。
-    shutdown(accfd, SHUT_WR);
-    connection_list.erase(accfd);
+    if (true) {
+      shutdown(accfd, SHUT_WR);
+      connection_list.erase(accfd);
+      return;
+    }
+    connection.erase_front_req();
   }
 }
