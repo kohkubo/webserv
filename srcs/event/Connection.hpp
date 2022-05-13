@@ -34,9 +34,9 @@ enum RequestState {
 // TODO: string -> vector<char>
 struct Request {
   RequestState state_;
-  std::string  request_header_;
-  std::string  request_body_;
-  HttpMessage  request_info_;
+  std::string  header_;
+  std::string  body_;
+  HttpMessage  info_;
   std::string  response_;
   ssize_t      send_count_;
 

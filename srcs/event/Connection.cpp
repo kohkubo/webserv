@@ -37,9 +37,9 @@ void Connection::parse_buffer(const std::string &data) {
       if (pos == std::string::npos) {
         return;
       }
-      request.request_header_ = cut_buffer(pos + HEADER_SP.size());
-      parse_request_header(request.request_info_, request.request_header_);
-      if (request.request_info_.is_expected_body()) {
+      request.header_ = cut_buffer(pos + HEADER_SP.size());
+      parse_request_header(request.info_, request.header_);
+      if (request.info_.is_expected_body()) {
         request.state_ = RECEIVING_BODY;
       } else {
         request.state_ = PENDING;
@@ -47,11 +47,11 @@ void Connection::parse_buffer(const std::string &data) {
       break;
     case RECEIVING_BODY:
       // TODO: chunkedのサイズ判定
-      if (buffer_.size() < request.request_info_.content_length_) {
+      if (buffer_.size() < request.info_.content_length_) {
         return;
       }
-      request.request_body_ = cut_buffer(request.request_info_.content_length_);
-      parse_request_body(request.request_info_, request.request_body_);
+      request.body_ = cut_buffer(request.info_.content_length_);
+      parse_request_body(request.info_, request.body_);
       request.state_ = PENDING;
       break;
     default:
@@ -71,7 +71,7 @@ void Connection::make_response(
     if ((*it).state_ == PENDING) {
       // TODO: リクエストに対して正しいserverconfを選択する。
       http_message_map response_info =
-          create_response_info(proper_conf, (*it).request_info_);
+          create_response_info(proper_conf, (*it).info_);
       (*it).response_ = make_message_string(response_info);
       (*it).state_    = SENDING;
     }
