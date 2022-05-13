@@ -51,6 +51,16 @@ static int xaccept(int listen_fd) {
   return connection_fd;
 }
 
+// TODO: exitすべきか調査
+static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
+  int nready = poll(fds, nfds, timeout);
+  if (nready == -1) {
+    error_log_with_errno("poll() failed");
+    exit(EXIT_FAILURE);
+  }
+  return nready;
+}
+
 // socket_list:     listen_fdとserver_groupの関係を管理
 // connection_list: connection_fdとlisten_fdの関係を管理
 void listen_event(const server_group_type &server_group) {
@@ -60,12 +70,9 @@ void listen_event(const server_group_type &server_group) {
 
   while (1) {
     create_pollfds(pollfds, socket_list, connection_list);
-    int nready = poll(&pollfds[0], pollfds.size(), 0);
-    if (nready == -1) {
-      error_log_with_errno("poll() failed");
-      exit(EXIT_FAILURE); // TODO: exitすべきか調査, するならwrapper
-    }
-    pollfds_type_iterator it = pollfds.begin();
+    // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
+    int                   nready = xpoll(&pollfds[0], pollfds.size(), 0);
+    pollfds_type_iterator it     = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready; it++) {
       if (it->revents) {
         put_events_info(it->fd, it->revents);
@@ -82,7 +89,6 @@ void listen_event(const server_group_type &server_group) {
           }
         }
         // TODO: POLLIN以外の処理
-        // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
         nready--;
       }
     }
