@@ -41,7 +41,8 @@ struct Request {
   ssize_t      send_count_;
 
   Request()
-      : state_(RECEIVING_HEADER) {}
+      : state_(RECEIVING_HEADER)
+      , send_count_(0) {}
 };
 
 struct Connection {
