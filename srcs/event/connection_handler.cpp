@@ -35,13 +35,16 @@ void connection_send_handler(int accfd, connection_list_type &connection_list) {
   Request    &request    = connection.get_front_request();
   request.send_response(accfd);
   if (request.is_send_completed()) {
-    // tmp
     // TODO: 送信完了したrequestがconnection:closeだったら、Connectionを削除。
-    if (true) {
-      shutdown(accfd, SHUT_WR);
-      connection_list.erase(accfd);
-      return;
-    }
+    // if (request.info_.is_close_ == true) {
+    //   shutdown(accfd, SHUT_WR);
+    //   // 送信は完了しているので、stateの更新が必要。
+    //   return;
+    // }
     connection.erase_front_req();
+
+    // tmp
+    shutdown(accfd, SHUT_WR);
+    connection_list.erase(accfd);
   }
 }
