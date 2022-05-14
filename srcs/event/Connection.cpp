@@ -2,15 +2,6 @@
 #include "config/ServerConfig.hpp"
 #include "http/const/const_delimiter.hpp"
 
-/*
-  コネクションが持つリクエストのキューの状態として、、、
-  1, リクエストを一つも持たない。
-  2, リクエストがあり、キューの最後のリクエストは読み取り済み。
-  (状態1, 2はデータを受信したら、状態3へ移行する）
-  3, リクエストがあり、キューの最後のリクエストがヘッダーを受信中
-  4, リクエストがあり、キューの最後のリクエストがbodyを受信中
- */
-
 // bufferを指定したlen切り出してstringとして返す関数。
 std::string Connection::cut_buffer(std::size_t len) {
   std::string res = __buffer_.substr(0, len);
