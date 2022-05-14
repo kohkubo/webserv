@@ -36,16 +36,10 @@ struct HttpMessage {
 
   HttpMessage()
       : method_(UNKNOWN)
-      , url_("")
-      , path_("")
-      , version_("")
-      , host_("")
-      , status_("")
-      , phrase_("")
       , content_length_(0)
-      , body_("")
-      , values_()
-      , status_code_(NONE) {}
+      , status_code_(NONE)
+      // tmp
+      , is_close_(true) {}
 
   bool is_expected_body() {
     // TODO: chunked
