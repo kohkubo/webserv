@@ -35,8 +35,7 @@ void Connection::parse_buffer(const std::string &data) {
       if (pos == std::string::npos) {
         return;
       }
-      request.header_ = cut_buffer(pos + HEADER_SP.size());
-      parse_request_header(request.info_, request.header_);
+      request.parse_header(cut_buffer(pos + HEADER_SP.size()));
       if (request.info_.is_expected_body()) {
         request.state_ = RECEIVING_BODY;
       } else {
@@ -48,8 +47,7 @@ void Connection::parse_buffer(const std::string &data) {
       if (__buffer_.size() < request.info_.content_length_) {
         return;
       }
-      request.body_ = cut_buffer(request.info_.content_length_);
-      parse_request_body(request.info_, request.body_);
+      request.parse_body(cut_buffer(request.info_.content_length_));
       request.state_ = PENDING;
       break;
     default:

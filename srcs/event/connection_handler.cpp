@@ -38,7 +38,7 @@ void connection_send_handler(int accfd, connection_list_type &connection_list) {
     // TODO: 送信完了したrequestがconnection:closeだったら、Connectionを削除。
     // if (request.info_.is_close_ == true) {
     //   shutdown(accfd, SHUT_WR);
-    //   // 送信は完了しているので、stateの更新が必要。
+    //   request.state_ = PENDING;
     //   return;
     // }
     connection.erase_front_req();
