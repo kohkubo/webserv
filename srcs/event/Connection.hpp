@@ -12,19 +12,20 @@ typedef class ServerConfig ServerConfig;
 
 class Connection {
 private:
-  std::deque<Request> __request_queue_;
-  std::string         __buffer_;
+  std::deque<Request>                __request_queue_;
+  std::string                        __buffer_;
+  std::vector<const ServerConfig *> *__config_;
 
 public:
-  int socket_fd_;
-
   Connection()
-      : socket_fd_(-1) {}
-  Connection(int fd)
-      : socket_fd_(fd) {}
+      : __config_(NULL) {}
+  Connection(std::vector<const ServerConfig *> *config)
+      : __config_(config) {}
   ~Connection() {}
 
-  Request &get_last_request() {
+  const std::vector<const ServerConfig *> *get_config() { return __config_; }
+
+  Request                                 &get_last_request() {
     if (__request_queue_.empty())
       __request_queue_.push_back(Request());
     return __request_queue_.back();
@@ -53,8 +54,7 @@ public:
 
   void        parse_buffer(const std::string &data);
   std::string cut_buffer(std::size_t len);
-  void
-  make_response_queue(const std::vector<const ServerConfig *> &server_list);
+  void        make_response_queue();
 };
 
 typedef std::map<int, Connection> connection_list_type;

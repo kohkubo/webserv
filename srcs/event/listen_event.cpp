@@ -60,7 +60,8 @@ create_pollfds(const struct pollfd        *old_pfds,
   return new_pfds;
 }
 
-static void connect_fd(int listen_fd, connection_list_type &connection_list) {
+static void connect_fd(int listen_fd, socket_list_type &socket_list,
+                       connection_list_type &connection_list) {
   int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
   if (accfd == -1) {
     error_log_with_errno("accept()) failed.");
@@ -68,7 +69,8 @@ static void connect_fd(int listen_fd, connection_list_type &connection_list) {
   }
   std::cout << "listen fd: " << listen_fd << " connection fd: " << accfd
             << std::endl;
-  connection_list.insert(std::make_pair(accfd, Connection(listen_fd)));
+  connection_list.insert(
+      std::make_pair(accfd, Connection(&socket_list[listen_fd])));
 }
 
 void listen_event(const server_group_type &server_group) {
@@ -100,7 +102,7 @@ void listen_event(const server_group_type &server_group) {
         if (pfds[i].revents & POLLIN) {
           // TMP: 処理するfdの種類はindex番号の範囲で判別している
           if (i < nfds_listen) {
-            connect_fd(pfds[i].fd, connection_list);
+            connect_fd(pfds[i].fd, socket_list, connection_list);
           } else {
             connection_receive_handler(pfds[i].fd, connection_list,
                                        socket_list);
