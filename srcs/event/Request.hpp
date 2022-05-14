@@ -33,46 +33,17 @@ public:
       , __send_count_(0) {}
 
   RequestState get_state() const { return __state_; }
-
   void         set_state(RequestState state) { __state_ = state; }
-
   bool         is_close() { return __info_.is_close_; }
-
   size_t       get_body_size() { return __info_.content_length_; }
-
-  void         parse_header(const std::string &header) {
-    parse_request_header(__info_, header);
-    if (__info_.is_expected_body()) {
-      __state_ = RECEIVING_BODY;
-    } else {
-      __state_ = PENDING;
-    }
-  }
-
-  void parse_body(const std::string &body) {
-    parse_request_body(__info_, body);
-    __state_ = PENDING;
-  }
-
-  void create_response(const ServerConfig &conf) {
-    if (get_state() != PENDING) {
-      return;
-    }
-    http_message_map response_info = create_response_info(conf, __info_);
-    __response_                    = make_message_string(response_info);
-    __state_                       = SENDING;
-  }
-
-  void send_response(int socket_fd) {
-    const char *rest_str   = __response_.c_str() + __send_count_;
-    size_t      rest_count = __response_.size() - __send_count_;
-    ssize_t     sc = send(socket_fd, rest_str, rest_count, MSG_DONTWAIT);
-    __send_count_ += sc;
-  }
-
-  bool is_send_completed() {
+  bool         is_send_completed() {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
+
+  void parse_header(const std::string &header);
+  void parse_body(const std::string &body);
+  void create_response(const ServerConfig &conf);
+  void send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_REQUEST_HPP */
