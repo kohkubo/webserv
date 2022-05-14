@@ -41,19 +41,20 @@ public:
   RequestState get_last_state() {
     if (__request_queue_.empty())
       return NO_REQUEST;
-    return __request_queue_.back().state_;
+    return __request_queue_.back().get_state();
   }
 
   bool is_sending() const {
     if (__request_queue_.empty())
       return false;
-    RequestState state = __request_queue_.front().state_;
+    RequestState state = __request_queue_.front().get_state();
     return state == SENDING;
   }
 
   void        parse_buffer(const std::string &data);
   std::string cut_buffer(std::size_t len);
-  void make_response(const std::vector<const ServerConfig *> &server_list);
+  void
+  make_response_queue(const std::vector<const ServerConfig *> &server_list);
 };
 
 typedef std::map<int, Connection> connection_list_type;

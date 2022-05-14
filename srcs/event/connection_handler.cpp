@@ -27,7 +27,7 @@ void      connection_receive_handler(int                   accfd,
   std::string data = std::string(buf.begin(), buf.begin() + rc);
   connection.parse_buffer(data);
   // cgi用のstateが必要になるかも
-  connection.make_response(socket_list[connection.socket_fd_]);
+  connection.make_response_queue(socket_list[connection.socket_fd_]);
 }
 
 void connection_send_handler(int accfd, connection_list_type &connection_list) {
