@@ -16,6 +16,9 @@ private:
   std::string                        __buffer_;
   std::vector<const ServerConfig *> *__config_;
 
+private:
+  std::string __cut_buffer(std::size_t len);
+
 public:
   Connection()
       : __config_(NULL) {}
@@ -50,9 +53,8 @@ public:
     return state == SENDING;
   }
 
-  void        parse_buffer(const std::string &data);
-  std::string cut_buffer(std::size_t len);
-  void        create_response_iter();
+  void parse_buffer(const std::string &data);
+  void create_response_iter();
 };
 
 typedef std::map<int, Connection> connection_list_type;

@@ -3,7 +3,7 @@
 #include "http/const/const_delimiter.hpp"
 
 // bufferを指定したlen切り出してstringとして返す関数。
-std::string Connection::cut_buffer(std::size_t len) {
+std::string Connection::__cut_buffer(std::size_t len) {
   std::string res = __buffer_.substr(0, len);
   __buffer_       = __buffer_.substr(len);
   return res;
@@ -22,14 +22,14 @@ void Connection::parse_buffer(const std::string &data) {
       if (pos == std::string::npos) {
         return;
       }
-      request.parse_header(cut_buffer(pos + HEADER_SP.size()));
+      request.parse_header(__cut_buffer(pos + HEADER_SP.size()));
       break;
     case RECEIVING_BODY:
       // TODO: chunkedのサイズ判定
       if (__buffer_.size() < request.get_body_size()) {
         return;
       }
-      request.parse_body(cut_buffer(request.get_body_size()));
+      request.parse_body(__cut_buffer(request.get_body_size()));
       break;
     default:
       __request_queue_.push_back(Request());
