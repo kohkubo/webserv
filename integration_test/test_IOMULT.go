@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 )
 
 func connect(port string) net.Conn {
@@ -17,9 +18,18 @@ func connect(port string) net.Conn {
 	return conn
 }
 
-func parse_request(conn net.Conn) {
+func send_request(conn net.Conn, req string) {
+	fmt.Fprintf(conn, req)
+	time.Sleep(1 * time.Second)
+}
+
+func parse_response(conn net.Conn, method string) {
+	defer conn.Close()
 	r := bufio.NewReader(conn)
-	resp, err := http.ReadResponse(r, nil) // optionのreqは必要性がわからん, typeの違い以外で使われている形跡なし, DELETEちゃんと送れてた
+	req := &http.Request{
+		Method: method,
+	}
+	resp, err := http.ReadResponse(r, req)
 	if err != nil {
 		log.Fatal("readresponse error: ", err)
 	}
@@ -28,12 +38,22 @@ func parse_request(conn net.Conn) {
 	fmt.Printf("%s\n", body)
 }
 
+// TODO: 各処理を go routineで走らせる
+// TODO: connを閉じる
+// TODO: 同じconnに送る
 func testIOMULT() {
-	conn5001 := connect("5001")
-	conn5500 := connect("5500")
-	fmt.Fprintf(conn5500, "GET /")
-	fmt.Fprintf(conn5001, "DELETE /nosuch HTTP/1.1\r\nHost: localhost:5500\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
-	parse_request(conn5001)
-	fmt.Fprintf(conn5500, " HTTP/1.1\r\nHost: localhost:5500\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
-	parse_request(conn5500)
+	conn5001B := connect("5001")
+	conn5001C := connect("5001")
+	conn5500A := connect("5500")
+	/* A */ send_request(conn5500A, "GET /")
+	/* B */ send_request(conn5001B, "GET /nosuch HT")
+	/* C */ send_request(conn5001C, "DELETE /nosuch HTTP/1.1\r")
+	/* A */ send_request(conn5500A, " HTTP/1.1\r\nHost: localhost:5500\r\nUse")
+	/* C */ send_request(conn5001C, "\nHost: localhost:5500\r\nUser-Agent: Go-http-c")
+	/* B */ send_request(conn5001B, "TP/1.1\r\nHost: localhost:5500\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
+	/* B */ parse_response(conn5001B, "GET")
+	/* A */ send_request(conn5500A, "r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
+	/* C */ send_request(conn5001C, "lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
+	/* A */ parse_response(conn5500A, "GET")
+	/* C */ parse_response(conn5001C, "DELETE")
 }
