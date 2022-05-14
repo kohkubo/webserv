@@ -8,5 +8,6 @@ const std::string LF        = "\n";
 const std::string CRLF      = "\r\n";
 const std::string SP        = " ";
 const std::string SEPARATOR = " \r\n";
+const std::string HEADER_SP = "\r\n\r\n";
 
 #endif /* SRCS_HTTP_CONST_CONST_DELIMITER_HPP */
