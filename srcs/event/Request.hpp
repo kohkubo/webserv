@@ -37,6 +37,8 @@ public:
 
   RequestState get_state() const { return __state_; }
 
+  void         set_state(RequestState state) { __state_ = state; }
+
   void         parse_header(const std::string &header) {
     parse_request_header(info_, header);
     if (info_.is_expected_body()) {
