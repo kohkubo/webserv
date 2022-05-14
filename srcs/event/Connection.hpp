@@ -57,6 +57,4 @@ public:
   void create_response_iter();
 };
 
-typedef std::map<int, Connection> connection_list_type;
-
 #endif /* SRCS_EVENT_CONNECTION */

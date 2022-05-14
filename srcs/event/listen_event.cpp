@@ -30,7 +30,7 @@ static void set_listen_fd(pollfds_type           &pollfds,
 
 static void set_connection_fd(pollfds_type        &pollfds,
                               const ConnectionMap &connection_list) {
-  connection_list_type::const_iterator it = connection_list.begin();
+  ConnectionMap::const_iterator it = connection_list.begin();
   for (; it != connection_list.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd = it->first;
