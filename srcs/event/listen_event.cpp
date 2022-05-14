@@ -6,15 +6,6 @@
 #include <cstdlib>
 #include <poll.h>
 #include <sys/socket.h>
-#include <unistd.h>
-
-/*
-** socketfdをkeyにしたServer_configvectorのmapをsocket_listとして保持
-** 実際のリクエストはaccfdから受け取る。->accfdからどのsocketの通信か判別する必要あり。
-** std::map connection_list<accfd,socketfd>>（もしくは類似の構造）
-** connection_listのvalueとしてsocketfd、受信したstringをもった構造が欲しい
-** pollingするときに二つのmapのkeyをreadfdsに加える。
-*/
 
 static socket_list_type
 create_socket_map(const server_group_type &server_group) {
@@ -28,88 +19,105 @@ create_socket_map(const server_group_type &server_group) {
   return res;
 }
 
-static void set_connection_fd(struct pollfd *pfds, int idx,
+static void set_listen_fd(pollfds_type           &pollfds,
+                          const socket_list_type &socket_list) {
+  socket_list_type::const_iterator it = socket_list.begin();
+  for (; it != socket_list.end(); it++) {
+    struct pollfd new_pfd;
+    new_pfd.fd     = it->first;
+    new_pfd.events = POLLIN;
+    pollfds.push_back(new_pfd);
+  }
+}
+
+static void set_connection_fd(pollfds_type               &pollfds,
                               const connection_list_type &connection_list) {
   connection_list_type::const_iterator it = connection_list.begin();
   for (; it != connection_list.end(); it++) {
-    pfds[idx].fd = it->first;
+    struct pollfd new_pfd;
+    new_pfd.fd = it->first;
     if (it->second.is_sending()) {
-      pfds[idx].events = POLLIN | POLLOUT;
+      new_pfd.events = POLLIN | POLLOUT;
     } else {
-      pfds[idx].events = POLLIN;
+      new_pfd.events = POLLIN;
     }
-    idx++;
+    pollfds.push_back(new_pfd);
   }
 }
 
-// pollに渡すpollfd構造体の配列作成
-// TODO: vectorでやる, 最初の要素のアドレス渡せば良い
-static struct pollfd *
-create_pollfds(const struct pollfd        *old_pfds,
-               const socket_list_type     &socket_list,
-               const connection_list_type &connection_list, const int &nfds) {
-  struct pollfd *new_pfds =
-      (struct pollfd *)realloc((void *)old_pfds, sizeof(struct pollfd) * nfds);
-  if (new_pfds == NULL) {
-    error_log_with_errno("realloc");
-    exit(EXIT_FAILURE);
-  }
-  memset(new_pfds, 0, sizeof(struct pollfd) * nfds);
-  set_fd_list(new_pfds, 0, socket_list);
-  set_connection_fd(new_pfds, socket_list.size(), connection_list);
-  return new_pfds;
+static void create_pollfds(pollfds_type               &pollfds,
+                           const socket_list_type     &socket_list,
+                           const connection_list_type &connection_list) {
+  pollfds.clear();
+  set_listen_fd(pollfds, socket_list);
+  set_connection_fd(pollfds, connection_list);
 }
 
-static void connect_fd(int listen_fd, socket_list_type &socket_list,
-                       connection_list_type &connection_list) {
-  int accfd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
-  if (accfd == -1) {
+static void debug_put_events_info(int fd, short revents) {
+  // clang-format off
+  std::cout << ((revents & POLLIN) ? "POLLIN " : "")
+            << ((revents & POLLPRI) ? "POLLPRI " : "")
+            << ((revents & POLLOUT) ? "POLLOUT " : "")
+            << ((revents & POLLERR) ? "POLLERR " : "")
+            << ((revents & POLLHUP) ? "POLLHUP " : "")
+            << ((revents & POLLNVAL) ? "POLLNVAL " : "")
+            << "fd: " << fd
+            << std::endl;
+  // clang-format on
+}
+
+// TODO: exitすべきか調査
+static int xaccept(int listen_fd) {
+  int connection_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
+  if (connection_fd == -1) {
     error_log_with_errno("accept()) failed.");
     exit(EXIT_FAILURE);
   }
-  std::cout << "listen fd: " << listen_fd << " connection fd: " << accfd
-            << std::endl;
-  connection_list.insert(
-      std::make_pair(accfd, Connection(&socket_list[listen_fd])));
+  std::cout << "listen fd: " << listen_fd << std::endl;
+  std::cout << "connection fd: " << connection_fd << std::endl;
+  return connection_fd;
 }
 
+// TODO: exitすべきか調査
+static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
+  int nready = poll(fds, nfds, timeout);
+  if (nready == -1) {
+    error_log_with_errno("poll() failed");
+    exit(EXIT_FAILURE);
+  }
+  return nready;
+}
+
+// socket_list:     listen_fdとserver_groupの関係を管理
+// connection_list: connection_fdとlisten_fdの関係を管理
 void listen_event(const server_group_type &server_group) {
-  socket_list_type socket_list =
-      create_socket_map(server_group); // listen_fdとserver_groupの関係を管理
+  socket_list_type     socket_list = create_socket_map(server_group);
   connection_list_type connection_list;
+  pollfds_type         pollfds;
 
-  struct pollfd       *pfds = NULL;
   while (1) {
-    int nfds_listen     = socket_list.size();
-    int nfds_connection = connection_list.size();
-    int nfds            = nfds_listen + nfds_connection;
-    pfds       = create_pollfds(pfds, socket_list, connection_list, nfds);
-
-    int nready = poll(pfds, nfds, 0);
-    if (nready == -1) {
-      error_log_with_errno("poll() failed");
-      exit(EXIT_FAILURE);
-    }
-    for (int i = 0; i < nfds && 0 < nready; i++) {
-      if (pfds[i].revents != 0) {
-        std::cout << ((pfds[i].revents & POLLIN) ? "POLLIN " : "")
-                  << ((pfds[i].revents & POLLPRI) ? "POLLPRI " : "")
-                  << ((pfds[i].revents & POLLOUT) ? "POLLOUT " : "")
-                  << ((pfds[i].revents & POLLERR) ? "POLLERR " : "")
-                  << ((pfds[i].revents & POLLHUP) ? "POLLHUP " : "")
-                  << ((pfds[i].revents & POLLNVAL) ? "POLLNVAL " : "")
-                  << "fd: " << pfds[i].fd << std::endl;
-        if (pfds[i].revents & POLLIN) {
-          // TMP: 処理するfdの種類はindex番号の範囲で判別している
-          if (i < nfds_listen) {
-            connect_fd(pfds[i].fd, socket_list, connection_list);
+    create_pollfds(pollfds, socket_list, connection_list);
+    // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
+    int                    nready = xpoll(&pollfds[0], pollfds.size(), 0);
+    pollfds_type::iterator it     = pollfds.begin();
+    for (; it != pollfds.end() && 0 < nready; it++) {
+      if (it->revents) {
+        debug_put_events_info(it->fd, it->revents);
+        if (it->revents & POLLIN) {
+          // TMP: socket_listの要素かどうかでfdを区別
+          int listen_flg = socket_list.count(it->fd);
+          if (listen_flg) {
+            int connection_fd = xaccept(it->fd);
+            connection_list.insert(std::make_pair(
+                connection_fd, Connection(&socket_list[it->fd])));
           } else {
-            connection_receive_handler(pfds[i].fd, connection_list);
+            connection_receive_handler(it->fd, connection_list);
           }
         }
-        if (pfds[i].revents & POLLOUT) {
-          connection_send_handler(pfds[i].fd, connection_list);
+        if (it->revents & POLLOUT) {
+          connection_send_handler(it->fd, connection_list);
         }
+        // TODO: 他reventsに対する処理
         nready--;
       }
     }
