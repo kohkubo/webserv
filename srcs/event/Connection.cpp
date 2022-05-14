@@ -48,7 +48,7 @@ void Connection::parse_buffer(const std::string &data) {
 }
 
 // キューの中にあるresponse生成待ちのrequestのresponseを生成する。
-void Connection::make_response_queue() {
+void Connection::create_response_iter() {
   ServerConfig                  proper_conf;
   std::deque<Request>::iterator it = __request_queue_.begin();
   for (; it != __request_queue_.end(); it++) {

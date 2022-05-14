@@ -52,7 +52,7 @@ public:
 
   void        parse_buffer(const std::string &data);
   std::string cut_buffer(std::size_t len);
-  void        make_response_queue();
+  void        create_response_iter();
 };
 
 typedef std::map<int, Connection> connection_list_type;
