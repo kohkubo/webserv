@@ -35,10 +35,10 @@ void Connection::parse_buffer(const std::string &data) {
       break;
     case RECEIVING_BODY:
       // TODO: chunkedのサイズ判定
-      if (__buffer_.size() < request.info_.content_length_) {
+      if (__buffer_.size() < request.get_body_size()) {
         return;
       }
-      request.parse_body(cut_buffer(request.info_.content_length_));
+      request.parse_body(cut_buffer(request.get_body_size()));
       break;
     default:
       __request_queue_.push_back(Request());

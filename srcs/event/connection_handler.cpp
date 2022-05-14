@@ -34,7 +34,7 @@ void connection_send_handler(int accfd, connection_list_type &connection_list) {
   Request    &request    = connection.get_front_request();
   request.send_response(accfd);
   if (request.is_send_completed()) {
-    if (request.info_.is_close_ == true) {
+    if (request.is_close()) {
       shutdown(accfd, SHUT_WR);
       request.set_state(CLOSING);
       return;
