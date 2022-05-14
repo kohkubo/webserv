@@ -23,9 +23,7 @@ public:
       : __config_(config) {}
   ~Connection() {}
 
-  const std::vector<const ServerConfig *> *get_config() { return __config_; }
-
-  Request                                 &get_last_request() {
+  Request &get_last_request() {
     if (__request_queue_.empty())
       __request_queue_.push_back(Request());
     return __request_queue_.back();
