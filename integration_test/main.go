@@ -4,4 +4,5 @@ func main() {
 	testGET()
 	testPOST()
 	testDELETE()
+	testIOMULT()
 }
