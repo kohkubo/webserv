@@ -1,4 +1,7 @@
 #include "event/Request.hpp"
+#include "http/request/request_parse.hpp"
+#include "http/response/response.hpp"
+#include <sys/socket.h>
 
 void Request::parse_header(const std::string &header) {
   parse_request_header(__info_, header);

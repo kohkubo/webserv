@@ -1,12 +1,9 @@
 #ifndef SRCS_EVENT_REQUEST_HPP
 #define SRCS_EVENT_REQUEST_HPP
 
+#include "config/ServerConfig.hpp"
 #include "http/HttpMessage.hpp"
-#include "http/const/const_response_key_map.hpp"
-#include "http/request/request_parse.hpp"
-#include "http/response/response.hpp"
 #include <string>
-#include <sys/socket.h>
 #include <sys/types.h>
 
 enum RequestState {
