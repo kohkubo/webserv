@@ -104,8 +104,7 @@ void listen_event(const server_group_type &server_group) {
           if (i < nfds_listen) {
             connect_fd(pfds[i].fd, socket_list, connection_list);
           } else {
-            connection_receive_handler(pfds[i].fd, connection_list,
-                                       socket_list);
+            connection_receive_handler(pfds[i].fd, connection_list);
           }
         }
         if (pfds[i].revents & POLLOUT) {

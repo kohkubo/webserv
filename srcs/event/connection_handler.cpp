@@ -10,8 +10,7 @@
 const int buf_size = 2048;
 
 void      connection_receive_handler(int                   accfd,
-                                     connection_list_type &connection_list,
-                                     socket_list_type     &socket_list) {
+                                     connection_list_type &connection_list) {
   Connection       &connection = connection_list[accfd];
   std::vector<char> buf(buf_size);
   ssize_t           rc = recv(accfd, &buf[0], buf_size, MSG_DONTWAIT);
