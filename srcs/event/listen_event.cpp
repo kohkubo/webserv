@@ -1,6 +1,6 @@
 #include "config/config.hpp"
 #include "event/Connection.hpp"
-#include "event/connection_handler.hpp"
+#include "event/ConnectionMap.hpp"
 #include "event/event.hpp"
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
@@ -28,8 +28,8 @@ static void set_listen_fd(pollfds_type           &pollfds,
   }
 }
 
-static void set_connection_fd(pollfds_type               &pollfds,
-                              const connection_list_type &connection_list) {
+static void set_connection_fd(pollfds_type        &pollfds,
+                              const ConnectionMap &connection_list) {
   connection_list_type::const_iterator it = connection_list.begin();
   for (; it != connection_list.end(); it++) {
     struct pollfd new_pfd;
@@ -43,9 +43,9 @@ static void set_connection_fd(pollfds_type               &pollfds,
   }
 }
 
-static void create_pollfds(pollfds_type               &pollfds,
-                           const socket_list_type     &socket_list,
-                           const connection_list_type &connection_list) {
+static void create_pollfds(pollfds_type           &pollfds,
+                           const socket_list_type &socket_list,
+                           const ConnectionMap    &connection_list) {
   pollfds.clear();
   set_listen_fd(pollfds, socket_list);
   set_connection_fd(pollfds, connection_list);
@@ -67,9 +67,9 @@ static void debug_put_events_info(int fd, short revents) {
 // socket_list:     listen_fdとserver_groupの関係を管理
 // connection_list: connection_fdとlisten_fdの関係を管理
 void listen_event(const server_group_type &server_group) {
-  socket_list_type     socket_list = create_socket_map(server_group);
-  connection_list_type connection_list;
-  pollfds_type         pollfds;
+  socket_list_type socket_list = create_socket_map(server_group);
+  ConnectionMap    connection_list;
+  pollfds_type     pollfds;
 
   while (1) {
     create_pollfds(pollfds, socket_list, connection_list);
@@ -85,15 +85,13 @@ void listen_event(const server_group_type &server_group) {
         // TMP: socket_listの要素かどうかでfdを区別
         int listen_flg = socket_list.count(it->fd);
         if (listen_flg) {
-          int connection_fd = xaccept(it->fd);
-          connection_list.insert(
-              std::make_pair(connection_fd, Connection(&socket_list[it->fd])));
+          connection_list.add_new_connection(it->fd, socket_list);
         } else {
-          connection_receive_handler(it->fd, connection_list);
+          connection_list.receive(it->fd);
         }
       }
       if (it->revents & POLLOUT) {
-        connection_send_handler(it->fd, connection_list);
+        connection_list.send(it->fd);
       }
       // TODO: 他reventsに対する処理
       nready--;
