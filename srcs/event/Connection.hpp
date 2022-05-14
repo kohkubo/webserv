@@ -1,77 +1,60 @@
 #ifndef SRCS_EVENT_CONNECTION
 #define SRCS_EVENT_CONNECTION
 
-#include "http/HttpMessage.hpp"
+#include "event/Request.hpp"
 #include <deque>
-#include <map>
 #include <string>
-#include <sys/types.h>
 #include <vector>
+
+// TODO: string -> vector<char>
 
 typedef class ServerConfig ServerConfig;
 
-/*
-  確立されたtcpコネクションからは接続が閉じられない限り、
-  複数のリクエストが連続して送信されてくる可能性がある。
-  先着したリクエストを処理している間、後続のリクエストを保存するキュー構造が必要。
+class Connection {
+private:
+  std::deque<Request>                __request_queue_;
+  std::string                        __buffer_;
+  std::vector<const ServerConfig *> *__config_;
 
-  deque.backのRequestStateを確認、
-  receivingのときはリクエストの受信が終わっていない、対応するvectorへデータ格納。
-  それ以外の時は、新しいRequestを追加。
-  受信したデータが一つ以上のリクエストを含むときの処理も必要
+private:
+  std::string __cut_buffer(std::size_t len);
 
-  レスポンスを返す順番はリクエストを受けた順番。
-*/
-
-enum RequestState {
-  NO_REQUEST,       // Connectionはリクエストを持たない。
-  RECEIVING_HEADER, // リクエストはheaderを読み取り中。
-  RECEIVING_BODY,   // リクエストはbodyを読み取り中。
-  PENDING, // リクエストの読み取りは完了。レスポンスの生成待ち。
-  SENDING, // レスポンスの送信中。
-};
-
-// TODO: string -> vector<char>
-struct Request {
-  RequestState state_;
-  std::string  header_;
-  std::string  body_;
-  HttpMessage  info_;
-  std::string  response_;
-  ssize_t      send_count_;
-
-  Request()
-      : state_(RECEIVING_HEADER)
-      , send_count_(0) {}
-};
-
-struct Connection {
-  int                 socket_fd_;
-  std::deque<Request> request_queue_;
-  std::string         buffer_;
-
+public:
   Connection()
-      : socket_fd_(-1) {}
-  Connection(int fd)
-      : socket_fd_(fd) {}
+      : __config_(NULL) {}
+  Connection(std::vector<const ServerConfig *> *config)
+      : __config_(config) {}
   ~Connection() {}
 
-  RequestState get_last_state() {
-    if (request_queue_.empty())
-      return NO_REQUEST;
-    return request_queue_.back().state_;
+  Request &get_last_request() {
+    if (__request_queue_.empty())
+      __request_queue_.push_back(Request());
+    return __request_queue_.back();
   }
 
-  bool is_waiting_send() const {
-    if (request_queue_.empty())
+  Request &get_front_request() {
+    if (__request_queue_.empty())
+      __request_queue_.push_back(Request());
+    return __request_queue_.front();
+  }
+
+  void         erase_front_req() { __request_queue_.pop_front(); }
+
+  RequestState get_last_state() {
+    if (__request_queue_.empty())
+      return NO_REQUEST;
+    return __request_queue_.back().get_state();
+  }
+
+  bool is_sending() const {
+    if (__request_queue_.empty())
       return false;
-    RequestState state = request_queue_.front().state_;
+    RequestState state = __request_queue_.front().get_state();
     return state == SENDING;
   }
 
-  void        parse_buffer(const std::string &data);
-  std::string cut_buffer(std::size_t len);
-  void make_response(const std::vector<const ServerConfig *> &server_list);
+  void parse_buffer(const std::string &data);
+  void create_response_iter();
 };
 
 typedef std::map<int, Connection> connection_list_type;

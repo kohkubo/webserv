@@ -36,7 +36,7 @@ static void set_connection_fd(pollfds_type               &pollfds,
   for (; it != connection_list.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd = it->first;
-    if (it->second.is_waiting_send()) {
+    if (it->second.is_sending()) {
       new_pfd.events = POLLIN | POLLOUT;
     } else {
       new_pfd.events = POLLIN;
@@ -108,10 +108,10 @@ void listen_event(const server_group_type &server_group) {
           int listen_flg = socket_list.count(it->fd);
           if (listen_flg) {
             int connection_fd = xaccept(it->fd);
-            connection_list.insert(
-                std::make_pair(connection_fd, Connection(it->fd)));
+            connection_list.insert(std::make_pair(
+                connection_fd, Connection(&socket_list[it->fd])));
           } else {
-            connection_receive_handler(it->fd, connection_list, socket_list);
+            connection_receive_handler(it->fd, connection_list);
           }
         }
         if (it->revents & POLLOUT) {
