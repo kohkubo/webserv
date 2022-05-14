@@ -1,8 +1,8 @@
 package main
 
 func main() {
-	//testGET()
-	//testPOST()
-	//testDELETE()
+	testGET()
+	testPOST()
+	testDELETE()
 	testIOMULT()
 }

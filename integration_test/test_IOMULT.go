@@ -2,14 +2,17 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"time"
 )
 
+// コネクションを確立, connを通して送受信できる
 func connect(port string) net.Conn {
 	conn, err := net.Dial("tcp", "localhost:"+port)
 	if err != nil {
@@ -18,12 +21,17 @@ func connect(port string) net.Conn {
 	return conn
 }
 
+// connを通してリクエスト文字列を送る
+// TMP: sleepは小分けにしたメッセージが同時に送ることにならないように
 func send_request(conn net.Conn, req string) {
 	fmt.Fprintf(conn, req)
-	time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Millisecond)
 }
 
-func parse_response(conn net.Conn, method string) {
+// リクエストのパース, レスポンスボディの確認
+// TODO: 関数を分ける
+// TODO: レスポンスヘッダーの確認を入れる
+func parse_response(conn net.Conn, method string, expectBody []byte) {
 	defer conn.Close()
 	r := bufio.NewReader(conn)
 	req := &http.Request{
@@ -35,25 +43,43 @@ func parse_response(conn net.Conn, method string) {
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
-	fmt.Printf("%s\n", body)
+	if bytes.Compare(body, expectBody) != 0 {
+		fmt.Println("error!")
+		os.Exit(1)
+	}
+	fmt.Println("ok!")
 }
 
+// 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 // TODO: 各処理を go routineで走らせる
-// TODO: connを閉じる
 // TODO: 同じconnに送る
 func testIOMULT() {
-	conn5001B := connect("5001")
-	conn5001C := connect("5001")
-	conn5500A := connect("5500")
-	/* A */ send_request(conn5500A, "GET /")
-	/* B */ send_request(conn5001B, "GET /nosuch HT")
-	/* C */ send_request(conn5001C, "DELETE /nosuch HTTP/1.1\r")
-	/* A */ send_request(conn5500A, " HTTP/1.1\r\nHost: localhost:5500\r\nUse")
-	/* C */ send_request(conn5001C, "\nHost: localhost:5500\r\nUser-Agent: Go-http-c")
-	/* B */ send_request(conn5001B, "TP/1.1\r\nHost: localhost:5500\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
-	/* B */ parse_response(conn5001B, "GET")
-	/* A */ send_request(conn5500A, "r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
-	/* C */ send_request(conn5001C, "lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n")
-	/* A */ parse_response(conn5500A, "GET")
-	/* C */ parse_response(conn5001C, "DELETE")
+	connA := connect("5500")
+	connB := connect("5001")
+	connC := connect("5001")
+
+	msgA_1 := "GET /"
+	msgA_2 := " HTTP/1.1\r\nHost: localhost:5500\r\nUse"
+	msgA_3 := "r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
+
+	msgB_1 := "GET /nosuch HT"
+	msgB_2 := "TP/1.1\r\nHost: localhost:55"
+	msgB_3 := "00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
+
+	msgC_1 := "DELETE /nosuch HTTP/1.1\r"
+	msgC_2 := "\nHost: localhost:5500\r\nUser-Agent: Go-http-c"
+	msgC_3 := "lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
+
+	send_request(connA, msgA_1)
+	send_request(connB, msgB_1)
+	send_request(connC, msgC_1)
+	send_request(connB, msgB_2)
+	send_request(connA, msgA_2)
+	send_request(connC, msgC_2)
+	send_request(connB, msgB_3)
+	parse_response(connB, "GET", FileToBytes(NOT_FOUND_PAGE))
+	send_request(connA, msgA_3)
+	parse_response(connA, "GET", FileToBytes(HELLO_WORLD_PAGE))
+	send_request(connC, msgC_3)
+	parse_response(connC, "DELETE", FileToBytes(NOT_FOUND_PAGE))
 }
