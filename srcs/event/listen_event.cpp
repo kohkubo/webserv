@@ -1,6 +1,7 @@
 #include "config/config.hpp"
+#include "event/Connection.hpp"
+#include "event/connection_handler.hpp"
 #include "event/event.hpp"
-#include "http/http.hpp"
 #include "utils/utils.hpp"
 #include <cstdlib>
 #include <poll.h>
@@ -18,12 +19,38 @@ create_socket_map(const server_group_type &server_group) {
   return res;
 }
 
+static void set_listen_fd(pollfds_type           &pollfds,
+                          const socket_list_type &socket_list) {
+  socket_list_type::const_iterator it = socket_list.begin();
+  for (; it != socket_list.end(); it++) {
+    struct pollfd new_pfd;
+    new_pfd.fd     = it->first;
+    new_pfd.events = POLLIN;
+    pollfds.push_back(new_pfd);
+  }
+}
+
+static void set_connection_fd(pollfds_type               &pollfds,
+                              const connection_list_type &connection_list) {
+  connection_list_type::const_iterator it = connection_list.begin();
+  for (; it != connection_list.end(); it++) {
+    struct pollfd new_pfd;
+    new_pfd.fd = it->first;
+    if (it->second.is_waiting_send()) {
+      new_pfd.events = POLLIN | POLLOUT;
+    } else {
+      new_pfd.events = POLLIN;
+    }
+    pollfds.push_back(new_pfd);
+  }
+}
+
 static void create_pollfds(pollfds_type               &pollfds,
                            const socket_list_type     &socket_list,
                            const connection_list_type &connection_list) {
   pollfds.clear();
-  set_pollfds(pollfds, socket_list);
-  set_pollfds(pollfds, connection_list);
+  set_listen_fd(pollfds, socket_list);
+  set_connection_fd(pollfds, connection_list);
 }
 
 static void debug_put_events_info(int fd, short revents) {
@@ -71,29 +98,28 @@ void listen_event(const server_group_type &server_group) {
   while (1) {
     create_pollfds(pollfds, socket_list, connection_list);
     // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
-    int                   nready = xpoll(&pollfds[0], pollfds.size(), 0);
-    pollfds_type_iterator it     = pollfds.begin();
+    int                    nready = xpoll(&pollfds[0], pollfds.size(), 0);
+    pollfds_type::iterator it     = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready; it++) {
       if (it->revents) {
-        put_events_info(it->fd, it->revents);
+        debug_put_events_info(it->fd, it->revents);
         if (it->revents & POLLIN) {
           // TMP: socket_listの要素かどうかでfdを区別
           int listen_flg = socket_list.count(it->fd);
           if (listen_flg) {
             int connection_fd = xaccept(it->fd);
-            connection_list.insert(std::make_pair(connection_fd, it->fd));
+            connection_list.insert(
+                std::make_pair(connection_fd, Connection(it->fd)));
           } else {
-            http(it->fd);
-            close(it->fd);
-            connection_list.erase(it->fd);
+            connection_receive_handler(it->fd, connection_list, socket_list);
           }
         }
-        // TODO: POLLIN以外の処理
+        if (it->revents & POLLOUT) {
+          connection_send_handler(it->fd, connection_list);
+        }
+        // TODO: 他reventsに対する処理
         nready--;
       }
     }
   }
-  // TMP
-  close_all_socket(socket_list);
-  close_all_socket(connection_list);
 }
