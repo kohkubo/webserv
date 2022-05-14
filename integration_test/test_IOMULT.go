@@ -54,6 +54,7 @@ func parse_response(conn net.Conn, method string, expectBody []byte) {
 // TODO: 各処理を go routineで走らせる
 // TODO: 同じconnに送る
 func testIOMULT() {
+	fmt.Println("IOMULT test")
 	connA := connect("5500")
 	connB := connect("5001")
 	connC := connect("5001")
@@ -78,8 +79,8 @@ func testIOMULT() {
 	send_request(connC, msgC_2)
 	send_request(connB, msgB_3)
 	parse_response(connB, "GET", FileToBytes(NOT_FOUND_PAGE))
-	send_request(connA, msgA_3)
-	parse_response(connA, "GET", FileToBytes(HELLO_WORLD_PAGE))
 	send_request(connC, msgC_3)
 	parse_response(connC, "DELETE", FileToBytes(NOT_FOUND_PAGE))
+	send_request(connA, msgA_3)
+	parse_response(connA, "GET", FileToBytes(HELLO_WORLD_PAGE))
 }
