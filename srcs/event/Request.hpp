@@ -15,6 +15,7 @@ enum RequestState {
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
   PENDING, // リクエストの読み取りは完了。レスポンスの生成待ち。
   SENDING, // レスポンスの送信中。
+  CLOSING,
 };
 
 // TODO: string -> vector<char>
