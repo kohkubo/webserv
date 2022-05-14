@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_CONST_RESPONSE_KEY_MAP_HPP
-#define SRCS_HTTP_CONST_RESPONSE_KEY_MAP_HPP
+#ifndef SRCS_HTTP_CONST_CONST_RESPONSE_KEY_MAP_HPP
+#define SRCS_HTTP_CONST_CONST_RESPONSE_KEY_MAP_HPP
 
 #include <map>
 #include <string>
@@ -18,4 +18,4 @@ const std::string                          BODY             = "BODY";
 const std::string                          VERSION_HTTP     = "HTTP/1.1";
 const std::string                          CONNECTION_CLOSE = "close";
 
-#endif /* SRCS_HTTP_CONST_RESPONSE_KEY_MAP_HPP */
+#endif /* SRCS_HTTP_CONST_CONST_RESPONSE_KEY_MAP_HPP */
