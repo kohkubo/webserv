@@ -39,12 +39,15 @@ func parse_response(conn net.Conn, method string, expectBody []byte) {
 	}
 	resp, err := http.ReadResponse(r, req)
 	if err != nil {
-		log.Fatal("readresponse error: ", err)
+		log.Fatal("ReadResponse error: ", err)
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("ReadAll error: ", err)
+	}
 	if bytes.Compare(body, expectBody) != 0 {
-		fmt.Println("error!")
+		fmt.Printf("error! body=%v, expect=%v\n", body, expectBody)
 		os.Exit(1)
 	}
 	fmt.Println("ok!")
