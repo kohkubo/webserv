@@ -1,7 +1,6 @@
 #include "config/ServerConfig.hpp"
 #include "event/Connection.hpp"
 #include "utils/utils.hpp"
-#include <iostream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -13,7 +12,6 @@ const int buf_size = 2048;
 void      connection_receive_handler(int                   accfd,
                                      connection_list_type &connection_list,
                                      socket_list_type     &socket_list) {
-  std::cout << "read from fd: " << accfd << std::endl;
   Connection       &connection = connection_list[accfd];
   std::vector<char> buf(buf_size);
   ssize_t           rc = recv(accfd, &buf[0], buf_size, MSG_DONTWAIT);
@@ -33,7 +31,6 @@ void      connection_receive_handler(int                   accfd,
 }
 
 void connection_send_handler(int accfd, connection_list_type &connection_list) {
-  std::cout << "send to fd: " << accfd << std::endl;
   Connection &connection = connection_list[accfd];
   Request    &request    = connection.request_queue_.front();
   ssize_t     sc =
@@ -47,7 +44,6 @@ void connection_send_handler(int accfd, connection_list_type &connection_list) {
     connection.request_queue_.pop_front();
     // tmp
     shutdown(accfd, SHUT_WR);
-    std::cout << "shutdown fd: " << accfd << std::endl;
     connection_list.erase(accfd);
   }
 }
