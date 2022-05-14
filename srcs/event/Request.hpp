@@ -27,7 +27,6 @@ private:
   std::string  __response_;
 
 public:
-  std::string body_;
   HttpMessage info_;
 
 public:
