@@ -81,17 +81,17 @@ void listen_event(const server_group_type &server_group) {
         continue;
       }
       debug_put_events_info(it->fd, it->revents);
-      if (it->revents & POLLIN) {
-        // TMP: socket_listの要素かどうかでfdを区別
-        int listen_flg = socket_list.count(it->fd);
-        if (listen_flg) {
-          connection_list.add_new_connection(it->fd, socket_list);
-        } else {
+      // TMP: socket_listの要素かどうかでfdを区別
+      int listen_flg = socket_list.count(it->fd);
+      if (listen_flg) {
+        connection_list.add_new_connection(it->fd, socket_list);
+      } else {
+        if (it->revents & POLLIN) {
           connection_list.receive(it->fd);
         }
-      }
-      if (it->revents & POLLOUT) {
-        connection_list.send(it->fd);
+        if (it->revents & POLLOUT) {
+          connection_list.send(it->fd);
+        }
       }
       // TODO: 他reventsに対する処理
       nready--;
