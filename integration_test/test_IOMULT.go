@@ -12,33 +12,19 @@ import (
 	"time"
 )
 
-// リクエストとレスポンスの表示
-//func main() {
-//    req, err := http.NewRequest(http.MethodGet, serverAddr, nil)
-//    if err != nil {
-//        log.Fatal(err)
-//    }
-//    req.Header.Add("test-header", "test-header-value")
-
-//    reqDump, err := httputil.DumpRequestOut(req, true)
-//    if err != nil {
-//        log.Fatal(err)
-//    }
-
-//    fmt.Printf("REQUEST:\n%s", string(reqDump))
-
-//    resp, err := http.DefaultClient.Do(req)
-//    if err != nil {
-//        log.Fatal(err)
-//    }
-
-//    respDump, err := httputil.DumpResponse(resp, true)
-//    if err != nil {
-//        log.Fatal(err)
-//    }
-
-//    fmt.Printf("RESPONSE:\n%s", string(respDump))
-//}
+func testHandler(name string, test func() (bool, error)) {
+	fmt.Print("[ " + name + " ] ")
+	ok, err := test()
+	if err != nil {
+		log.Fatalf("erro occured!: %v", err)
+	}
+	if ok {
+		fmt.Println(GREEN, "ok", RESET)
+	} else {
+		fmt.Println(RED, "error", RESET)
+		os.Exit(1) // TODO: テスト全体でエラーがあれば最後にexit(1)する
+	}
+}
 
 const (
 	RED   = "\033[31m"
@@ -114,39 +100,49 @@ func check_response(conn net.Conn, method string, expectHeader http.Header, expe
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 func testIOMULT() {
 	fmt.Println("IOMULT test")
-	connA := connect("5500")
-	connB := connect("5001")
-	connC := connect("5001")
+	testHandler("3client", func() (bool, error) {
+		type Client struct {
+			Port         string
+			ReqPayload   []string
+			Conn         net.Conn
+			Resp         *http.Response
+			ExpectHeader http.Header
+			ExpectBody   []byte
+		}
 
-	msgA_1 := "GET /"
-	msgA_2 := " HTTP/1.1\r\nHost: localhost:5500\r\nUse"
-	msgA_3 := "r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
+		connA := connect("5500")
+		connB := connect("5001")
+		connC := connect("5001")
 
-	msgB_1 := "GET /nosuch HT"
-	msgB_2 := "TP/1.1\r\nHost: localhost:55"
-	msgB_3 := "00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
+		msgA_1 := "GET /"
+		msgA_2 := " HTTP/1.1\r\nHost: localhost:5500\r\nUse"
+		msgA_3 := "r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
 
-	msgC_1 := "DELETE /nosuch HTTP/1.1\r"
-	msgC_2 := "\nHost: localhost:5500\r\nUser-Agent: Go-http-c"
-	msgC_3 := "lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
+		msgB_1 := "GET /nosuch HT"
+		msgB_2 := "TP/1.1\r\nHost: localhost:55"
+		msgB_3 := "00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
 
-	send_request(connA, msgA_1)
-	send_request(connB, msgB_1)
-	send_request(connC, msgC_1)
-	send_request(connB, msgB_2)
-	send_request(connA, msgA_2)
-	send_request(connC, msgC_2)
-	send_request(connB, msgB_3)
-	diff_flag := check_response(connB, "GET", nil, FileToBytes(NOT_FOUND_PAGE))
-	send_request(connC, msgC_3)
-	diff_flag += check_response(connC, "DELETE", nil, FileToBytes(NOT_FOUND_PAGE))
-	send_request(connA, msgA_3)
-	diff_flag += check_response(connA, "GET", nil, FileToBytes(HELLO_WORLD_PAGE))
+		msgC_1 := "DELETE /nosuch HTTP/1.1\r"
+		msgC_2 := "\nHost: localhost:5500\r\nUser-Agent: Go-http-c"
+		msgC_3 := "lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n"
 
-	if diff_flag == 0 {
-		fmt.Println(GREEN, "ok", RESET)
-	} else {
-		fmt.Println(RED, "error", RESET)
-		os.Exit(1)
-	}
+		send_request(connA, msgA_1)
+		send_request(connB, msgB_1)
+		send_request(connC, msgC_1)
+		send_request(connB, msgB_2)
+		send_request(connA, msgA_2)
+		send_request(connC, msgC_2)
+		send_request(connB, msgB_3)
+		diff_flag := check_response(connB, "GET", nil, FileToBytes(NOT_FOUND_PAGE))
+		send_request(connC, msgC_3)
+		diff_flag += check_response(connC, "DELETE", nil, FileToBytes(NOT_FOUND_PAGE))
+		send_request(connA, msgA_3)
+		diff_flag += check_response(connA, "GET", nil, FileToBytes(HELLO_WORLD_PAGE))
+
+		if diff_flag == 0 {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	})
 }
