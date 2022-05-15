@@ -14,6 +14,7 @@ static std::string trim_space(std::string str) {
 }
 
 static bool is_comma_sparated(std::string &field_name) {
+  (void)field_name;
   // カンマ区切りが定義されたフィールドか判定する。
   // tmp
   return true;
@@ -32,7 +33,8 @@ create_header_map(const std::string &request_string) {
       // error bad request
     }
     std::string field_name = line.substr(0, pos);
-    if (field_name.back() == ' ' || field_name.back() == '\t') {
+    char        last_char  = field_name[field_name.size() - 1];
+    if (last_char == ' ' || last_char == '\t') {
       // bad request
     }
     std::string field_value = trim_space(line.substr(pos + 1));
