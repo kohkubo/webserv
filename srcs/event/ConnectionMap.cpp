@@ -1,9 +1,13 @@
 #include "event/ConnectionMap.hpp"
-#include "utils/syscall_wrapper.hpp"
-#include "utils/utils.hpp"
+
+#include <iostream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <vector>
+
+#include "utils/syscall_wrapper.hpp"
+#include "utils/utils.hpp"
 
 void ConnectionMap::add_new_connection(int               listen_fd,
                                        socket_list_type &socket_list) {

@@ -1,9 +1,10 @@
 #ifndef SRCS_EVENT_CONNECTIONMAP_HPP
 #define SRCS_EVENT_CONNECTIONMAP_HPP
 
+#include <map>
+
 #include "config/ServerConfig.hpp"
 #include "event/Connection.hpp"
-#include <map>
 
 class ConnectionMap {
 private:
