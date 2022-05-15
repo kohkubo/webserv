@@ -2,13 +2,13 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"reflect"
 	"time"
 )
 
@@ -40,50 +40,78 @@ import (
 //    fmt.Printf("RESPONSE:\n%s", string(respDump))
 //}
 
+const (
+	RED   = "\033[31m"
+	GREEN = "\033[32m"
+	RESET = "\033[0m"
+)
+
 // コネクションを確立, connを通して送受信できる
 func connect(port string) net.Conn {
 	conn, err := net.Dial("tcp", "localhost:"+port)
 	if err != nil {
-		log.Fatal("dial err: ", err)
+		log.Fatalf("failt to connect: %v", err)
 	}
 	return conn
 }
 
-// connを通してリクエスト文字列を送る
-// TMP: sleepは小分けにしたメッセージが同時に送ることにならないように
+// connを通してリクエスト文字列reqを送る
 func send_request(conn net.Conn, req string) {
-	fmt.Fprintf(conn, req)
+	_, err := fmt.Fprintf(conn, req)
 	time.Sleep(1 * time.Millisecond)
+	if err != nil {
+		log.Fatalf("failt to send request: %v", err)
+	}
 }
 
-// リクエストのパース, レスポンスボディの確認
-// TODO: 関数を分ける
-// TODO: レスポンスヘッダーの確認を入れる
-func parse_response(conn net.Conn, method string, expectBody []byte) {
-	defer conn.Close()
+// connを通してリクエストを受け取る, パースする
+func recv_response(conn net.Conn, method string) *http.Response {
 	r := bufio.NewReader(conn)
 	req := &http.Request{
 		Method: method,
 	}
 	resp, err := http.ReadResponse(r, req)
 	if err != nil {
-		log.Fatal("ReadResponse error: ", err)
+		log.Fatalf("failt to read response: %v", err)
 	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal("ReadAll error: ", err)
-	}
-	if bytes.Compare(body, expectBody) != 0 {
-		fmt.Printf("error! body=%v, expect=%v\n", body, expectBody)
-		os.Exit(1)
-	}
-	fmt.Println("ok!")
+	return resp
 }
 
+// レスポンスが期待するヘッダーとボディを持っているか確認
+func compare_response(resp *http.Response, expectHeader http.Header, expectBody []byte) int {
+	var diff_flag int
+	for expect_k, expect_v := range expectHeader {
+		if actual_v, exist := resp.Header[expect_k]; !exist {
+			fmt.Fprintf(os.Stderr, "header diff: no such header %v\n", expect_k)
+			diff_flag++
+		} else if !reflect.DeepEqual(actual_v, expect_v) {
+			fmt.Fprintf(os.Stderr, "header diff: key=%v:  actual=%v expect=%v\n", expect_k, actual_v, expect_v)
+			diff_flag++
+		}
+	}
+	if expectBody != nil {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalf("failt to read response: %v", err)
+		}
+		if !reflect.DeepEqual(body, expectBody) {
+			fmt.Printf("body diff: actual=%v, expect=%v\n", body, expectBody)
+			diff_flag++
+		}
+	}
+	return diff_flag
+}
+
+// レスポンスの確認
+func check_response(conn net.Conn, method string, expectHeader http.Header, expectBody []byte) int {
+	defer conn.Close()
+	resp := recv_response(conn, method)
+	defer resp.Body.Close()
+	return compare_response(resp, expectHeader, expectBody)
+}
+
+// タイムアウト
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
-// TODO: 各処理を go routineで走らせる
-// TODO: 同じconnに送る
 func testIOMULT() {
 	fmt.Println("IOMULT test")
 	connA := connect("5500")
@@ -109,9 +137,16 @@ func testIOMULT() {
 	send_request(connA, msgA_2)
 	send_request(connC, msgC_2)
 	send_request(connB, msgB_3)
-	parse_response(connB, "GET", FileToBytes(NOT_FOUND_PAGE))
+	diff_flag := check_response(connB, "GET", nil, FileToBytes(NOT_FOUND_PAGE))
 	send_request(connC, msgC_3)
-	parse_response(connC, "DELETE", FileToBytes(NOT_FOUND_PAGE))
+	diff_flag += check_response(connC, "DELETE", nil, FileToBytes(NOT_FOUND_PAGE))
 	send_request(connA, msgA_3)
-	parse_response(connA, "GET", FileToBytes(HELLO_WORLD_PAGE))
+	diff_flag += check_response(connA, "GET", nil, FileToBytes(HELLO_WORLD_PAGE))
+
+	if diff_flag == 0 {
+		fmt.Println(GREEN, "ok", RESET)
+	} else {
+		fmt.Println(RED, "error", RESET)
+		os.Exit(1)
+	}
 }
