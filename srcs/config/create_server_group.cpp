@@ -1,9 +1,11 @@
-#include "ServerConfig.hpp"
-#include "event/event.hpp"
+#include "config/config.hpp"
+
 #include <iostream>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+
+#include "ServerConfig.hpp"
 
 static bool is_same_socket(const ServerConfig &serv_x,
                            const ServerConfig &serv_y) {
