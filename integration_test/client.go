@@ -19,6 +19,11 @@ type Client struct {
 	resp         *http.Response
 }
 
+func NewClient(c *Client) *Client {
+	c.connect()
+	return c
+}
+
 // コネクションを確立, connを通して送受信できる
 func (c *Client) connect() {
 	conn, err := net.Dial("tcp", "localhost:"+c.Port)
@@ -75,10 +80,4 @@ func (c *Client) isExpectedResult() bool {
 		log.Fatalf("isExpectedResult: %v", err)
 	}
 	return result == 0
-}
-
-func connectAll(a ...*Client) {
-	for _, c := range a {
-		c.connect()
-	}
 }
