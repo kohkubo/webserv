@@ -13,6 +13,19 @@ static std::string trim_space(std::string str) {
   return str;
 }
 
+// request-line = method SP request-target SP HTTP-version (CRLF)
+static void parse_request_line(const std::string &request_line) {
+  std::size_t first_sp = request_line.find_first_of(' ');
+  std::size_t last_sp  = request_line.find_last_of(' ');
+  // TODO: check npos
+  std::string method   = request_line.substr(0, first_sp);
+  std::string target   = request_line.substr(first_sp + 1, last_sp);
+  std::string version  = request_line.substr(last_sp + 1);
+  // parse_method();
+  // parse_target();
+  // parse_version();
+}
+
 static bool is_comma_sparated(std::string &field_name) {
   (void)field_name;
   // カンマ区切りが定義されたフィールドか判定する。
@@ -21,12 +34,10 @@ static bool is_comma_sparated(std::string &field_name) {
 }
 
 // エラーをエスカレートする必要あり
-std::map<std::string, std::string>
-create_header_map(const std::string &request_string) {
-  token_vector fields = tokenize(request_string, CRLF, CRLF);
-
-  std::map<std::string, std::string> header_map;
-  for (token_iterator it = fields.begin(); it != fields.end(); it++) {
+std::map<std::string, std::string> create_header_map(token_iterator it,
+                                                     token_iterator end) {
+  std::map<std::string, std::string> res;
+  for (; it != end; it++) {
     std::string line = *it;
     std::size_t pos  = line.find(':');
     if (pos == std::string::npos) {
@@ -38,15 +49,25 @@ create_header_map(const std::string &request_string) {
       // bad request
     }
     std::string field_value = trim_space(line.substr(pos + 1));
-    if (header_map.count(field_name)) {
+    if (res.count(field_name)) {
       if (is_comma_sparated(field_name)) {
-        header_map[field_name] += ", " + field_value;
+        res[field_name] += ", " + field_value;
       } else {
         // bad request
       }
     } else {
-      header_map[field_name] = field_value;
+      res[field_name] = field_value;
     }
   }
-  return header_map;
+  return res;
+}
+
+void parse_request_header(const std::string &request_string) {
+  token_vector   fields = tokenize(request_string, CRLF, CRLF);
+  token_iterator it     = fields.begin();
+
+  parse_request_line(*it++);
+  std::map<std::string, std::string> header_map =
+      create_header_map(it, fields.end());
+  // call each field's parser
 }
