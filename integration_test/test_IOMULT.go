@@ -5,7 +5,7 @@ import (
 )
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
-// 一つのクライアントから複数リクエスト->複数レスポンス
+// TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 func testIOMULT() {
 	fmt.Println("IOMULT test")
 	testHandler("3client", func() (bool, error) {

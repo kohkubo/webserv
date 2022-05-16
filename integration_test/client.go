@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+// NOTE: 呼び出し元でのエラー処理が面倒なので,
+//       予期しないエラーに関してはlog.Fatal()してる
+
 type Client struct {
 	Port         string
 	ReqPayload   []string
@@ -22,11 +25,25 @@ type Client struct {
 
 // constructor的な存在
 func NewClient(c *Client) *Client {
-	c.connect()
+	conn, err := connect(c.Port)
+	if err != nil {
+		log.Fatalf("NewClient: fail to connect: %v", err)
+	}
+	c.conn = conn
 	c.method = resolveMethod(c.ReqPayload)
 	return c
 }
 
+// コネクションを確立, connを通して送受信できる
+func connect(port string) (net.Conn, error) {
+	conn, err := net.Dial("tcp", "localhost:"+port)
+	if err != nil {
+		return nil, fmt.Errorf("connect: %w", err)
+	}
+	return conn, nil
+}
+
+// リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
 func resolveMethod(reqPayload []string) string {
 	var buff string
 	for _, v := range reqPayload {
@@ -45,15 +62,7 @@ func resolveMethod(reqPayload []string) string {
 	}
 }
 
-// コネクションを確立, connを通して送受信できる
-func (c *Client) connect() {
-	conn, err := net.Dial("tcp", "localhost:"+c.Port)
-	if err != nil {
-		log.Fatalf("connect: %v", err)
-	}
-	c.conn = conn
-}
-
+// リクエスト送信
 func (c *Client) sendRequest() {
 	for _, r := range c.ReqPayload {
 		_, err := fmt.Fprintf(c.conn, r)
@@ -67,7 +76,7 @@ func (c *Client) sendRequest() {
 func (c *Client) sendPartialRequest() {
 	if len(c.ReqPayload) != 0 {
 		r := c.ReqPayload[0]
-		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除
+		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除したものに更新
 		_, err := fmt.Fprintf(c.conn, r)
 		time.Sleep(1 * time.Millisecond) // 連続で使用された場合にリクエストが分かれるように
 		if err != nil {
@@ -89,6 +98,7 @@ func (c *Client) recvResponse() error {
 	return nil
 }
 
+// レスポンスを受けて, 結果を確認するまで行う
 func (c *Client) isExpectedResult() bool {
 	defer c.conn.Close()
 	err := c.recvResponse()
