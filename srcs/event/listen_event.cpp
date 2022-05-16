@@ -7,18 +7,6 @@
 #include <poll.h>
 #include <sys/socket.h>
 
-static socket_list_type
-create_socket_map(const server_group_type &server_group) {
-  socket_list_type                  res;
-
-  server_group_type::const_iterator it = server_group.begin();
-  for (; it != server_group.end(); it++) {
-    int new_socket = open_new_socket(*((*it)[0]));
-    res.insert(std::make_pair(new_socket, *it));
-  }
-  return res;
-}
-
 static void set_listen_fd(pollfds_type           &pollfds,
                           const socket_list_type &socket_list) {
   socket_list_type::const_iterator it = socket_list.begin();
@@ -90,8 +78,7 @@ static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
 
 // socket_list:     listen_fdとserver_groupの関係を管理
 // connection_list: connection_fdとlisten_fdの関係を管理
-void listen_event(const server_group_type &server_group) {
-  socket_list_type     socket_list = create_socket_map(server_group);
+void listen_event(socket_list_type &socket_list) {
   connection_list_type connection_list;
   pollfds_type         pollfds;
 
