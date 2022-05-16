@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 
 	"time"
 )
@@ -12,17 +13,36 @@ import (
 type Client struct {
 	Port         string
 	ReqPayload   []string
-	Method       string
 	ExpectHeader http.Header
 	ExpectBody   []byte
 	conn         net.Conn
+	method       string
 	resp         *http.Response
 }
 
 // constructor的な存在
 func NewClient(c *Client) *Client {
 	c.connect()
+	c.method = resolveMethod(c.ReqPayload)
 	return c
+}
+
+func resolveMethod(reqPayload []string) string {
+	var buff string
+	for _, v := range reqPayload {
+		buff += v
+		if len("DELETE") < len(buff) {
+			break
+		}
+	}
+	switch {
+	case strings.HasPrefix(buff, "POST"):
+		return "POST"
+	case strings.HasPrefix(buff, "DELETE"):
+		return "DELETE"
+	default:
+		return "GET"
+	}
 }
 
 // コネクションを確立, connを通して送受信できる
@@ -59,9 +79,9 @@ func (c *Client) sendPartialRequest() {
 // レスポンスを受ける
 func (c *Client) recvResponse() error {
 	if len(c.ReqPayload) != 0 {
-		return fmt.Errorf("ReqPayload is not empty!")
+		return fmt.Errorf("recvResponse: ReqPayload is not empty!")
 	}
-	resp, err := getResponse(c.conn, c.Method)
+	resp, err := readResponse(c.conn, c.method)
 	if err != nil {
 		return fmt.Errorf("recvResponse: %w", err)
 	}

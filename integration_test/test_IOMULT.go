@@ -16,7 +16,6 @@ func testIOMULT() {
 				" HTTP/1.1\r\nHost: localhost:5500\r\nUse",
 				"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
-			Method:       "GET",
 			ExpectHeader: nil,
 			ExpectBody:   FileToBytes(HELLO_WORLD_PAGE),
 		})
@@ -27,7 +26,6 @@ func testIOMULT() {
 				"TP/1.1\r\nHost: localhost:55",
 				"00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
-			Method:       "GET",
 			ExpectHeader: nil,
 			ExpectBody:   FileToBytes(NOT_FOUND_PAGE),
 		})
@@ -38,7 +36,6 @@ func testIOMULT() {
 				"\nHost: localhost:5500\r\nUser-Agent: Go-http-c",
 				"lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
-			Method:       "DELETE",
 			ExpectHeader: nil,
 			ExpectBody:   FileToBytes(NOT_FOUND_PAGE),
 		})

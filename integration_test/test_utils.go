@@ -34,7 +34,7 @@ func testHandler(name string, test func() (bool, error)) {
 
 // src(conn)からリクエストを受け取りパースする
 // TODO: タイムアウト実装
-func getResponse(src io.Reader, method string) (*http.Response, error) {
+func readResponse(src io.Reader, method string) (*http.Response, error) {
 	r := bufio.NewReader(src)
 	req := &http.Request{
 		Method: method,
