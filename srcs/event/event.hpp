@@ -6,8 +6,7 @@
 #include <poll.h>
 #include <unistd.h>
 
-int  open_new_socket(const ServerConfig &config);
-void listen_event(const server_group_type &server_group);
+void                               listen_event(socket_list_type &socket_list);
 
 typedef std::vector<struct pollfd> pollfds_type;
 
