@@ -19,6 +19,7 @@ type Client struct {
 	resp         *http.Response
 }
 
+// constructor的な存在
 func NewClient(c *Client) *Client {
 	c.connect()
 	return c
