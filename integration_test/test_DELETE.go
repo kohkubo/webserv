@@ -38,13 +38,13 @@ func testDELETE() {
 		// check file exists or deleted
 		_, err := os.Stat(deleteFileRelativePath)
 		switch {
-		case errors.Is(err, os.ErrNotExist):
+		case errors.Is(err, os.ErrNotExist): // file does not exit
 			return true, nil
 		case err != nil:
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath))
+			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // error
 			return false, err
 		default:
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath))
+			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // file still exists
 			fmt.Fprintf(os.Stderr, "file wasn't deleted")
 			return false, nil
 		}
