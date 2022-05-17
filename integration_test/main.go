@@ -5,7 +5,6 @@ import (
 	"os"
 )
 
-// TODO: ステータスコードの確認
 // TODO: POSTのテスト
 // TODO: DELETEのテストを通るようにする
 // TODO: webservがレスポンスボディを文字列で持つようになったら同様にする
