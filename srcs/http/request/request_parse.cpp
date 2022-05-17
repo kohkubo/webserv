@@ -86,7 +86,6 @@ void parse_request_body(HttpMessage       &request_info,
     }
   }
 }
-#include <iostream>
 
 /*
  * 超安易パース
@@ -94,8 +93,6 @@ void parse_request_body(HttpMessage       &request_info,
  */
 void parse_request_header(HttpMessage       &request_info,
                           const std::string &request_string) {
-  std::cout << "========" << std::endl
-            << request_string << "========" << std::endl;
   std::vector<std::string> request_tokens =
       tokenize(request_string, SEPARATOR, " ");
   parse_request_method_line(request_info, request_tokens);
