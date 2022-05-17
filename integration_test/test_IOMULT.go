@@ -47,15 +47,21 @@ func testIOMULT() {
 		clientA.sendPartialRequest()
 		clientC.sendPartialRequest()
 		clientB.sendPartialRequest()
-		if !clientB.isExpectedResult() {
+
+		clientB.recvResponse()
+		if !clientB.isExpectedResponse() {
 			return false, nil
 		}
+
 		clientC.sendPartialRequest()
-		if !clientC.isExpectedResult() {
+		clientC.recvResponse()
+		if !clientC.isExpectedResponse() {
 			return false, nil
 		}
+
 		clientA.sendPartialRequest()
-		if !clientA.isExpectedResult() {
+		clientA.recvResponse()
+		if !clientA.isExpectedResponse() {
 			return false, nil
 		}
 		return true, nil

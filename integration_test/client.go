@@ -34,15 +34,6 @@ func NewClient(c *Client) *Client {
 	return c
 }
 
-// コネクションを確立, connを通して送受信できる
-func connect(port string) (net.Conn, error) {
-	conn, err := net.Dial("tcp", "localhost:"+port)
-	if err != nil {
-		return nil, fmt.Errorf("connect: %w", err)
-	}
-	return conn, nil
-}
-
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
 func resolveMethod(reqPayload []string) string {
 	var buff string
@@ -87,29 +78,34 @@ func (c *Client) sendPartialRequest() {
 }
 
 // レスポンスを受ける
-func (c *Client) recvResponse() error {
+func (c *Client) recvResponse() {
 	if len(c.ReqPayload) != 0 {
-		return fmt.Errorf("recvResponse: ReqPayload is not empty!")
+		log.Fatalf("recvResponse: ReqPayload is not empty!")
 	}
 	resp, err := readResponse(c.conn, c.method)
 	if err != nil {
-		return fmt.Errorf("recvResponse: %w", err)
+		log.Fatalf("recvResponse: %v", err)
 	}
 	c.resp = resp
-	return nil
+	c.conn.Close()
 }
 
-// レスポンスを受けて, 結果を確認するまで行う
-func (c *Client) isExpectedResult() bool {
-	defer c.conn.Close()
-	err := c.recvResponse()
-	if err != nil {
-		log.Fatalf("isExpectedResult: %v", err)
-	}
-	defer c.resp.Body.Close()
+// レスポンスが期待するものか確認する
+func (c *Client) isExpectedResponse() bool {
 	result, err := compareResponse(c.resp, c.ExpectHeader, c.ExpectBody)
 	if err != nil {
 		log.Fatalf("isExpectedResult: %v", err)
 	}
+	c.resp.Body.Close()
 	return result == 0
+}
+
+// リクエストの送信, 受信, 結果の確認まで行う
+func (c *Client) isTestOK() bool {
+	c.sendRequest()
+	c.recvResponse()
+	if !c.isExpectedResponse() {
+		return false
+	}
+	return true
 }

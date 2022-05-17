@@ -19,13 +19,12 @@ func testGET() {
 			ExpectHeader: nil,
 			ExpectBody:   FileToBytes(HELLO_WORLD_PAGE),
 		})
-
-		clientA.sendRequest()
-		if !clientA.isExpectedResult() {
+		if !clientA.isTestOK() {
 			return false, nil
 		}
 		return true, nil
 	})
+
 	//tests := []testcase.TestCase{
 	//	{ // sample test
 	//		Name:           "sample",

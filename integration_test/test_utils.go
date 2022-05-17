@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"reflect"
@@ -30,6 +31,15 @@ func testHandler(name string, test func() (bool, error)) {
 		fmt.Println(red, "error", reset)
 		os.Exit(1) // TODO: テスト全体でエラーがあれば最後にexit(1)する
 	}
+}
+
+// コネクションを確立, connを通して送受信できる
+func connect(port string) (net.Conn, error) {
+	conn, err := net.Dial("tcp", "localhost:"+port)
+	if err != nil {
+		return nil, fmt.Errorf("connect: %w", err)
+	}
+	return conn, nil
 }
 
 // src(conn)からリクエストを受け取りパースする
