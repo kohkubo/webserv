@@ -2,6 +2,7 @@
 #define SRCS_HTTP_REQUEST_REQUESTINFO_HPP
 
 #include <map>
+#include <stdexcept>
 #include <string>
 
 #include "utils/tokenize.hpp"

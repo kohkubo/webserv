@@ -1,5 +1,6 @@
 #include "http/request/RequestInfo.hpp"
 
+#include <cstdlib>
 #include <iostream>
 
 #include "http/const/const_delimiter.hpp"
