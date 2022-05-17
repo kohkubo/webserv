@@ -70,6 +70,7 @@ func (c *Client) sendRequest() {
 			log.Fatalf("sendRequest: %v", err)
 		}
 	}
+	c.ReqPayload = nil
 }
 
 // 先頭のReqPayloadのみ送信
