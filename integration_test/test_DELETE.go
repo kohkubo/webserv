@@ -2,30 +2,24 @@ package main
 
 import (
 	"fmt"
-	"integration_test/testcase"
-	"net/http"
 )
 
 func testDELETE() {
-	tests := []testcase.TestCase{
-		{ // sample test
-			Name:           "sample",
-			Port:           PORT_5500,
-			Url:            TMP_FILE,
-			WantStatusCode: http.StatusOK,
-
-			// リクエスト内容:
-			//   DELETE /html/tmp.html HTTP/1.1
-			//   Host: localhost:5500
-			//   User-Agent: Go-http-client/1.1
-			//   Accept-Encoding: gzip
-		},
-	}
-	// テスト実行
 	fmt.Println("DELETE test")
-	for _, t := range tests {
-		t := t
-		t.Method = http.MethodDelete
-		//t.Do() // おそらくwevservの返答が未完成なのが理由でエラー出てる
-	}
+
+	testHandler("no_such_file", func() (bool, error) {
+		clientA := NewClient(&Client{
+			Port: "5500",
+			ReqPayload: []string{
+				"DELETE /no_such_file HTTP/1.1\r\n",
+				"Host: localhost:5500\r\n",
+				"User-Agent: curl/7.79.1\r\n",
+				`Accept: */*` + "\r\n",
+				"\r\n",
+			},
+			ExpectHeader: nil,
+			ExpectBody:   FileToBytes(NOT_FOUND_PAGE),
+		})
+		return clientA.isTestOK(), nil
+	})
 }
