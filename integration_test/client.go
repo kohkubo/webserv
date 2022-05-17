@@ -13,8 +13,6 @@ import (
 // NOTE: 呼び出し元でのエラー処理が面倒なので,
 //       予期しないエラーに関してはlog.Fatal()してる
 
-// TODO: ステータスコードの確認
-
 type Client struct {
 	Port         string
 	ReqPayload   []string
@@ -25,7 +23,7 @@ type Client struct {
 	resp         *http.Response
 }
 
-// constructor的な存在
+// constructor
 func NewClient(c *Client) *Client {
 	conn, err := connect(c.Port)
 	if err != nil {

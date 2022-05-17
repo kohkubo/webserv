@@ -29,7 +29,7 @@ func testHandler(name string, test func() (bool, error)) {
 		fmt.Println(green, "ok", reset)
 	} else {
 		fmt.Println(red, "error", reset)
-		os.Exit(1) // TODO: テスト全体でエラーがあれば最後にexit(1)する
+		CountTestFail++
 	}
 }
 
@@ -43,7 +43,6 @@ func connect(port string) (net.Conn, error) {
 }
 
 // src(conn)からリクエストを受け取りパースする
-// TODO: タイムアウト実装
 func readResponse(src io.Reader, method string) (*http.Response, error) {
 	r := bufio.NewReader(src)
 	req := &http.Request{
