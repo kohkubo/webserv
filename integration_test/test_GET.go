@@ -18,7 +18,7 @@ func testGET() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   FileToBytes(HELLO_WORLD_PAGE),
+			ExpectBody:   HELLO_WORLD_PAGE,
 		})
 		return clientA.isTestOK(), nil
 	})
@@ -34,7 +34,7 @@ func testGET() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   FileToBytes(HELLO_WORLD_PAGE),
+			ExpectBody:   HELLO_WORLD_PAGE,
 		})
 		return clientA.isTestOK(), nil
 	})
@@ -50,7 +50,7 @@ func testGET() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   FileToBytes(NOT_FOUND_PAGE),
+			ExpectBody:   NOT_FOUND_PAGE,
 		})
 		return clientA.isTestOK(), nil
 	})

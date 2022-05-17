@@ -17,7 +17,7 @@ func testIOMULT() {
 				"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   FileToBytes(HELLO_WORLD_PAGE),
+			ExpectBody:   HELLO_WORLD_PAGE,
 		})
 		clientB := NewClient(&Client{
 			Port: "5001",
@@ -27,7 +27,7 @@ func testIOMULT() {
 				"00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   FileToBytes(NOT_FOUND_PAGE),
+			ExpectBody:   NOT_FOUND_PAGE,
 		})
 		clientC := NewClient(&Client{
 			Port: "5001",
@@ -37,7 +37,7 @@ func testIOMULT() {
 				"lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   FileToBytes(NOT_FOUND_PAGE),
+			ExpectBody:   NOT_FOUND_PAGE,
 		})
 
 		clientA.sendPartialRequest()

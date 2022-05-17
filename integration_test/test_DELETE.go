@@ -61,7 +61,7 @@ func testDELETE() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   FileToBytes(NOT_FOUND_PAGE),
+			ExpectBody:   NOT_FOUND_PAGE,
 		})
 		return clientA.isTestOK(), nil
 	})

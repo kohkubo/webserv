@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -17,6 +18,23 @@ const (
 	green = "\033[32m"
 	reset = "\033[0m"
 )
+
+var HELLO_WORLD_PAGE = FileToBytes("../html/index.html")
+var NOT_FOUND_PAGE = FileToBytes("../html/not_found.html")
+
+// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
+func FileToBytes(fileName string) []byte {
+	file, err := os.Open(fileName)
+	if err != nil {
+		log.Fatalf("FileBytes: %v", err)
+	}
+	defer file.Close()
+	srcBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatalf("FileBytes: %v", err)
+	}
+	return srcBytes
+}
 
 // 実行するテストの名前と関数を渡してその結果に合わせたメッセージを出力する関数です
 func testHandler(name string, test func() (bool, error)) {
@@ -43,7 +61,7 @@ func connect(port string) (net.Conn, error) {
 }
 
 // src(conn)からリクエストを受け取りパースする
-func readResponse(src io.Reader, method string) (*http.Response, error) {
+func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 	r := bufio.NewReader(src)
 	req := &http.Request{
 		Method: method,

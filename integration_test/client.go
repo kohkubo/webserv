@@ -82,7 +82,7 @@ func (c *Client) recvResponse() {
 	if len(c.ReqPayload) != 0 {
 		log.Fatalf("recvResponse: ReqPayload is not empty!")
 	}
-	resp, err := readResponse(c.conn, c.method)
+	resp, err := readParseResponse(c.conn, c.method)
 	if err != nil {
 		log.Fatalf("recvResponse: %v", err)
 	}
