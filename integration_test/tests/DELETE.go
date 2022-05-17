@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"integration_test/tester"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -31,10 +32,11 @@ func TestDELETE() {
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
-			ExpectHeader: nil,
-			ExpectBody:   nil,
+			ExpectStatusCode: http.StatusNoContent,
+			ExpectHeader:     nil,
+			ExpectBody:       nil,
 		})
-		clientA.IsTestOK()
+		clientA.Test()
 
 		// check file exists or deleted
 		_, err := os.Stat(deleteFileRelativePath)
@@ -61,10 +63,11 @@ func TestDELETE() {
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
-			ExpectHeader: nil,
-			ExpectBody:   NOT_FOUND,
+			ExpectStatusCode: http.StatusNotFound,
+			ExpectHeader:     nil,
+			ExpectBody:       NOT_FOUND,
 		})
-		return clientA.IsTestOK(), nil
+		return clientA.Test(), nil
 	})
 
 }

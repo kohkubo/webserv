@@ -14,13 +14,14 @@ import (
 //       予期しないエラーに関してはlog.Fatal()してる
 
 type Client struct {
-	Port         string
-	ReqPayload   []string
-	ExpectHeader http.Header
-	ExpectBody   []byte
-	conn         net.Conn
-	method       string
-	resp         *http.Response
+	Port             string
+	ReqPayload       []string
+	ExpectStatusCode int
+	ExpectHeader     http.Header
+	ExpectBody       []byte
+	conn             net.Conn
+	method           string
+	resp             *http.Response
 }
 
 // constructor
@@ -92,7 +93,7 @@ func (c *Client) RecvResponse() {
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() bool {
-	result, err := compareResponse(c.resp, c.ExpectHeader, c.ExpectBody)
+	result, err := compareResponse(c.resp, c.ExpectStatusCode, c.ExpectHeader, c.ExpectBody)
 	if err != nil {
 		log.Fatalf("isExpectedResult: %v", err)
 	}
@@ -101,7 +102,8 @@ func (c *Client) IsExpectedResponse() bool {
 }
 
 // リクエストの送信, 受信, 結果の確認まで行う
-func (c *Client) IsTestOK() bool {
+// 成功->true, 失敗->false
+func (c *Client) Test() bool {
 	c.SendRequest()
 	c.RecvResponse()
 	if !c.IsExpectedResponse() {

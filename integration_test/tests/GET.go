@@ -3,6 +3,7 @@ package tests
 import (
 	"fmt"
 	"integration_test/tester"
+	"net/http"
 )
 
 func TestGET() {
@@ -18,10 +19,11 @@ func TestGET() {
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
-			ExpectHeader: nil,
-			ExpectBody:   HELLO_WORLD,
+			ExpectStatusCode: http.StatusOK,
+			ExpectHeader:     nil,
+			ExpectBody:       HELLO_WORLD,
 		})
-		return clientA.IsTestOK(), nil
+		return clientA.Test(), nil
 	})
 
 	testHandler("simple_5001", func() (bool, error) {
@@ -34,10 +36,11 @@ func TestGET() {
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
-			ExpectHeader: nil,
-			ExpectBody:   HELLO_WORLD,
+			ExpectStatusCode: http.StatusOK,
+			ExpectHeader:     nil,
+			ExpectBody:       HELLO_WORLD,
 		})
-		return clientA.IsTestOK(), nil
+		return clientA.Test(), nil
 	})
 
 	testHandler("no_such_file", func() (bool, error) {
@@ -50,10 +53,11 @@ func TestGET() {
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
-			ExpectHeader: nil,
-			ExpectBody:   NOT_FOUND,
+			ExpectStatusCode: http.StatusNotFound,
+			ExpectHeader:     nil,
+			ExpectBody:       NOT_FOUND,
 		})
-		return clientA.IsTestOK(), nil
+		return clientA.Test(), nil
 	})
 
 }

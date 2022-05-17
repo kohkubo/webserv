@@ -3,6 +3,7 @@ package tests
 import (
 	"fmt"
 	"integration_test/tester"
+	"net/http"
 )
 
 func TestPOST() {
@@ -19,10 +20,11 @@ func TestPOST() {
 				"\r\n",
 				/* body */
 			},
-			ExpectHeader: nil,
-			ExpectBody:   nil,
+			ExpectStatusCode: http.StatusOK,
+			ExpectHeader:     nil,
+			ExpectBody:       nil,
 		})
-		return clientA.IsTestOK(), nil
+		return clientA.Test(), nil
 	})
 
 }

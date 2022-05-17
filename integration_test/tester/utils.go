@@ -33,8 +33,12 @@ func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func compareResponse(resp *http.Response, expectHeader http.Header, expectBody []byte) (int, error) {
+func compareResponse(resp *http.Response, expectStatusCode int, expectHeader http.Header, expectBody []byte) (int, error) {
 	var diff_flag int
+	if resp.StatusCode != expectStatusCode {
+		fmt.Fprintf(os.Stderr, "status code diff: actual=%v expect=%v\n", resp.StatusCode, expectStatusCode)
+		diff_flag++
+	}
 	for expect_k, expect_v := range expectHeader {
 		if actual_v, exist := resp.Header[expect_k]; !exist {
 			fmt.Fprintf(os.Stderr, "header diff: no such header %v\n", expect_k)
