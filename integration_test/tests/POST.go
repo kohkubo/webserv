@@ -1,14 +1,15 @@
-package main
+package tests
 
 import (
 	"fmt"
+	"integration_test/tester"
 )
 
-func testPOST() {
+func TestPOST() {
 	fmt.Println("POST test")
 
 	testHandler("simple", func() (bool, error) {
-		clientA := NewClient(&Client{
+		clientA := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"POST / HTTP/1.1\r\n",
@@ -21,7 +22,7 @@ func testPOST() {
 			ExpectHeader: nil,
 			ExpectBody:   nil,
 		})
-		return clientA.isTestOK(), nil
+		return clientA.IsTestOK(), nil
 	})
 
 }

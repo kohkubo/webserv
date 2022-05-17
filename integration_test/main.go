@@ -1,22 +1,24 @@
 package main
 
-import "os"
+import (
+	"integration_test/tests"
+	"os"
+)
 
 // TODO: ステータスコードの確認
 // TODO: POSTのテスト
 // TODO: DELETEのテストを通るようにする
 // TODO: webservがレスポンスボディを文字列で持つようになったら同様にする
 // TODO: レスポンスのタイムアウト実装
-
-var CountTestFail uint
+// TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 
 func main() {
-	testGET()
-	//testPOST()
-	//testDELETE()
-	testIOMULT()
+	tests.TestGET()
+	//tests.TestPOST()
+	//tests.TestDELETE()
+	tests.TestIOMULT()
 
-	if CountTestFail != 0 {
+	if tests.CountTestFail != 0 {
 		os.Exit(1)
 	}
 }

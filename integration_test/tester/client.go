@@ -1,4 +1,4 @@
-package main
+package tester
 
 import (
 	"fmt"
@@ -54,7 +54,7 @@ func resolveMethod(reqPayload []string) string {
 }
 
 // リクエスト送信
-func (c *Client) sendRequest() {
+func (c *Client) SendRequest() {
 	for _, r := range c.ReqPayload {
 		_, err := fmt.Fprintf(c.conn, r)
 		if err != nil {
@@ -65,7 +65,7 @@ func (c *Client) sendRequest() {
 }
 
 // 先頭のReqPayloadのみ送信
-func (c *Client) sendPartialRequest() {
+func (c *Client) SendPartialRequest() {
 	if len(c.ReqPayload) != 0 {
 		r := c.ReqPayload[0]
 		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除したものに更新
@@ -78,7 +78,7 @@ func (c *Client) sendPartialRequest() {
 }
 
 // レスポンスを受ける
-func (c *Client) recvResponse() {
+func (c *Client) RecvResponse() {
 	if len(c.ReqPayload) != 0 {
 		log.Fatalf("recvResponse: ReqPayload is not empty!")
 	}
@@ -91,7 +91,7 @@ func (c *Client) recvResponse() {
 }
 
 // レスポンスが期待するものか確認する
-func (c *Client) isExpectedResponse() bool {
+func (c *Client) IsExpectedResponse() bool {
 	result, err := compareResponse(c.resp, c.ExpectHeader, c.ExpectBody)
 	if err != nil {
 		log.Fatalf("isExpectedResult: %v", err)
@@ -101,10 +101,10 @@ func (c *Client) isExpectedResponse() bool {
 }
 
 // リクエストの送信, 受信, 結果の確認まで行う
-func (c *Client) isTestOK() bool {
-	c.sendRequest()
-	c.recvResponse()
-	if !c.isExpectedResponse() {
+func (c *Client) IsTestOK() bool {
+	c.SendRequest()
+	c.RecvResponse()
+	if !c.IsExpectedResponse() {
 		return false
 	}
 	return true

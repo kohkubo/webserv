@@ -1,13 +1,14 @@
-package main
+package tests
 
 import (
 	"errors"
 	"fmt"
+	"integration_test/tester"
 	"os"
 	"path/filepath"
 )
 
-func testDELETE() {
+func TestDELETE() {
 	fmt.Println("DELETE test")
 
 	testHandler("simple", func() (bool, error) {
@@ -21,7 +22,7 @@ func testDELETE() {
 			return false, err
 		}
 
-		clientA := NewClient(&Client{
+		clientA := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"DELETE /" + deleteFilePath + " HTTP/1.1\r\n",
@@ -33,7 +34,7 @@ func testDELETE() {
 			ExpectHeader: nil,
 			ExpectBody:   nil,
 		})
-		clientA.isTestOK()
+		clientA.IsTestOK()
 
 		// check file exists or deleted
 		_, err := os.Stat(deleteFileRelativePath)
@@ -51,7 +52,7 @@ func testDELETE() {
 	})
 
 	testHandler("no_such_file", func() (bool, error) {
-		clientA := NewClient(&Client{
+		clientA := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"DELETE /no_such_file HTTP/1.1\r\n",
@@ -61,8 +62,9 @@ func testDELETE() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   NOT_FOUND_PAGE,
+			ExpectBody:   NOT_FOUND,
 		})
-		return clientA.isTestOK(), nil
+		return clientA.IsTestOK(), nil
 	})
+
 }

@@ -1,14 +1,15 @@
-package main
+package tests
 
 import (
 	"fmt"
+	"integration_test/tester"
 )
 
-func testGET() {
+func TestGET() {
 	fmt.Println("GET test")
 
 	testHandler("simple_5500", func() (bool, error) {
-		clientA := NewClient(&Client{
+		clientA := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"GET / HTTP/1.1\r\n",
@@ -18,13 +19,13 @@ func testGET() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   HELLO_WORLD_PAGE,
+			ExpectBody:   HELLO_WORLD,
 		})
-		return clientA.isTestOK(), nil
+		return clientA.IsTestOK(), nil
 	})
 
 	testHandler("simple_5001", func() (bool, error) {
-		clientA := NewClient(&Client{
+		clientA := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
 				"GET / HTTP/1.1\r\n",
@@ -34,13 +35,13 @@ func testGET() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   HELLO_WORLD_PAGE,
+			ExpectBody:   HELLO_WORLD,
 		})
-		return clientA.isTestOK(), nil
+		return clientA.IsTestOK(), nil
 	})
 
 	testHandler("no_such_file", func() (bool, error) {
-		clientA := NewClient(&Client{
+		clientA := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
 				"GET /no_such_file HTTP/1.1\r\n",
@@ -50,8 +51,9 @@ func testGET() {
 				"\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   NOT_FOUND_PAGE,
+			ExpectBody:   NOT_FOUND,
 		})
-		return clientA.isTestOK(), nil
+		return clientA.IsTestOK(), nil
 	})
+
 }

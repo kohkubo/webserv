@@ -1,55 +1,14 @@
-package main
+package tester
 
 import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"os"
 	"reflect"
 )
-
-// for color print
-const (
-	red   = "\033[31m"
-	green = "\033[32m"
-	reset = "\033[0m"
-)
-
-var HELLO_WORLD_PAGE = FileToBytes("../html/index.html")
-var NOT_FOUND_PAGE = FileToBytes("../html/not_found.html")
-
-// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
-func FileToBytes(fileName string) []byte {
-	file, err := os.Open(fileName)
-	if err != nil {
-		log.Fatalf("FileBytes: %v", err)
-	}
-	defer file.Close()
-	srcBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Fatalf("FileBytes: %v", err)
-	}
-	return srcBytes
-}
-
-// 実行するテストの名前と関数を渡してその結果に合わせたメッセージを出力する関数です
-func testHandler(name string, test func() (bool, error)) {
-	fmt.Print("[ " + name + " ] ")
-	ok, err := test()
-	if err != nil {
-		log.Fatalf("erro occured!: %v", err)
-	}
-	if ok {
-		fmt.Println(green, "ok", reset)
-	} else {
-		fmt.Println(red, "error", reset)
-		CountTestFail++
-	}
-}
 
 // コネクションを確立, connを通して送受信できる
 func connect(port string) (net.Conn, error) {

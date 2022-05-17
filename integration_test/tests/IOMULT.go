@@ -1,15 +1,16 @@
-package main
+package tests
 
 import (
 	"fmt"
+	"integration_test/tester"
 )
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
-// TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
-func testIOMULT() {
+func TestIOMULT() {
 	fmt.Println("IOMULT test")
+
 	testHandler("3client", func() (bool, error) {
-		clientA := NewClient(&Client{
+		clientA := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"GET /",
@@ -17,9 +18,9 @@ func testIOMULT() {
 				"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   HELLO_WORLD_PAGE,
+			ExpectBody:   HELLO_WORLD,
 		})
-		clientB := NewClient(&Client{
+		clientB := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
 				"GET /nosuch HT",
@@ -27,9 +28,9 @@ func testIOMULT() {
 				"00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   NOT_FOUND_PAGE,
+			ExpectBody:   NOT_FOUND,
 		})
-		clientC := NewClient(&Client{
+		clientC := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
 				"DELETE /nosuch HTTP/1.1\r",
@@ -37,33 +38,34 @@ func testIOMULT() {
 				"lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 			},
 			ExpectHeader: nil,
-			ExpectBody:   NOT_FOUND_PAGE,
+			ExpectBody:   NOT_FOUND,
 		})
 
-		clientA.sendPartialRequest()
-		clientB.sendPartialRequest()
-		clientC.sendPartialRequest()
-		clientB.sendPartialRequest()
-		clientA.sendPartialRequest()
-		clientC.sendPartialRequest()
-		clientB.sendPartialRequest()
+		clientA.SendPartialRequest()
+		clientB.SendPartialRequest()
+		clientC.SendPartialRequest()
+		clientB.SendPartialRequest()
+		clientA.SendPartialRequest()
+		clientC.SendPartialRequest()
+		clientB.SendPartialRequest()
 
-		clientB.recvResponse()
-		if !clientB.isExpectedResponse() {
+		clientB.RecvResponse()
+		if !clientB.IsExpectedResponse() {
 			return false, nil
 		}
 
-		clientC.sendPartialRequest()
-		clientC.recvResponse()
-		if !clientC.isExpectedResponse() {
+		clientC.SendPartialRequest()
+		clientC.RecvResponse()
+		if !clientC.IsExpectedResponse() {
 			return false, nil
 		}
 
-		clientA.sendPartialRequest()
-		clientA.recvResponse()
-		if !clientA.isExpectedResponse() {
+		clientA.SendPartialRequest()
+		clientA.RecvResponse()
+		if !clientA.IsExpectedResponse() {
 			return false, nil
 		}
 		return true, nil
 	})
+
 }
