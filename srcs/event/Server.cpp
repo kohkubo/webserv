@@ -58,15 +58,15 @@ void Server::__connection_receive_handler(int conn_fd) {
 }
 
 void Server::__connection_send_handler(int conn_fd) {
-  Response &response = __conn_fd_map_[conn_fd].get_front_response();
-  response.send_message(conn_fd);
-  if (response.is_send_completed()) {
-    if (response.is_close()) {
+  Request &request = __conn_fd_map_[conn_fd].get_front_request();
+  request.send_response(conn_fd);
+  if (request.is_send_completed()) {
+    if (request.is_close()) {
       shutdown(conn_fd, SHUT_WR);
-      response.set_closing();
+      request.set_state(CLOSING);
       return;
     }
-    __conn_fd_map_[conn_fd].erase_front_response();
+    __conn_fd_map_[conn_fd].erase_front_req();
   }
 }
 
