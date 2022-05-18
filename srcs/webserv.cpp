@@ -5,7 +5,6 @@
 #include "config/Config.hpp"
 #include "config/create_listen_fd_map.hpp"
 #include "event/Server.hpp"
-#include "event/event.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 
