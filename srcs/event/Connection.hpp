@@ -2,6 +2,7 @@
 #define SRCS_EVENT_CONNECTION
 
 #include "event/Request.hpp"
+#include "event/Response.hpp"
 #include <deque>
 #include <string>
 #include <vector>
@@ -13,9 +14,10 @@ typedef class ServerConfig ServerConfig;
 // TODO: こっちでresponse, stateを持つ
 class Connection {
 private:
-  std::deque<Request> __request_queue_;
-  std::string         __buffer_;
-  conf_group         *__config_;
+  std::deque<Request>  __request_queue_;
+  std::deque<Response> __response_queue_;
+  std::string          __buffer_;
+  conf_group          *__config_;
 
 private:
   std::string __cut_buffer(std::size_t len);
@@ -33,13 +35,8 @@ public:
     return __request_queue_.back();
   }
 
-  Request &get_front_request() {
-    if (__request_queue_.empty())
-      __request_queue_.push_back(Request());
-    return __request_queue_.front();
-  }
-
-  void         erase_front_req() { __request_queue_.pop_front(); }
+  Response    &get_front_response() { return __response_queue_.front(); }
+  void         erase_front_response() { __response_queue_.pop_front(); }
 
   RequestState get_last_state() {
     if (__request_queue_.empty())
@@ -48,9 +45,9 @@ public:
   }
 
   bool is_sending() const {
-    if (__request_queue_.empty())
+    if (__response_queue_.empty())
       return false;
-    RequestState state = __request_queue_.front().get_state();
+    ResponseState state = __response_queue_.front().get_state();
     return state == SENDING;
   }
 

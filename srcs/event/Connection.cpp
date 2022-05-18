@@ -41,10 +41,14 @@ void Connection::parse_buffer(const std::string &data) {
 // キューの中にあるresponse生成待ちのrequestのresponseを生成する。
 void Connection::create_response_iter() {
   (void)__config_;
-  ServerConfig                  proper_conf;
-  std::deque<Request>::iterator it = __request_queue_.begin();
-  for (; it != __request_queue_.end(); it++) {
+  ServerConfig proper_conf;
+  while (!__request_queue_.empty()) {
+    Request &top_req = __request_queue_.front();
+    if (top_req.get_state() != PENDING)
+      break;
     // TODO: リクエストに対して正しいserverconfを選択する。
-    (*it).create_response(proper_conf);
+    std::string response_str = top_req.create_response(proper_conf);
+    __response_queue_.push_back(Response(response_str, top_req.is_close()));
+    __request_queue_.pop_front();
   }
 }

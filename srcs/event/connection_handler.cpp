@@ -35,14 +35,14 @@ void      connection_receive_handler(int                        conn_fd,
 void connection_send_handler(int                        conn_fd,
                              std::map<int, Connection> &conn_fd_map) {
   Connection &connection = conn_fd_map[conn_fd];
-  Request    &request    = connection.get_front_request();
-  request.send_response(conn_fd);
-  if (request.is_send_completed()) {
-    if (request.is_close()) {
+  Response   &response   = connection.get_front_response();
+  response.send_message(conn_fd);
+  if (response.is_send_completed()) {
+    if (response.is_close()) {
       shutdown(conn_fd, SHUT_WR);
-      request.set_state(CLOSING);
+      response.set_closing();
       return;
     }
-    connection.erase_front_req();
+    connection.erase_front_response();
   }
 }

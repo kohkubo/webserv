@@ -17,18 +17,7 @@ void Request::parse_body(const std::string &body) {
   __state_ = PENDING;
 }
 
-void Request::create_response(const ServerConfig &conf) {
-  if (get_state() != PENDING) {
-    return;
-  }
+std::string Request::create_response(const ServerConfig &conf) {
   http_message_map response_info = create_response_info(conf, __info_);
-  __response_                    = make_message_string(response_info);
-  __state_                       = SENDING;
-}
-
-void Request::send_response(int socket_fd) {
-  const char *rest_str   = __response_.c_str() + __send_count_;
-  size_t      rest_count = __response_.size() - __send_count_;
-  ssize_t     sc         = send(socket_fd, rest_str, rest_count, MSG_DONTWAIT);
-  __send_count_ += sc;
+  return make_message_string(response_info);
 }
