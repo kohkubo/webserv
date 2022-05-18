@@ -10,11 +10,7 @@
 
 typedef class ServerConfig ServerConfig;
 
-// listen_fd -> conf_group
-// listen_fd -> conn_fd
-// conn_fd -> req, buffer
-// req -> resp
-
+// TODO: こっちでresponse, stateを持つ
 class Connection {
 private:
   std::deque<Request> __request_queue_;
