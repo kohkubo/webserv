@@ -1,4 +1,4 @@
-#include "config/ServerConfig.hpp"
+#include "config/Config.hpp"
 #include "http/HttpMessage.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
@@ -35,8 +35,8 @@ static HttpStatusCode delete_target_file(const HttpMessage &request_info,
   return NO_CONTENT_204;
 }
 
-http_message_map delete_method_handler(const ServerConfig &server_config,
-                                       HttpMessage        &request_info) {
+http_message_map delete_method_handler(const Config &server_config,
+                                       HttpMessage  &request_info) {
   http_message_map response_info;
   if (is_minus_depth(request_info.url_)) {
     set_status_and_path(response_info, server_config, NOT_FOUND_404);
