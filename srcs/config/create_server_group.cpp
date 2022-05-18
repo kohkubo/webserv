@@ -27,10 +27,9 @@ find_same_socket(const ServerConfig              &conf,
   return it;
 }
 
-static bool
-is_include_same_server_name(const ServerConfig               &conf,
-                            std::vector<const ServerConfig *> group) {
-  std::vector<const ServerConfig *>::iterator it = group.begin();
+static bool is_include_same_server_name(const ServerConfig &conf,
+                                        conf_group          group) {
+  conf_group::iterator it = group.begin();
   for (; it != group.end(); it++) {
     if ((*it)->server_name_ == conf.server_name_)
       return true;
@@ -53,8 +52,7 @@ create_socket_map(const server_list &server_list) {
       it->second.push_back(&(*sl_it));
     } else {
       int new_socket = open_new_socket(*sl_it);
-      listen_fd_map.insert(
-          std::make_pair(new_socket, std::vector<const ServerConfig *>()));
+      listen_fd_map.insert(std::make_pair(new_socket, conf_group()));
       listen_fd_map[new_socket].push_back(&(*sl_it));
     }
   }

@@ -12,9 +12,9 @@ typedef class ServerConfig ServerConfig;
 
 class Connection {
 private:
-  std::deque<Request>                __request_queue_;
-  std::string                        __buffer_;
-  std::vector<const ServerConfig *> *__config_;
+  std::deque<Request> __request_queue_;
+  std::string         __buffer_;
+  conf_group         *__config_;
 
 private:
   std::string __cut_buffer(std::size_t len);
@@ -22,7 +22,7 @@ private:
 public:
   Connection()
       : __config_(NULL) {}
-  Connection(std::vector<const ServerConfig *> *config)
+  Connection(conf_group *config)
       : __config_(config) {}
   ~Connection() {}
 
