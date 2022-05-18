@@ -7,9 +7,9 @@
 #include <poll.h>
 #include <sys/socket.h>
 
-static void set_listen_fd(pollfds_type           &pollfds,
-                          const socket_list_type &socket_list) {
-  socket_list_type::const_iterator it = socket_list.begin();
+static void set_listen_fd(pollfds_type                          &pollfds,
+                          const std::map<listen_fd, conf_group> &socket_list) {
+  std::map<listen_fd, conf_group>::const_iterator it = socket_list.begin();
   for (; it != socket_list.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd     = it->first;
@@ -33,8 +33,8 @@ static void set_connection_fd(pollfds_type               &pollfds,
   }
 }
 
-static void create_pollfds(pollfds_type               &pollfds,
-                           const socket_list_type     &socket_list,
+static void create_pollfds(pollfds_type                          &pollfds,
+                           const std::map<listen_fd, conf_group> &socket_list,
                            const connection_list_type &connection_list) {
   pollfds.clear();
   set_listen_fd(pollfds, socket_list);
@@ -76,9 +76,14 @@ static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
   return nready;
 }
 
+// pollfds - socket_list->first , connection_list->first
+// socket_list
+// connection_list
+// listen_eventの動きを持つクラス
+
 // socket_list:     listen_fdとserver_groupの関係を管理
 // connection_list: connection_fdとlisten_fdの関係を管理
-void listen_event(socket_list_type &socket_list) {
+void listen_event(std::map<listen_fd, conf_group> &socket_list) {
   connection_list_type connection_list;
   pollfds_type         pollfds;
 

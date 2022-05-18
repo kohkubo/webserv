@@ -16,9 +16,10 @@ static bool is_same_socket(const ServerConfig &serv_x,
          (x->sin_port == y->sin_port);
 }
 
-static socket_list_type::iterator
-find_same_socket(const ServerConfig &conf, socket_list_type &socket_list) {
-  socket_list_type::iterator it = socket_list.begin();
+static std::map<listen_fd, conf_group>::iterator
+find_same_socket(const ServerConfig              &conf,
+                 std::map<listen_fd, conf_group> &socket_list) {
+  std::map<listen_fd, conf_group>::iterator it = socket_list.begin();
   for (; it != socket_list.end(); it++) {
     if (is_same_socket(conf, *(it->second[0])))
       break;
@@ -37,11 +38,13 @@ is_include_same_server_name(const ServerConfig               &conf,
   return false;
 }
 
-socket_list_type create_socket_map(const server_list_type &server_list) {
-  socket_list_type                 socket_list;
-  server_list_type::const_iterator sl_it = server_list.begin();
+std::map<listen_fd, conf_group>
+create_socket_map(const server_list &server_list) {
+  std::map<listen_fd, conf_group> socket_list;
+  server_list::const_iterator     sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
-    socket_list_type::iterator it = find_same_socket(*sl_it, socket_list);
+    std::map<listen_fd, conf_group>::iterator it =
+        find_same_socket(*sl_it, socket_list);
     if (it != socket_list.end()) {
       if (is_include_same_server_name(*sl_it, it->second)) {
         std::cout << "server_name conflicts." << std::endl;

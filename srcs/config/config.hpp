@@ -3,8 +3,9 @@
 
 #include "config/ServerConfig.hpp"
 
-int              open_new_socket(const ServerConfig &config);
-server_list_type read_config(const char *config_file_path);
-socket_list_type create_socket_map(const server_list_type &server_list);
+int         open_new_socket(const ServerConfig &config);
+server_list read_config(const char *config_file_path);
+std::map<listen_fd, conf_group>
+create_socket_map(const server_list &server_list);
 
 #endif /* SRCS_CONFIG_CONFIG_HPP */
