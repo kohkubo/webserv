@@ -11,33 +11,6 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-void Server::run_loop() {
-  while (1) {
-    __reset_pollfds();
-    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
-    std::vector<struct pollfd>::iterator it = __pollfds_.begin();
-    for (; it != __pollfds_.end() && 0 < nready; it++) {
-      if (!it->revents) {
-        continue;
-      }
-      int listen_flg = __listen_fd_map_.count(it->fd);
-      if (listen_flg) {
-        int conn_fd = xaccept(it->fd);
-        __conn_fd_map_.insert(
-            std::make_pair(conn_fd, Connection(&__listen_fd_map_[it->fd])));
-        continue;
-      }
-      if (it->revents & POLLIN) {
-        __connection_receive_handler(it->fd);
-      } else if (it->revents & POLLOUT) {
-        __connection_send_handler(it->fd);
-      }
-      // TODO: 他reventsに対する処理
-      nready--;
-    }
-  }
-}
-
 void Server::__add_listenfd_to_pollfds() {
   std::map<listen_fd, conf_group>::const_iterator it = __listen_fd_map_.begin();
   for (; it != __listen_fd_map_.end(); it++) {
@@ -94,5 +67,32 @@ void Server::__connection_send_handler(int conn_fd) {
       return;
     }
     __conn_fd_map_[conn_fd].erase_front_req();
+  }
+}
+
+void Server::run_loop() {
+  while (1) {
+    __reset_pollfds();
+    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
+    std::vector<struct pollfd>::iterator it = __pollfds_.begin();
+    for (; it != __pollfds_.end() && 0 < nready; it++) {
+      if (!it->revents) {
+        continue;
+      }
+      int listen_flg = __listen_fd_map_.count(it->fd);
+      if (listen_flg) {
+        int conn_fd = xaccept(it->fd);
+        __conn_fd_map_.insert(
+            std::make_pair(conn_fd, Connection(&__listen_fd_map_[it->fd])));
+        continue;
+      }
+      if (it->revents & POLLIN) {
+        __connection_receive_handler(it->fd);
+      } else if (it->revents & POLLOUT) {
+        __connection_send_handler(it->fd);
+      }
+      // TODO: 他reventsに対する処理
+      nready--;
+    }
   }
 }
