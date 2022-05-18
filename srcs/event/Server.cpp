@@ -8,7 +8,6 @@
 #include <cstdlib>
 
 #include "event/Connection.hpp"
-#include "event/Response.hpp"
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
