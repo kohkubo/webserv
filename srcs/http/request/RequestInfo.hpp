@@ -8,6 +8,7 @@
 #include "utils/tokenize.hpp"
 
 enum HttpMethod { GET, POST, DELETE, UNKNOWN };
+
 enum HttpStatusCode {
   NONE = -1,
   OK_200,
@@ -37,7 +38,8 @@ private:
 public:
   RequestInfo()
       : __method_(UNKNOWN)
-      , __is_close_(false) {}
+      , __is_close_(false)
+      , __content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
   public:
