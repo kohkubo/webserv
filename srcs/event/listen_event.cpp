@@ -92,25 +92,25 @@ void listen_event(std::map<listen_fd, conf_group> &listen_fd_map) {
     int nready = xpoll(&pollfds[0], pollfds.size(), 0);
     std::vector<struct pollfd>::iterator it = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready; it++) {
-      if (it->revents) {
-        debug_put_events_info(it->fd, it->revents);
-        if (it->revents & POLLIN) {
-          // TMP: socket_listの要素かどうかでfdを区別
-          int listen_flg = listen_fd_map.count(it->fd);
-          if (listen_flg) {
-            int connection_fd = xaccept(it->fd);
-            conn_fd_map.insert(std::make_pair(
-                connection_fd, Connection(&listen_fd_map[it->fd])));
-          } else {
-            connection_receive_handler(it->fd, conn_fd_map);
-          }
-        }
-        if (it->revents & POLLOUT) {
-          connection_send_handler(it->fd, conn_fd_map);
-        }
-        // TODO: 他reventsに対する処理
-        nready--;
+      if (!it->revents) {
+        continue;
       }
+      debug_put_events_info(it->fd, it->revents);
+      int listen_flg = listen_fd_map.count(it->fd);
+      if (listen_flg) {
+        int connection_fd = xaccept(it->fd);
+        conn_fd_map.insert(
+            std::make_pair(connection_fd, Connection(&listen_fd_map[it->fd])));
+        continue;
+      }
+      // conn_fd
+      if (it->revents & POLLIN) {
+        connection_receive_handler(it->fd, conn_fd_map);
+      } else if (it->revents & POLLOUT) {
+        connection_send_handler(it->fd, conn_fd_map);
+      }
+      // TODO: 他reventsに対する処理
+      nready--;
     }
   }
 }
