@@ -8,13 +8,14 @@
 
 // TODO: string -> vector<char>
 
-typedef class ServerConfig ServerConfig;
+typedef class Config Config;
 
+// TODO: こっちでresponse, stateを持つ
 class Connection {
 private:
-  std::deque<Request>                __request_queue_;
-  std::string                        __buffer_;
-  std::vector<const ServerConfig *> *__config_;
+  std::deque<Request> __request_queue_;
+  std::string         __buffer_;
+  conf_group         *__config_;
 
 private:
   std::string __cut_buffer(std::size_t len);
@@ -22,7 +23,7 @@ private:
 public:
   Connection()
       : __config_(NULL) {}
-  Connection(std::vector<const ServerConfig *> *config)
+  Connection(conf_group *config)
       : __config_(config) {}
   ~Connection() {}
 
@@ -57,6 +58,6 @@ public:
   void create_response_iter();
 };
 
-typedef std::map<int, Connection> connection_list_type;
+typedef int conn_fd;
 
 #endif /* SRCS_EVENT_CONNECTION */

@@ -1,5 +1,5 @@
-#include "config/ServerConfig.hpp"
-#include "config/config.hpp"
+#include "config/Config.hpp"
+#include "config/create_listen_fd_map.hpp"
 #include "event/event.hpp"
 #include <cstdlib>
 #include <iostream>
@@ -20,9 +20,10 @@ static const char *resolve_config_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char      *config_file_path = resolve_config_file(argc, argv);
-  server_list_type server_list      = read_config(config_file_path);
-  socket_list_type socket_list      = create_socket_map(server_list);
-  listen_event(socket_list);
+  const char *config_file_path = resolve_config_file(argc, argv);
+  server_list server_list      = read_config(config_file_path);
+  std::map<listen_fd, conf_group> listen_fd_map =
+      create_socket_map(server_list);
+  listen_event(listen_fd_map);
   return (0);
 }

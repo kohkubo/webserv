@@ -1,12 +1,12 @@
-#include "config/ServerConfig.hpp"
-#include "config/config.hpp"
+#include "config/Config.hpp"
+#include "config/create_listen_fd_map.hpp"
 #include "gtest/gtest.h"
 #include <vector>
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
 
 TEST(read_config_test, simple_test) {
-  server_list_type server_list = read_config(SAMPLE_CONF);
+  server_list server_list = read_config(SAMPLE_CONF);
 
   EXPECT_EQ(server_list[0].listen_address_, "0.0.0.0");
   EXPECT_EQ(server_list[0].listen_port_, "5500");
