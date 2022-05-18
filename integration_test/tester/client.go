@@ -1,4 +1,4 @@
-package main
+package tester
 
 import (
 	"fmt"
@@ -14,16 +14,17 @@ import (
 //       予期しないエラーに関してはlog.Fatal()してる
 
 type Client struct {
-	Port         string
-	ReqPayload   []string
-	ExpectHeader http.Header
-	ExpectBody   []byte
-	conn         net.Conn
-	method       string
-	resp         *http.Response
+	Port             string
+	ReqPayload       []string
+	ExpectStatusCode int
+	ExpectHeader     http.Header
+	ExpectBody       []byte
+	conn             net.Conn
+	method           string
+	resp             *http.Response
 }
 
-// constructor的な存在
+// constructor
 func NewClient(c *Client) *Client {
 	conn, err := connect(c.Port)
 	if err != nil {
@@ -32,15 +33,6 @@ func NewClient(c *Client) *Client {
 	c.conn = conn
 	c.method = resolveMethod(c.ReqPayload)
 	return c
-}
-
-// コネクションを確立, connを通して送受信できる
-func connect(port string) (net.Conn, error) {
-	conn, err := net.Dial("tcp", "localhost:"+port)
-	if err != nil {
-		return nil, fmt.Errorf("connect: %w", err)
-	}
-	return conn, nil
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
@@ -63,17 +55,18 @@ func resolveMethod(reqPayload []string) string {
 }
 
 // リクエスト送信
-func (c *Client) sendRequest() {
+func (c *Client) SendRequest() {
 	for _, r := range c.ReqPayload {
 		_, err := fmt.Fprintf(c.conn, r)
 		if err != nil {
 			log.Fatalf("sendRequest: %v", err)
 		}
 	}
+	c.ReqPayload = nil
 }
 
 // 先頭のReqPayloadのみ送信
-func (c *Client) sendPartialRequest() {
+func (c *Client) SendPartialRequest() {
 	if len(c.ReqPayload) != 0 {
 		r := c.ReqPayload[0]
 		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除したものに更新
@@ -86,29 +79,35 @@ func (c *Client) sendPartialRequest() {
 }
 
 // レスポンスを受ける
-func (c *Client) recvResponse() error {
+func (c *Client) RecvResponse() {
 	if len(c.ReqPayload) != 0 {
-		return fmt.Errorf("recvResponse: ReqPayload is not empty!")
+		log.Fatalf("recvResponse: ReqPayload is not empty!")
 	}
-	resp, err := readResponse(c.conn, c.method)
+	resp, err := readParseResponse(c.conn, c.method)
 	if err != nil {
-		return fmt.Errorf("recvResponse: %w", err)
+		log.Fatalf("recvResponse: %v", err)
 	}
 	c.resp = resp
-	return nil
+	c.conn.Close()
 }
 
-// レスポンスを受けて, 結果を確認するまで行う
-func (c *Client) isExpectedResult() bool {
-	defer c.conn.Close()
-	err := c.recvResponse()
+// レスポンスが期待するものか確認する
+func (c *Client) IsExpectedResponse() bool {
+	result, err := compareResponse(c.resp, c.ExpectStatusCode, c.ExpectHeader, c.ExpectBody)
 	if err != nil {
 		log.Fatalf("isExpectedResult: %v", err)
 	}
-	defer c.resp.Body.Close()
-	result, err := compareResponse(c.resp, c.ExpectHeader, c.ExpectBody)
-	if err != nil {
-		log.Fatalf("isExpectedResult: %v", err)
-	}
+	c.resp.Body.Close()
 	return result == 0
+}
+
+// リクエストの送信, 受信, 結果の確認まで行う
+// 成功->true, 失敗->false
+func (c *Client) Test() bool {
+	c.SendRequest()
+	c.RecvResponse()
+	if !c.IsExpectedResponse() {
+		return false
+	}
+	return true
 }

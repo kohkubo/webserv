@@ -1,40 +1,26 @@
-package main
+package tester
 
 import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
+	"net"
 	"net/http"
 	"os"
 	"reflect"
 )
 
-// for color print
-const (
-	red   = "\033[31m"
-	green = "\033[32m"
-	reset = "\033[0m"
-)
-
-// 実行するテストの名前と関数を渡してその結果に合わせたメッセージを出力する関数です
-func testHandler(name string, test func() (bool, error)) {
-	fmt.Print("[ " + name + " ] ")
-	ok, err := test()
+// コネクションを確立, connを通して送受信できる
+func connect(port string) (net.Conn, error) {
+	conn, err := net.Dial("tcp", "localhost:"+port)
 	if err != nil {
-		log.Fatalf("erro occured!: %v", err)
+		return nil, fmt.Errorf("connect: %w", err)
 	}
-	if ok {
-		fmt.Println(green, "ok", reset)
-	} else {
-		fmt.Println(red, "error", reset)
-		os.Exit(1) // TODO: テスト全体でエラーがあれば最後にexit(1)する
-	}
+	return conn, nil
 }
 
 // src(conn)からリクエストを受け取りパースする
-// TODO: タイムアウト実装
-func readResponse(src io.Reader, method string) (*http.Response, error) {
+func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 	r := bufio.NewReader(src)
 	req := &http.Request{
 		Method: method,
@@ -47,8 +33,12 @@ func readResponse(src io.Reader, method string) (*http.Response, error) {
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func compareResponse(resp *http.Response, expectHeader http.Header, expectBody []byte) (int, error) {
+func compareResponse(resp *http.Response, expectStatusCode int, expectHeader http.Header, expectBody []byte) (int, error) {
 	var diff_flag int
+	if resp.StatusCode != expectStatusCode {
+		fmt.Fprintf(os.Stderr, "status code diff: actual=%v expect=%v\n", resp.StatusCode, expectStatusCode)
+		diff_flag++
+	}
 	for expect_k, expect_v := range expectHeader {
 		if actual_v, exist := resp.Header[expect_k]; !exist {
 			fmt.Fprintf(os.Stderr, "header diff: no such header %v\n", expect_k)
