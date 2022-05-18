@@ -76,26 +76,46 @@ void Server::__insert_connection_map(int conn_fd) {
       std::make_pair(conn_fd, Connection(&__listen_fd_map_[conn_fd])));
 }
 
+
+
+HandlerState Server::__state(std::vector<struct pollfd>::iterator it) {
+  if (!it->revents) {
+    return NO_REVENTS;
+  }
+  int listen_flg = __listen_fd_map_.count(it->fd);
+  if (listen_flg) {
+    return INSERT;
+  }
+  if (it->revents & POLLIN) {
+    return RECV;
+  } else if (it->revents & POLLOUT) {
+    return SEND;
+  }
+  return ERROR;
+}
+
 void Server::run_loop() {
   while (1) {
     __reset_pollfds();
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
-      if (!it->revents) {
-        continue;
-      }
-      int listen_flg = __listen_fd_map_.count(it->fd);
-      if (listen_flg) {
+      switch (__state(it)) {
+      case INSERT:
         __insert_connection_map(it->fd);
-        continue;
-      }
-      if (it->revents & POLLIN) {
+        break;
+      case RECV:
         __connection_receive_handler(it->fd);
-      } else if (it->revents & POLLOUT) {
+        break;
+      case SEND:
         __connection_send_handler(it->fd);
+        break;
+      case NO_REVENTS:
+        break;
+      case ERROR:
+        error_log_with_errno("run_loop(): error state.");
+        break;
       }
-      // TODO: 他reventsに対する処理
       nready--;
     }
   }

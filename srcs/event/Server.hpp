@@ -5,6 +5,14 @@
 #include "event/Connection.hpp"
 #include <poll.h>
 
+enum HandlerState {
+  SEND,
+  RECV,
+  INSERT,
+  NO_REVENTS,
+  ERROR,
+};
+
 class Server {
 private:
   std::map<listen_fd, conf_group> __listen_fd_map_;
@@ -25,6 +33,7 @@ private:
   void __connection_receive_handler(int conn_fd);
   void __connection_send_handler(int conn_fd);
   void __insert_connection_map(int conn_fd);
+  HandlerState __state(std::vector<struct pollfd>::iterator it);
 
 public:
   Server(std::map<listen_fd, conf_group> &listen_fd_map)
