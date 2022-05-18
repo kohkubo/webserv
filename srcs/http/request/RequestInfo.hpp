@@ -29,6 +29,10 @@ private:
   std::string                        __host_;
   int                                __port_;
   bool                               __is_close_;
+  std::size_t                        __content_length_;
+
+  // TODO: values_ CGIにわたす形式に合わせる。仮置でmap
+  std::map<std::string, std::string> __values_;
 
 public:
   RequestInfo()
@@ -40,7 +44,8 @@ public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
 
-  void parse_request_header(const std::string &request_string);
+  void parse_request_header(const std::string &request_header);
+  void parse_request_body(const std::string &request_body);
 
 private:
   void        __parse_request_line(const std::string &request_line);
@@ -50,6 +55,7 @@ private:
   std::string __trim_space(std::string str);
   void        __parse_request_host();
   void        __parse_request_connection();
+  void        __parse_request_content_length();
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */
