@@ -9,9 +9,9 @@
 
 const int buf_size = 2048;
 
-void      connection_receive_handler(int                   accfd,
-                                     connection_list_type &connection_list) {
-  Connection       &connection = connection_list[accfd];
+void      connection_receive_handler(int                            accfd,
+                                     std::map<conn_fd, Connection> &conn_fd_map) {
+  Connection       &connection = conn_fd_map[accfd];
   std::vector<char> buf(buf_size);
   ssize_t           rc = recv(accfd, &buf[0], buf_size, MSG_DONTWAIT);
   if (rc == -1) {
@@ -20,7 +20,7 @@ void      connection_receive_handler(int                   accfd,
   if (rc == 0) {
     std::cerr << "closed from client." << std::endl;
     close(accfd);
-    connection_list.erase(accfd);
+    conn_fd_map.erase(accfd);
     return;
   }
   std::string data = std::string(buf.begin(), buf.begin() + rc);
@@ -29,8 +29,9 @@ void      connection_receive_handler(int                   accfd,
   connection.create_response_iter();
 }
 
-void connection_send_handler(int accfd, connection_list_type &connection_list) {
-  Connection &connection = connection_list[accfd];
+void connection_send_handler(int                            accfd,
+                             std::map<conn_fd, Connection> &conn_fd_map) {
+  Connection &connection = conn_fd_map[accfd];
   Request    &request    = connection.get_front_request();
   request.send_response(accfd);
   if (request.is_send_completed()) {

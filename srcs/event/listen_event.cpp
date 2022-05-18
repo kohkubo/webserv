@@ -7,10 +7,11 @@
 #include <poll.h>
 #include <sys/socket.h>
 
-static void set_listen_fd(pollfds_type                          &pollfds,
-                          const std::map<listen_fd, conf_group> &listen_fds) {
-  std::map<listen_fd, conf_group>::const_iterator it = listen_fds.begin();
-  for (; it != listen_fds.end(); it++) {
+static void
+set_listen_fd(pollfds_type                          &pollfds,
+              const std::map<listen_fd, conf_group> &listen_fd_map) {
+  std::map<listen_fd, conf_group>::const_iterator it = listen_fd_map.begin();
+  for (; it != listen_fd_map.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd     = it->first;
     new_pfd.events = POLLIN;
@@ -18,10 +19,11 @@ static void set_listen_fd(pollfds_type                          &pollfds,
   }
 }
 
-static void set_connection_fd(pollfds_type               &pollfds,
-                              const connection_list_type &connection_list) {
-  connection_list_type::const_iterator it = connection_list.begin();
-  for (; it != connection_list.end(); it++) {
+static void
+set_connection_fd(pollfds_type                        &pollfds,
+                  const std::map<conn_fd, Connection> &conn_fd_map) {
+  std::map<conn_fd, Connection>::const_iterator it = conn_fd_map.begin();
+  for (; it != conn_fd_map.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd = it->first;
     if (it->second.is_sending()) {
@@ -34,11 +36,11 @@ static void set_connection_fd(pollfds_type               &pollfds,
 }
 
 static void create_pollfds(pollfds_type                          &pollfds,
-                           const std::map<listen_fd, conf_group> &listen_fds,
-                           const connection_list_type &connection_list) {
+                           const std::map<listen_fd, conf_group> &listen_fd_map,
+                           const std::map<conn_fd, Connection>   &conn_fd_map) {
   pollfds.clear();
-  set_listen_fd(pollfds, listen_fds);
-  set_connection_fd(pollfds, connection_list);
+  set_listen_fd(pollfds, listen_fd_map);
+  set_connection_fd(pollfds, conn_fd_map);
 }
 
 static void debug_put_events_info(int fd, short revents) {
@@ -76,16 +78,16 @@ static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
   return nready;
 }
 
-// pollfds - listen_fds->first , connection_list->first
+// pollfds - listen_fd_map->first , conn_fd_map->first
 
-// listen_fds:     listen_fdとserver_groupの関係を管理
-// connection_list: connection_fdとlisten_fdの関係を管理
-void listen_event(std::map<listen_fd, conf_group> &listen_fds) {
-  connection_list_type connection_list;
-  pollfds_type         pollfds;
+// listen_fd_map:     listen_fdとserver_groupの関係を管理
+// conn_fd_map: connection_fdとlisten_fdの関係を管理
+void listen_event(std::map<listen_fd, conf_group> &listen_fd_map) {
+  std::map<conn_fd, Connection> conn_fd_map;
+  pollfds_type                  pollfds;
 
   while (1) {
-    create_pollfds(pollfds, listen_fds, connection_list);
+    create_pollfds(pollfds, listen_fd_map, conn_fd_map);
     // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
     int                    nready = xpoll(&pollfds[0], pollfds.size(), 0);
     pollfds_type::iterator it     = pollfds.begin();
@@ -94,17 +96,17 @@ void listen_event(std::map<listen_fd, conf_group> &listen_fds) {
         debug_put_events_info(it->fd, it->revents);
         if (it->revents & POLLIN) {
           // TMP: socket_listの要素かどうかでfdを区別
-          int listen_flg = listen_fds.count(it->fd);
+          int listen_flg = listen_fd_map.count(it->fd);
           if (listen_flg) {
             int connection_fd = xaccept(it->fd);
-            connection_list.insert(
-                std::make_pair(connection_fd, Connection(&listen_fds[it->fd])));
+            conn_fd_map.insert(std::make_pair(
+                connection_fd, Connection(&listen_fd_map[it->fd])));
           } else {
-            connection_receive_handler(it->fd, connection_list);
+            connection_receive_handler(it->fd, conn_fd_map);
           }
         }
         if (it->revents & POLLOUT) {
-          connection_send_handler(it->fd, connection_list);
+          connection_send_handler(it->fd, conn_fd_map);
         }
         // TODO: 他reventsに対する処理
         nready--;
