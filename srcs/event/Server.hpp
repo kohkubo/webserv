@@ -3,6 +3,7 @@
 
 #include "config/ServerConfig.hpp"
 #include "event/Connection.hpp"
+#include <poll.h>
 
 class Server {
 private:
