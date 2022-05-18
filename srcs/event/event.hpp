@@ -8,6 +8,4 @@
 
 void listen_event(std::map<listen_fd, conf_group> &listen_fd_map);
 
-typedef std::vector<struct pollfd> pollfds_type;
-
 #endif /* SRCS_EVENT_EVENT_HPP */

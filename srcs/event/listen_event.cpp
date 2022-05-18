@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 
 static void
-set_listen_fd(pollfds_type                          &pollfds,
+set_listen_fd(std::vector<struct pollfd>            &pollfds,
               const std::map<listen_fd, conf_group> &listen_fd_map) {
   std::map<listen_fd, conf_group>::const_iterator it = listen_fd_map.begin();
   for (; it != listen_fd_map.end(); it++) {
@@ -20,7 +20,7 @@ set_listen_fd(pollfds_type                          &pollfds,
 }
 
 static void
-set_connection_fd(pollfds_type                        &pollfds,
+set_connection_fd(std::vector<struct pollfd>          &pollfds,
                   const std::map<conn_fd, Connection> &conn_fd_map) {
   std::map<conn_fd, Connection>::const_iterator it = conn_fd_map.begin();
   for (; it != conn_fd_map.end(); it++) {
@@ -35,7 +35,7 @@ set_connection_fd(pollfds_type                        &pollfds,
   }
 }
 
-static void create_pollfds(pollfds_type                          &pollfds,
+static void create_pollfds(std::vector<struct pollfd>            &pollfds,
                            const std::map<listen_fd, conf_group> &listen_fd_map,
                            const std::map<conn_fd, Connection>   &conn_fd_map) {
   pollfds.clear();
@@ -84,13 +84,13 @@ static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
 // conn_fd_map: connection_fdとlisten_fdの関係を管理
 void listen_event(std::map<listen_fd, conf_group> &listen_fd_map) {
   std::map<conn_fd, Connection> conn_fd_map;
-  pollfds_type                  pollfds;
+  std::vector<struct pollfd>    pollfds;
 
   while (1) {
     create_pollfds(pollfds, listen_fd_map, conn_fd_map);
     // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
-    int                    nready = xpoll(&pollfds[0], pollfds.size(), 0);
-    pollfds_type::iterator it     = pollfds.begin();
+    int nready = xpoll(&pollfds[0], pollfds.size(), 0);
+    std::vector<struct pollfd>::iterator it = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready; it++) {
       if (it->revents) {
         debug_put_events_info(it->fd, it->revents);
