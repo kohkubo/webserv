@@ -16,20 +16,20 @@ static bool is_same_socket(const ServerConfig &serv_x,
          (x->sin_port == y->sin_port);
 }
 
-static socket_list_type::iterator
-find_same_socket(const ServerConfig &conf, socket_list_type &socket_list) {
-  socket_list_type::iterator it = socket_list.begin();
-  for (; it != socket_list.end(); it++) {
+static std::map<listen_fd, conf_group>::iterator
+find_same_socket(const ServerConfig              &conf,
+                 std::map<listen_fd, conf_group> &listen_fd_map) {
+  std::map<listen_fd, conf_group>::iterator it = listen_fd_map.begin();
+  for (; it != listen_fd_map.end(); it++) {
     if (is_same_socket(conf, *(it->second[0])))
       break;
   }
   return it;
 }
 
-static bool
-is_include_same_server_name(const ServerConfig               &conf,
-                            std::vector<const ServerConfig *> group) {
-  std::vector<const ServerConfig *>::iterator it = group.begin();
+static bool is_include_same_server_name(const ServerConfig &conf,
+                                        conf_group          group) {
+  conf_group::iterator it = group.begin();
   for (; it != group.end(); it++) {
     if ((*it)->server_name_ == conf.server_name_)
       return true;
@@ -37,12 +37,14 @@ is_include_same_server_name(const ServerConfig               &conf,
   return false;
 }
 
-socket_list_type create_socket_map(const server_list_type &server_list) {
-  socket_list_type                 socket_list;
-  server_list_type::const_iterator sl_it = server_list.begin();
+std::map<listen_fd, conf_group>
+create_socket_map(const server_list &server_list) {
+  std::map<listen_fd, conf_group> listen_fd_map;
+  server_list::const_iterator     sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
-    socket_list_type::iterator it = find_same_socket(*sl_it, socket_list);
-    if (it != socket_list.end()) {
+    std::map<listen_fd, conf_group>::iterator it =
+        find_same_socket(*sl_it, listen_fd_map);
+    if (it != listen_fd_map.end()) {
       if (is_include_same_server_name(*sl_it, it->second)) {
         std::cout << "server_name conflicts." << std::endl;
         continue;
@@ -50,10 +52,9 @@ socket_list_type create_socket_map(const server_list_type &server_list) {
       it->second.push_back(&(*sl_it));
     } else {
       int new_socket = open_new_socket(*sl_it);
-      socket_list.insert(
-          std::make_pair(new_socket, std::vector<const ServerConfig *>()));
-      socket_list[new_socket].push_back(&(*sl_it));
+      listen_fd_map.insert(std::make_pair(new_socket, conf_group()));
+      listen_fd_map[new_socket].push_back(&(*sl_it));
     }
   }
-  return socket_list;
+  return listen_fd_map;
 }
