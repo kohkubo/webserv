@@ -8,8 +8,8 @@
 #include <sys/socket.h>
 
 static void
-set_listen_fd(std::vector<struct pollfd>            &pollfds,
-              const std::map<listen_fd, conf_group> &listen_fd_map) {
+add_listenfd_to_pollfds(std::vector<struct pollfd>            &pollfds,
+                        const std::map<listen_fd, conf_group> &listen_fd_map) {
   std::map<listen_fd, conf_group>::const_iterator it = listen_fd_map.begin();
   for (; it != listen_fd_map.end(); it++) {
     struct pollfd new_pfd;
@@ -20,8 +20,8 @@ set_listen_fd(std::vector<struct pollfd>            &pollfds,
 }
 
 static void
-set_connection_fd(std::vector<struct pollfd>          &pollfds,
-                  const std::map<conn_fd, Connection> &conn_fd_map) {
+add_connfd_to_pollfds(std::vector<struct pollfd>          &pollfds,
+                      const std::map<conn_fd, Connection> &conn_fd_map) {
   std::map<conn_fd, Connection>::const_iterator it = conn_fd_map.begin();
   for (; it != conn_fd_map.end(); it++) {
     struct pollfd new_pfd;
@@ -35,12 +35,12 @@ set_connection_fd(std::vector<struct pollfd>          &pollfds,
   }
 }
 
-static void create_pollfds(std::vector<struct pollfd>            &pollfds,
-                           const std::map<listen_fd, conf_group> &listen_fd_map,
-                           const std::map<conn_fd, Connection>   &conn_fd_map) {
+static void reset_pollfds(std::vector<struct pollfd>            &pollfds,
+                          const std::map<listen_fd, conf_group> &listen_fd_map,
+                          const std::map<conn_fd, Connection>   &conn_fd_map) {
   pollfds.clear();
-  set_listen_fd(pollfds, listen_fd_map);
-  set_connection_fd(pollfds, conn_fd_map);
+  add_listenfd_to_pollfds(pollfds, listen_fd_map);
+  add_connfd_to_pollfds(pollfds, conn_fd_map);
 }
 
 static void debug_put_events_info(int fd, short revents) {
@@ -87,7 +87,7 @@ void listen_event(std::map<listen_fd, conf_group> &listen_fd_map) {
   std::vector<struct pollfd>    pollfds;
 
   while (1) {
-    create_pollfds(pollfds, listen_fd_map, conn_fd_map);
+    reset_pollfds(pollfds, listen_fd_map, conn_fd_map);
     // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
     int nready = xpoll(&pollfds[0], pollfds.size(), 0);
     std::vector<struct pollfd>::iterator it = pollfds.begin();

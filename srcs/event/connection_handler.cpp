@@ -14,19 +14,22 @@ void      connection_receive_handler(int                            accfd,
   Connection       &connection = conn_fd_map[accfd];
   std::vector<char> buf(buf_size);
   ssize_t           rc = recv(accfd, &buf[0], buf_size, MSG_DONTWAIT);
-  if (rc == -1) {
+  switch (rc) {
+  case -1:
     error_log_with_errno("recv() failed.");
-  }
-  if (rc == 0) {
+    break;
+  case 0:
     std::cerr << "closed from client." << std::endl;
     close(accfd);
     conn_fd_map.erase(accfd);
     return;
+  default:
+    std::string data = std::string(buf.begin(), buf.begin() + rc);
+    connection.parse_buffer(data);
+    // cgi用のstateが必要になるかも
+    connection.create_response_iter();
+    break;
   }
-  std::string data = std::string(buf.begin(), buf.begin() + rc);
-  connection.parse_buffer(data);
-  // cgi用のstateが必要になるかも
-  connection.create_response_iter();
 }
 
 void connection_send_handler(int                            accfd,
