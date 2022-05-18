@@ -1,7 +1,7 @@
 #ifndef SRCS_EVENT_REQUEST_HPP
 #define SRCS_EVENT_REQUEST_HPP
 
-#include "config/ServerConfig.hpp"
+#include "config/Config.hpp"
 #include "http/HttpMessage.hpp"
 #include <string>
 #include <sys/types.h>

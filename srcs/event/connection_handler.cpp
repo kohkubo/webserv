@@ -1,4 +1,4 @@
-#include "config/ServerConfig.hpp"
+#include "config/Config.hpp"
 #include "event/Connection.hpp"
 #include "utils/utils.hpp"
 #include <sys/socket.h>

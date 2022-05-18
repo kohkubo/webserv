@@ -1,9 +1,10 @@
-#include "ServerConfig.hpp"
-#include "utils/file_io_utils.hpp"
-#include "utils/tokenize.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+
+#include "config/Config.hpp"
+#include "utils/file_io_utils.hpp"
+#include "utils/tokenize.hpp"
 
 server_list read_config(const char *config_file_path) {
   std::string  contents = read_file_tostring(config_file_path);

@@ -1,14 +1,15 @@
 #ifndef SRCS_CONFIG_SERVERCONFIG_HPP
 #define SRCS_CONFIG_SERVERCONFIG_HPP
 
-#include "utils/tokenize.hpp"
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#define CONFIG_DELIMITER "\v\r\f\t\n {};"
-#define CONFIG_SKIP      "\v\r\f\t\n "
+#include "utils/tokenize.hpp"
+
+const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
+const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
 
 class ServerConfig {
 public:
