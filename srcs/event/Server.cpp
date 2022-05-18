@@ -76,8 +76,6 @@ void Server::__insert_connection_map(int conn_fd) {
       std::make_pair(conn_fd, Connection(&__listen_fd_map_[conn_fd])));
 }
 
-
-
 HandlerState Server::__state(std::vector<struct pollfd>::iterator it) {
   if (!it->revents) {
     return NO_REVENTS;
