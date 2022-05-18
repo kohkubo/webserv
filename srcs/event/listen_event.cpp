@@ -20,9 +20,9 @@ add_listenfd_to_pollfds(std::vector<struct pollfd>            &pollfds,
 }
 
 static void
-add_connfd_to_pollfds(std::vector<struct pollfd>          &pollfds,
-                      const std::map<conn_fd, Connection> &conn_fd_map) {
-  std::map<conn_fd, Connection>::const_iterator it = conn_fd_map.begin();
+add_connfd_to_pollfds(std::vector<struct pollfd>      &pollfds,
+                      const std::map<int, Connection> &conn_fd_map) {
+  std::map<int, Connection>::const_iterator it = conn_fd_map.begin();
   for (; it != conn_fd_map.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd = it->first;
@@ -37,7 +37,7 @@ add_connfd_to_pollfds(std::vector<struct pollfd>          &pollfds,
 
 static void reset_pollfds(std::vector<struct pollfd>            &pollfds,
                           const std::map<listen_fd, conf_group> &listen_fd_map,
-                          const std::map<conn_fd, Connection>   &conn_fd_map) {
+                          const std::map<int, Connection>       &conn_fd_map) {
   pollfds.clear();
   add_listenfd_to_pollfds(pollfds, listen_fd_map);
   add_connfd_to_pollfds(pollfds, conn_fd_map);
@@ -78,13 +78,9 @@ static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
   return nready;
 }
 
-// pollfds - listen_fd_map->first , conn_fd_map->first
-
-// listen_fd_map:     listen_fdとserver_groupの関係を管理
-// conn_fd_map: connection_fdとlisten_fdの関係を管理
 void listen_event(std::map<listen_fd, conf_group> &listen_fd_map) {
-  std::map<conn_fd, Connection> conn_fd_map;
-  std::vector<struct pollfd>    pollfds;
+  std::map<int, Connection>  conn_fd_map;
+  std::vector<struct pollfd> pollfds;
 
   while (1) {
     reset_pollfds(pollfds, listen_fd_map, conn_fd_map);

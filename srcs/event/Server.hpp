@@ -8,7 +8,7 @@
 class Server {
 private:
   std::map<listen_fd, conf_group> __listen_fd_map_;
-  std::map<conn_fd, Connection>   __conn_fd_map_;
+  std::map<int, Connection>       __conn_fd_map_;
   std::vector<struct pollfd>      __pollfds_;
 
 private:
