@@ -28,10 +28,12 @@ private:
   std::map<std::string, std::string> __field_map_;
   std::string                        __host_;
   int                                __port_;
+  bool                               __is_close_;
 
 public:
   RequestInfo()
-      : __method_(UNKNOWN) {}
+      : __method_(UNKNOWN)
+      , __is_close_(false) {}
 
   class BadRequestException : public std::logic_error {
   public:
@@ -47,6 +49,7 @@ private:
   bool        __is_comma_sparated(std::string &field_name);
   std::string __trim_space(std::string str);
   void        __parse_request_host();
+  void        __parse_request_connection();
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

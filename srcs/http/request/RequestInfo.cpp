@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "http/const/const_delimiter.hpp"
+#include "utils/utils.hpp"
 
 RequestInfo::BadRequestException::BadRequestException(const std::string &msg)
     : logic_error(msg) {}
@@ -18,6 +19,7 @@ void RequestInfo::parse_request_header(const std::string &request_string) {
 
   // call each field's parser
   __parse_request_host();
+  __parse_request_connection();
 }
 
 // request-line = method SP request-target SP HTTP-version (CRLF)
@@ -84,6 +86,7 @@ std::string RequestInfo::__trim_space(std::string str) {
   return str;
 }
 
+// TODO: hostとportで分ける必要あるか確認
 void RequestInfo::__parse_request_host() {
   if (!__field_map_.count("Host")) {
     throw BadRequestException();
@@ -93,5 +96,15 @@ void RequestInfo::__parse_request_host() {
   __port_         = atoi(__field_map_["Host"].substr(pos + 1).c_str());
   if (__port_ < 0 || __port_ > 65535) {
     throw BadRequestException();
+  }
+}
+
+void RequestInfo::__parse_request_connection() {
+  if (!__field_map_.count("Connection")) {
+    return;
+  }
+  std::string value = tolower(__field_map_["Connection"]);
+  if (value == "close") {
+    __is_close_ = true;
   }
 }
