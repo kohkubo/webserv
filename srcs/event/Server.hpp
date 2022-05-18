@@ -1,7 +1,7 @@
 #ifndef SRCS_EVENT_SERVER_HPP
 #define SRCS_EVENT_SERVER_HPP
 
-#include "config/ServerConfig.hpp"
+#include "config/Config.hpp"
 #include "event/Connection.hpp"
 #include <poll.h>
 

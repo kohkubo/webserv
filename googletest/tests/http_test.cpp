@@ -1,4 +1,4 @@
-#include "config/ServerConfig.hpp"
+#include "config/Config.hpp"
 #include "http/HttpMessage.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
@@ -14,23 +14,23 @@
 #include <sys/types.h>
 
 TEST(http_test, create_response_info_get_normal) {
-  std::string  expect        = "HTTP/1.1 200 OK\r\n"
-                               "Content-Length: 127\r\n"
-                               "Content-Type: text/html\r\n"
-                               "Connection: close\r\n"
-                               "\r\n"
-                               "<!DOCTYPE html>\n"
-                               "<html>\n"
-                               "    <head>\n"
-                               "        <title>Basic Web Page</title>\n"
-                               "    </head>\n"
-                               "    <body>\n"
-                               "Hello World!\n"
-                               "    </body>\n"
-                               "</html>";
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  std::string expect        = "HTTP/1.1 200 OK\r\n"
+                              "Content-Length: 127\r\n"
+                              "Content-Type: text/html\r\n"
+                              "Connection: close\r\n"
+                              "\r\n"
+                              "<!DOCTYPE html>\n"
+                              "<html>\n"
+                              "    <head>\n"
+                              "        <title>Basic Web Page</title>\n"
+                              "    </head>\n"
+                              "    <body>\n"
+                              "Hello World!\n"
+                              "    </body>\n"
+                              "</html>";
+  Config      server_config = Config();
+  server_config.root_       = "../html";
+  server_config.index_      = "index.html";
   HttpMessage request_info;
   request_info.method_  = GET;
   request_info.url_     = "/";
@@ -51,9 +51,9 @@ TEST(http_test, create_response_info_get_normal) {
 }
 
 TEST(http_test, create_response_info_get_400) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  Config server_config = Config();
+  server_config.root_  = "../html";
+  server_config.index_ = "index.html";
   HttpMessage request_info;
   request_info.method_  = GET;
   request_info.url_     = "/";
@@ -69,9 +69,9 @@ TEST(http_test, create_response_info_get_400) {
 }
 
 TEST(http_test, create_response_info_get_404) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  Config server_config = Config();
+  server_config.root_  = "../html";
+  server_config.index_ = "index.html";
   HttpMessage request_info;
   request_info.method_  = GET;
   request_info.url_     = "/hogehoge.html";
@@ -89,9 +89,9 @@ TEST(http_test, create_response_info_get_404) {
 }
 
 TEST(http_test, create_response_info_get_403) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  Config server_config = Config();
+  server_config.root_  = "../html";
+  server_config.index_ = "index.html";
   HttpMessage request_info;
   request_info.method_  = GET;
   request_info.url_     = "/000.html";
@@ -112,11 +112,11 @@ TEST(http_test, create_response_info_get_403) {
 }
 
 TEST(http_test, create_response_info_delete_normal) {
-  std::string  expect        = "HTTP/1.1 204 No Content\r\n"
-                               "Connection: close\r\n\r\n";
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  std::string expect        = "HTTP/1.1 204 No Content\r\n"
+                              "Connection: close\r\n\r\n";
+  Config      server_config = Config();
+  server_config.root_       = "../html";
+  server_config.index_      = "index.html";
   HttpMessage request_info;
   request_info.method_  = DELETE;
   request_info.url_     = "/delete_target.html";
@@ -138,9 +138,9 @@ TEST(http_test, create_response_info_delete_normal) {
 }
 
 TEST(http_test, create_response_info_delete_404) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  Config server_config = Config();
+  server_config.root_  = "../html";
+  server_config.index_ = "index.html";
   HttpMessage request_info;
   request_info.method_  = DELETE;
   request_info.url_     = "/delete_target.html";
@@ -157,9 +157,9 @@ TEST(http_test, create_response_info_delete_404) {
 }
 
 TEST(http_test, create_response_info_delete_403) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  Config server_config = Config();
+  server_config.root_  = "../html";
+  server_config.index_ = "index.html";
   HttpMessage request_info;
   request_info.method_  = DELETE;
   request_info.url_     = "/000.html";
@@ -180,9 +180,9 @@ TEST(http_test, create_response_info_delete_403) {
 }
 
 TEST(http_test, create_response_info_delete_400) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "../html";
-  server_config.index_       = "index.html";
+  Config server_config = Config();
+  server_config.root_  = "../html";
+  server_config.index_ = "index.html";
   HttpMessage request_info;
   request_info.method_         = DELETE;
   request_info.url_            = "/hogehoge.html";
@@ -207,9 +207,9 @@ TEST(http_test, create_response_info_delete_400) {
 #define NO_SUCH_FILE       "no such file"
 
 TEST(http_test, method_get) {
-  ServerConfig server_config = ServerConfig();
-  server_config.root_        = "./tdata/";
-  server_config.index_       = "test.txt";
+  Config server_config = Config();
+  server_config.root_  = "./tdata/";
+  server_config.index_ = "test.txt";
   HttpMessage      request_info;
   http_message_map response_info;
   request_info.url_  = "/";
@@ -224,7 +224,7 @@ TEST(http_test, method_get) {
 // 今はget()の中でNOT_FOUNDページを挿入するようになっているため
 // テスト側からNOT_FOUNDページの中身について確認するのが難しいのでボディのテスト保留
 TEST(http_test, target_file_not_exist) {
-  ServerConfig     server_config = ServerConfig();
+  Config           server_config = Config();
 
   HttpMessage      request_info;
   http_message_map response_info;
