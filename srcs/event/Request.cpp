@@ -17,7 +17,7 @@ void Request::parse_body(const std::string &body) {
   __state_ = PENDING;
 }
 
-void Request::create_response(const ServerConfig &conf) {
+void Request::create_response(const Config &conf) {
   if (get_state() != PENDING) {
     return;
   }

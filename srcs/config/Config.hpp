@@ -1,16 +1,17 @@
 #ifndef SRCS_CONFIG_SERVERCONFIG_HPP
 #define SRCS_CONFIG_SERVERCONFIG_HPP
 
-#include "utils/tokenize.hpp"
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#define CONFIG_DELIMITER "\v\r\f\t\n {};"
-#define CONFIG_SKIP      "\v\r\f\t\n "
+#include "utils/tokenize.hpp"
 
-class ServerConfig {
+const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
+const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
+
+class Config {
 public:
   std::string                listen_address_;
   std::string                listen_port_;
@@ -32,10 +33,10 @@ public:
   };
 
 public:
-  ServerConfig();
-  ~ServerConfig();
-  ServerConfig(const ServerConfig &other);
-  ServerConfig  &operator=(const ServerConfig &other);
+  Config();
+  ~Config();
+  Config(const Config &other);
+  Config        &operator=(const Config &other);
   token_iterator parse(token_iterator pos, token_iterator end);
 
 private:
@@ -58,10 +59,10 @@ private:
                                           token_iterator            end);
 };
 
-// TODO: ServerConfig ポインタ -> 実体
+// TODO: Config ポインタ -> 実体
 // conf_group: 同じソケットのserver_confの集合
-typedef std::vector<ServerConfig>         server_list;
-typedef std::vector<const ServerConfig *> conf_group;
-typedef int                               listen_fd;
+typedef std::vector<Config>         server_list;
+typedef std::vector<const Config *> conf_group;
+typedef int                         listen_fd;
 
 #endif /* SRCS_CONFIG_SERVERCONFIG_HPP */

@@ -8,7 +8,7 @@
 
 // TODO: string -> vector<char>
 
-typedef class ServerConfig ServerConfig;
+typedef class Config Config;
 
 // TODO: こっちでresponse, stateを持つ
 class Connection {
