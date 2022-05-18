@@ -8,6 +8,7 @@
 #include <cstdlib>
 
 #include "event/Connection.hpp"
+#include "event/Response.hpp"
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
@@ -58,16 +59,22 @@ void Server::__connection_receive_handler(int conn_fd) {
 }
 
 void Server::__connection_send_handler(int conn_fd) {
-  Request &request = __conn_fd_map_[conn_fd].get_front_request();
-  request.send_response(conn_fd);
-  if (request.is_send_completed()) {
-    if (request.is_close()) {
+  Response &response = __conn_fd_map_[conn_fd].get_front_response();
+  response.send_message(conn_fd);
+  if (response.is_send_completed()) {
+    if (response.is_close()) {
       shutdown(conn_fd, SHUT_WR);
-      request.set_state(CLOSING);
+      response.set_closing();
       return;
     }
-    __conn_fd_map_[conn_fd].erase_front_req();
+    __conn_fd_map_[conn_fd].erase_front_response();
   }
+}
+
+void Server::__insert_connection_map(int conn_fd) {
+  conn_fd = xaccept(conn_fd);
+  __conn_fd_map_.insert(
+      std::make_pair(conn_fd, Connection(&__listen_fd_map_[conn_fd])));
 }
 
 void Server::run_loop() {
@@ -81,9 +88,7 @@ void Server::run_loop() {
       }
       int listen_flg = __listen_fd_map_.count(it->fd);
       if (listen_flg) {
-        int conn_fd = xaccept(it->fd);
-        __conn_fd_map_.insert(
-            std::make_pair(conn_fd, Connection(&__listen_fd_map_[it->fd])));
+        __insert_connection_map(it->fd);
         continue;
       }
       if (it->revents & POLLIN) {
