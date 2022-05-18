@@ -71,7 +71,7 @@ static void listen_passive_socket(int listen_fd) {
   }
 }
 
-int open_new_socket(const ServerConfig &config) {
+int open_new_socket(const Config &config) {
   int listen_fd = get_listen_fd(config.addrinfo_);
   bind_socket(listen_fd, config.addrinfo_);
   listen_passive_socket(listen_fd);

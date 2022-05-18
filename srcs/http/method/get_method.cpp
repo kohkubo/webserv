@@ -30,8 +30,8 @@ static HttpStatusCode check_url(const std::string &target_filepath) {
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map method_get(const ServerConfig &server_config,
-                            HttpMessage        &request_info) {
+http_message_map method_get(const Config &server_config,
+                            HttpMessage  &request_info) {
   http_message_map response_info;
   std::string target_filepath = resolve_url(server_config, request_info.url_);
 

@@ -12,18 +12,18 @@ TEST(server_config_test, server_exception) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
+                 Config::UnexpectedTokenException);
   }
   {
     std::string  str = "server {\n"
                        "\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
+                 Config::UnexpectedTokenException);
   }
   {
     std::string  str = "server {\n"
@@ -32,9 +32,9 @@ TEST(server_config_test, server_exception) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
+                 Config::UnexpectedTokenException);
   }
 }
 
@@ -45,9 +45,9 @@ TEST(server_config_test, parse_string_derective_exception) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
+                 Config::UnexpectedTokenException);
   }
   {
     std::string  str = "server {\n"
@@ -55,9 +55,9 @@ TEST(server_config_test, parse_string_derective_exception) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
+                 Config::UnexpectedTokenException);
   }
 }
 
@@ -68,7 +68,7 @@ TEST(server_config_test, parse_string_derective) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.server_name_, "example.com");
   }
@@ -78,7 +78,7 @@ TEST(server_config_test, parse_string_derective) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.server_name_, "example.com");
   }
@@ -91,9 +91,9 @@ TEST(server_config_test, listen_except) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
+                 Config::UnexpectedTokenException);
   }
   {
     std::string  str = "server {\n"
@@ -101,9 +101,9 @@ TEST(server_config_test, listen_except) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     EXPECT_THROW(conf.parse(l.begin(), l.end()),
-                 ServerConfig::UnexpectedTokenException);
+                 Config::UnexpectedTokenException);
   }
 }
 
@@ -114,7 +114,7 @@ TEST(server_config_test, parse_listen) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_port_, "888");
   }
@@ -124,7 +124,7 @@ TEST(server_config_test, parse_listen) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_address_, "192.168.0.1");
   }
@@ -134,7 +134,7 @@ TEST(server_config_test, parse_listen) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_address_, "192.168.0.1");
     EXPECT_EQ(conf.listen_port_, "80");
@@ -145,7 +145,7 @@ TEST(server_config_test, parse_listen) {
                        "}\n";
 
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.listen_address_, "localhost");
     EXPECT_EQ(conf.listen_port_, "80");
@@ -159,7 +159,7 @@ TEST(server_config_test, parse_map_directive) {
                        "error_page 500 /500.html;\n"
                        "}\n";
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.error_pages_.size(), 2);
     EXPECT_EQ(conf.error_pages_[404], "/404.html");
@@ -173,7 +173,7 @@ TEST(server_config_test, parse_boolean_directive) {
                        "autoindex on;\n"
                        "}\n";
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.autoindex_, true);
   }
@@ -182,7 +182,7 @@ TEST(server_config_test, parse_boolean_directive) {
                        "autoindex off;\n"
                        "}\n";
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.autoindex_, false);
   }
@@ -194,7 +194,7 @@ TEST(server_config_test, parse_sizet_directive) {
                        "client_max_body_size 1000;\n"
                        "}\n";
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.client_max_body_size_, 1000);
   }
@@ -206,7 +206,7 @@ TEST(server_config_test, parse_vector_directive) {
                        "limit_except GET POST;\n"
                        "}\n";
     token_vector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    ServerConfig conf;
+    Config       conf;
     conf.parse(l.begin(), l.end());
     EXPECT_EQ(conf.limit_except_.size(), 2);
     EXPECT_EQ(conf.limit_except_[0], "GET");

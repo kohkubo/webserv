@@ -7,8 +7,7 @@
 
 #include "config/Config.hpp"
 
-static bool is_same_socket(const ServerConfig &serv_x,
-                           const ServerConfig &serv_y) {
+static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
   struct sockaddr_in *x, *y;
   x = reinterpret_cast<sockaddr_in *>(serv_x.addrinfo_->ai_addr);
   y = reinterpret_cast<sockaddr_in *>(serv_y.addrinfo_->ai_addr);
@@ -17,7 +16,7 @@ static bool is_same_socket(const ServerConfig &serv_x,
 }
 
 static std::map<listen_fd, conf_group>::iterator
-find_same_socket(const ServerConfig              &conf,
+find_same_socket(const Config                    &conf,
                  std::map<listen_fd, conf_group> &listen_fd_map) {
   std::map<listen_fd, conf_group>::iterator it = listen_fd_map.begin();
   for (; it != listen_fd_map.end(); it++) {
@@ -27,8 +26,7 @@ find_same_socket(const ServerConfig              &conf,
   return it;
 }
 
-static bool is_include_same_server_name(const ServerConfig &conf,
-                                        conf_group          group) {
+static bool is_include_same_server_name(const Config &conf, conf_group group) {
   conf_group::iterator it = group.begin();
   for (; it != group.end(); it++) {
     if ((*it)->server_name_ == conf.server_name_)

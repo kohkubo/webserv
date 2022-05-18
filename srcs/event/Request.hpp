@@ -39,7 +39,7 @@ public:
 
   void parse_header(const std::string &header);
   void parse_body(const std::string &body);
-  void create_response(const ServerConfig &conf);
+  void create_response(const Config &conf);
   void send_response(int socket_fd);
 };
 
