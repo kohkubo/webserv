@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_CONNECTION
-#define SRCS_EVENT_CONNECTION
+#ifndef SRCS_EVENT_CONNECTION_HPP
+#define SRCS_EVENT_CONNECTION_HPP
 
 #include "event/Request.hpp"
 #include <deque>
@@ -60,4 +60,4 @@ public:
 
 typedef int conn_fd;
 
-#endif /* SRCS_EVENT_CONNECTION */
+#endif /* SRCS_EVENT_CONNECTION_HPP */
