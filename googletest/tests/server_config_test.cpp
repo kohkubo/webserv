@@ -214,17 +214,21 @@ TEST(server_config_test, parse_vector_directive) {
   }
 }
 
-TEST(server_config_test, server_group_test) {
-  server_list_type  server_list  = read_config(SAMPLE_CONF);
-  server_group_type server_group = create_server_group(server_list);
+TEST(server_config_test, socket_list_test) {
+  server_list                     server_list = read_config(SAMPLE_CONF);
+  std::map<listen_fd, conf_group> listen_fd_map =
+      create_socket_map(server_list);
 
-  EXPECT_EQ(server_group[0][0]->listen_address_, "0.0.0.0");
-  EXPECT_EQ(server_group[0][0]->listen_port_, "5500");
-  EXPECT_EQ(server_group[0][1]->listen_address_, "0.0.0.0");
-  EXPECT_EQ(server_group[0][1]->listen_port_, "5500");
-  EXPECT_EQ(server_group[1][0]->listen_address_, "0.0.0.0");
-  EXPECT_EQ(server_group[1][0]->listen_port_, "5001");
-  EXPECT_EQ(server_group.size(), 2);
-  EXPECT_EQ(server_group[0].size(), 2);
-  EXPECT_EQ(server_group[1].size(), 1);
+  EXPECT_EQ(listen_fd_map.size(), 2);
+
+  std::map<listen_fd, conf_group>::iterator it = listen_fd_map.begin();
+  EXPECT_EQ((it->second).size(), 2);
+  EXPECT_EQ((it->second)[0]->listen_address_, "0.0.0.0");
+  EXPECT_EQ((it->second)[0]->listen_port_, "5500");
+  EXPECT_EQ((it->second)[1]->listen_address_, "0.0.0.0");
+  EXPECT_EQ((it->second)[1]->listen_port_, "5500");
+  it++;
+  EXPECT_EQ((it->second).size(), 1);
+  EXPECT_EQ((it->second)[0]->listen_address_, "0.0.0.0");
+  EXPECT_EQ((it->second)[0]->listen_port_, "5001");
 }

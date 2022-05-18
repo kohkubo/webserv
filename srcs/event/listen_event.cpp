@@ -5,22 +5,11 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-static socket_list_type
-create_socket_map(const server_group_type &server_group) {
-  socket_list_type                  res;
-
-  server_group_type::const_iterator it = server_group.begin();
-  for (; it != server_group.end(); it++) {
-    int new_socket = open_new_socket(*((*it)[0]));
-    res.insert(std::make_pair(new_socket, *it));
-  }
-  return res;
-}
-
-static void set_listen_fd(pollfds_type           &pollfds,
-                          const socket_list_type &socket_list) {
-  socket_list_type::const_iterator it = socket_list.begin();
-  for (; it != socket_list.end(); it++) {
+static void
+add_listenfd_to_pollfds(std::vector<struct pollfd>            &pollfds,
+                        const std::map<listen_fd, conf_group> &listen_fd_map) {
+  std::map<listen_fd, conf_group>::const_iterator it = listen_fd_map.begin();
+  for (; it != listen_fd_map.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd     = it->first;
     new_pfd.events = POLLIN;
@@ -28,10 +17,11 @@ static void set_listen_fd(pollfds_type           &pollfds,
   }
 }
 
-static void set_connection_fd(pollfds_type               &pollfds,
-                              const connection_list_type &connection_list) {
-  connection_list_type::const_iterator it = connection_list.begin();
-  for (; it != connection_list.end(); it++) {
+static void
+add_connfd_to_pollfds(std::vector<struct pollfd>      &pollfds,
+                      const std::map<int, Connection> &conn_fd_map) {
+  std::map<int, Connection>::const_iterator it = conn_fd_map.begin();
+  for (; it != conn_fd_map.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd = it->first;
     if (it->second.is_sending()) {
@@ -43,12 +33,12 @@ static void set_connection_fd(pollfds_type               &pollfds,
   }
 }
 
-static void create_pollfds(pollfds_type               &pollfds,
-                           const socket_list_type     &socket_list,
-                           const connection_list_type &connection_list) {
+static void reset_pollfds(std::vector<struct pollfd>            &pollfds,
+                          const std::map<listen_fd, conf_group> &listen_fd_map,
+                          const std::map<int, Connection>       &conn_fd_map) {
   pollfds.clear();
-  set_listen_fd(pollfds, socket_list);
-  set_connection_fd(pollfds, connection_list);
+  add_listenfd_to_pollfds(pollfds, listen_fd_map);
+  add_connfd_to_pollfds(pollfds, conn_fd_map);
 }
 
 static void debug_put_events_info(int fd, short revents) {
@@ -66,34 +56,32 @@ static void debug_put_events_info(int fd, short revents) {
 
 // socket_list:     listen_fdとserver_groupの関係を管理
 // connection_list: connection_fdとlisten_fdの関係を管理
-void listen_event(const server_group_type &server_group) {
-  socket_list_type     socket_list = create_socket_map(server_group);
-  connection_list_type connection_list;
-  pollfds_type         pollfds;
+void listen_event(std::map<listen_fd, conf_group> &listen_fd_map) {
+  std::map<int, Connection>  conn_fd_map;
+  std::vector<struct pollfd> pollfds;
 
   while (1) {
-    create_pollfds(pollfds, socket_list, connection_list);
+    reset_pollfds(pollfds, listen_fd_map, conn_fd_map);
     // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
-    int                    nready = xpoll(&pollfds[0], pollfds.size(), 0);
-    pollfds_type::iterator it     = pollfds.begin();
+    int nready = xpoll(&pollfds[0], pollfds.size(), 0);
+    std::vector<struct pollfd>::iterator it = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready; it++) {
       if (!it->revents) {
         continue;
       }
       debug_put_events_info(it->fd, it->revents);
-      if (it->revents & POLLIN) {
-        // TMP: socket_listの要素かどうかでfdを区別
-        int listen_flg = socket_list.count(it->fd);
-        if (listen_flg) {
-          int connection_fd = xaccept(it->fd);
-          connection_list.insert(
-              std::make_pair(connection_fd, Connection(&socket_list[it->fd])));
-        } else {
-          connection_receive_handler(it->fd, connection_list);
-        }
+      int listen_flg = listen_fd_map.count(it->fd);
+      if (listen_flg) {
+        int connection_fd = xaccept(it->fd);
+        conn_fd_map.insert(
+            std::make_pair(connection_fd, Connection(&listen_fd_map[it->fd])));
+        continue;
       }
-      if (it->revents & POLLOUT) {
-        connection_send_handler(it->fd, connection_list);
+      // conn_fd
+      if (it->revents & POLLIN) {
+        connection_receive_handler(it->fd, conn_fd_map);
+      } else if (it->revents & POLLOUT) {
+        connection_send_handler(it->fd, conn_fd_map);
       }
       // TODO: 他reventsに対する処理
       nready--;

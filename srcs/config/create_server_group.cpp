@@ -1,8 +1,11 @@
-#include "ServerConfig.hpp"
+#include "config/config.hpp"
+
 #include <iostream>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+
+#include "ServerConfig.hpp"
 
 static bool is_same_socket(const ServerConfig &serv_x,
                            const ServerConfig &serv_y) {
@@ -13,21 +16,20 @@ static bool is_same_socket(const ServerConfig &serv_x,
          (x->sin_port == y->sin_port);
 }
 
-static server_group_type::iterator
-find_same_socket(const ServerConfig &conf, server_group_type &server_group) {
-  server_group_type::iterator it = server_group.begin();
-  for (; it != server_group.end(); it++) {
-    // 先頭の要素と一致すれば良い
-    if (is_same_socket(conf, *((*it)[0])))
+static std::map<listen_fd, conf_group>::iterator
+find_same_socket(const ServerConfig              &conf,
+                 std::map<listen_fd, conf_group> &listen_fd_map) {
+  std::map<listen_fd, conf_group>::iterator it = listen_fd_map.begin();
+  for (; it != listen_fd_map.end(); it++) {
+    if (is_same_socket(conf, *(it->second[0])))
       break;
   }
   return it;
 }
 
-static bool
-is_include_same_server_name(const ServerConfig               &conf,
-                            std::vector<const ServerConfig *> group) {
-  std::vector<const ServerConfig *>::iterator it = group.begin();
+static bool is_include_same_server_name(const ServerConfig &conf,
+                                        conf_group          group) {
+  conf_group::iterator it = group.begin();
   for (; it != group.end(); it++) {
     if ((*it)->server_name_ == conf.server_name_)
       return true;
@@ -35,22 +37,24 @@ is_include_same_server_name(const ServerConfig               &conf,
   return false;
 }
 
-// tmpにlistenディレクティブが共通するServerConfigのリストを作る
-server_group_type create_server_group(const server_list_type &server_list) {
-  server_group_type                server_group;
-  server_list_type::const_iterator sl_it = server_list.begin();
+std::map<listen_fd, conf_group>
+create_socket_map(const server_list &server_list) {
+  std::map<listen_fd, conf_group> listen_fd_map;
+  server_list::const_iterator     sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
-    server_group_type::iterator it = find_same_socket(*sl_it, server_group);
-    if (it != server_group.end()) {
-      if (is_include_same_server_name(*sl_it, *it)) {
+    std::map<listen_fd, conf_group>::iterator it =
+        find_same_socket(*sl_it, listen_fd_map);
+    if (it != listen_fd_map.end()) {
+      if (is_include_same_server_name(*sl_it, it->second)) {
         std::cout << "server_name conflicts." << std::endl;
         continue;
       }
-      (*it).push_back(&(*sl_it));
+      it->second.push_back(&(*sl_it));
     } else {
-      server_group.push_back(std::vector<const ServerConfig *>());
-      server_group.back().push_back(&(*sl_it));
+      int new_socket = open_new_socket(*sl_it);
+      listen_fd_map.insert(std::make_pair(new_socket, conf_group()));
+      listen_fd_map[new_socket].push_back(&(*sl_it));
     }
   }
-  return server_group;
+  return listen_fd_map;
 }

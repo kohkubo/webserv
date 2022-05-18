@@ -58,8 +58,10 @@ private:
                                           token_iterator            end);
 };
 
-typedef std::vector<ServerConfig>                         server_list_type;
-typedef std::vector<std::vector<const ServerConfig *> >   server_group_type;
-typedef std::map<int, std::vector<const ServerConfig *> > socket_list_type;
+// TODO: ServerConfig ポインタ -> 実体
+// conf_group: 同じソケットのserver_confの集合
+typedef std::vector<ServerConfig>         server_list;
+typedef std::vector<const ServerConfig *> conf_group;
+typedef int                               listen_fd;
 
 #endif /* SRCS_CONFIG_SERVERCONFIG_HPP */
