@@ -8,9 +8,9 @@
 #include <sys/socket.h>
 
 static void set_listen_fd(pollfds_type                          &pollfds,
-                          const std::map<listen_fd, conf_group> &socket_list) {
-  std::map<listen_fd, conf_group>::const_iterator it = socket_list.begin();
-  for (; it != socket_list.end(); it++) {
+                          const std::map<listen_fd, conf_group> &listen_fds) {
+  std::map<listen_fd, conf_group>::const_iterator it = listen_fds.begin();
+  for (; it != listen_fds.end(); it++) {
     struct pollfd new_pfd;
     new_pfd.fd     = it->first;
     new_pfd.events = POLLIN;
@@ -34,10 +34,10 @@ static void set_connection_fd(pollfds_type               &pollfds,
 }
 
 static void create_pollfds(pollfds_type                          &pollfds,
-                           const std::map<listen_fd, conf_group> &socket_list,
+                           const std::map<listen_fd, conf_group> &listen_fds,
                            const connection_list_type &connection_list) {
   pollfds.clear();
-  set_listen_fd(pollfds, socket_list);
+  set_listen_fd(pollfds, listen_fds);
   set_connection_fd(pollfds, connection_list);
 }
 
@@ -76,19 +76,16 @@ static int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
   return nready;
 }
 
-// pollfds - socket_list->first , connection_list->first
-// socket_list
-// connection_list
-// listen_eventの動きを持つクラス
+// pollfds - listen_fds->first , connection_list->first
 
-// socket_list:     listen_fdとserver_groupの関係を管理
+// listen_fds:     listen_fdとserver_groupの関係を管理
 // connection_list: connection_fdとlisten_fdの関係を管理
-void listen_event(std::map<listen_fd, conf_group> &socket_list) {
+void listen_event(std::map<listen_fd, conf_group> &listen_fds) {
   connection_list_type connection_list;
   pollfds_type         pollfds;
 
   while (1) {
-    create_pollfds(pollfds, socket_list, connection_list);
+    create_pollfds(pollfds, listen_fds, connection_list);
     // NOTE: nreadyはpollfdsでreventにフラグが立ってる要素数
     int                    nready = xpoll(&pollfds[0], pollfds.size(), 0);
     pollfds_type::iterator it     = pollfds.begin();
@@ -97,11 +94,11 @@ void listen_event(std::map<listen_fd, conf_group> &socket_list) {
         debug_put_events_info(it->fd, it->revents);
         if (it->revents & POLLIN) {
           // TMP: socket_listの要素かどうかでfdを区別
-          int listen_flg = socket_list.count(it->fd);
+          int listen_flg = listen_fds.count(it->fd);
           if (listen_flg) {
             int connection_fd = xaccept(it->fd);
-            connection_list.insert(std::make_pair(
-                connection_fd, Connection(&socket_list[it->fd])));
+            connection_list.insert(
+                std::make_pair(connection_fd, Connection(&listen_fds[it->fd])));
           } else {
             connection_receive_handler(it->fd, connection_list);
           }

@@ -18,9 +18,9 @@ static bool is_same_socket(const ServerConfig &serv_x,
 
 static std::map<listen_fd, conf_group>::iterator
 find_same_socket(const ServerConfig              &conf,
-                 std::map<listen_fd, conf_group> &socket_list) {
-  std::map<listen_fd, conf_group>::iterator it = socket_list.begin();
-  for (; it != socket_list.end(); it++) {
+                 std::map<listen_fd, conf_group> &listen_fds) {
+  std::map<listen_fd, conf_group>::iterator it = listen_fds.begin();
+  for (; it != listen_fds.end(); it++) {
     if (is_same_socket(conf, *(it->second[0])))
       break;
   }
@@ -40,12 +40,12 @@ is_include_same_server_name(const ServerConfig               &conf,
 
 std::map<listen_fd, conf_group>
 create_socket_map(const server_list &server_list) {
-  std::map<listen_fd, conf_group> socket_list;
+  std::map<listen_fd, conf_group> listen_fds;
   server_list::const_iterator     sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
     std::map<listen_fd, conf_group>::iterator it =
-        find_same_socket(*sl_it, socket_list);
-    if (it != socket_list.end()) {
+        find_same_socket(*sl_it, listen_fds);
+    if (it != listen_fds.end()) {
       if (is_include_same_server_name(*sl_it, it->second)) {
         std::cout << "server_name conflicts." << std::endl;
         continue;
@@ -53,10 +53,10 @@ create_socket_map(const server_list &server_list) {
       it->second.push_back(&(*sl_it));
     } else {
       int new_socket = open_new_socket(*sl_it);
-      socket_list.insert(
+      listen_fds.insert(
           std::make_pair(new_socket, std::vector<const ServerConfig *>()));
-      socket_list[new_socket].push_back(&(*sl_it));
+      listen_fds[new_socket].push_back(&(*sl_it));
     }
   }
-  return socket_list;
+  return listen_fds;
 }
