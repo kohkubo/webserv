@@ -1,6 +1,6 @@
 #include "config/ServerConfig.hpp"
 #include "config/config.hpp"
-#include "event/event.hpp"
+#include "event/Server.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <vector>
@@ -24,6 +24,7 @@ int main(int argc, char **argv) {
   server_list server_list      = read_config(config_file_path);
   std::map<listen_fd, conf_group> listen_fd_map =
       create_socket_map(server_list);
-  listen_event(listen_fd_map);
+  Server server(listen_fd_map);
+  server.run_loop();
   return (0);
 }
