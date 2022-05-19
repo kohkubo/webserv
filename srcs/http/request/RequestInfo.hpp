@@ -50,6 +50,11 @@ public:
   void parse_request_header(const std::string &request_header);
   void parse_request_body(const std::string &request_body);
 
+  bool is_expected_body() {
+    // TODO: chunked
+    return content_length_ != 0;
+  }
+
 private:
   void        __parse_request_line(const std::string &request_line);
   HttpMethod  __parse_request_method(const std::string &method);
