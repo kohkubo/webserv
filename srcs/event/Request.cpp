@@ -3,6 +3,8 @@
 #include <sys/socket.h>
 
 void Request::parse_header(const std::string &header) {
+  // requestのエラーは例外が送出されるのでここでキャッチする。
+  // エラーの時のレスポンスの生成方法は要検討
   __info_.parse_request_header(header);
   if (__info_.is_expected_body()) {
     __state_ = RECEIVING_BODY;
