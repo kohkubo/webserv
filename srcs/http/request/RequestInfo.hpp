@@ -30,7 +30,7 @@ public:
   std::string                        target_;
   std::string                        version_;
   std::string                        host_;
-  int                                port_;
+  std::string                        port_;
   bool                               is_close_;
   std::size_t                        content_length_;
   // TODO: values_ CGIにわたす形式に合わせる。仮置でmap

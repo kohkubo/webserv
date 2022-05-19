@@ -93,9 +93,15 @@ void RequestInfo::__parse_request_host() {
     throw BadRequestException();
   }
   std::size_t pos = __field_map_["Host"].find(':');
-  host_           = __field_map_["Host"].substr(0, pos);
-  port_           = atoi(__field_map_["Host"].substr(pos + 1).c_str());
-  if (port_ < 0 || port_ > 65535) {
+  if (pos == std::string::npos) {
+    host_ = __field_map_["Host"];
+    port_ = std::string("80");
+    return;
+  }
+  host_        = __field_map_["Host"].substr(0, pos);
+  port_        = __field_map_["Host"].substr(pos + 1);
+  int port_num = atoi(__field_map_["Host"].substr(pos + 1).c_str());
+  if (port_num < 0 || port_num > 65535) {
     throw BadRequestException();
   }
 }

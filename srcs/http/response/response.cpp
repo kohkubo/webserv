@@ -50,7 +50,7 @@ std::string make_message_string(http_message_map &response_info) {
 // clang-format on
 
 http_message_map create_response_info(const Config &server_config,
-                                      HttpMessage  &request_info) {
+                                      RequestInfo  &request_info) {
   http_message_map response_info;
   switch (request_info.method_) {
   case GET:
