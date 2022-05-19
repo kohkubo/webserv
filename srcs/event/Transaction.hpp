@@ -17,7 +17,7 @@ enum RequestState {
 
 // TODO: string -> vector<char>
 
-struct Request {
+struct Transaction {
 private:
   RequestState __state_;
   ssize_t      __send_count_;
@@ -25,7 +25,7 @@ private:
   RequestInfo  __info_;
 
 public:
-  Request()
+  Transaction()
       : __state_(RECEIVING_HEADER)
       , __send_count_(0) {}
 
