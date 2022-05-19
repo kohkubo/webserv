@@ -61,7 +61,7 @@ void RequestInfo::__create_header_map(token_iterator it, token_iterator end) {
     if (last_char == ' ' || last_char == '\t') {
       throw BadRequestException();
     }
-    std::string field_value = __trim_space(line.substr(pos + 1));
+    std::string field_value = __trim_optional_whitespace(line.substr(pos + 1));
     if (__field_map_.count(field_name)) {
       if (__is_comma_sparated(field_name)) {
         __field_map_[field_name] += ", " + field_value;
@@ -81,9 +81,12 @@ bool RequestInfo::__is_comma_sparated(std::string &field_name) {
   return false;
 }
 
-std::string RequestInfo::__trim_space(std::string str) {
+std::string RequestInfo::__trim_optional_whitespace(std::string str) {
   str.erase(0, str.find_first_not_of(" \t"));
-  str.erase(str.find_last_not_of(" \t") + 1);
+  std::size_t pos = str.find_last_not_of(" \t");
+  if (pos != std::string::npos) {
+    str.erase(pos + 1);
+  }
   return str;
 }
 
@@ -120,5 +123,5 @@ void RequestInfo::__parse_request_content_length() {
   if (!__field_map_.count("Content-Length")) {
     return;
   }
-  content_length_ = atoi(__field_map_["Host"].c_str());
+  content_length_ = atoi(__field_map_["Content-Length"].c_str());
 }
