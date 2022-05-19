@@ -31,9 +31,9 @@ void RequestInfo::__parse_request_line(const std::string &request_line) {
     throw BadRequestException();
   }
   std::string method_str = request_line.substr(0, first_sp);
-  __method_              = __parse_request_method(method_str);
-  __target_              = request_line.substr(first_sp + 1, last_sp);
-  __version_             = request_line.substr(last_sp + 1);
+  method_                = __parse_request_method(method_str);
+  target_                = request_line.substr(first_sp + 1, last_sp);
+  version_               = request_line.substr(last_sp + 1);
 }
 
 HttpMethod RequestInfo::__parse_request_method(const std::string &method) {
@@ -93,9 +93,9 @@ void RequestInfo::__parse_request_host() {
     throw BadRequestException();
   }
   std::size_t pos = __field_map_["Host"].find(':');
-  __host_         = __field_map_["Host"].substr(0, pos);
-  __port_         = atoi(__field_map_["Host"].substr(pos + 1).c_str());
-  if (__port_ < 0 || __port_ > 65535) {
+  host_           = __field_map_["Host"].substr(0, pos);
+  port_           = atoi(__field_map_["Host"].substr(pos + 1).c_str());
+  if (port_ < 0 || port_ > 65535) {
     throw BadRequestException();
   }
 }
@@ -106,7 +106,7 @@ void RequestInfo::__parse_request_connection() {
   }
   std::string value = tolower(__field_map_["Connection"]);
   if (value == "close") {
-    __is_close_ = true;
+    is_close_ = true;
   }
 }
 
@@ -114,5 +114,5 @@ void RequestInfo::__parse_request_content_length() {
   if (!__field_map_.count("Content-Length")) {
     return;
   }
-  __content_length_ = atoi(__field_map_["Host"].c_str());
+  content_length_ = atoi(__field_map_["Host"].c_str());
 }

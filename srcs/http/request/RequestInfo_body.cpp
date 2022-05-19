@@ -16,6 +16,6 @@ void RequestInfo::parse_request_body(const std::string &request_body) {
   for (token_iterator it = tokens.begin(); it != tokens.end(); ++it) {
     // TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
     std::pair<std::string, std::string> value = parse_request_value(*it);
-    __values_[value.first]                    = value.second;
+    values_[value.first]                      = value.second;
   }
 }

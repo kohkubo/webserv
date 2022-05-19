@@ -23,23 +23,24 @@ enum HttpStatusCode {
 
 class RequestInfo {
 private:
-  HttpMethod                         __method_;
-  std::string                        __target_;
-  std::string                        __version_;
   std::map<std::string, std::string> __field_map_;
-  std::string                        __host_;
-  int                                __port_;
-  bool                               __is_close_;
-  std::size_t                        __content_length_;
 
+public:
+  HttpMethod                         method_;
+  std::string                        target_;
+  std::string                        version_;
+  std::string                        host_;
+  int                                port_;
+  bool                               is_close_;
+  std::size_t                        content_length_;
   // TODO: values_ CGIにわたす形式に合わせる。仮置でmap
-  std::map<std::string, std::string> __values_;
+  std::map<std::string, std::string> values_;
 
 public:
   RequestInfo()
-      : __method_(UNKNOWN)
-      , __is_close_(false)
-      , __content_length_(0) {}
+      : method_(UNKNOWN)
+      , is_close_(false)
+      , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
   public:
