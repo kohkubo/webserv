@@ -15,24 +15,24 @@ void Connection::parse_buffer(const std::string &data) {
 
   __buffer_.append(data);
   while (1) {
-    Request &request = get_last_request();
+    Transaction &transaction = get_last_request();
     switch (get_last_state()) {
     case RECEIVING_HEADER:
       pos = __buffer_.find(HEADER_SP);
       if (pos == std::string::npos) {
         return;
       }
-      request.parse_header(__cut_buffer(pos + HEADER_SP.size()));
+      transaction.parse_header(__cut_buffer(pos + HEADER_SP.size()));
       break;
     case RECEIVING_BODY:
       // TODO: chunkedのサイズ判定
-      if (__buffer_.size() < request.get_body_size()) {
+      if (__buffer_.size() < transaction.get_body_size()) {
         return;
       }
-      request.parse_body(__cut_buffer(request.get_body_size()));
+      transaction.parse_body(__cut_buffer(transaction.get_body_size()));
       break;
     default:
-      __request_queue_.push_back(Request());
+      __transaction_queue_.push_back(Transaction());
       break;
     }
   }
@@ -41,9 +41,9 @@ void Connection::parse_buffer(const std::string &data) {
 // キューの中にあるresponse生成待ちのrequestのresponseを生成する。
 void Connection::create_response_iter() {
   (void)__config_;
-  Config                        proper_conf;
-  std::deque<Request>::iterator it = __request_queue_.begin();
-  for (; it != __request_queue_.end(); it++) {
+  Config                            proper_conf;
+  std::deque<Transaction>::iterator it = __transaction_queue_.begin();
+  for (; it != __transaction_queue_.end(); it++) {
     // TODO: リクエストに対して正しいserverconfを選択する。
     (*it).create_response(proper_conf);
   }
