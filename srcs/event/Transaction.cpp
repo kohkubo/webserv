@@ -1,10 +1,11 @@
 #include "event/Transaction.hpp"
-#include "http/request/request_parse.hpp"
 #include "http/response/response.hpp"
 #include <sys/socket.h>
 
 void Transaction::parse_header(const std::string &header) {
-  parse_request_header(__info_, header);
+  // requestのエラーは例外が送出されるのでここでキャッチする。
+  // エラーの時のレスポンスの生成方法は要検討
+  __info_.parse_request_header(header);
   if (__info_.is_expected_body()) {
     __state_ = RECEIVING_BODY;
   } else {
@@ -13,7 +14,7 @@ void Transaction::parse_header(const std::string &header) {
 }
 
 void Transaction::parse_body(const std::string &body) {
-  parse_request_body(__info_, body);
+  __info_.parse_request_body(body);
   __state_ = PENDING;
 }
 

@@ -13,6 +13,7 @@ inline void error_log_with_errno(const std::string &msg) {
 }
 
 bool is_match_suffix_string(const std::string &str, const std::string &suffix);
+std::string tolower(const std::string &str);
 
 template <typename T>
 std::string to_string(T val) {
