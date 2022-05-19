@@ -50,7 +50,7 @@ public:
   void parse_request_header(const std::string &request_header);
   void parse_request_body(const std::string &request_body);
 
-  bool is_expected_body() {
+  bool is_expected_body() const {
     // TODO: chunked
     return content_length_ != 0;
   }

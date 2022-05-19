@@ -8,14 +8,9 @@
 #include <iostream>
 #include <unistd.h>
 
-static bool has_body(const RequestInfo &request_info) {
-  // TODO: chunked
-  return request_info.content_length_ != 0;
-}
-
 static HttpStatusCode delete_target_file(const RequestInfo &request_info,
                                          const std::string &target_filepath) {
-  if (has_body(request_info)) {
+  if (request_info.is_expected_body()) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
     return BAD_REQUEST_400;
   }
