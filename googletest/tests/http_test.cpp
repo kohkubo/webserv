@@ -1,10 +1,10 @@
 #include "config/Config.hpp"
-#include "http/HttpMessage.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/http_parser_utils.hpp"
 #include "http/method/method.hpp"
+#include "http/request/RequestInfo.hpp"
 #include "http/response/response.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
@@ -31,9 +31,9 @@ TEST(http_test, create_response_info_get_normal) {
   Config      server_config = Config();
   server_config.root_       = "../html";
   server_config.index_      = "index.html";
-  HttpMessage request_info;
+  RequestInfo request_info;
   request_info.method_  = GET;
-  request_info.url_     = "/";
+  request_info.target_  = "/";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -50,31 +50,13 @@ TEST(http_test, create_response_info_get_normal) {
   EXPECT_EQ(response_message, expect);
 }
 
-TEST(http_test, create_response_info_get_400) {
-  Config server_config = Config();
-  server_config.root_  = "../html";
-  server_config.index_ = "index.html";
-  HttpMessage request_info;
-  request_info.method_  = GET;
-  request_info.url_     = "/";
-  request_info.version_ = "HTTP/1.1";
-
-  http_message_map response_info =
-      create_response_info(server_config, request_info);
-
-  EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_400_PHRASE);
-  EXPECT_EQ(response_info[PATH], BAD_REQUEST_PAGE);
-  EXPECT_EQ(response_info[VERSION], VERSION_HTTP);
-  EXPECT_EQ(response_info[CONNECTION], CONNECTION_CLOSE);
-}
-
 TEST(http_test, create_response_info_get_404) {
   Config server_config = Config();
   server_config.root_  = "../html";
   server_config.index_ = "index.html";
-  HttpMessage request_info;
+  RequestInfo request_info;
   request_info.method_  = GET;
-  request_info.url_     = "/hogehoge.html";
+  request_info.target_  = "/hogehoge.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -92,9 +74,9 @@ TEST(http_test, create_response_info_get_403) {
   Config server_config = Config();
   server_config.root_  = "../html";
   server_config.index_ = "index.html";
-  HttpMessage request_info;
+  RequestInfo request_info;
   request_info.method_  = GET;
-  request_info.url_     = "/000.html";
+  request_info.target_  = "/000.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -117,9 +99,9 @@ TEST(http_test, create_response_info_delete_normal) {
   Config      server_config = Config();
   server_config.root_       = "../html";
   server_config.index_      = "index.html";
-  HttpMessage request_info;
+  RequestInfo request_info;
   request_info.method_  = DELETE;
-  request_info.url_     = "/delete_target.html";
+  request_info.target_  = "/delete_target.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -141,9 +123,9 @@ TEST(http_test, create_response_info_delete_404) {
   Config server_config = Config();
   server_config.root_  = "../html";
   server_config.index_ = "index.html";
-  HttpMessage request_info;
+  RequestInfo request_info;
   request_info.method_  = DELETE;
-  request_info.url_     = "/delete_target.html";
+  request_info.target_  = "/delete_target.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -160,9 +142,9 @@ TEST(http_test, create_response_info_delete_403) {
   Config server_config = Config();
   server_config.root_  = "../html";
   server_config.index_ = "index.html";
-  HttpMessage request_info;
+  RequestInfo request_info;
   request_info.method_  = DELETE;
-  request_info.url_     = "/000.html";
+  request_info.target_  = "/000.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -183,12 +165,11 @@ TEST(http_test, create_response_info_delete_400) {
   Config server_config = Config();
   server_config.root_  = "../html";
   server_config.index_ = "index.html";
-  HttpMessage request_info;
+  RequestInfo request_info;
   request_info.method_         = DELETE;
-  request_info.url_            = "/hogehoge.html";
+  request_info.target_         = "/hogehoge.html";
   request_info.version_        = "HTTP/1.1";
   request_info.host_           = "localhost";
-  request_info.body_           = "hogehoge";
   request_info.content_length_ = 8;
 
   http_message_map response_info =
@@ -210,11 +191,11 @@ TEST(http_test, method_get) {
   Config server_config = Config();
   server_config.root_  = "./tdata/";
   server_config.index_ = "test.txt";
-  HttpMessage      request_info;
+  RequestInfo      request_info;
   http_message_map response_info;
-  request_info.url_  = "/";
-  request_info.host_ = "localhost";
-  response_info      = method_get(server_config, request_info);
+  request_info.target_ = "/";
+  request_info.host_   = "localhost";
+  response_info        = method_get(server_config, request_info);
   set_response_body(response_info);
   EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_200_PHRASE);
   EXPECT_EQ(response_info[BODY], TEST_CONTENT);
@@ -226,13 +207,13 @@ TEST(http_test, method_get) {
 TEST(http_test, target_file_not_exist) {
   Config           server_config = Config();
 
-  HttpMessage      request_info;
+  RequestInfo      request_info;
   http_message_map response_info;
 
-  request_info.url_  = "/no_such_file";
-  request_info.host_ = "localhost";
+  request_info.target_ = "/no_such_file";
+  request_info.host_   = "localhost";
 
-  response_info      = method_get(server_config, request_info);
+  response_info        = method_get(server_config, request_info);
   EXPECT_EQ(response_info[STATUS_PHRASE], STATUS_404_PHRASE);
   // EXPECT_EQ(response_message[BODY], TEST_CONTENT);
   // EXPECT_EQ(response_message[CONTENT_LEN],
