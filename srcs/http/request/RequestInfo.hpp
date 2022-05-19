@@ -54,6 +54,9 @@ public:
     // TODO: chunked
     return content_length_ != 0;
   }
+  std::string &get_field_value(const std::string &field_name) {
+    return __field_map_[field_name];
+  }
 
 private:
   void        __parse_request_line(const std::string &request_line);
