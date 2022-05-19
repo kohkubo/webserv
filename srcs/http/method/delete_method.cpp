@@ -14,7 +14,7 @@ static HttpStatusCode delete_target_file(const RequestInfo &request_info,
     std::cerr << "DELETE with body is unsupported" << std::endl;
     return BAD_REQUEST_400;
   }
-  if (!is_file_exists(target_filepath.c_str())) {
+  if (!is_file_exists(target_filepath)) {
     std::cerr << "target file is not found" << std::endl;
     return NOT_FOUND_404;
   }
