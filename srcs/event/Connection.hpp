@@ -45,14 +45,15 @@ public:
   TransactionState get_last_state() {
     if (__transaction_queue_.empty())
       return NO_REQUEST;
-    return __transaction_queue_.back().get_state();
+    return __transaction_queue_.back().get_tranction_state();
   }
 
   bool is_sending() const {
     if (__transaction_queue_.empty())
       return false;
-    TransactionState state = __transaction_queue_.front().get_state();
-    return state == SENDING;
+    TransactionState transaction_state =
+        __transaction_queue_.front().get_tranction_state();
+    return transaction_state == SENDING;
   }
 
   void parse_buffer(const std::string &data);
