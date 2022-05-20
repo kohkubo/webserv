@@ -1,5 +1,5 @@
-#include "event/Connection.hpp"
 #include "config/Config.hpp"
+#include "event/Connection.hpp"
 #include "http/const/const_delimiter.hpp"
 
 // bufferを指定したlen切り出してstringとして返す関数。
@@ -40,7 +40,7 @@ void Connection::parse_buffer(const std::string &data) {
 
 // キューの中にあるresponse生成待ちのrequestのresponseを生成する。
 void Connection::create_response_iter() {
-  (void)__config_;
+  (void)__conf_group_;
   Config                            proper_conf;
   std::deque<Transaction>::iterator it = __transaction_queue_.begin();
   for (; it != __transaction_queue_.end(); it++) {

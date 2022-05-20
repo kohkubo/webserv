@@ -62,7 +62,7 @@ private:
 // TODO: Config ポインタ -> 実体
 // conf_group: 同じソケットのserver_confの集合
 typedef std::vector<Config>         serverList;
-typedef std::vector<const Config *> conf_group;
+typedef std::vector<const Config *> confGroup;
 typedef int                         listenFd;
 
 #endif /* SRCS_CONFIG_SERVERCONFIG_HPP */
