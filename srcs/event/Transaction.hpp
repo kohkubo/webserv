@@ -2,7 +2,7 @@
 #define SRCS_EVENT_REQUEST_HPP
 
 #include "config/Config.hpp"
-#include "http/HttpMessage.hpp"
+#include "http/request/RequestInfo.hpp"
 #include <string>
 #include <sys/types.h>
 
@@ -17,15 +17,15 @@ enum RequestState {
 
 // TODO: string -> vector<char>
 
-struct Request {
+struct Transaction {
 private:
   RequestState __state_;
   ssize_t      __send_count_;
   std::string  __response_;
-  HttpMessage  __info_;
+  RequestInfo  __info_;
 
 public:
-  Request()
+  Transaction()
       : __state_(RECEIVING_HEADER)
       , __send_count_(0) {}
 

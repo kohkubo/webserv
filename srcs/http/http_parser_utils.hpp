@@ -2,8 +2,8 @@
 #define SRCS_HTTP_HTTP_PARSER_UTILS_HPP
 
 #include "config/Config.hpp"
-#include "http/HttpMessage.hpp"
 #include "http/const/const_response_key_map.hpp"
+#include "http/request/RequestInfo.hpp"
 
 std::string resolve_url(const Config      &server_config,
                         const std::string &request_url);
