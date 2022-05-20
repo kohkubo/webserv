@@ -23,13 +23,11 @@ TEST(http_test, create_response_info_get_403) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  // TODO: bodyがこっちからとれない
   system("chmod 000 ../html/000.html");
   Response response(config, request_info);
   system("chmod 644 ../html/000.html");
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
-Host: \r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
@@ -61,15 +59,10 @@ TEST(http_test, create_response_info_delete_normal) {
 
   system("touch ../html/delete_target.html");
 
-  // TODO: テストケースこれでOK?
   Response response(config, request_info);
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 204 No Content\r\n\
-Host: \r\n\
-Content-Length: \r\n\
-Content-Type: \r\n\
-Connection: close\r\n\
-\r\n\
+Connection: close\r\n\r\n\
 ");
 }
 
@@ -83,11 +76,9 @@ TEST(http_test, create_response_info_delete_404) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  // TODO: テストケースこれでOK?
   Response response(config, request_info);
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 404 Not Found\r\n\
-Host: \r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
@@ -123,7 +114,6 @@ TEST(http_test, create_response_info_delete_403) {
 
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
-Host: \r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
@@ -156,7 +146,6 @@ TEST(http_test, create_response_info_delete_400) {
 
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 400 Bad Request\r\n\
-Host: \r\n\
 Content-Length: 147\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\

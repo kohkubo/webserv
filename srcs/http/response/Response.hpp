@@ -52,12 +52,16 @@ private:
     // start line
     __response_string_ = __version_ + SP + __status_phrase_ + CRLF;
     // header
-    __response_string_ += "Host: " + __host_ + CRLF;
-    __response_string_ += "Content-Length: " + __content_len_ + CRLF;
-    __response_string_ += "Content-Type: " + __content_type_ + CRLF;
+    if (!(__status_code_ == 204 || __status_code_ == 304)) {
+      __response_string_ += "Content-Length: " + __content_len_ + CRLF;
+      __response_string_ += "Content-Type: " + __content_type_ + CRLF;
+    }
     __response_string_ += "Connection: " + __connection_ + CRLF;
     // empty line
     __response_string_ += CRLF;
+    if (__status_code_ == 204 || __status_code_ == 304) {
+      return;
+    }
     // body
     __response_string_ += __body_;
   };
