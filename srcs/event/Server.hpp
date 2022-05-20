@@ -7,14 +7,6 @@
 
 typedef int connFd;
 
-enum HandlerState {
-  SEND,
-  RECV,
-  INSERT,
-  NO_REVENTS,
-  ERROR,
-};
-
 class Server {
 private:
   std::map<listen_fd, conf_group> __listen_fd_map_;
