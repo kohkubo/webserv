@@ -36,6 +36,7 @@ http_message_map method_get(const Config &config, RequestInfo &request_info) {
   }
 
   HttpStatusCode code = check_url(target_filepath);
+  // TODO: ここでエラーページを反映していると、rootディレクティブからのパスを設定できていない
   set_status_and_path(response_info, config, code);
   if (code == OK_200)
     response_info[PATH] = target_filepath;
