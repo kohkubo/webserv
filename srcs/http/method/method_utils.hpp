@@ -1,6 +1,8 @@
 #ifndef SRCS_HTTP_HTTP_PARSER_UTILS_HPP
 #define SRCS_HTTP_HTTP_PARSER_UTILS_HPP
 
+#include <stdlib.h>
+
 #include "config/Config.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/request/RequestInfo.hpp"
