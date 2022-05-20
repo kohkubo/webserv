@@ -32,3 +32,9 @@ echo "index directive test"
 echo "normal 5002 index2! in dir1"
 echo "======================"
 curl localhost:5002
+echo
+echo "======================"
+echo "error_page directive test"
+echo "normal 5003"
+echo "======================"
+curl localhost:5003/dlkdsklsdf
