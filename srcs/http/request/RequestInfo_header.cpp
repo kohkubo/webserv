@@ -11,8 +11,8 @@ RequestInfo::BadRequestException::BadRequestException(const std::string &msg)
 
 // 呼び出し元で例外をcatchする
 void RequestInfo::parse_request_header(const std::string &request_string) {
-  token_vector   fields = tokenize(request_string, CRLF, CRLF);
-  token_iterator it     = fields.begin();
+  tokenVector   fields = tokenize(request_string, CRLF, CRLF);
+  tokenIterator it     = fields.begin();
 
   __parse_request_line(*it++);
   __create_header_map(it, fields.end());
@@ -49,7 +49,7 @@ HttpMethod RequestInfo::__parse_request_method(const std::string &method) {
   return UNKNOWN;
 }
 
-void RequestInfo::__create_header_map(token_iterator it, token_iterator end) {
+void RequestInfo::__create_header_map(tokenIterator it, tokenIterator end) {
   for (; it != end; it++) {
     std::string line = *it;
     std::size_t pos  = line.find(':');

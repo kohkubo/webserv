@@ -62,8 +62,8 @@ void set_response_body(http_message_map &response_info) {
 }
 
 bool is_minus_depth(std::string url) {
-  token_vector   tokens = tokenize(url, "/", "/");
-  token_iterator it     = tokens.begin();
+  tokenVector   tokens = tokenize(url, "/", "/");
+  tokenIterator it     = tokens.begin();
 
   for (long depth = 0; it != tokens.end(); it++) {
     if (*it == "..") {

@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-typedef std::vector<std::string> token_vector;
-typedef token_vector::iterator   token_iterator;
+typedef std::vector<std::string> tokenVector;
+typedef tokenVector::iterator    tokenIterator;
 
-token_vector tokenize(const std::string &text, const std::string &delimiter,
-                      const std::string &skip);
+tokenVector tokenize(const std::string &text, const std::string &delimiter,
+                     const std::string &skip);
 
 #endif /* SRCS_TOKENIZE_HPP */

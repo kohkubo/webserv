@@ -11,8 +11,8 @@ std::string Connection::__cut_buffer(std::size_t len) {
 }
 
 void Connection::parse_buffer(const std::string &data) {
-  std::size_t  pos;
-  token_vector header_tokens;
+  std::size_t pos;
+  tokenVector header_tokens;
 
   __buffer_.append(data);
   while (1) {
