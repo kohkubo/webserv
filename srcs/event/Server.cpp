@@ -58,12 +58,12 @@ void Server::__connection_receive_handler(int conn_fd) {
 }
 
 void Server::__connection_send_handler(int conn_fd) {
-  Request &request = __conn_fd_map_[conn_fd].get_front_request();
-  request.send_response(conn_fd);
-  if (request.is_send_completed()) {
-    if (request.is_close()) {
+  Transaction &transaction = __conn_fd_map_[conn_fd].get_front_request();
+  transaction.send_response(conn_fd);
+  if (transaction.is_send_completed()) {
+    if (transaction.is_close()) {
       shutdown(conn_fd, SHUT_WR);
-      request.set_state(CLOSING);
+      transaction.set_state(CLOSING);
       return;
     }
     __conn_fd_map_[conn_fd].erase_front_req();
