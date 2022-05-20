@@ -1,7 +1,9 @@
+#include "gtest/gtest.h"
+
+#include <vector>
+
 #include "config/Config.hpp"
 #include "config/create_listen_fd_map.hpp"
-#include "gtest/gtest.h"
-#include <vector>
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
 
