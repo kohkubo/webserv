@@ -30,10 +30,20 @@ TEST(http_test, create_response_info_get_403) {
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Host: \r\n\
-Content-Length: 0\r\n\
+Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
 \r\n\
+<!DOCTYPE html>\n\
+<html>\n\
+    <head>\n\
+        <title>403</title>\n\
+    </head>\n\
+    <body>\n\
+<h2>403 Forbidden</h2>\n\
+default error page\n\
+    </body>\n\
+</html>\
 ");
 }
 
@@ -78,10 +88,20 @@ TEST(http_test, create_response_info_delete_404) {
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 404 Not Found\r\n\
 Host: \r\n\
-Content-Length: 0\r\n\
+Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
 \r\n\
+<!DOCTYPE html>\n\
+<html>\n\
+    <head>\n\
+        <title>404</title>\n\
+    </head>\n\
+    <body>\n\
+<h2>404 Not Found</h2>\n\
+default error page\n\
+    </body>\n\
+</html>\
 ");
 }
 
@@ -104,10 +124,20 @@ TEST(http_test, create_response_info_delete_403) {
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Host: \r\n\
-Content-Length: 0\r\n\
+Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
 \r\n\
+<!DOCTYPE html>\n\
+<html>\n\
+    <head>\n\
+        <title>403</title>\n\
+    </head>\n\
+    <body>\n\
+<h2>403 Forbidden</h2>\n\
+default error page\n\
+    </body>\n\
+</html>\
 ");
 }
 
@@ -127,9 +157,19 @@ TEST(http_test, create_response_info_delete_400) {
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 400 Bad Request\r\n\
 Host: \r\n\
-Content-Length: 0\r\n\
+Content-Length: 147\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
 \r\n\
+<!DOCTYPE html>\n\
+<html>\n\
+    <head>\n\
+        <title>400</title>\n\
+    </head>\n\
+    <body>\n\
+<h2>400 Bad Request</h2>\n\
+default error page\n\
+    </body>\n\
+</html>\
 ");
 }
