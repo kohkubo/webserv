@@ -22,11 +22,11 @@ private:
     __add_listenfd_to_pollfds();
     __add_connfd_to_pollfds();
   }
-  void         __add_listenfd_to_pollfds();
-  void         __add_connfd_to_pollfds();
-  void         __connection_receive_handler(connFd conn_fd);
-  void         __connection_send_handler(connFd conn_fd);
-  void         __insert_connection_map(connFd conn_fd);
+  void __add_listenfd_to_pollfds();
+  void __add_connfd_to_pollfds();
+  void __connection_receive_handler(connFd conn_fd);
+  void __connection_send_handler(connFd conn_fd);
+  void __insert_connection_map(connFd conn_fd);
 
 public:
   Server(std::map<listen_fd, conf_group> &listen_fd_map)
