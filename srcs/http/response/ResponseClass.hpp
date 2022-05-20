@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_METHOD_RESPONSECLASS_HPP
-#define SRCS_HTTP_METHOD_RESPONSECLASS_HPP
+#ifndef SRCS_HTTP_RESPONSE_RESPONSECLASS_HPP
+#define SRCS_HTTP_RESPONSE_RESPONSECLASS_HPP
 
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
@@ -16,15 +16,13 @@ private:
   std::string        __response_string_;
   std::string        __file_path_;
 
-public:
-  std::string path_;
-  std::string status_phrase_;
-  std::string version_;
-  std::string host_;
-  std::string content_len_;
-  std::string content_type_;
-  std::string connection_;
-  std::string body_;
+  std::string        __status_phrase_;
+  std::string        __version_;
+  std::string        __host_;
+  std::string        __content_len_;
+  std::string        __content_type_;
+  std::string        __connection_;
+  std::string        __body_;
 
 public:
   ResponseClass(const Config &config, const RequestInfo &request_info);
@@ -48,20 +46,20 @@ private:
     __set_content_type();
   }
   // clan-format on
-  void __set_content_len() { content_len_ = to_string(body_.size()); };
-  void __set_content_type() { content_type_ = TEXT_HTML; };
+  void __set_content_len() { __content_len_ = to_string(__body_.size()); };
+  void __set_content_type() { __content_type_ = TEXT_HTML; };
   void __make_message_string() {
     // start line
-    __response_string_ = version_ + SP + status_phrase_ + CRLF;
+    __response_string_ = __version_ + SP + __status_phrase_ + CRLF;
     // header
-    __response_string_ += "Host: " + host_ + CRLF;
-    __response_string_ += "Content-Length: " + content_len_ + CRLF;
-    __response_string_ += "Content-Type: " + content_type_ + CRLF;
-    __response_string_ += "Connection: " + connection_ + CRLF;
+    __response_string_ += "Host: " + __host_ + CRLF;
+    __response_string_ += "Content-Length: " + __content_len_ + CRLF;
+    __response_string_ += "Content-Type: " + __content_type_ + CRLF;
+    __response_string_ += "Connection: " + __connection_ + CRLF;
     // empty line
     __response_string_ += CRLF;
     // body
-    __response_string_ += body_;
+    __response_string_ += __body_;
   };
 
   void __resolve_url();
@@ -77,4 +75,4 @@ private:
   }
 };
 
-#endif /* SRCS_HTTP_METHOD_RESPONSECLASS_HPP */
+#endif /* SRCS_HTTP_RESPONSE_RESPONSECLASS_HPP */

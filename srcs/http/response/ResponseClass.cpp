@@ -44,8 +44,8 @@ ResponseClass::ResponseClass(const Config      &config,
     : __config_(config)
     , __request_info_(request_info)
     , __status_code_(0) {
-  version_    = VERSION_HTTP;
-  connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
+  __version_    = VERSION_HTTP;
+  __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
   init_response_status_maps();
   __resolve_url();
   __check_status();
@@ -65,7 +65,7 @@ ResponseClass::ResponseClass(const Config      &config,
     __file_path_ = g_error_page_map.at(__status_code_);
     __set_error_page_file_path();
   }
-  status_phrase_ = g_response_status_phrase_map.at(__status_code_);
+  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   __set_body();
 }
 
@@ -75,15 +75,15 @@ void ResponseClass::__resolve_url() {
     return;
   }
   // TODO: rootの末尾に/入ってるとき
-  if (__request_info_.target_ == "/") {
+  if (__request_info_.uri_ == "/") {
     __file_path_ = __config_.root_ + "/" + __config_.index_;
   } else {
-    __file_path_ = __config_.root_ + "/" + __request_info_.target_;
+    __file_path_ = __config_.root_ + "/" + __request_info_.uri_;
   }
 }
 
 bool ResponseClass::__is_minus_depth() {
-  tokenVector   tokens = tokenize(__request_info_.target_, "/", "/");
+  tokenVector   tokens = tokenize(__request_info_.uri_, "/", "/");
   tokenIterator it     = tokens.begin();
 
   for (long depth = 0; it != tokens.end(); it++) {
@@ -132,7 +132,7 @@ void ResponseClass::__set_error_page_file_path() {
 
 void ResponseClass::__set_body() {
   if (is_match_suffix_string(__file_path_, ".sh")) {
-    body_ = __read_file_tostring_cgi(__file_path_);
+    __body_ = __read_file_tostring_cgi(__file_path_);
   }
-  body_ = read_file_tostring(__file_path_);
+  __body_ = read_file_tostring(__file_path_);
 }
