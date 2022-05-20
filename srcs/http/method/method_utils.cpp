@@ -44,8 +44,9 @@ static void init_response_status_maps() {
 }
 // clang-format on
 
-void set_status_and_path(http_message_map &response_info, const Config &config,
-                         HttpStatusCode status_code) {
+void set_response_status_and_file_path(http_message_map &response_info,
+                                       const Config     &config,
+                                       HttpStatusCode    status_code) {
   init_response_status_maps();
   response_info[STATUS_PHRASE] = g_response_status_phrase_map[status_code];
   if (status_code == OK_200 || status_code == NO_CONTENT_204) {

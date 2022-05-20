@@ -31,14 +31,14 @@ http_message_map method_get(const Config &config, RequestInfo &request_info) {
   std::string      target_filepath = resolve_url(config, request_info.target_);
 
   if (is_minus_depth(request_info.target_)) {
-    set_status_and_path(response_info, config, NOT_FOUND_404);
+    set_response_status_and_file_path(response_info, config, NOT_FOUND_404);
     return response_info;
   }
 
   HttpStatusCode code = check_url(target_filepath);
   // TODO:
   // ここでエラーページを反映していると、rootディレクティブからのパスを設定できていない
-  set_status_and_path(response_info, config, code);
+  set_response_status_and_file_path(response_info, config, code);
   if (code == OK_200)
     response_info[PATH] = target_filepath;
   return response_info;

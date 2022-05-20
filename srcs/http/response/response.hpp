@@ -5,7 +5,7 @@
 #include "http/const/const_response_key_map.hpp"
 #include "http/request/RequestInfo.hpp"
 
-http_message_map create_response_info(const Config &server_config,
+std::string create_response_string(const Config &config,
                                       RequestInfo  &request_info);
 std::string      make_message_string(http_message_map &response_info);
 std::string      read_file_tostring_cgi(const std::string &file_path);

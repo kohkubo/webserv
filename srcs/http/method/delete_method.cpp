@@ -38,13 +38,14 @@ http_message_map delete_method_handler(const Config &server_config,
                                        RequestInfo  &request_info) {
   http_message_map response_info;
   if (is_minus_depth(request_info.target_)) {
-    set_status_and_path(response_info, server_config, NOT_FOUND_404);
+    set_response_status_and_file_path(response_info, server_config,
+                                      NOT_FOUND_404);
     return response_info;
   }
   std::string target_filepath =
       resolve_url(server_config, request_info.target_);
 
   HttpStatusCode code = delete_target_file(request_info, target_filepath);
-  set_status_and_path(response_info, server_config, code);
+  set_response_status_and_file_path(response_info, server_config, code);
   return response_info;
 }

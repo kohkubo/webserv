@@ -10,8 +10,9 @@
 std::string resolve_url(const Config      &server_config,
                         const std::string &request_url);
 
-void        set_status_and_path(http_message_map &response_info,
-                                const Config &server_config, HttpStatusCode code);
+void        set_response_status_and_file_path(http_message_map &response_info,
+                                              const Config     &server_config,
+                                              HttpStatusCode    code);
 
 bool        is_minus_depth(std::string url);
 
