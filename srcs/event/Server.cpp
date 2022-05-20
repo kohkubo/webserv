@@ -12,7 +12,7 @@
 #include "utils/utils.hpp"
 
 void Server::__add_listenfd_to_pollfds() {
-  std::map<listen_fd, conf_group>::const_iterator it = __listen_fd_map_.begin();
+  std::map<listenFd, conf_group>::const_iterator it = __listen_fd_map_.begin();
   for (; it != __listen_fd_map_.end(); it++) {
     struct pollfd new_pfd = {it->first, POLLIN, 0};
     __pollfds_.push_back(new_pfd);

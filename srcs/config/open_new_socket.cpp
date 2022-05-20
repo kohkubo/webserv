@@ -22,8 +22,8 @@
  * 詳解UNIXでは「引数「protocol」は普通ゼロで、指定したドメインとソケット種別に
  * たいするデフォルトのプロトコルを選択します。」と書いてある。なぜ0になるのかわからない
  */
-static int get_listen_fd(struct addrinfo *info) {
-  int listen_fd = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+static listenFd get_listen_fd(struct addrinfo *info) {
+  listenFd listen_fd = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
   if (listen_fd == -1) {
     error_log_with_errno("socket() failed.");
     exit(EXIT_FAILURE);
@@ -49,7 +49,7 @@ static int get_listen_fd(struct addrinfo *info) {
  * addr    ソケットアドレス
  * addrlen ソケットアドレス長
  */
-static void bind_socket(int listen_fd, struct addrinfo *info) {
+static void bind_socket(listenFd listen_fd, struct addrinfo *info) {
   if (bind(listen_fd, info->ai_addr, info->ai_addrlen) == -1) {
     error_log_with_errno("bind() failed.");
     close(listen_fd);
@@ -63,7 +63,7 @@ static void bind_socket(int listen_fd, struct addrinfo *info) {
  * sockfd 　ソケットディスクリプタ
  * backlog 　待ち受けキューの最大数
  */
-static void listen_passive_socket(int listen_fd) {
+static void listen_passive_socket(listenFd listen_fd) {
   if (listen(listen_fd, SOMAXCONN) == -1) {
     error_log_with_errno("listen() failed.");
     close(listen_fd);
@@ -72,7 +72,7 @@ static void listen_passive_socket(int listen_fd) {
 }
 
 int open_new_socket(const Config &config) {
-  int listen_fd = get_listen_fd(config.addrinfo_);
+  listenFd listen_fd = get_listen_fd(config.addrinfo_);
   bind_socket(listen_fd, config.addrinfo_);
   listen_passive_socket(listen_fd);
   return listen_fd;

@@ -215,13 +215,12 @@ TEST(server_config_test, parse_vector_directive) {
 }
 
 TEST(server_config_test, socket_list_test) {
-  serverList                     server_list = read_config(SAMPLE_CONF);
-  std::map<listen_fd, conf_group> listen_fd_map =
-      create_socket_map(server_list);
+  serverList                     server_list   = read_config(SAMPLE_CONF);
+  std::map<listenFd, conf_group> listen_fd_map = create_socket_map(server_list);
 
   EXPECT_EQ(listen_fd_map.size(), 2);
 
-  std::map<listen_fd, conf_group>::iterator it = listen_fd_map.begin();
+  std::map<listenFd, conf_group>::iterator it = listen_fd_map.begin();
   EXPECT_EQ((it->second).size(), 2);
   EXPECT_EQ((it->second)[0]->listen_address_, "0.0.0.0");
   EXPECT_EQ((it->second)[0]->listen_port_, "5500");

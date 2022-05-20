@@ -15,10 +15,10 @@ static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
          (x->sin_port == y->sin_port);
 }
 
-static std::map<listen_fd, conf_group>::iterator
-find_same_socket(const Config                    &conf,
-                 std::map<listen_fd, conf_group> &listen_fd_map) {
-  std::map<listen_fd, conf_group>::iterator it = listen_fd_map.begin();
+static std::map<listenFd, conf_group>::iterator
+find_same_socket(const Config                   &conf,
+                 std::map<listenFd, conf_group> &listen_fd_map) {
+  std::map<listenFd, conf_group>::iterator it = listen_fd_map.begin();
   for (; it != listen_fd_map.end(); it++) {
     if (is_same_socket(conf, *(it->second[0])))
       break;
@@ -35,12 +35,12 @@ static bool is_include_same_server_name(const Config &conf, conf_group group) {
   return false;
 }
 
-std::map<listen_fd, conf_group>
+std::map<listenFd, conf_group>
 create_socket_map(const serverList &server_list) {
-  std::map<listen_fd, conf_group> listen_fd_map;
-  serverList::const_iterator      sl_it = server_list.begin();
+  std::map<listenFd, conf_group> listen_fd_map;
+  serverList::const_iterator     sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
-    std::map<listen_fd, conf_group>::iterator it =
+    std::map<listenFd, conf_group>::iterator it =
         find_same_socket(*sl_it, listen_fd_map);
     if (it != listen_fd_map.end()) {
       if (is_include_same_server_name(*sl_it, it->second)) {

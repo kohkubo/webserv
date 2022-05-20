@@ -9,7 +9,7 @@
 #include "utils/utils.hpp"
 
 // TODO: exitすべきか調査
-int xaccept(int listen_fd) {
+int xaccept(listenFd listen_fd) {
   int connection_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
   if (connection_fd == -1) {
     error_log_with_errno("accept()) failed.");

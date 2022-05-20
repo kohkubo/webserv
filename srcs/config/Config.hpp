@@ -63,6 +63,6 @@ private:
 // conf_group: 同じソケットのserver_confの集合
 typedef std::vector<Config>         serverList;
 typedef std::vector<const Config *> conf_group;
-typedef int                         listen_fd;
+typedef int                         listenFd;
 
 #endif /* SRCS_CONFIG_SERVERCONFIG_HPP */
