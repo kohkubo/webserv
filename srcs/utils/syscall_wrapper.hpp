@@ -3,7 +3,10 @@
 
 #include <poll.h>
 
-int xaccept(int listen_fd);
-int xpoll(struct pollfd *fds, nfds_t nfds, int timeout);
+typedef int listenFd;
+typedef int connFd;
+
+connFd      xaccept(listenFd listen_fd);
+int         xpoll(struct pollfd *fds, nfds_t nfds, int timeout);
 
 #endif /* SRCS_UTILS_SYSCALL_WRAPPER_HPP */

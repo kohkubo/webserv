@@ -1,3 +1,9 @@
+#include "http/method/method.hpp"
+
+#include <unistd.h>
+
+#include <string>
+
 #include "config/Config.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
@@ -6,8 +12,6 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
-#include <string>
-#include <unistd.h>
 
 static HttpStatusCode check_url(const std::string &target_filepath) {
   if (!is_file_exists(target_filepath)) {
@@ -22,19 +26,17 @@ static HttpStatusCode check_url(const std::string &target_filepath) {
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map method_get(const Config &server_config,
-                            RequestInfo  &request_info) {
+http_message_map method_get(const Config &config, RequestInfo &request_info) {
   http_message_map response_info;
-  std::string      target_filepath =
-      resolve_url(server_config, request_info.target_);
+  std::string      target_filepath = resolve_url(config, request_info.target_);
 
   if (is_minus_depth(request_info.target_)) {
-    set_status_and_path(response_info, server_config, NOT_FOUND_404);
+    set_status_and_path(response_info, config, NOT_FOUND_404);
     return response_info;
   }
 
   HttpStatusCode code = check_url(target_filepath);
-  set_status_and_path(response_info, server_config, code);
+  set_status_and_path(response_info, config, code);
   if (code == OK_200)
     response_info[PATH] = target_filepath;
   return response_info;

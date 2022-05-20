@@ -1,5 +1,8 @@
-#include "utils/tokenize.hpp"
+#include "config/config_parser_utils.hpp"
+
 #include <string>
+
+#include "utils/tokenize.hpp"
 
 bool is_uint8(const std::string &token) {
   if (token.size() == 1) {
@@ -31,9 +34,9 @@ bool is_uint8(const std::string &token) {
 }
 
 bool is_ip(const std::string &field_value) {
-  token_vector   tokens = tokenize(field_value, ".", "");
-  token_iterator it     = tokens.begin();
-  size_t         count  = 0;
+  tokenVector   tokens = tokenize(field_value, ".", "");
+  tokenIterator it     = tokens.begin();
+  size_t        count  = 0;
   for (; it != tokens.end(); it++, count++) {
     if (!is_uint8(*it))
       return false;

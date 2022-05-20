@@ -1,12 +1,13 @@
 #include "config/Config.hpp"
 
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 #include "config/config_parser_utils.hpp"
 
@@ -49,12 +50,12 @@ Config &Config::operator=(const Config &other) {
 
 Config::~Config() { freeaddrinfo(addrinfo_); }
 
-token_iterator Config::parse(token_iterator pos, token_iterator end) {
+tokenIterator Config::parse(tokenIterator pos, tokenIterator end) {
   pos++;
   if (*pos++ != "{")
     throw UnexpectedTokenException("server directive does not have context.");
   while (pos != end && *pos != "}") {
-    token_iterator head = pos;
+    tokenIterator head = pos;
     // clang-format off
     pos = __parse_listen(pos, end);
     pos = __parse_string_directive("index", index_, pos, end);
@@ -75,14 +76,14 @@ token_iterator Config::parse(token_iterator pos, token_iterator end) {
   return ++pos;
 }
 
-token_iterator Config::__parse_listen(token_iterator pos, token_iterator end) {
+tokenIterator Config::__parse_listen(tokenIterator pos, tokenIterator end) {
   if (*pos != "listen")
     return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     throw UnexpectedTokenException("could not detect directive value.");
-  token_vector   l  = tokenize(*pos, ": ", " ");
-  token_iterator it = l.begin();
+  tokenVector   l  = tokenize(*pos, ": ", " ");
+  tokenIterator it = l.begin();
   while (it != l.end()) {
     if (is_digits(*it)) {
       listen_port_ = *it;
@@ -95,10 +96,10 @@ token_iterator Config::__parse_listen(token_iterator pos, token_iterator end) {
   return pos + 2;
 }
 
-token_iterator Config::__parse_map_directive(std::string                 key,
-                                             std::map<int, std::string> &value,
-                                             token_iterator              pos,
-                                             token_iterator              end) {
+tokenIterator Config::__parse_map_directive(std::string                 key,
+                                            std::map<int, std::string> &value,
+                                            tokenIterator               pos,
+                                            tokenIterator               end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -108,10 +109,10 @@ token_iterator Config::__parse_map_directive(std::string                 key,
   return pos + 3;
 }
 
-token_iterator Config::__parse_string_directive(std::string    key,
-                                                std::string   &value,
-                                                token_iterator pos,
-                                                token_iterator end) {
+tokenIterator Config::__parse_string_directive(std::string   key,
+                                               std::string  &value,
+                                               tokenIterator pos,
+                                               tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -121,9 +122,9 @@ token_iterator Config::__parse_string_directive(std::string    key,
   return pos + 2;
 }
 
-token_iterator Config::__parse_sizet_directive(std::string key, size_t &value,
-                                               token_iterator pos,
-                                               token_iterator end) {
+tokenIterator Config::__parse_sizet_directive(std::string key, size_t &value,
+                                              tokenIterator pos,
+                                              tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -135,9 +136,9 @@ token_iterator Config::__parse_sizet_directive(std::string key, size_t &value,
   return pos + 2;
 }
 
-token_iterator Config::__parse_bool_directive(std::string key, bool &value,
-                                              token_iterator pos,
-                                              token_iterator end) {
+tokenIterator Config::__parse_bool_directive(std::string key, bool &value,
+                                             tokenIterator pos,
+                                             tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -152,10 +153,10 @@ token_iterator Config::__parse_bool_directive(std::string key, bool &value,
   return pos + 2;
 }
 
-token_iterator Config::__parse_vector_directive(std::string               key,
-                                                std::vector<std::string> &value,
-                                                token_iterator            pos,
-                                                token_iterator            end) {
+tokenIterator Config::__parse_vector_directive(std::string               key,
+                                               std::vector<std::string> &value,
+                                               tokenIterator             pos,
+                                               tokenIterator             end) {
   if (*pos != key)
     return pos;
   pos++;

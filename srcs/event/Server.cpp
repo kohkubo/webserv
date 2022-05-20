@@ -12,7 +12,7 @@
 #include "utils/utils.hpp"
 
 void Server::__add_listenfd_to_pollfds() {
-  std::map<listen_fd, conf_group>::const_iterator it = __listen_fd_map_.begin();
+  std::map<listenFd, confGroup>::const_iterator it = __listen_fd_map_.begin();
   for (; it != __listen_fd_map_.end(); it++) {
     struct pollfd new_pfd = {it->first, POLLIN, 0};
     __pollfds_.push_back(new_pfd);
@@ -20,7 +20,7 @@ void Server::__add_listenfd_to_pollfds() {
 }
 
 void Server::__add_connfd_to_pollfds() {
-  std::map<int, Connection>::const_iterator it = __conn_fd_map_.begin();
+  std::map<connFd, Connection>::const_iterator it = __conn_fd_map_.begin();
   for (; it != __conn_fd_map_.end(); it++) {
     struct pollfd pfd = {it->first, 0, 0};
     if (it->second.is_sending()) {
@@ -60,7 +60,7 @@ void Server::__connection_send_handler(connFd conn_fd) {
   if (transaction.is_send_completed()) {
     if (transaction.is_close()) {
       shutdown(conn_fd, SHUT_WR);
-      transaction.set_state(CLOSING);
+      transaction.set_tranction_state(CLOSING);
       return;
     }
     __conn_fd_map_[conn_fd].erase_front_req();

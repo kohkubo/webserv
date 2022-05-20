@@ -1,3 +1,9 @@
+#include "http/method/method.hpp"
+
+#include <unistd.h>
+
+#include <iostream>
+
 #include "config/Config.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
@@ -5,8 +11,6 @@
 #include "http/http_parser_utils.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
-#include <iostream>
-#include <unistd.h>
 
 static HttpStatusCode delete_target_file(const RequestInfo &request_info,
                                          const std::string &target_filepath) {

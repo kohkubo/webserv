@@ -1,12 +1,15 @@
 #include "utils/file_io_utils.hpp"
-#include "utils/utils.hpp"
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+
+#include "utils/utils.hpp"
 
 bool is_file_exists(const std::string &path) {
   struct stat file_info;

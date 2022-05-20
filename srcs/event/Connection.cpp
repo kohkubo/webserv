@@ -1,4 +1,5 @@
 #include "event/Connection.hpp"
+
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
 
@@ -10,8 +11,8 @@ std::string Connection::__cut_buffer(std::size_t len) {
 }
 
 void Connection::parse_buffer(const std::string &data) {
-  std::size_t  pos;
-  token_vector header_tokens;
+  std::size_t pos;
+  tokenVector header_tokens;
 
   __buffer_.append(data);
   while (1) {
@@ -40,7 +41,7 @@ void Connection::parse_buffer(const std::string &data) {
 
 // キューの中にあるresponse生成待ちのrequestのresponseを生成する。
 void Connection::create_response_iter() {
-  (void)__config_;
+  (void)__conf_group_;
   Config                            proper_conf;
   std::deque<Transaction>::iterator it = __transaction_queue_.begin();
   for (; it != __transaction_queue_.end(); it++) {

@@ -1,20 +1,23 @@
-#include "utils/utils.hpp"
+#include "utils/syscall_wrapper.hpp"
 
-#include <cstdlib>
 #include <poll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include <cstdlib>
+
+#include "utils/utils.hpp"
+
 // TODO: exitすべきか調査
-int xaccept(int listen_fd) {
-  int connection_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
-  if (connection_fd == -1) {
+connFd xaccept(listenFd listen_fd) {
+  connFd conn_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
+  if (conn_fd == -1) {
     error_log_with_errno("accept()) failed.");
     exit(EXIT_FAILURE);
   }
-  std::cout << "listen fd: " << listen_fd << std::endl;
-  std::cout << "connection fd: " << connection_fd << std::endl;
-  return connection_fd;
+  std::cout << "listen_fd: " << listen_fd << std::endl;
+  std::cout << "conn_fd: " << conn_fd << std::endl;
+  return conn_fd;
 }
 
 // TODO: exitすべきか調査

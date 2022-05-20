@@ -1,3 +1,9 @@
+#include "gtest/gtest.h"
+
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #include "config/Config.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
@@ -8,10 +14,6 @@
 #include "http/response/response.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
-#include "gtest/gtest.h"
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 TEST(http_test, create_response_info_get_normal) {
   std::string expect        = "HTTP/1.1 200 OK\r\n"

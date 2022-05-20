@@ -61,7 +61,7 @@ public:
 private:
   void        __parse_request_line(const std::string &request_line);
   HttpMethod  __parse_request_method(const std::string &method);
-  void        __create_header_map(token_iterator it, token_iterator end);
+  void        __create_header_map(tokenIterator it, tokenIterator end);
   bool        __is_comma_sparated(std::string &field_name);
   std::string __trim_optional_whitespace(std::string str);
   void        __parse_request_host();
