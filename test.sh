@@ -5,9 +5,16 @@ echo "======================"
 curl localhost:5000
 echo
 echo "======================"
-echo "normal 5001 404"
+echo "normal 5000 404"
 echo "======================"
 curl localhost:5000/jlksdfjklfsdjkldfs
+echo "======================"
+echo "5001 403"
+echo "normal 5000"
+echo "======================"
+chmod 000 html/index.html
+curl localhost:5000 -v
+chmod 744 html/index.html
 echo
 echo "======================"
 echo "get request path"
