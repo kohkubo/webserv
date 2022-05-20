@@ -58,6 +58,4 @@ public:
   void create_response_iter();
 };
 
-typedef int conn_fd;
-
 #endif /* SRCS_EVENT_CONNECTION_HPP */

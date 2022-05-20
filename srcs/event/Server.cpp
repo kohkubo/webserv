@@ -35,7 +35,7 @@ void Server::__add_connfd_to_pollfds() {
 const int BUF_SIZE = 2048;
 
 // clang-format off
-void Server::__connection_receive_handler(int conn_fd) {
+void Server::__connection_receive_handler(connFd conn_fd) {
   // clang-format on
   std::vector<char> buf(BUF_SIZE);
   ssize_t           rc = recv(conn_fd, &buf[0], BUF_SIZE, MSG_DONTWAIT);
@@ -57,7 +57,7 @@ void Server::__connection_receive_handler(int conn_fd) {
   }
 }
 
-void Server::__connection_send_handler(int conn_fd) {
+void Server::__connection_send_handler(connFd conn_fd) {
   Transaction &transaction = __conn_fd_map_[conn_fd].get_front_request();
   transaction.send_response(conn_fd);
   if (transaction.is_send_completed()) {
@@ -70,9 +70,9 @@ void Server::__connection_send_handler(int conn_fd) {
   }
 }
 
-void Server::__insert_connection_map(int fd) {
+void Server::__insert_connection_map(connFd conn_fd) {
   __conn_fd_map_.insert(
-      std::make_pair(xaccept(fd), Connection(&__listen_fd_map_[fd])));
+      std::make_pair(xaccept(conn_fd), Connection(&__listen_fd_map_[conn_fd])));
 }
 
 HandlerState Server::__state(std::vector<struct pollfd>::iterator it) {
