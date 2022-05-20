@@ -36,7 +36,7 @@ public:
   bool             is_close() { return __requst_info_.is_close_; }
   size_t           get_body_size() { return __requst_info_.content_length_; }
   bool             is_send_completed() {
-                return __send_count_ == static_cast<ssize_t>(__response_.size());
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
 
   void parse_header(const std::string &header);
