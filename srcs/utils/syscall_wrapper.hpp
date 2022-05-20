@@ -4,8 +4,9 @@
 #include <poll.h>
 
 typedef int listenFd;
+typedef int connFd;
 
-int         xaccept(listenFd listen_fd);
+connFd      xaccept(listenFd listen_fd);
 int         xpoll(struct pollfd *fds, nfds_t nfds, int timeout);
 
 #endif /* SRCS_UTILS_SYSCALL_WRAPPER_HPP */
