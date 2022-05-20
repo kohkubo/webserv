@@ -19,26 +19,30 @@ std::string resolve_url(const Config &config, const std::string &request_url) {
   }
 }
 
-void set_status_and_path(http_message_map &response_info, const Config &config,
-                         HttpStatusCode code) {
-  const std::string error_response_status[] = {
-      STATUS_200_PHRASE, STATUS_204_PHRASE, STATUS_400_PHRASE,
-      STATUS_403_PHRASE, STATUS_404_PHRASE, STATUS_500_PHRASE,
-      STATUS_501_PHRASE, STATUS_520_PHRASE,
-  };
-  const std::string default_error_page_path[] = {
-      "",                         // 200
-      "",                         // 204
-      BAD_REQUEST_PAGE,           // 400
-      FORBIDDEN_PAGE,             // 403
-      NOT_FOUND_PAGE,             // 404
-      INTERNAL_SERVER_ERROR_PAGE, // 500
-      NOT_IMPLEMENTED_PAGE,       // 501
-      UNKNOWN_ERROR_PAGE,         // 520
-  };
+// mapを宣言時に定義できるのはC++11以降のため、初期化関数を実装しています。
+std::map<int, std::string> g_error_page_map;
+std::map<int, std::string> g_response_status_phrase_map;
 
-  // TODO: serverConfigのerror_pageみる
-  (void)config;
+// clang-format off
+static void init_response_status_maps() {
+  g_error_page_map[200]             = "";
+  g_response_status_phrase_map[200] = STATUS_200_PHRASE;
+  g_error_page_map[204]             = "";
+  g_response_status_phrase_map[204] = STATUS_204_PHRASE;
+  g_error_page_map[400]             = BAD_REQUEST_PAGE;
+  g_response_status_phrase_map[400] = STATUS_400_PHRASE;
+  g_error_page_map[403]             = FORBIDDEN_PAGE;
+  g_response_status_phrase_map[403] = STATUS_403_PHRASE;
+  g_error_page_map[404]             = NOT_FOUND_PAGE;
+  g_response_status_phrase_map[404] = STATUS_404_PHRASE;
+  g_error_page_map[500]             = INTERNAL_SERVER_ERROR_PAGE;
+  g_response_status_phrase_map[500] = STATUS_500_PHRASE;
+  g_error_page_map[501]             = NOT_IMPLEMENTED_PAGE;
+  g_response_status_phrase_map[501] = STATUS_501_PHRASE;
+  g_error_page_map[520]             = UNKNOWN_ERROR_PAGE;
+  g_response_status_phrase_map[520] = STATUS_520_PHRASE;
+}
+// clang-format on
 
   response_info[STATUS_PHRASE] = error_response_status[code];
   if (!(code == OK_200 || code == NO_CONTENT_204))
