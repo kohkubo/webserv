@@ -1,3 +1,9 @@
+#include "http/method/method.hpp"
+
+#include <unistd.h>
+
+#include <string>
+
 #include "config/Config.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
@@ -6,8 +12,6 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
-#include <string>
-#include <unistd.h>
 
 static HttpStatusCode check_url(const std::string &target_filepath) {
   if (!is_file_exists(target_filepath)) {

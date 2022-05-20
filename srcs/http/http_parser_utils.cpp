@@ -1,3 +1,5 @@
+#include "http/http_parser_utils.hpp"
+
 #include "config/Config.hpp"
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"

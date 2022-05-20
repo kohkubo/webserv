@@ -1,5 +1,8 @@
-#include "utils/tokenize.hpp"
+#include "config/config_parser_utils.hpp"
+
 #include <string>
+
+#include "utils/tokenize.hpp"
 
 bool is_uint8(const std::string &token) {
   if (token.size() == 1) {

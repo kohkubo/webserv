@@ -1,10 +1,12 @@
 #ifndef SRCS_EVENT_REQUEST_HPP
 #define SRCS_EVENT_REQUEST_HPP
 
+#include <sys/types.h>
+
+#include <string>
+
 #include "config/Config.hpp"
 #include "http/request/RequestInfo.hpp"
-#include <string>
-#include <sys/types.h>
 
 enum RequestState {
   NO_REQUEST,       // Connectionはリクエストを持たない。

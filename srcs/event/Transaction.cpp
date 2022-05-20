@@ -1,6 +1,8 @@
 #include "event/Transaction.hpp"
-#include "http/response/response.hpp"
+
 #include <sys/socket.h>
+
+#include "http/response/response.hpp"
 
 void Transaction::parse_header(const std::string &header) {
   // requestのエラーは例外が送出されるのでここでキャッチする。

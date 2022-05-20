@@ -1,10 +1,11 @@
 #ifndef SRCS_EVENT_CONNECTION_HPP
 #define SRCS_EVENT_CONNECTION_HPP
 
-#include "event/Transaction.hpp"
 #include <deque>
 #include <string>
 #include <vector>
+
+#include "event/Transaction.hpp"
 
 // TODO: string -> vector<char>
 

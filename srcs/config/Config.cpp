@@ -1,12 +1,13 @@
 #include "config/Config.hpp"
 
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 #include "config/config_parser_utils.hpp"
 
