@@ -41,7 +41,6 @@ void Server::__connection_receive_handler(connFd conn_fd) {
     error_log_with_errno("recv() failed.");
     break;
   case 0:
-    std::cerr << "closed from client." << std::endl;
     close(conn_fd);
     __conn_fd_map_.erase(conn_fd);
     return;
