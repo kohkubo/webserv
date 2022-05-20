@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "config/Config.hpp"
-#include "config/create_listen_fd_map.hpp"
+#include "config/ConfigMapGenerator.hpp"
 #include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
