@@ -7,8 +7,8 @@
 void Transaction::parse_header(const std::string &header) {
   // requestのエラーは例外が送出されるのでここでキャッチする。
   // エラーの時のレスポンスの生成方法は要検討
-  __info_.parse_request_header(header);
-  if (__info_.is_expected_body()) {
+  __requst_info_.parse_request_header(header);
+  if (__requst_info_.is_expected_body()) {
     __state_ = RECEIVING_BODY;
   } else {
     __state_ = PENDING;
@@ -16,7 +16,7 @@ void Transaction::parse_header(const std::string &header) {
 }
 
 void Transaction::parse_body(const std::string &body) {
-  __info_.parse_request_body(body);
+  __requst_info_.parse_request_body(body);
   __state_ = PENDING;
 }
 
@@ -24,7 +24,7 @@ void Transaction::create_response(const Config &conf) {
   if (get_state() != PENDING) {
     return;
   }
-  http_message_map response_info = create_response_info(conf, __info_);
+  http_message_map response_info = create_response_info(conf, __requst_info_);
   __response_                    = make_message_string(response_info);
   __state_                       = SENDING;
 }
