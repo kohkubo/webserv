@@ -62,7 +62,7 @@ void Server::__connection_send_handler(connFd conn_fd) {
   if (transaction.is_send_completed()) {
     if (transaction.is_close()) {
       shutdown(conn_fd, SHUT_WR);
-      transaction.set_state(CLOSING);
+      transaction.set_tranction_state(CLOSING);
       return;
     }
     __conn_fd_map_[conn_fd].erase_front_req();
@@ -74,7 +74,7 @@ void Server::__insert_connection_map(connFd conn_fd) {
       std::make_pair(xaccept(conn_fd), Connection(__listen_fd_map_[conn_fd])));
 }
 
-HandlerState Server::__state(std::vector<struct pollfd>::iterator it) {
+FdState Server::__fd_state(std::vector<struct pollfd>::iterator it) {
   if (!it->revents) {
     return NO_REVENTS;
   }
@@ -96,7 +96,7 @@ void Server::run_loop() {
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
-      switch (__state(it)) {
+      switch (__fd_state(it)) {
       case NO_REVENTS:
         continue;
       case INSERT:

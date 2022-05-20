@@ -8,7 +8,7 @@
 
 typedef int connFd;
 
-enum HandlerState {
+enum FdState {
   SEND,
   RECV,
   INSERT,
@@ -27,16 +27,16 @@ private:
   Server(Server const &other);
   Server &operator=(Server const &other);
   void    __reset_pollfds() {
-    __pollfds_.clear();
-    __add_listenfd_to_pollfds();
-    __add_connfd_to_pollfds();
+       __pollfds_.clear();
+       __add_listenfd_to_pollfds();
+       __add_connfd_to_pollfds();
   }
-  void         __add_listenfd_to_pollfds();
-  void         __add_connfd_to_pollfds();
-  void         __connection_receive_handler(connFd conn_fd);
-  void         __connection_send_handler(connFd conn_fd);
-  void         __insert_connection_map(connFd conn_fd);
-  HandlerState __state(std::vector<struct pollfd>::iterator it);
+  void    __add_listenfd_to_pollfds();
+  void    __add_connfd_to_pollfds();
+  void    __connection_receive_handler(connFd conn_fd);
+  void    __connection_send_handler(connFd conn_fd);
+  void    __insert_connection_map(connFd conn_fd);
+  FdState __fd_state(std::vector<struct pollfd>::iterator it);
 
 public:
   Server(std::map<listenFd, confGroup> &listen_fd_map)
