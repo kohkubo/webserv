@@ -32,13 +32,10 @@ void Server::__add_connfd_to_pollfds() {
   }
 }
 
-const int BUF_SIZE = 2048;
-
-// clang-format off
 void Server::__connection_receive_handler(connFd conn_fd) {
-  // clang-format on
-  std::vector<char> buf(BUF_SIZE);
-  ssize_t           rc = recv(conn_fd, &buf[0], BUF_SIZE, MSG_DONTWAIT);
+  const int         buf_size = 2048;
+  std::vector<char> buf(buf_size);
+  ssize_t           rc = recv(conn_fd, &buf[0], buf_size, MSG_DONTWAIT);
   switch (rc) {
   case -1:
     error_log_with_errno("recv() failed.");
