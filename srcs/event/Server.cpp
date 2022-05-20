@@ -99,22 +99,24 @@ void Server::run_loop() {
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
       switch (__state(it)) {
+      case NO_REVENTS:
+        continue;
       case INSERT:
         __insert_connection_map(it->fd);
-        break;
+        continue;
       case RECV:
         __connection_receive_handler(it->fd);
-        break;
+        nready--;
+        continue;
       case SEND:
         __connection_send_handler(it->fd);
-        break;
-      case NO_REVENTS:
-        break;
-      case ERROR:
+        nready--;
+        continue;
+      default:
         error_log_with_errno("run_loop(): error state.");
-        break;
+        nready--;
+        continue;
       }
-      nready--;
     }
   }
 }
