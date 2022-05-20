@@ -71,7 +71,7 @@ void Server::__connection_send_handler(connFd conn_fd) {
 
 void Server::__insert_connection_map(connFd conn_fd) {
   __conn_fd_map_.insert(
-      std::make_pair(xaccept(conn_fd), Connection(&__listen_fd_map_[conn_fd])));
+      std::make_pair(xaccept(conn_fd), Connection(__listen_fd_map_[conn_fd])));
 }
 
 HandlerState Server::__state(std::vector<struct pollfd>::iterator it) {

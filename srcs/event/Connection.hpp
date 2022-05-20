@@ -16,15 +16,14 @@ class Connection {
 private:
   std::deque<Transaction> __transaction_queue_;
   std::string             __buffer_;
-  confGroup              *__conf_group_;
+  confGroup               __conf_group_;
 
 private:
   std::string __cut_buffer(std::size_t len);
 
 public:
-  Connection()
-      : __conf_group_(NULL) {}
-  Connection(confGroup *conf_group)
+  Connection(){}
+  Connection(confGroup conf_group)
       : __conf_group_(conf_group) {}
   ~Connection() {}
 
