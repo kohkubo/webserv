@@ -4,7 +4,7 @@
 #include <limits.h>
 
 #include "config/config_parser_utils.hpp"
-#include "http/http_parser_utils.hpp"
+#include "http/method/method_utils.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
