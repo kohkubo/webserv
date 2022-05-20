@@ -16,32 +16,23 @@
 #include "utils/utils.hpp"
 
 // mapを宣言時に定義できるのはC++11以降のため、初期化関数を実装しています。
-std::map<int, std::string> g_error_page_map;
 std::map<int, std::string> g_response_status_phrase_map;
 std::map<int, std::string> g_error_page_contents_map;
 
 // clang-format off
 static void init_response_status_maps() {
-  g_error_page_map[200]             = "";
   g_response_status_phrase_map[200] = STATUS_200_PHRASE;
-  g_error_page_map[204]             = "";
   g_response_status_phrase_map[204] = STATUS_204_PHRASE;
-  g_error_page_map[400]             = BAD_REQUEST_PAGE;
   g_response_status_phrase_map[400] = STATUS_400_PHRASE;
   g_error_page_contents_map[400]    = content_400;
-  g_error_page_map[403]             = FORBIDDEN_PAGE;
   g_response_status_phrase_map[403] = STATUS_403_PHRASE;
   g_error_page_contents_map[403]    = content_403;
-  g_error_page_map[404]             = NOT_FOUND_PAGE;
   g_response_status_phrase_map[404] = STATUS_404_PHRASE;
   g_error_page_contents_map[404]    = content_404;
-  g_error_page_map[500]             = INTERNAL_SERVER_ERROR_PAGE;
   g_response_status_phrase_map[500] = STATUS_500_PHRASE;
   g_error_page_contents_map[500]    = content_500;
-  g_error_page_map[501]             = NOT_IMPLEMENTED_PAGE;
   g_response_status_phrase_map[501] = STATUS_501_PHRASE;
   g_error_page_contents_map[501]    = content_501;
-  g_error_page_map[520]             = UNKNOWN_ERROR_PAGE;
   g_response_status_phrase_map[520] = STATUS_520_PHRASE;
   g_error_page_contents_map[520]    = content_520;
 }
@@ -70,9 +61,8 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   }
   __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   if (__status_code_ != 200) {
-    __file_path_ = g_error_page_map.at(__status_code_);
     __set_error_page_body();
-    return ;
+    return;
   }
   __set_body();
 }
