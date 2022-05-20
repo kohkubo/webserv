@@ -37,7 +37,7 @@ public:
 
 private:
   ResponseClass();
-  std::string  __read_file_tostring_cgi(const std::string &path);
+  std::string __read_file_tostring_cgi(const std::string &path);
 
   // clang-format off
   void __set_response_body() {
