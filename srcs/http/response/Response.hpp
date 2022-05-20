@@ -75,4 +75,7 @@ private:
   }
 };
 
+std::map<int, std::string> init_response_status_phrase_map();
+std::map<int, std::string> init_page_contents_map();
+
 #endif /* SRCS_HTTP_RESPONSE_RESPONSECLASS_HPP */
