@@ -1,9 +1,10 @@
 #include "config/create_listen_fd_map.hpp"
 
-#include <iostream>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+
+#include <iostream>
 
 #include "config/Config.hpp"
 
@@ -26,7 +27,8 @@ find_same_socket(const Config                  &conf,
   return it;
 }
 
-static bool is_include_same_server_name(const Config &conf, confGroup conf_group) {
+static bool is_include_same_server_name(const Config &conf,
+                                        confGroup     conf_group) {
   confGroup::iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == conf.server_name_)

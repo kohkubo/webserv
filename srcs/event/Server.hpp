@@ -1,9 +1,10 @@
 #ifndef SRCS_EVENT_SERVER_HPP
 #define SRCS_EVENT_SERVER_HPP
 
+#include <poll.h>
+
 #include "config/Config.hpp"
 #include "event/Connection.hpp"
-#include <poll.h>
 
 typedef int connFd;
 
@@ -26,9 +27,9 @@ private:
   Server(Server const &other);
   Server &operator=(Server const &other);
   void    __reset_pollfds() {
-       __pollfds_.clear();
-       __add_listenfd_to_pollfds();
-       __add_connfd_to_pollfds();
+    __pollfds_.clear();
+    __add_listenfd_to_pollfds();
+    __add_connfd_to_pollfds();
   }
   void         __add_listenfd_to_pollfds();
   void         __add_connfd_to_pollfds();

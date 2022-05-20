@@ -1,5 +1,6 @@
-#include "config/Config.hpp"
 #include "event/Connection.hpp"
+
+#include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
 
 // bufferを指定したlen切り出してstringとして返す関数。

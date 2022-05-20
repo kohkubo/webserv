@@ -1,9 +1,10 @@
-#include <cstdlib>
 #include <fcntl.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <cstdlib>
 
 #include "config/Config.hpp"
 #include "utils/utils.hpp"
@@ -23,7 +24,8 @@
  * たいするデフォルトのプロトコルを選択します。」と書いてある。なぜ0になるのかわからない
  */
 static listenFd get_listen_fd(struct addrinfo *info) {
-  listenFd listen_fd = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+  listenFd listen_fd =
+      socket(info->ai_family, info->ai_socktype, info->ai_protocol);
   if (listen_fd == -1) {
     error_log_with_errno("socket() failed.");
     exit(EXIT_FAILURE);
