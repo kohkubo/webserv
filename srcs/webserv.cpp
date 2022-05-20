@@ -22,7 +22,7 @@ static const char *resolve_config_file(int argc, char **argv) {
 
 int main(int argc, char **argv) {
   const char *config_file_path = resolve_config_file(argc, argv);
-  server_list server_list      = read_config(config_file_path);
+  serverList  server_list      = read_config(config_file_path);
   std::map<listen_fd, conf_group> listen_fd_map =
       create_socket_map(server_list);
   Server server(listen_fd_map);

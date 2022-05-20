@@ -215,7 +215,7 @@ TEST(server_config_test, parse_vector_directive) {
 }
 
 TEST(server_config_test, socket_list_test) {
-  server_list                     server_list = read_config(SAMPLE_CONF);
+  serverList                     server_list = read_config(SAMPLE_CONF);
   std::map<listen_fd, conf_group> listen_fd_map =
       create_socket_map(server_list);
 

@@ -36,9 +36,9 @@ static bool is_include_same_server_name(const Config &conf, conf_group group) {
 }
 
 std::map<listen_fd, conf_group>
-create_socket_map(const server_list &server_list) {
+create_socket_map(const serverList &server_list) {
   std::map<listen_fd, conf_group> listen_fd_map;
-  server_list::const_iterator     sl_it = server_list.begin();
+  serverList::const_iterator      sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
     std::map<listen_fd, conf_group>::iterator it =
         find_same_socket(*sl_it, listen_fd_map);
