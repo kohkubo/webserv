@@ -18,7 +18,6 @@ private:
   ConfigMapGenerator &operator=(const ConfigMapGenerator &other);
 
   void __read_config(const char *config_file_path);
-  void
 };
 
 #endif /* SRCS_CONFIG_CONFIGMAPGENERATOR_HPP */

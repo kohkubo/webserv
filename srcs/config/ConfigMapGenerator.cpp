@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "config/Config.hpp"
-#include "config/create_listen_fd_map.hpp"
+#include "config/Socket.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/tokenize.hpp"
 
@@ -74,9 +74,10 @@ std::map<listenFd, confGroup> ConfigMapGenerator::generate() {
       }
       it->second.push_back(&(*sl_it));
     } else {
-      int new_socket = open_new_socket(*sl_it);
-      listen_fd_map.insert(std::make_pair(new_socket, confGroup()));
-      listen_fd_map[new_socket].push_back(&(*sl_it));
+      Socket socket(sl_it->addrinfo_);
+      listenFd listen_fd = socket.get_listen_fd();
+      listen_fd_map.insert(std::make_pair(listen_fd, confGroup()));
+      listen_fd_map[listen_fd].push_back(&(*sl_it));
     }
   }
   return listen_fd_map;
