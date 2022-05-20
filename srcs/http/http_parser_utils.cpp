@@ -10,8 +10,7 @@
 #include "utils/utils.hpp"
 
 // TODO: location
-std::string resolve_url(const Config      &config,
-                        const std::string &request_url) {
+std::string resolve_url(const Config &config, const std::string &request_url) {
   // TODO: rootの末尾に/入ってるとき
   if (request_url == "/") {
     return config.root_ + "/" + config.index_;
@@ -20,8 +19,8 @@ std::string resolve_url(const Config      &config,
   }
 }
 
-void set_status_and_path(http_message_map &response_info,
-                         const Config &config, HttpStatusCode code) {
+void set_status_and_path(http_message_map &response_info, const Config &config,
+                         HttpStatusCode code) {
   const std::string error_response_status[] = {
       STATUS_200_PHRASE, STATUS_204_PHRASE, STATUS_400_PHRASE,
       STATUS_403_PHRASE, STATUS_404_PHRASE, STATUS_500_PHRASE,

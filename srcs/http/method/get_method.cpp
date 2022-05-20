@@ -26,11 +26,9 @@ static HttpStatusCode check_url(const std::string &target_filepath) {
 /*
  * mapへの挿入時keyが被っている時の処理は現状考慮してない.
  */
-http_message_map method_get(const Config &config,
-                            RequestInfo  &request_info) {
+http_message_map method_get(const Config &config, RequestInfo &request_info) {
   http_message_map response_info;
-  std::string      target_filepath =
-      resolve_url(config, request_info.target_);
+  std::string      target_filepath = resolve_url(config, request_info.target_);
 
   if (is_minus_depth(request_info.target_)) {
     set_status_and_path(response_info, config, NOT_FOUND_404);
