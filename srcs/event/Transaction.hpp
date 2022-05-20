@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_REQUEST_HPP
-#define SRCS_EVENT_REQUEST_HPP
+#ifndef SRCS_EVENT_TRANSACTION_HPP
+#define SRCS_EVENT_TRANSACTION_HPP
 
 #include <sys/types.h>
 
@@ -8,7 +8,7 @@
 #include "config/Config.hpp"
 #include "http/request/RequestInfo.hpp"
 
-enum RequestState {
+enum TransactionState {
   NO_REQUEST,       // Connectionはリクエストを持たない。
   RECEIVING_HEADER, // リクエストはheaderを読み取り中。
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
@@ -21,21 +21,23 @@ enum RequestState {
 
 struct Transaction {
 private:
-  RequestState __state_;
-  ssize_t      __send_count_;
-  std::string  __response_;
-  RequestInfo  __info_;
+  TransactionState __transction_state_;
+  ssize_t          __send_count_;
+  std::string      __response_;
+  RequestInfo      __requst_info_;
 
 public:
   Transaction()
-      : __state_(RECEIVING_HEADER)
+      : __transction_state_(RECEIVING_HEADER)
       , __send_count_(0) {}
 
-  RequestState get_state() const { return __state_; }
-  void         set_state(RequestState state) { __state_ = state; }
-  bool         is_close() { return __info_.is_close_; }
-  size_t       get_body_size() { return __info_.content_length_; }
-  bool         is_send_completed() {
+  TransactionState get_tranction_state() const { return __transction_state_; }
+  void             set_tranction_state(TransactionState state) {
+    __transction_state_ = state;
+  }
+  bool   is_close() { return __requst_info_.is_close_; }
+  size_t get_body_size() { return __requst_info_.content_length_; }
+  bool   is_send_completed() {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
 
@@ -45,4 +47,4 @@ public:
   void send_response(int socket_fd);
 };
 
-#endif /* SRCS_EVENT_REQUEST_HPP */
+#endif /* SRCS_EVENT_TRANSACTION_HPP */
