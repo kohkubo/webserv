@@ -44,9 +44,26 @@ static void init_response_status_maps() {
 }
 // clang-format on
 
-  response_info[STATUS_PHRASE] = error_response_status[code];
-  if (!(code == OK_200 || code == NO_CONTENT_204))
-    response_info[PATH] = default_error_page_path[code];
+void set_status_and_path(http_message_map &response_info, const Config &config,
+                         HttpStatusCode status_code) {
+  init_response_status_maps();
+  response_info[STATUS_PHRASE] = g_response_status_phrase_map[status_code];
+  if (status_code == OK_200 || status_code == NO_CONTENT_204) {
+    return;
+  }
+  switch (config.error_pages_.count(status_code)) {
+  case 0:
+    response_info[PATH] = g_error_page_map[status_code];
+    break;
+  case 1:
+    // TODO:現状エラーページがフルパスでしか対応していない
+    response_info[PATH] = config.error_pages_.at(status_code);
+    break;
+  default:
+    std::cout << "Error: status code is duplicated." << std::endl;
+    exit(1);
+  }
+  return;
 }
 
 static std::string response_body_content(const std::string &path) {
