@@ -14,11 +14,12 @@ serverList read_config(const char *config_file_path) {
     tokenIterator it = config_tokens.begin();
     while (it != config_tokens.end()) {
       if (*it == "server") {
-        Config new_server = Config();
-        it                = new_server.parse(it, config_tokens.end());
-        server_list.push_back(new_server);
+        Config config(it, config_tokens.end());
+        it = config.get_moved_it();
+        server_list.push_back(config);
       } else {
-        it++;
+        std::cerr << "unexpected token: " << *it << std::endl;
+        exit(EXIT_FAILURE);
       }
     }
     return server_list;
