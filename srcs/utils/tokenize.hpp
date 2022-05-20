@@ -1,5 +1,5 @@
-#ifndef SRCS_TOKENIZE_HPP
-#define SRCS_TOKENIZE_HPP
+#ifndef SRCS_UTILS_TOKENIZE_HPP
+#define SRCS_UTILS_TOKENIZE_HPP
 
 #include <string>
 #include <vector>
@@ -10,4 +10,4 @@ typedef tokenVector::iterator    tokenIterator;
 tokenVector tokenize(const std::string &text, const std::string &delimiter,
                      const std::string &skip);
 
-#endif /* SRCS_TOKENIZE_HPP */
+#endif /* SRCS_UTILS_TOKENIZE_HPP */
