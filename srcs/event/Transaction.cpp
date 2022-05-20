@@ -2,7 +2,7 @@
 
 #include <sys/socket.h>
 
-#include "http/response/response.hpp"
+#include "http/response/ResponseClass.hpp"
 
 void Transaction::parse_header(const std::string &header) {
   // requestのエラーは例外が送出されるのでここでキャッチする。
@@ -24,8 +24,9 @@ void Transaction::create_response(const Config &conf) {
   if (get_tranction_state() != PENDING) {
     return;
   }
-  __response_                    = create_response_string(conf, __requst_info_);
-  __transction_state_            = SENDING;
+  ResponseClass response_class(conf, __requst_info_);
+  __response_         = response_class.get_response_string();
+  __transction_state_ = SENDING;
 }
 
 void Transaction::send_response(int socket_fd) {

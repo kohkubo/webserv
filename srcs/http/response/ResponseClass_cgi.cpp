@@ -1,3 +1,5 @@
+#include "http/response/ResponseClass.hpp"
+
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -21,7 +23,7 @@ static std::string read_fd_tostring(int fd) {
   return s;
 }
 
-std::string read_file_tostring_cgi(const std::string &path) {
+std::string ResponseClass::__read_file_tostring_cgi(const std::string &path) {
   int pipefd[2];
   if (pipe(pipefd) == -1) {
     std::cout << "error: pipe in read_file_tostring_cgi" << std::endl;
