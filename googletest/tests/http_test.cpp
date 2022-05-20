@@ -19,7 +19,7 @@ TEST(http_test, create_response_info_get_403) {
   config.index_ = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
-  request_info.target_  = "/000.html";
+  request_info.uri_     = "/000.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -45,7 +45,7 @@ TEST(http_test, create_response_info_delete_normal) {
   config.index_      = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
-  request_info.target_  = "/delete_target.html";
+  request_info.uri_     = "/delete_target.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -69,7 +69,7 @@ TEST(http_test, create_response_info_delete_404) {
   config.index_ = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
-  request_info.target_  = "/delete_target.html";
+  request_info.uri_     = "/delete_target.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -91,7 +91,7 @@ TEST(http_test, create_response_info_delete_403) {
   config.index_ = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
-  request_info.target_  = "/000.html";
+  request_info.uri_     = "/000.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
@@ -117,7 +117,7 @@ TEST(http_test, create_response_info_delete_400) {
   config.index_ = "index.html";
   RequestInfo request_info;
   request_info.method_         = DELETE;
-  request_info.target_         = "/hogehoge.html";
+  request_info.uri_            = "/hogehoge.html";
   request_info.version_        = "HTTP/1.1";
   request_info.host_           = "localhost";
   request_info.content_length_ = 8;

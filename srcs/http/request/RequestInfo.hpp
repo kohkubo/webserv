@@ -27,7 +27,7 @@ private:
 
 public:
   HttpMethod                         method_;
-  std::string                        target_;
+  std::string                        uri_;
   std::string                        version_;
   std::string                        host_;
   std::string                        port_;
