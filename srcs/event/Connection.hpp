@@ -22,7 +22,7 @@ private:
   std::string __cut_buffer(std::size_t len);
 
 public:
-  Connection(){}
+  Connection() {}
   Connection(confGroup conf_group)
       : __conf_group_(conf_group) {}
   ~Connection() {}
