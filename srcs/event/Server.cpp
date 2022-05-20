@@ -32,13 +32,10 @@ void Server::__add_connfd_to_pollfds() {
   }
 }
 
-const int BUF_SIZE = 2048;
-
-// clang-format off
 void Server::__connection_receive_handler(connFd conn_fd) {
-  // clang-format on
-  std::vector<char> buf(BUF_SIZE);
-  ssize_t           rc = recv(conn_fd, &buf[0], BUF_SIZE, MSG_DONTWAIT);
+  const int         buf_size = 2048;
+  std::vector<char> buf(buf_size);
+  ssize_t           rc = recv(conn_fd, &buf[0], buf_size, MSG_DONTWAIT);
   switch (rc) {
   case -1:
     error_log_with_errno("recv() failed.");
@@ -75,46 +72,26 @@ void Server::__insert_connection_map(connFd conn_fd) {
       std::make_pair(xaccept(conn_fd), Connection(&__listen_fd_map_[conn_fd])));
 }
 
-FdState Server::__fd_state(std::vector<struct pollfd>::iterator it) {
-  if (!it->revents) {
-    return NO_REVENTS;
-  }
-  int listen_flg = __listen_fd_map_.count(it->fd);
-  if (listen_flg) {
-    return INSERT;
-  }
-  if (it->revents & POLLIN) {
-    return RECV;
-  } else if (it->revents & POLLOUT) {
-    return SEND;
-  }
-  return ERROR;
-}
-
 void Server::run_loop() {
   while (1) {
     __reset_pollfds();
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
-      switch (__fd_state(it)) {
-      case NO_REVENTS:
+      if (!it->revents) {
         continue;
-      case INSERT:
+      }
+      nready--;
+      int listen_flg = __listen_fd_map_.count(it->fd);
+      if (listen_flg) {
         __insert_connection_map(it->fd);
         continue;
-      case RECV:
+      }
+      if (it->revents & POLLIN) {
         __connection_receive_handler(it->fd);
-        nready--;
-        continue;
-      case SEND:
+      }
+      if (it->revents & POLLOUT) {
         __connection_send_handler(it->fd);
-        nready--;
-        continue;
-      default:
-        error_log_with_errno("run_loop(): error state.");
-        nready--;
-        continue;
       }
     }
   }
