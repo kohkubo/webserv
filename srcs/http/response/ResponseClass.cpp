@@ -62,6 +62,7 @@ ResponseClass::ResponseClass(const Config      &config,
   }
   if (__status_code_ != 200) {
     __file_path_ = g_error_page_map.at(__status_code_);
+    __set_error_page_file_path();
   }
   status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   __set_body();
