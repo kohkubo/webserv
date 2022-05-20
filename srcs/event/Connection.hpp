@@ -34,6 +34,7 @@ public:
     return __transaction_queue_.back();
   }
 
+  // TODO: 分岐不要の話はどうなった?
   Transaction &get_front_request() {
     if (__transaction_queue_.empty())
       __transaction_queue_.push_back(Transaction());
