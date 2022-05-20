@@ -5,19 +5,18 @@
 
 class ConfigMapGenerator {
 private:
-  serverList  __server_list_;
+  serverList __server_list_;
 
 public:
   ConfigMapGenerator(const char *config_file_path);
-  ~ConfigMapGenerator();
+  ~ConfigMapGenerator(){};
   std::map<listenFd, confGroup> generate();
 
 private:
   ConfigMapGenerator();
   ConfigMapGenerator(const ConfigMapGenerator &other);
   ConfigMapGenerator &operator=(const ConfigMapGenerator &other);
-
-  void __read_config(const char *config_file_path);
+  void                __read_config(const char *config_file_path);
 };
 
 #endif /* SRCS_CONFIG_CONFIGMAPGENERATOR_HPP */

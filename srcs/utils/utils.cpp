@@ -33,20 +33,17 @@ bool is_uint8(const std::string &str) {
     }
     return false;
   } else if (str.size() == 2) {
-    if (str[0] >= '1' && str[0] <= '9' && str[1] >= '0' &&
-        str[1] <= '9') {
+    if (str[0] >= '1' && str[0] <= '9' && str[1] >= '0' && str[1] <= '9') {
       return true;
     }
     return false;
   } else if (str.size() == 3) {
     if (str[0] == '1') {
-      if ((str[1] >= '0' && str[1] <= '9') &&
-          (str[2] >= '0' && str[2] <= '9'))
+      if ((str[1] >= '0' && str[1] <= '9') && (str[2] >= '0' && str[2] <= '9'))
         return true;
     }
     if (str[0] == '2') {
-      if ((str[1] >= '0' && str[1] <= '4') &&
-          (str[2] >= '0' && str[2] <= '9'))
+      if ((str[1] >= '0' && str[1] <= '4') && (str[2] >= '0' && str[2] <= '9'))
         return true;
       if (str[1] == '5' && (str[2] >= '0' && str[2] <= '5'))
         return true;

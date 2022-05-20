@@ -1,11 +1,11 @@
 #include "config/ConfigMapGenerator.hpp"
 
-#include <string>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
 #include <iostream>
+#include <string>
 
 #include "config/Config.hpp"
 #include "config/Socket.hpp"
@@ -74,7 +74,7 @@ std::map<listenFd, confGroup> ConfigMapGenerator::generate() {
       }
       it->second.push_back(&(*sl_it));
     } else {
-      Socket socket(sl_it->addrinfo_);
+      Socket   socket(sl_it->addrinfo_);
       listenFd listen_fd = socket.get_listen_fd();
       listen_fd_map.insert(std::make_pair(listen_fd, confGroup()));
       listen_fd_map[listen_fd].push_back(&(*sl_it));

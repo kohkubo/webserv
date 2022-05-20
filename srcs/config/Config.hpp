@@ -1,11 +1,11 @@
 #ifndef SRCS_CONFIG_SERVERCONFIG_HPP
 #define SRCS_CONFIG_SERVERCONFIG_HPP
 
+#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "utils/tokenize.hpp"
 
@@ -49,7 +49,7 @@ public:
   }
   ~Config();
   Config(const Config &other);
-  Config       &operator=(const Config &other);
+  Config &operator=(const Config &other);
 
 private:
   tokenIterator __parse(tokenIterator pos, tokenIterator end);

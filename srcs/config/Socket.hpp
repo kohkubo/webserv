@@ -4,8 +4,13 @@
 #include "config/Config.hpp"
 
 class Socket {
- public:
-  Socket(struct addrinfo *info) : __info_(info) {
+private:
+  struct addrinfo *__info_;
+  listenFd         __listen_fd_;
+
+public:
+  Socket(struct addrinfo *info)
+      : __info_(info) {
     __set_listen_fd();
     __set_bind_socket();
     __set_listen_passive_socket();
@@ -13,14 +18,12 @@ class Socket {
   ~Socket(){};
   listenFd get_listen_fd() { return __listen_fd_; };
 
- private:
+private:
   Socket(const Socket &other);
   Socket &operator=(const Socket &other);
-  struct addrinfo *__info_;
-  listenFd __listen_fd_;
-  void __set_listen_fd();
-  void __set_bind_socket();
-  void __set_listen_passive_socket();
+  void    __set_listen_fd();
+  void    __set_bind_socket();
+  void    __set_listen_passive_socket();
 };
 
 #endif /* SRCS_CONFIG_SOCKET_HPP */
