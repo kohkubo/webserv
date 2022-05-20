@@ -1,8 +1,9 @@
+#include <sys/wait.h>
+#include <unistd.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <sys/wait.h>
-#include <unistd.h>
 
 #define READ_FD  0
 #define WRITE_FD 1
