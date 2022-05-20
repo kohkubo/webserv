@@ -26,3 +26,9 @@ echo "get request path"
 echo "normal 5000 in dir1"
 echo "======================"
 curl localhost:5000/dir1/index2.html
+echo
+echo "======================"
+echo "cgi"
+echo "normal 5000 cgi"
+echo "======================"
+curl localhost:5000/cgi.sh
