@@ -9,7 +9,7 @@
 #include <iostream>
 #include <map>
 
-#include "config/config_parser_utils.hpp"
+#include "utils/utils.hpp"
 
 Config::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
