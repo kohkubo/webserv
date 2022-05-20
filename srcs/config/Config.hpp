@@ -1,5 +1,5 @@
-#ifndef SRCS_CONFIG_SERVERCONFIG_HPP
-#define SRCS_CONFIG_SERVERCONFIG_HPP
+#ifndef SRCS_CONFIG_CONFIG_HPP
+#define SRCS_CONFIG_CONFIG_HPP
 
 #include <map>
 #include <stdexcept>
@@ -65,4 +65,4 @@ typedef std::vector<Config>         server_list;
 typedef std::vector<const Config *> conf_group;
 typedef int                         listen_fd;
 
-#endif /* SRCS_CONFIG_SERVERCONFIG_HPP */
+#endif /* SRCS_CONFIG_CONFIG_HPP */
