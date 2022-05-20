@@ -8,7 +8,7 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/utils.hpp"
 
-class ResponseClass {
+class Response {
 private:
   const Config      &__config_;
   const RequestInfo &__request_info_;
@@ -25,8 +25,8 @@ private:
   std::string        __body_;
 
 public:
-  ResponseClass(const Config &config, const RequestInfo &request_info);
-  virtual ~ResponseClass(){};
+  Response(const Config &config, const RequestInfo &request_info);
+  virtual ~Response(){};
   std::string get_response_string() {
     __set_response_body();
     __make_message_string();
@@ -34,7 +34,7 @@ public:
   }
 
 private:
-  ResponseClass();
+  Response();
   std::string __read_file_tostring_cgi(const std::string &path);
 
   // clang-format off

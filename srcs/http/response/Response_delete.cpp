@@ -1,4 +1,4 @@
-#include "http/response/ResponseClass.hpp"
+#include "http/response/Response.hpp"
 
 #include <unistd.h>
 
@@ -11,7 +11,7 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 
-void ResponseClass::__delete_target_file() {
+void Response::__delete_target_file() {
   if (__request_info_.is_expected_body()) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
     __status_code_ = BAD_REQUEST_400;

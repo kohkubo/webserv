@@ -1,4 +1,4 @@
-#include "http/response/ResponseClass.hpp"
+#include "http/response/Response.hpp"
 
 #include <cstdlib>
 #include <unistd.h>
@@ -39,8 +39,7 @@ static void init_response_status_maps() {
 }
 // clang-format on
 
-ResponseClass::ResponseClass(const Config      &config,
-                             const RequestInfo &request_info)
+Response::Response(const Config &config, const RequestInfo &request_info)
     : __config_(config)
     , __request_info_(request_info)
     , __status_code_(0) {
@@ -69,7 +68,7 @@ ResponseClass::ResponseClass(const Config      &config,
   __set_body();
 }
 
-void ResponseClass::__resolve_url() {
+void Response::__resolve_url() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
     return;
@@ -82,7 +81,7 @@ void ResponseClass::__resolve_url() {
   }
 }
 
-bool ResponseClass::__is_minus_depth() {
+bool Response::__is_minus_depth() {
   tokenVector   tokens = tokenize(__request_info_.uri_, "/", "/");
   tokenIterator it     = tokens.begin();
 
@@ -99,7 +98,7 @@ bool ResponseClass::__is_minus_depth() {
   return false;
 }
 
-void ResponseClass::__check_status() {
+void Response::__check_status() {
   if (__status_code_) {
     return;
   }
@@ -115,7 +114,7 @@ void ResponseClass::__check_status() {
   __status_code_ = OK_200;
 }
 
-void ResponseClass::__set_error_page_file_path() {
+void Response::__set_error_page_file_path() {
   switch (__config_.error_pages_.count(__status_code_)) {
   case 0:
     __file_path_ = g_error_page_map[__status_code_];
@@ -130,7 +129,7 @@ void ResponseClass::__set_error_page_file_path() {
   }
 }
 
-void ResponseClass::__set_body() {
+void Response::__set_body() {
   if (is_match_suffix_string(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_);
   }

@@ -9,7 +9,7 @@
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/ResponseClass.hpp"
+#include "http/response/Response.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
@@ -25,9 +25,9 @@ TEST(http_test, create_response_info_get_403) {
 
   // TODO: bodyがこっちからとれない
   system("chmod 000 ../html/000.html");
-  ResponseClass response_class(config, request_info);
+  Response response(config, request_info);
   system("chmod 644 ../html/000.html");
-  EXPECT_EQ(response_class.get_response_string(), "\
+  EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Host: \r\n\
 Content-Length: 0\r\n\
@@ -52,8 +52,8 @@ TEST(http_test, create_response_info_delete_normal) {
   system("touch ../html/delete_target.html");
 
   // TODO: テストケースこれでOK?
-  ResponseClass response_class(config, request_info);
-  EXPECT_EQ(response_class.get_response_string(), "\
+  Response response(config, request_info);
+  EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 204 No Content\r\n\
 Host: \r\n\
 Content-Length: \r\n\
@@ -74,8 +74,8 @@ TEST(http_test, create_response_info_delete_404) {
   request_info.host_    = "localhost";
 
   // TODO: テストケースこれでOK?
-  ResponseClass response_class(config, request_info);
-  EXPECT_EQ(response_class.get_response_string(), "\
+  Response response(config, request_info);
+  EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 404 Not Found\r\n\
 Host: \r\n\
 Content-Length: 0\r\n\
@@ -97,11 +97,11 @@ TEST(http_test, create_response_info_delete_403) {
 
   system("chmod 000 ../html/000.html");
 
-  ResponseClass response_class(config, request_info);
+  Response response(config, request_info);
 
   system("chmod 644 ../html/000.html");
 
-  EXPECT_EQ(response_class.get_response_string(), "\
+  EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Host: \r\n\
 Content-Length: 0\r\n\
@@ -122,9 +122,9 @@ TEST(http_test, create_response_info_delete_400) {
   request_info.host_           = "localhost";
   request_info.content_length_ = 8;
 
-  ResponseClass response_class(config, request_info);
+  Response response(config, request_info);
 
-  EXPECT_EQ(response_class.get_response_string(), "\
+  EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 400 Bad Request\r\n\
 Host: \r\n\
 Content-Length: 0\r\n\
