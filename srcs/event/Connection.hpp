@@ -33,25 +33,27 @@ public:
     return __transaction_queue_.back();
   }
 
+  // TODO: 分岐不要の話はどうなった?
   Transaction &get_front_request() {
     if (__transaction_queue_.empty())
       __transaction_queue_.push_back(Transaction());
     return __transaction_queue_.front();
   }
 
-  void         erase_front_req() { __transaction_queue_.pop_front(); }
+  void             erase_front_req() { __transaction_queue_.pop_front(); }
 
-  RequestState get_last_state() {
+  TransactionState get_last_state() {
     if (__transaction_queue_.empty())
       return NO_REQUEST;
-    return __transaction_queue_.back().get_state();
+    return __transaction_queue_.back().get_tranction_state();
   }
 
   bool is_sending() const {
     if (__transaction_queue_.empty())
       return false;
-    RequestState state = __transaction_queue_.front().get_state();
-    return state == SENDING;
+    TransactionState transaction_state =
+        __transaction_queue_.front().get_tranction_state();
+    return transaction_state == SENDING;
   }
 
   void parse_buffer(const std::string &data);
