@@ -21,18 +21,18 @@ enum TransactionState {
 
 struct Transaction {
 private:
-  TransactionState __state_;
+  TransactionState __tran_state_;
   ssize_t          __send_count_;
   std::string      __response_;
   RequestInfo      __requst_info_;
 
 public:
   Transaction()
-      : __state_(RECEIVING_HEADER)
+      : __tran_state_(RECEIVING_HEADER)
       , __send_count_(0) {}
 
-  TransactionState get_state() const { return __state_; }
-  void             set_state(TransactionState state) { __state_ = state; }
+  TransactionState get_state() const { return __tran_state_; }
+  void             set_state(TransactionState state) { __tran_state_ = state; }
   bool             is_close() { return __requst_info_.is_close_; }
   size_t           get_body_size() { return __requst_info_.content_length_; }
   bool             is_send_completed() {
