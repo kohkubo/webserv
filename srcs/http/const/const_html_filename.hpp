@@ -3,7 +3,7 @@
 
 #include <string>
 
-const std::string ROOT               = "/";
-const std::string TEXT_HTML          = "text/html";
+const std::string ROOT      = "/";
+const std::string TEXT_HTML = "text/html";
 
 #endif /* SRCS_HTTP_CONST_CONST_HTML_FILENAME_HPP */
