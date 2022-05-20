@@ -6,8 +6,13 @@
 #include <string>
 
 #include "http/const/const_delimiter.hpp"
-#include "http/http_parser_utils.hpp"
+#include "http/const/const_response_key_map.hpp"
+#include "http/const/const_status_phrase.hpp"
+#include "http/const/const_html_filename.hpp"
+#include "http/method/method_utils.hpp"
 #include "http/method/method.hpp"
+#include "utils/file_io_utils.hpp"
+#include "utils/utils.hpp"
 
 /*
  * ステータスラインの要素は必須だが, 存在しなかった時のバリデートは現状してない
@@ -52,6 +57,23 @@ std::string make_message_string(http_message_map &response_info) {
     response_body(response_info);
 }
 // clang-format on
+
+static std::string response_body_content(const std::string &path) {
+  if (is_match_suffix_string(path, ".sh")) {
+    return read_file_tostring_cgi(path);
+  }
+  return read_file_tostring(path);
+}
+
+static void set_response_body(http_message_map &response_info) {
+  if (response_info[STATUS_PHRASE] == STATUS_204_PHRASE ||
+      response_info[STATUS_PHRASE] == STATUS_304_PHRASE) {
+    return;
+  }
+  response_info[BODY]         = response_body_content(response_info[PATH]);
+  response_info[CONTENT_LEN]  = to_string(response_info[BODY].size());
+  response_info[CONTENT_TYPE] = TEXT_HTML;
+}
 
 http_message_map create_response_info(const Config &server_config,
                                       RequestInfo  &request_info) {

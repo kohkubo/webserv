@@ -8,7 +8,7 @@
 #include "http/const/const_html_filename.hpp"
 #include "http/const/const_response_key_map.hpp"
 #include "http/const/const_status_phrase.hpp"
-#include "http/http_parser_utils.hpp"
+#include "http/method/method_utils.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
@@ -36,7 +36,8 @@ http_message_map method_get(const Config &config, RequestInfo &request_info) {
   }
 
   HttpStatusCode code = check_url(target_filepath);
-  // TODO: ここでエラーページを反映していると、rootディレクティブからのパスを設定できていない
+  // TODO:
+  // ここでエラーページを反映していると、rootディレクティブからのパスを設定できていない
   set_status_and_path(response_info, config, code);
   if (code == OK_200)
     response_info[PATH] = target_filepath;

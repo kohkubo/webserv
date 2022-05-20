@@ -1,4 +1,4 @@
-#include "http/http_parser_utils.hpp"
+#include "http/method/method_utils.hpp"
 
 #include "config/Config.hpp"
 #include "http/const/const_html_filename.hpp"
@@ -64,23 +64,6 @@ void set_status_and_path(http_message_map &response_info, const Config &config,
     exit(1);
   }
   return;
-}
-
-static std::string response_body_content(const std::string &path) {
-  if (is_match_suffix_string(path, ".sh")) {
-    return read_file_tostring_cgi(path);
-  }
-  return read_file_tostring(path);
-}
-
-void set_response_body(http_message_map &response_info) {
-  if (response_info[STATUS_PHRASE] == STATUS_204_PHRASE ||
-      response_info[STATUS_PHRASE] == STATUS_304_PHRASE) {
-    return;
-  }
-  response_info[BODY]         = response_body_content(response_info[PATH]);
-  response_info[CONTENT_LEN]  = to_string(response_info[BODY].size());
-  response_info[CONTENT_TYPE] = TEXT_HTML;
 }
 
 bool is_minus_depth(std::string url) {

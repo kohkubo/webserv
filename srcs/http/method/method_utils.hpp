@@ -11,8 +11,6 @@ std::string resolve_url(const Config      &server_config,
 void        set_status_and_path(http_message_map &response_info,
                                 const Config &server_config, HttpStatusCode code);
 
-void        set_response_body(http_message_map &response_info);
-
 bool        is_minus_depth(std::string url);
 
 #endif /* SRCS_HTTP_HTTP_PARSER_UTILS_HPP */
