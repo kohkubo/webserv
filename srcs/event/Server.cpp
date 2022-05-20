@@ -20,7 +20,7 @@ void Server::__add_listenfd_to_pollfds() {
 }
 
 void Server::__add_connfd_to_pollfds() {
-  std::map<int, Connection>::const_iterator it = __conn_fd_map_.begin();
+  std::map<connFd, Connection>::const_iterator it = __conn_fd_map_.begin();
   for (; it != __conn_fd_map_.end(); it++) {
     struct pollfd pfd = {it->first, 0, 0};
     if (it->second.is_sending()) {

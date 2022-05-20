@@ -18,7 +18,7 @@ enum HandlerState {
 class Server {
 private:
   std::map<listenFd, confGroup> __listen_fd_map_;
-  std::map<int, Connection>     __conn_fd_map_;
+  std::map<connFd, Connection>  __conn_fd_map_;
   std::vector<struct pollfd>    __pollfds_;
 
 private:
