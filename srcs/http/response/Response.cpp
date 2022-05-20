@@ -15,28 +15,33 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-// mapを宣言時に定義できるのはC++11以降のため、初期化関数を実装しています。
-std::map<int, std::string> g_response_status_phrase_map;
-std::map<int, std::string> g_error_page_contents_map;
+std::map<int, std::string> g_response_status_phrase_map =
+    init_response_status_phrase_map();
+std::map<int, std::string> g_error_page_contents_map = init_page_contents_map();
 
-// clang-format off
-static void init_response_status_maps() {
-  g_response_status_phrase_map[200] = STATUS_200_PHRASE;
-  g_response_status_phrase_map[204] = STATUS_204_PHRASE;
-  g_response_status_phrase_map[400] = STATUS_400_PHRASE;
-  g_error_page_contents_map[400]    = content_400;
-  g_response_status_phrase_map[403] = STATUS_403_PHRASE;
-  g_error_page_contents_map[403]    = content_403;
-  g_response_status_phrase_map[404] = STATUS_404_PHRASE;
-  g_error_page_contents_map[404]    = content_404;
-  g_response_status_phrase_map[500] = STATUS_500_PHRASE;
-  g_error_page_contents_map[500]    = content_500;
-  g_response_status_phrase_map[501] = STATUS_501_PHRASE;
-  g_error_page_contents_map[501]    = content_501;
-  g_response_status_phrase_map[520] = STATUS_520_PHRASE;
-  g_error_page_contents_map[520]    = content_520;
+std::map<int, std::string> init_response_status_phrase_map() {
+  std::map<int, std::string> res;
+  res[200] = STATUS_200_PHRASE;
+  res[204] = STATUS_204_PHRASE;
+  res[400] = STATUS_400_PHRASE;
+  res[403] = STATUS_403_PHRASE;
+  res[404] = STATUS_404_PHRASE;
+  res[500] = STATUS_500_PHRASE;
+  res[501] = STATUS_501_PHRASE;
+  res[520] = STATUS_520_PHRASE;
+  return res;
 }
-// clang-format on
+
+std::map<int, std::string> init_page_contents_map() {
+  std::map<int, std::string> res;
+  res[400] = content_400;
+  res[403] = content_403;
+  res[404] = content_404;
+  res[500] = content_500;
+  res[501] = content_501;
+  res[520] = content_520;
+  return res;
+}
 
 Response::Response(const Config &config, const RequestInfo &request_info)
     : __config_(config)
@@ -44,7 +49,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     , __status_code_(0) {
   __version_    = VERSION_HTTP;
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
-  init_response_status_maps();
   __resolve_url();
   __check_status();
   switch (__request_info_.method_) {
