@@ -42,9 +42,9 @@ static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
 
 static std::map<listenFd, confGroup>::iterator
 find_same_socket(const Config                  &conf,
-                 std::map<listenFd, confGroup> &listen_fd_map) {
-  std::map<listenFd, confGroup>::iterator it = listen_fd_map.begin();
-  for (; it != listen_fd_map.end(); it++) {
+                 std::map<listenFd, confGroup> &config_map) {
+  std::map<listenFd, confGroup>::iterator it = config_map.begin();
+  for (; it != config_map.end(); it++) {
     if (is_same_socket(conf, *(it->second[0])))
       break;
   }
@@ -62,12 +62,12 @@ static bool is_include_same_server_name(const Config &conf,
 }
 
 std::map<listenFd, confGroup> ConfigMapGenerator::generate() {
-  std::map<listenFd, confGroup> listen_fd_map;
+  std::map<listenFd, confGroup> config_map;
   serverList::const_iterator    sl_it = __server_list_.begin();
   for (; sl_it != __server_list_.end(); sl_it++) {
     std::map<listenFd, confGroup>::iterator it =
-        find_same_socket(*sl_it, listen_fd_map);
-    if (it != listen_fd_map.end()) {
+        find_same_socket(*sl_it, config_map);
+    if (it != config_map.end()) {
       if (is_include_same_server_name(*sl_it, it->second)) {
         std::cout << "server_name conflicts." << std::endl;
         continue;
@@ -76,9 +76,9 @@ std::map<listenFd, confGroup> ConfigMapGenerator::generate() {
     } else {
       Socket   socket(sl_it->addrinfo_);
       listenFd listen_fd = socket.get_listen_fd();
-      listen_fd_map.insert(std::make_pair(listen_fd, confGroup()));
-      listen_fd_map[listen_fd].push_back(&(*sl_it));
+      config_map.insert(std::make_pair(listen_fd, confGroup()));
+      config_map[listen_fd].push_back(&(*sl_it));
     }
   }
-  return listen_fd_map;
+  return config_map;
 }
