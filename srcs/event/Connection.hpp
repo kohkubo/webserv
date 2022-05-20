@@ -39,9 +39,9 @@ public:
     return __transaction_queue_.front();
   }
 
-  void         erase_front_req() { __transaction_queue_.pop_front(); }
+  void             erase_front_req() { __transaction_queue_.pop_front(); }
 
-  RequestState get_last_state() {
+  TransactionState get_last_state() {
     if (__transaction_queue_.empty())
       return NO_REQUEST;
     return __transaction_queue_.back().get_state();
@@ -50,7 +50,7 @@ public:
   bool is_sending() const {
     if (__transaction_queue_.empty())
       return false;
-    RequestState state = __transaction_queue_.front().get_state();
+    TransactionState state = __transaction_queue_.front().get_state();
     return state == SENDING;
   }
 
