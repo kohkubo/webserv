@@ -15,8 +15,6 @@ connFd xaccept(listenFd listen_fd) {
     error_log_with_errno("accept()) failed.");
     exit(EXIT_FAILURE);
   }
-  std::cout << "listen_fd: " << listen_fd << std::endl;
-  std::cout << "conn_fd: " << conn_fd << std::endl;
   return conn_fd;
 }
 
