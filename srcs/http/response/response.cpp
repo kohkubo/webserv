@@ -75,15 +75,15 @@ void set_response_body(http_message_map &response_info) {
   response_info[CONTENT_TYPE] = TEXT_HTML;
 }
 
-http_message_map create_response_info(const Config &server_config,
+std::string create_response_string(const Config &config,
                                       RequestInfo  &request_info) {
   http_message_map response_info;
   switch (request_info.method_) {
   case GET:
-    response_info = method_get(server_config, request_info);
+    response_info = method_get(config, request_info);
     break;
   case DELETE:
-    response_info = delete_method_handler(server_config, request_info);
+    response_info = delete_method_handler(config, request_info);
     break;
   // case POST:
   //   break;
@@ -94,5 +94,6 @@ http_message_map create_response_info(const Config &server_config,
   response_info[CONNECTION] = CONNECTION_CLOSE; // TODO: 別関数に実装
 
   set_response_body(response_info);
-  return response_info;
+
+  return make_message_string(response_info);
 }

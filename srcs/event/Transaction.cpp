@@ -24,8 +24,7 @@ void Transaction::create_response(const Config &conf) {
   if (get_tranction_state() != PENDING) {
     return;
   }
-  http_message_map response_info = create_response_info(conf, __requst_info_);
-  __response_                    = make_message_string(response_info);
+  __response_                    = create_response_string(conf, __requst_info_);
   __transction_state_            = SENDING;
 }
 
