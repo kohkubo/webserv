@@ -65,7 +65,7 @@ static std::string response_body_content(const std::string &path) {
   return read_file_tostring(path);
 }
 
-static void set_response_body(http_message_map &response_info) {
+void set_response_body(http_message_map &response_info) {
   if (response_info[STATUS_PHRASE] == STATUS_204_PHRASE ||
       response_info[STATUS_PHRASE] == STATUS_304_PHRASE) {
     return;
