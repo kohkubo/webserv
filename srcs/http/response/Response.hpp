@@ -65,7 +65,7 @@ private:
   void __resolve_url();
   bool __is_minus_depth();
   void __check_status();
-  void __set_error_page_file_path();
+  void __set_error_page_body();
   void __set_body();
 
   void __get_method_handler() {}

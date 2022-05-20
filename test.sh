@@ -8,6 +8,7 @@ echo "======================"
 echo "normal 5000 404"
 echo "======================"
 curl localhost:5000/jlksdfjklfsdjkldfs
+echo
 echo "======================"
 echo "5001 403"
 echo "normal 5000"
@@ -41,7 +42,7 @@ echo "======================"
 curl localhost:5002
 echo
 echo "======================"
-echo "error_page directive test"
+echo "error_page directive test 404"
 echo "normal 5003"
 echo "======================"
 curl localhost:5003/dlkdsklsdf
