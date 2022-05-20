@@ -33,12 +33,12 @@ public:
 
   TransactionState get_tranction_state() const { return __transction_state_; }
   void             set_tranction_state(TransactionState state) {
-                __transction_state_ = state;
+    __transction_state_ = state;
   }
   bool   is_close() { return __requst_info_.is_close_; }
   size_t get_body_size() { return __requst_info_.content_length_; }
   bool   is_send_completed() {
-      return __send_count_ == static_cast<ssize_t>(__response_.size());
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
 
   void parse_header(const std::string &header);
