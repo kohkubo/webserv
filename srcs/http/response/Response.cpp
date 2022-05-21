@@ -123,17 +123,11 @@ void Response::__check_status() {
 }
 
 void Response::__set_error_page_body() {
-  switch (__config_.error_pages_.count(__status_code_)) {
-  case 0:
-    __body_ = g_error_page_contents_map[__status_code_];
-    break;
-  case 1:
+  if (__config_.error_pages_.count(__status_code_)) {
     __resolve_url();
     __set_body();
-    break;
-  default:
-    std::cout << "Error: status code is duplicated." << std::endl;
-    exit(1);
+  } else {
+    __body_ = g_error_page_contents_map[__status_code_];
   }
 }
 
