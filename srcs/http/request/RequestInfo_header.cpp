@@ -134,7 +134,6 @@ static ContentType content_type(const std::string &type) {
   return NOTSUPPORTED;
 }
 
-// content-typeは被っていいかの話
 void RequestInfo::__parse_request_content_type() {
   if (!__field_map_.count("Content-Type")) {
     return;
