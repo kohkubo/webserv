@@ -45,7 +45,7 @@ private:
   void        __set_error_page_body();
   void        __set_body();
 
-  void        __get_method_handler() {}
+  void        __get_method_handler() { __check_status(); }
   void        __delete_target_file();
   void        __delete_method_handler() { __delete_target_file(); }
 };

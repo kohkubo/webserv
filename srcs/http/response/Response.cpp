@@ -51,18 +51,19 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   __version_    = VERSION_HTTP;
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
   __resolve_url();
-  __check_status();
-  switch (__request_info_.method_) {
-  case GET:
-    __get_method_handler();
-    break;
-  case DELETE:
-    __delete_method_handler();
-    break;
-  default:
-    std::cout << "unsupported method" << std::endl;
-    __status_code_ = NOT_IMPLEMENTED_501;
-    break;
+  if (__status_code_ == NONE) {
+    switch (__request_info_.method_) {
+    case GET:
+      __get_method_handler();
+      break;
+    case DELETE:
+      __delete_method_handler();
+      break;
+    default:
+      std::cout << "unsupported method" << std::endl;
+      __status_code_ = NOT_IMPLEMENTED_501;
+      break;
+    }
   }
   __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   if (__status_code_ != NO_CONTENT_204) {
@@ -75,11 +76,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 void Response::__resolve_url() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
-  }
-  if (__status_code_ != NONE) {
-    __file_path_ =
-        __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
-    return;
   }
   // TODO: rootの末尾に/入ってるとき
   if (__request_info_.uri_ == "/") {
@@ -107,16 +103,13 @@ bool Response::__is_minus_depth() {
 }
 
 void Response::__check_status() {
-  if (__status_code_ != NONE) {
-    return;
-  }
   if (!is_file_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
     return;
   }
   if (!is_accessible(__file_path_, R_OK)) {
-    __status_code_ =
-        FORBIDDEN_403; // TODO: Permission error が 403なのか確かめてない
+    // TODO: Permission error が 403なのか確かめてない
+    __status_code_ = FORBIDDEN_403;
     return;
   }
   __status_code_ = OK_200;
@@ -124,8 +117,9 @@ void Response::__check_status() {
 
 void Response::__set_error_page_body() {
   if (__config_.error_pages_.count(__status_code_)) {
-    __resolve_url();
-    __set_body();
+    __file_path_ =
+        __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
+    __body_ = read_file_tostring(__file_path_);
   } else {
     __body_ = g_error_page_contents_map[__status_code_];
   }
