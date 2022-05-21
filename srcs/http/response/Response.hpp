@@ -45,7 +45,7 @@ private:
     __set_content_len();
     __set_content_type();
   }
-  // clan-format on
+  // clang-format on
   void __set_content_len() { __content_len_ = to_string(__body_.size()); };
   void __set_content_type() { __content_type_ = TEXT_HTML; };
   void __make_message_string() {
@@ -74,9 +74,7 @@ private:
 
   void __get_method_handler() {}
   void __delete_target_file();
-  void __delete_method_handler() {
-    __delete_target_file();
-  }
+  void __delete_method_handler() { __delete_target_file(); }
 };
 
 std::map<int, std::string> init_response_status_phrase_map();

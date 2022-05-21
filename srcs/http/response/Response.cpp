@@ -107,7 +107,7 @@ bool Response::__is_minus_depth() {
 }
 
 void Response::__check_status() {
-  if (__status_code_) {
+  if (__status_code_ != NONE) {
     return;
   }
   if (!is_file_exists(__file_path_)) {
