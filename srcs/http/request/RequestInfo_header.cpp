@@ -127,6 +127,7 @@ void RequestInfo::__parse_request_content_length() {
   content_length_ = atoi(__field_map_["Content-Length"].c_str());
 }
 
+// TODO: content-typeはどこまで把握する必要があるのか
 static ContentType content_type(const std::string &type) {
   if (type == "application/x-www-form-urlencoded") {
     return URLENCODED;
