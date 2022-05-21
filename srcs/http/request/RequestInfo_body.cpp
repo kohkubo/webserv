@@ -1,5 +1,12 @@
 #include "http/request/RequestInfo.hpp"
 
+static ContentType parse_content_type(const std::string &type) {
+  if (type == "application/x-www-form-urlencoded") {
+    return URLENCODED;
+  }
+  return NOTSUPPORTED;
+}
+
 static std::pair<std::string, std::string>
 parse_request_value(std::string value) {
   std::string::size_type pos = value.find('=');
