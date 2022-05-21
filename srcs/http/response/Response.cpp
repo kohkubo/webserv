@@ -75,7 +75,8 @@ void Response::__resolve_url() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
   }
-  if (__status_code_) {
+  bool error_code_already_set = __status_code_ != 0;
+  if (error_code_already_set) {
     __file_path_ =
         __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
     return;
