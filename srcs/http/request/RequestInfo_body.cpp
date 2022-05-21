@@ -16,8 +16,8 @@ parse_request_value(std::string value) {
   return std::make_pair(value.substr(0, pos), value.substr(pos + 1));
 }
 
-// TODO: 今のところ Content-Type は無視している
-// TODO: 今のところ 一列でくるものと仮定
+// TODO: Content-Typeは何を対応するのか, そもそもパースはするのかわからない
+// TODO: chunkedについても考える
 void RequestInfo::parse_request_body(const std::string &request_body) {
   tokenVector tokens = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
