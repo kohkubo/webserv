@@ -5,21 +5,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "http/const/const_http_enums.hpp"
 #include "utils/tokenize.hpp"
-
-enum HttpMethod { GET, POST, DELETE, UNKNOWN };
-
-enum HttpStatusCode {
-  NONE                      = -1,
-  OK_200                    = 200,
-  NO_CONTENT_204            = 204,
-  BAD_REQUEST_400           = 400,
-  FORBIDDEN_403             = 403,
-  NOT_FOUND_404             = 404,
-  INTERNAL_SERVER_ERROR_500 = 500,
-  NOT_IMPLEMENTED_501       = 501,
-  UNKNOWN_ERROR_520         = 520,
-};
 
 class RequestInfo {
 private:
