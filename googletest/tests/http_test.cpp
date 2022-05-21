@@ -5,8 +5,7 @@
 #include <sys/types.h>
 
 #include "config/Config.hpp"
-#include "http/const/const_html_filename.hpp"
-#include "http/const/const_response_key_map.hpp"
+#include "http/const/const_header_field_values.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/Response.hpp"
@@ -46,11 +45,11 @@ default error page\n\
 }
 
 TEST(http_test, create_response_info_delete_normal) {
-  std::string expect = "HTTP/1.1 204 No Content\r\n"
-                       "Connection: close\r\n\r\n";
-  Config      config = Config();
-  config.root_       = "../html";
-  config.index_      = "index.html";
+  std::string expected_response = "HTTP/1.1 204 No Content\r\n"
+                                  "Connection: close\r\n\r\n";
+  Config      config            = Config();
+  config.root_                  = "../html";
+  config.index_                 = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
   request_info.uri_     = "/delete_target.html";
@@ -60,10 +59,7 @@ TEST(http_test, create_response_info_delete_normal) {
   system("touch ../html/delete_target.html");
 
   Response response(config, request_info);
-  EXPECT_EQ(response.get_response_string(), "\
-HTTP/1.1 204 No Content\r\n\
-Connection: close\r\n\r\n\
-");
+  EXPECT_EQ(response.get_response_string(), expected_response);
 }
 
 TEST(http_test, create_response_info_delete_404) {
