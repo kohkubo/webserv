@@ -9,14 +9,18 @@ void RequestInfo::__parse_request_values(const std::string &request_body) {
   }
 }
 
-// TODO: クエリ形式以外のボディについて
 // TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパース？
 void RequestInfo::parse_request_body(const std::string &request_body) {
-  switch (content_type_) {
-  case URLENCODED:
-    __parse_request_values(request_body);
-    break;
-  default:
-    break;
-  }
+  if (content_type_)
+    switch (content_type_) {
+    case URLENCODED:
+      __parse_request_values(request_body);
+      break;
+    case SOMETYPE:
+      /* TODO */
+      break;
+    default:
+      /* TODO: content-typeがない時 */
+      break;
+    }
 }

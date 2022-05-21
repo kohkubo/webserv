@@ -9,7 +9,7 @@
 
 enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 
-enum ContentType { URLENCODED, NOTSUPPORTED };
+enum ContentType { URLENCODED, SOMETYPE, NONTYPE };
 
 enum HttpStatusCode {
   NONE = -1,
@@ -42,7 +42,8 @@ public:
   RequestInfo()
       : method_(UNKNOWN)
       , is_close_(false)
-      , content_length_(0) {}
+      , content_length_(0)
+      , content_type_(NONTYPE) {}
 
   class BadRequestException : public std::logic_error {
   public:
