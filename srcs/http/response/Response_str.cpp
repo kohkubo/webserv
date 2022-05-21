@@ -5,13 +5,12 @@ std::string Response::get_response_string() {
     __make_bodyless_message_string();
     return __response_string_;
   }
-  __set_response_body();
+  __set_body_header();
   __make_message_string();
-
   return __response_string_;
 }
 
-void Response::__set_response_body() {
+void Response::__set_body_header() {
   __set_content_len();
   __set_content_type();
 }

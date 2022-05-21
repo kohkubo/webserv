@@ -33,16 +33,17 @@ private:
   Response();
   std::string __read_file_tostring_cgi(const std::string &path);
 
-  void        __set_response_body();
+  void        __set_body_header();
   void        __set_content_len();
   void        __set_content_type();
   void        __make_message_string();
   void        __make_bodyless_message_string();
 
   void        __resolve_url();
+  bool        __is_error_status_code();
   bool        __is_minus_depth();
   void        __check_status();
-  void        __set_error_page_body();
+  void        __set_error_page_contents();
   void        __set_body();
 
   void        __get_method_handler() { __check_status(); }

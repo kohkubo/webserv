@@ -44,6 +44,16 @@ std::map<int, std::string> init_page_contents_map() {
   return res;
 }
 
+bool Response::__is_error_status_code() {
+  HttpStatusCode code = __status_code_;
+  if (code == BAD_REQUEST_400 || code == FORBIDDEN_403 ||
+      code == NOT_FOUND_404 || code == INTERNAL_SERVER_ERROR_500 ||
+      code == NOT_IMPLEMENTED_501 || code == UNKNOWN_ERROR_520) {
+    return true;
+  }
+  return false;
+}
+
 Response::Response(const Config &config, const RequestInfo &request_info)
     : __config_(config)
     , __request_info_(request_info)
@@ -51,25 +61,27 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   __version_    = VERSION_HTTP;
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
   __resolve_url();
-  if (__status_code_ == NONE) {
-    switch (__request_info_.method_) {
-    case GET:
-      __get_method_handler();
-      break;
-    case DELETE:
-      __delete_method_handler();
-      break;
-    default:
-      std::cout << "unsupported method" << std::endl;
-      __status_code_ = NOT_IMPLEMENTED_501;
-      break;
-    }
-  }
-  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
-  if (__status_code_ != NO_CONTENT_204) {
-    __set_error_page_body();
+  if (__is_error_status_code()) {
+    __set_error_page_contents();
     return;
   }
+  switch (__request_info_.method_) {
+  case GET:
+    __get_method_handler();
+    break;
+  case DELETE:
+    __delete_method_handler();
+    break;
+  default:
+    std::cout << "unsupported method" << std::endl;
+    __status_code_ = NOT_IMPLEMENTED_501;
+    break;
+  }
+  if (__is_error_status_code()) {
+    __set_error_page_contents();
+    return;
+  }
+  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   __set_body();
 }
 
@@ -115,7 +127,8 @@ void Response::__check_status() {
   __status_code_ = OK_200;
 }
 
-void Response::__set_error_page_body() {
+void Response::__set_error_page_contents() {
+  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   if (__config_.error_pages_.count(__status_code_)) {
     __file_path_ =
         __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
