@@ -24,6 +24,7 @@ void Connection::parse_buffer(const std::string &data) {
         return;
       }
       transaction.parse_header(__cut_buffer(pos + HEADER_SP.size()));
+      transaction.detect_config(__conf_group_);
       break;
     case RECEIVING_BODY:
       // TODO: chunkedのサイズ判定
@@ -41,10 +42,8 @@ void Connection::parse_buffer(const std::string &data) {
 
 // キューの中にあるresponse生成待ちのrequestのresponseを生成する。
 void Connection::create_response_iter() {
-  // TODO: リクエストに対して正しいserverconfを選択する。
-  Config                            proper_conf = *__conf_group_[0];
-  std::deque<Transaction>::iterator it          = __transaction_queue_.begin();
+  std::deque<Transaction>::iterator it = __transaction_queue_.begin();
   for (; it != __transaction_queue_.end(); it++) {
-    (*it).create_response(proper_conf);
+    (*it).create_response();
   }
 }
