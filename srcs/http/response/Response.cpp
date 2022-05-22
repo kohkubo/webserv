@@ -61,10 +61,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   __version_    = VERSION_HTTP;
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
   __resolve_url();
-  if (__is_error_status_code()) {
-    __set_error_page_contents();
-    return;
-  }
   switch (__request_info_.method_) {
   case GET:
     __get_method_handler();
@@ -77,12 +73,12 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     __status_code_ = NOT_IMPLEMENTED_501;
     break;
   }
+  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   if (__is_error_status_code()) {
     __set_error_page_contents();
-    return;
+  } else {
+    __set_body();
   }
-  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
-  __set_body();
 }
 
 void Response::__resolve_url() {
@@ -115,6 +111,9 @@ bool Response::__is_minus_depth() {
 }
 
 void Response::__check_status() {
+  if (__status_code_ != NONE) {
+    return;
+  }
   if (!is_file_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
     return;
@@ -128,7 +127,6 @@ void Response::__check_status() {
 }
 
 void Response::__set_error_page_contents() {
-  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
   if (__config_.error_pages_.count(__status_code_)) {
     __file_path_ =
         __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
