@@ -17,7 +17,6 @@ private:
   std::string        __file_path_;
 
   std::string        __status_phrase_;
-  std::string        __version_;
   std::string        __content_len_;
   std::string        __content_type_;
   std::string        __connection_;
@@ -32,7 +31,9 @@ private:
   Response();
   std::string __read_file_tostring_cgi(const std::string &path);
 
-  void        __set_body_header();
+  void        __set_status_phrase();
+  void        __set_general_header();
+  void        __set_entity_header();
   void        __set_content_len();
   void        __set_content_type();
   void        __make_message_string();
