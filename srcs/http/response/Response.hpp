@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_RESPONSECLASS_HPP
-#define SRCS_HTTP_RESPONSE_RESPONSECLASS_HPP
+#ifndef SRCS_HTTP_RESPONSE_RESPONSE_HPP
+#define SRCS_HTTP_RESPONSE_RESPONSE_HPP
 
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
@@ -54,4 +54,4 @@ private:
 std::map<int, std::string> init_response_status_phrase_map();
 std::map<int, std::string> init_page_contents_map();
 
-#endif /* SRCS_HTTP_RESPONSE_RESPONSECLASS_HPP */
+#endif /* SRCS_HTTP_RESPONSE_RESPONSE_HPP */
