@@ -41,6 +41,7 @@ bool Response::__is_bodiless_response() {
   return __status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304;
 }
 
+// bodyをセットするところに移動したほうがよさそう
 void Response::__set_entity_header() {
   __set_content_len();
   __set_content_type();
