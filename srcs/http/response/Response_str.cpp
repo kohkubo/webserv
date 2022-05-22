@@ -20,7 +20,9 @@ std::map<int, std::string> init_response_status_phrase_map() {
 std::string Response::get_response_string() {
   __set_status_phrase();
   __set_general_header();
-  if (__is_bodiless_response()) {
+  bool is_bodiless =
+      __status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304;
+  if (is_bodiless) {
     __make_bodiless_message_string();
   } else {
     __set_entity_header();
@@ -35,10 +37,6 @@ void Response::__set_status_phrase() {
 
 void Response::__set_general_header() {
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
-}
-
-bool Response::__is_bodiless_response() {
-  return __status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304;
 }
 
 // bodyをセットするところに移動したほうがよさそう
