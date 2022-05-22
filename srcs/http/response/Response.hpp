@@ -37,7 +37,8 @@ private:
   void        __set_content_len();
   void        __set_content_type();
   void        __make_message_string();
-  void        __make_bodyless_message_string();
+  void        __make_bodiless_message_string();
+  bool        __is_bodiless_response();
 
   void        __resolve_url();
   bool        __is_error_status_code();

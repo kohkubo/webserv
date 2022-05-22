@@ -1,12 +1,16 @@
 #include "http/response/Response.hpp"
 
+bool Response::__is_bodiless_response() {
+  return __status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304;
+}
+
 std::string Response::get_response_string() {
-  if (__status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304) {
-    __make_bodyless_message_string();
-    return __response_string_;
+  if (__is_bodiless_response()) {
+    __make_bodiless_message_string();
+  } else {
+    __set_body_header();
+    __make_message_string();
   }
-  __set_body_header();
-  __make_message_string();
   return __response_string_;
 }
 
@@ -34,7 +38,7 @@ void Response::__make_message_string() {
   __response_string_ += __body_;
 };
 
-void Response::__make_bodyless_message_string() {
+void Response::__make_bodiless_message_string() {
   // start line
   __response_string_ = __version_ + SP + __status_phrase_ + CRLF;
   // header
