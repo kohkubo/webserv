@@ -30,9 +30,8 @@ std::map<int, std::string> init_page_contents_map() {
 
 bool Response::__is_error_status_code() {
   HttpStatusCode code = __status_code_;
-  if (code == BAD_REQUEST_400 || code == FORBIDDEN_403 ||
-      code == NOT_FOUND_404 || code == INTERNAL_SERVER_ERROR_500 ||
-      code == NOT_IMPLEMENTED_501 || code == UNKNOWN_ERROR_520) {
+  // TODO: エラーのステータスコードの扱いを決まったら再実装
+  if (code > 299 && code < 600) {
     return true;
   }
   return false;
