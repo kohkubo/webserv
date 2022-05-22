@@ -60,7 +60,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     , __status_code_(NONE) {
   __version_    = VERSION_HTTP;
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
-  __resolve_url();
+  __resolve_uri();
   switch (__request_info_.method_) {
   case GET:
     __get_method_handler();
@@ -81,7 +81,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   }
 }
 
-void Response::__resolve_url() {
+void Response::__resolve_uri() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
   }
@@ -110,7 +110,7 @@ bool Response::__is_minus_depth() {
   return false;
 }
 
-void Response::__check_status() {
+void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
   }

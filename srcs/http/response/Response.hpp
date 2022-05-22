@@ -39,14 +39,14 @@ private:
   void        __make_bodiless_message_string();
   bool        __is_bodiless_response();
 
-  void        __resolve_url();
+  void        __resolve_uri();
   bool        __is_error_status_code();
   bool        __is_minus_depth();
-  void        __check_status();
+  void        __check_filepath_status();
   void        __set_error_page_contents();
   void        __set_body();
 
-  void        __get_method_handler() { __check_status(); }
+  void        __get_method_handler() { __check_filepath_status(); }
   void        __delete_target_file();
   void        __delete_method_handler() { __delete_target_file(); }
 };
