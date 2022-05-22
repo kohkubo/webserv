@@ -7,8 +7,8 @@
 
 #include "config/Config.hpp"
 #include "http/const/const_error_contents.hpp"
-#include "http/const/const_html_filename.hpp"
-#include "http/const/const_response_key_map.hpp"
+#include "http/const/const_header_field_values.hpp"
+#include "http/const/const_http_enums.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
@@ -23,6 +23,7 @@ std::map<int, std::string> init_response_status_phrase_map() {
   std::map<int, std::string> res;
   res[200] = STATUS_200_PHRASE;
   res[204] = STATUS_204_PHRASE;
+  res[304] = STATUS_304_PHRASE;
   res[400] = STATUS_400_PHRASE;
   res[403] = STATUS_403_PHRASE;
   res[404] = STATUS_404_PHRASE;
@@ -46,7 +47,7 @@ std::map<int, std::string> init_page_contents_map() {
 Response::Response(const Config &config, const RequestInfo &request_info)
     : __config_(config)
     , __request_info_(request_info)
-    , __status_code_(0) {
+    , __status_code_(NONE) {
   __version_    = VERSION_HTTP;
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
   __resolve_uri();
@@ -64,7 +65,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     break;
   }
   __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
-  if (__status_code_ != 200) {
+  if (__status_code_ != NO_CONTENT_204) {
     __set_error_page_body();
     return;
   }
