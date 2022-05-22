@@ -18,7 +18,6 @@ private:
 
   std::string        __status_phrase_;
   std::string        __version_;
-  std::string        __host_;
   std::string        __content_len_;
   std::string        __content_type_;
   std::string        __connection_;
