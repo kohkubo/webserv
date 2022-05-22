@@ -41,8 +41,14 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     : __config_(config)
     , __request_info_(request_info)
     , __status_code_(NONE) {
+  // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
+  // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   __resolve_uri();
   switch (__request_info_.method_) {
+  // TODO:
+  // methodの前処理をどこまで共通化するのか。一旦個別に実装して、最後リファクタで考えるのがよい。
+  // 2018/05/22 16:21 kohkubo nakamoto 話し合い
+  // 現状はmethod handlerに
   case GET:
     __get_method_handler();
     break;
