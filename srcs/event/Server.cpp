@@ -47,7 +47,7 @@ void Server::__connection_receive_handler(connFd conn_fd) {
   default:
     std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
     // transaction の parse_bufferが呼び出されている
-      __conn_fd_map_[conn_fd].create_transaction(recv_data);
+    __conn_fd_map_[conn_fd].create_transaction(recv_data);
     // cgi用のstateが必要になるかも
     __conn_fd_map_[conn_fd].create_response_iter();
     break;

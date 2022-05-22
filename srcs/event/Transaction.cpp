@@ -15,7 +15,8 @@ void Transaction::parse_header(const std::string &header) {
       __transction_state_ = PENDING;
     }
   } catch (const std::exception &e) {
-    // 400エラー処理 仕様読まないとconfigで400エラーが指定できるのか、する必要があるのか不明。
+    // 400エラー処理
+    // 仕様読まないとconfigで400エラーが指定できるのか、する必要があるのか不明。
     // TODO: 本当にこれでよいの?? 2022/05/22 17:19 kohkubo nakamoto
     // 現状、Requestが400だったときは、Responseクラスを呼び出さなくてもよい??
     __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
