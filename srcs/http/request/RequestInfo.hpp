@@ -13,8 +13,8 @@ private:
   std::map<std::string, std::string> __field_map_;
 
 public:
-  HttpMethod                         method_;
-  std::string                        uri_;
+  HttpMethod method_;
+  std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
   std::string                        version_;
   std::string                        host_;
   std::string                        port_;
