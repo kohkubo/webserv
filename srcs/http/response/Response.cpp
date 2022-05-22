@@ -15,23 +15,7 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-std::map<int, std::string> g_response_status_phrase_map =
-    init_response_status_phrase_map();
 std::map<int, std::string> g_error_page_contents_map = init_page_contents_map();
-
-std::map<int, std::string> init_response_status_phrase_map() {
-  std::map<int, std::string> res;
-  res[200] = STATUS_200_PHRASE;
-  res[204] = STATUS_204_PHRASE;
-  res[304] = STATUS_304_PHRASE;
-  res[400] = STATUS_400_PHRASE;
-  res[403] = STATUS_403_PHRASE;
-  res[404] = STATUS_404_PHRASE;
-  res[500] = STATUS_500_PHRASE;
-  res[501] = STATUS_501_PHRASE;
-  res[520] = STATUS_520_PHRASE;
-  return res;
-}
 
 std::map<int, std::string> init_page_contents_map() {
   std::map<int, std::string> res;
@@ -44,15 +28,27 @@ std::map<int, std::string> init_page_contents_map() {
   return res;
 }
 
+bool Response::__is_error_status_code() {
+  HttpStatusCode code = __status_code_;
+  // TODO: エラーのステータスコードの扱いを決まったら再実装
+  if (code > 299 && code < 600) {
+    return true;
+  }
+  return false;
+}
+
 Response::Response(const Config &config, const RequestInfo &request_info)
     : __config_(config)
     , __request_info_(request_info)
     , __status_code_(NONE) {
-  __version_    = VERSION_HTTP;
-  __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
+  // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
+  // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   __resolve_uri();
-  __check_filepath_status();
   switch (__request_info_.method_) {
+  // TODO:
+  // methodの前処理をどこまで共通化するのか。一旦個別に実装して、最後リファクタで考えるのがよい。
+  // 2018/05/22 16:21 kohkubo nakamoto 話し合い
+  // 現状はmethod handlerに
   case GET:
     __get_method_handler();
     break;
@@ -64,23 +60,16 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     __status_code_ = NOT_IMPLEMENTED_501;
     break;
   }
-  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
-  if (__status_code_ != NO_CONTENT_204) {
+  if (__is_error_status_code()) {
     __set_error_page_body();
-    return;
+  } else {
+    __set_body();
   }
-  __set_body();
 }
 
 void Response::__resolve_uri() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
-  }
-  bool error_code_already_set = __status_code_ != 0;
-  if (error_code_already_set) {
-    __file_path_ =
-        __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
-    return;
   }
   // TODO: rootの末尾に/入ってるとき
   if (__request_info_.uri_ == "/") {
@@ -108,7 +97,7 @@ bool Response::__is_minus_depth() {
 }
 
 void Response::__check_filepath_status() {
-  if (__status_code_) {
+  if (__status_code_ != NONE) {
     return;
   }
   if (!is_file_exists(__file_path_)) {
@@ -116,25 +105,21 @@ void Response::__check_filepath_status() {
     return;
   }
   if (!is_accessible(__file_path_, R_OK)) {
-    __status_code_ =
-        FORBIDDEN_403; // TODO: Permission error が 403なのか確かめてない
+    // TODO: Permission error が 403なのか確かめてない
+    __status_code_ = FORBIDDEN_403;
     return;
   }
   __status_code_ = OK_200;
 }
 
 void Response::__set_error_page_body() {
-  switch (__config_.error_pages_.count(__status_code_)) {
-  case 0:
+  if (__config_.error_pages_.count(__status_code_)) {
+    // TODO: locationの扱いどうする?
+    __file_path_ =
+        __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
+    __body_ = read_file_tostring(__file_path_);
+  } else {
     __body_ = g_error_page_contents_map[__status_code_];
-    break;
-  case 1:
-    __resolve_uri();
-    __set_body();
-    break;
-  default:
-    std::cout << "Error: status code is duplicated." << std::endl;
-    exit(1);
   }
 }
 

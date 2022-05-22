@@ -12,6 +12,34 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
+TEST(http_test, create_response_info_get_normal) {
+  std::string expect        = "HTTP/1.1 200 OK\r\n"
+                              "Content-Length: 127\r\n"
+                              "Content-Type: text/html\r\n"
+                              "Connection: close\r\n"
+                              "\r\n"
+                              "<!DOCTYPE html>\n"
+                              "<html>\n"
+                              "    <head>\n"
+                              "        <title>Basic Web Page</title>\n"
+                              "    </head>\n"
+                              "    <body>\n"
+                              "Hello World!\n"
+                              "    </body>\n"
+                              "</html>";
+  Config      server_config = Config();
+  server_config.root_       = "../html";
+  server_config.index_      = "index.html";
+  RequestInfo request_info;
+  request_info.method_  = GET;
+  request_info.uri_     = "/";
+  request_info.version_ = "HTTP/1.1";
+  request_info.host_    = "localhost";
+
+  Response response(server_config, request_info);
+  EXPECT_EQ(response.get_response_string(), expect);
+}
+
 TEST(http_test, create_response_info_get_403) {
   Config config = Config();
   config.root_  = "../html";
