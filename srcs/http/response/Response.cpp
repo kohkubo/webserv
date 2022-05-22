@@ -75,7 +75,7 @@ void Response::__resolve_uri() {
   if (__request_info_.uri_ == "/") {
     __file_path_ = __config_.root_ + "/" + __config_.index_;
   } else {
-    __file_path_ = __config_.root_ + "/" + __request_info_.uri_;
+    __file_path_ = __config_.root_ + __request_info_.uri_;
   }
 }
 
