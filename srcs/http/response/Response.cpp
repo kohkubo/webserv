@@ -50,8 +50,8 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     , __status_code_(NONE) {
   __version_    = VERSION_HTTP;
   __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
-  __resolve_url();
-  __check_status();
+  __resolve_uri();
+  __check_filepath_status();
   switch (__request_info_.method_) {
   case GET:
     __get_method_handler();
@@ -72,11 +72,12 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   __set_body();
 }
 
-void Response::__resolve_url() {
+void Response::__resolve_uri() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
   }
-  if (__status_code_ != NONE) {
+  bool error_code_already_set = __status_code_ != 0;
+  if (error_code_already_set) {
     __file_path_ =
         __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
     return;
@@ -106,8 +107,8 @@ bool Response::__is_minus_depth() {
   return false;
 }
 
-void Response::__check_status() {
-  if (__status_code_ != NONE) {
+void Response::__check_filepath_status() {
+  if (__status_code_) {
     return;
   }
   if (!is_file_exists(__file_path_)) {
@@ -128,7 +129,7 @@ void Response::__set_error_page_body() {
     __body_ = g_error_page_contents_map[__status_code_];
     break;
   case 1:
-    __resolve_url();
+    __resolve_uri();
     __set_body();
     break;
   default:

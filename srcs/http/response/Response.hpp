@@ -68,9 +68,9 @@ private:
     __response_string_ += __body_;
   };
 
-  void __resolve_url();
+  void __resolve_uri();
   bool __is_minus_depth();
-  void __check_status();
+  void __check_filepath_status();
   void __set_error_page_body();
   void __set_body();
 
