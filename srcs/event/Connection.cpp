@@ -10,7 +10,7 @@ std::string Connection::__cut_buffer(std::size_t len) {
   return res;
 }
 
-void Connection::parse_buffer(const std::string &data) {
+void Connection::create_transaction(const std::string &data) {
   std::size_t pos;
   tokenVector header_tokens;
 
