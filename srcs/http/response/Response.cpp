@@ -55,7 +55,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     break;
   }
   if (__is_error_status_code()) {
-    __set_error_page_contents();
+    __set_error_page_body();
   } else {
     __set_body();
   }
@@ -106,8 +106,9 @@ void Response::__check_filepath_status() {
   __status_code_ = OK_200;
 }
 
-void Response::__set_error_page_contents() {
+void Response::__set_error_page_body() {
   if (__config_.error_pages_.count(__status_code_)) {
+    // TODO: locationの扱いどうする?
     __file_path_ =
         __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
     __body_ = read_file_tostring(__file_path_);

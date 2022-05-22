@@ -43,7 +43,7 @@ private:
   bool        __is_error_status_code();
   bool        __is_minus_depth();
   void        __check_filepath_status();
-  void        __set_error_page_contents();
+  void        __set_error_page_body();
   void        __set_body();
 
   void        __get_method_handler() { __check_filepath_status(); }
