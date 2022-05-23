@@ -14,6 +14,12 @@ private:
   std::map<connFd, Connection>  __connection_map_;
   std::vector<struct pollfd>    __pollfds_;
 
+public:
+  Server(std::map<listenFd, confGroup> &conf_group_map)
+      : __conf_group_map_(conf_group_map) {}
+  ~Server() {}
+  void run_loop();
+
 private:
   Server();
   Server(Server const &other);
@@ -28,12 +34,6 @@ private:
   void __connection_receive_handler(connFd conn_fd);
   void __connection_send_handler(connFd conn_fd);
   void __insert_connection_map(connFd conn_fd);
-
-public:
-  Server(std::map<listenFd, confGroup> &__confgroup_map_)
-      : __conf_group_map_(__confgroup_map_) {}
-  ~Server() {}
-  void run_loop();
 };
 
 #endif /* SRCS_EVENT_SERVER_HPP */
