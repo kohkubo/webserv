@@ -11,7 +11,6 @@
 
 typedef class Config Config;
 
-// TODO: こっちでresponse, stateを持つ
 class Connection {
 private:
   std::deque<Transaction> __transaction_queue_;
@@ -52,7 +51,6 @@ public:
   }
 
   void create_transaction(const std::string &data);
-  void create_response_iter();
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */
