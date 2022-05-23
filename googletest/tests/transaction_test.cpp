@@ -1,16 +1,13 @@
 #include "gtest/gtest.h"
 
 #include "config/Config.hpp"
-#include "config/create_listen_fd_map.hpp"
+#include "config/ConfGroupMapGenerator.hpp"
 #include "event/Transaction.hpp"
 
 TEST(transaction_test, detect_properconf) {
-  serverList server_list = read_config("tdata/transaction_test.conf");
-  confGroup  conf_group;
-  for (serverList::iterator it = server_list.begin(); it != server_list.end();
-       it++) {
-    conf_group.push_back(&(*it));
-  }
+  ConfGroupMapGenerator conf_group_map_generator("tdata/transaction_test.conf");
+  std::map<listenFd, confGroup> conf_group_map = conf_group_map_generator.generate();
+  confGroup  conf_group = conf_group_map[0];
 
   std::string apple_req  = "GET / HTTP/1.1\r\n"
                            "Host: apple.com\r\n"
