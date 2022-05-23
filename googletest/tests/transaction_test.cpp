@@ -21,7 +21,6 @@ TEST(transaction_test, detect_properconf) {
   std::string peach_req  = "GET / HTTP/1.1\r\n"
                            "Host: peach.com\r\n"
                            "\r\n";
-
   {
     Transaction t;
     t.parse_header(apple_req);
@@ -49,5 +48,10 @@ TEST(transaction_test, detect_properconf) {
     t.detect_config(conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "apple.com");
+  }
+  // close all sockets
+  std::map<listenFd, confGroup>::iterator it;
+  for (it = conf_group_map.begin(); it != conf_group_map.end(); it++) {
+    close(it->first);
   }
 }

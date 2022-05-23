@@ -198,11 +198,11 @@ TEST(server_config_test, parse_vector_directive) {
 
 TEST(server_config_test, socket_list_test) {
   ConfGroupMapGenerator         config_map_generator(SAMPLE_CONF);
-  std::map<listenFd, confGroup> confgroup_map = config_map_generator.generate();
+  std::map<listenFd, confGroup> conf_group_map = config_map_generator.generate();
 
-  EXPECT_EQ(confgroup_map.size(), 2);
+  EXPECT_EQ(conf_group_map.size(), 2);
 
-  std::map<listenFd, confGroup>::iterator it = confgroup_map.begin();
+  std::map<listenFd, confGroup>::iterator it = conf_group_map.begin();
   EXPECT_EQ((it->second).size(), 2);
   EXPECT_EQ((it->second)[0]->listen_address_, "0.0.0.0");
   EXPECT_EQ((it->second)[0]->listen_port_, "5500");
@@ -212,4 +212,8 @@ TEST(server_config_test, socket_list_test) {
   EXPECT_EQ((it->second).size(), 1);
   EXPECT_EQ((it->second)[0]->listen_address_, "0.0.0.0");
   EXPECT_EQ((it->second)[0]->listen_port_, "5001");
+  // close all sockets
+  for (it = conf_group_map.begin(); it != conf_group_map.end(); it++) {
+    close(it->first);
+  }
 }
