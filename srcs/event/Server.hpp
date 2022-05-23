@@ -10,8 +10,8 @@ typedef int connFd;
 
 class Server {
 private:
-  std::map<listenFd, confGroup> __listen_fd_map_;
-  std::map<connFd, Connection>  __conn_fd_map_;
+  std::map<listenFd, confGroup> __conf_group_map_;
+  std::map<connFd, Connection>  __connection_map_;
   std::vector<struct pollfd>    __pollfds_;
 
 private:
@@ -30,8 +30,8 @@ private:
   void __insert_connection_map(connFd conn_fd);
 
 public:
-  Server(std::map<listenFd, confGroup> &config_map)
-      : __listen_fd_map_(config_map) {}
+  Server(std::map<listenFd, confGroup> &__confgroup_map_)
+      : __conf_group_map_(__confgroup_map_) {}
   ~Server() {}
   void run_loop();
 };

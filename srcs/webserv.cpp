@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include "config/ConfGroupMapGenerator.hpp"
 #include "config/Config.hpp"
-#include "config/ConfigMapGenerator.hpp"
 #include "event/Server.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
@@ -21,10 +21,11 @@ static const char *resolve_config_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char        *config_file_path = resolve_config_file(argc, argv);
-  ConfigMapGenerator config_map_generator(config_file_path);
-  std::map<listenFd, confGroup> config_map = config_map_generator.generate();
-  Server                        server(config_map);
+  const char           *config_file_path = resolve_config_file(argc, argv);
+  ConfGroupMapGenerator config_map_generator(config_file_path);
+  std::map<listenFd, confGroup> __confgroup_map_ =
+      config_map_generator.generate();
+  Server server(__confgroup_map_);
   server.run_loop();
   return (0);
 }

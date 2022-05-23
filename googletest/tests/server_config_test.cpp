@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
+#include "config/ConfGroupMapGenerator.hpp"
 #include "config/Config.hpp"
-#include "config/ConfigMapGenerator.hpp"
 #include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
@@ -216,11 +216,12 @@ TEST(server_config_test, parse_vector_directive) {
 
 TEST(server_config_test, socket_list_test) {
   serverList                    server_list = read_config(SAMPLE_CONF);
-  std::map<listenFd, confGroup> config_map  = create_socket_map(server_list);
+  std::map<listenFd, confGroup> __confgroup_map_ =
+      create_socket_map(server_list);
 
-  EXPECT_EQ(config_map.size(), 2);
+  EXPECT_EQ(__confgroup_map_.size(), 2);
 
-  std::map<listenFd, confGroup>::iterator it = config_map.begin();
+  std::map<listenFd, confGroup>::iterator it = __confgroup_map_.begin();
   EXPECT_EQ((it->second).size(), 2);
   EXPECT_EQ((it->second)[0]->listen_address_, "0.0.0.0");
   EXPECT_EQ((it->second)[0]->listen_port_, "5500");
