@@ -8,11 +8,11 @@ void Transaction::parse_header(const std::string &header) {
   // requestのエラーは例外が送出されるのでここでキャッチする。
   // エラーの時のレスポンスの生成方法は要検討
   try {
-    __requst_info_.parse_request_header(header);
-    if (__requst_info_.is_expected_body()) {
-      __transction_state_ = RECEIVING_BODY;
+    __request_info_.parse_request_header(header);
+    if (__request_info_.is_expected_body()) {
+      __transaction_state_ = RECEIVING_BODY;
     } else {
-      __transction_state_ = PENDING;
+      __transaction_state_ = PENDING;
     }
   } catch (const std::exception &e) {
     // 400エラー処理
@@ -20,14 +20,14 @@ void Transaction::parse_header(const std::string &header) {
     // TODO: 本当にこれでよいの?? 2022/05/22 17:19 kohkubo nakamoto
     // 現状、Requestが400だったときは、Responseクラスを呼び出さなくてもよい??
     __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-    __transction_state_ = SENDING;
+    __transaction_state_ = SENDING;
   }
 }
 
 void Transaction::detect_config(const confGroup &conf_group) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
-    if ((*it)->server_name_ == __requst_info_.host_) {
+    if ((*it)->server_name_ == __request_info_.host_) {
       __conf_ = *it;
       return;
     }
@@ -41,12 +41,12 @@ void Transaction::parse_body(const std::string &body) {
 }
 
 void Transaction::create_response() {
-  if (get_tranction_state() != PENDING) {
+  if (get_transaction_state() != PENDING) {
     return;
   }
-  Response response(*__conf_, __requst_info_);
-  __response_         = response.get_response_string();
-  __transction_state_ = SENDING;
+  Response response(*__conf_, __request_info_);
+  __response_          = response.get_response_string();
+  __transaction_state_ = SENDING;
 }
 
 void Transaction::send_response(int socket_fd) {

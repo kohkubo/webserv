@@ -24,12 +24,12 @@ private:
   TransactionState __transaction_state_;
   ssize_t          __send_count_;
   std::string      __response_;
-  RequestInfo      __requst_info_;
+  RequestInfo      __request_info_;
   const Config    *__conf_;
 
 public:
   Transaction()
-      : __transction_state_(RECEIVING_HEADER)
+      : __transaction_state_(RECEIVING_HEADER)
       , __send_count_(0)
       , __conf_(NULL) {}
 
