@@ -23,8 +23,8 @@ void Connection::create_transaction(const std::string &data) {
       if (pos == std::string::npos) {
         return;
       }
-      transaction.parse_header(__cut_buffer(pos + HEADER_SP.size()));
-      transaction.detect_config(__conf_group_);
+      transaction.parse_header(__cut_buffer(pos + HEADER_SP.size()),
+                               __conf_group_);
       break;
     case RECEIVING_BODY:
       // TODO: chunkedのサイズ判定
@@ -37,15 +37,5 @@ void Connection::create_transaction(const std::string &data) {
       __transaction_queue_.push_back(Transaction());
       break;
     }
-  }
-}
-
-// キューの中にあるresponse生成待ちのrequestのresponseを生成する。
-// TODO: responseは複数存在しないので、できた段階で送るように変更する 2022/05/22
-// 16:50 nakamoto okhkubo話し合い
-void Connection::create_response_iter() {
-  std::deque<Transaction>::iterator it = __transaction_queue_.begin();
-  for (; it != __transaction_queue_.end(); it++) {
-    (*it).create_response();
   }
 }

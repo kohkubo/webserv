@@ -4,15 +4,18 @@
 
 #include "http/response/Response.hpp"
 
-void Transaction::parse_header(const std::string &header) {
+// ヘッダーがパース出来たとき、configが決定できる。
+void Transaction::parse_header(const std::string &header,
+                               const confGroup   &conf_group) {
   // requestのエラーは例外が送出されるのでここでキャッチする。
   // エラーの時のレスポンスの生成方法は要検討
   try {
     __request_info_.parse_request_header(header);
+    detect_config(conf_group);
     if (__request_info_.is_expected_body()) {
       __transaction_state_ = RECEIVING_BODY;
     } else {
-      __transaction_state_ = PENDING;
+      create_response();
     }
   } catch (const std::exception &e) {
     // 400エラー処理
@@ -37,13 +40,10 @@ void Transaction::detect_config(const confGroup &conf_group) {
 
 void Transaction::parse_body(const std::string &body) {
   __request_info_.parse_request_body(body);
-  __transaction_state_ = PENDING;
+  create_response();
 }
 
 void Transaction::create_response() {
-  if (get_transaction_state() != PENDING) {
-    return;
-  }
   Response response(*__conf_, __request_info_);
   __response_          = response.get_response_string();
   __transaction_state_ = SENDING;
