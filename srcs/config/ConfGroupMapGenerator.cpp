@@ -43,9 +43,9 @@ static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
 
 static std::map<listenFd, confGroup>::iterator
 find_same_socket(const Config                  &conf,
-                 std::map<listenFd, confGroup> &__confgroup_map_) {
-  std::map<listenFd, confGroup>::iterator it = __confgroup_map_.begin();
-  for (; it != __confgroup_map_.end(); it++) {
+                 std::map<listenFd, confGroup> &confgroup_map) {
+  std::map<listenFd, confGroup>::iterator it = confgroup_map.begin();
+  for (; it != confgroup_map.end(); it++) {
     if (is_same_socket(conf, *(it->second[0])))
       break;
   }
