@@ -33,7 +33,7 @@ void RequestInfo::__parse_request_line(const std::string &request_line) {
   }
   std::string method_str = request_line.substr(0, first_sp);
   method_                = __parse_request_method(method_str);
-  target_  = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
+  uri_     = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
   version_ = request_line.substr(last_sp + 1);
 }
 

@@ -10,7 +10,7 @@ std::string Connection::__cut_buffer(std::size_t len) {
   return res;
 }
 
-void Connection::parse_buffer(const std::string &data) {
+void Connection::create_transaction(const std::string &data) {
   std::size_t pos;
   tokenVector header_tokens;
 
@@ -40,6 +40,8 @@ void Connection::parse_buffer(const std::string &data) {
 }
 
 // キューの中にあるresponse生成待ちのrequestのresponseを生成する。
+// TODO: responseは複数存在しないので、できた段階で送るように変更する 2022/05/22
+// 16:50 nakamoto okhkubo話し合い
 void Connection::create_response_iter() {
   // TODO: リクエストに対して正しいserverconfを選択する。
   Config                            proper_conf = *__conf_group_[0];

@@ -2,16 +2,25 @@
 
 #include <sys/socket.h>
 
-#include "http/response/response.hpp"
+#include "http/response/Response.hpp"
 
 void Transaction::parse_header(const std::string &header) {
   // requestのエラーは例外が送出されるのでここでキャッチする。
   // エラーの時のレスポンスの生成方法は要検討
-  __requst_info_.parse_request_header(header);
-  if (__requst_info_.is_expected_body()) {
-    __transction_state_ = RECEIVING_BODY;
-  } else {
-    __transction_state_ = PENDING;
+  try {
+    __requst_info_.parse_request_header(header);
+    if (__requst_info_.is_expected_body()) {
+      __transction_state_ = RECEIVING_BODY;
+    } else {
+      __transction_state_ = PENDING;
+    }
+  } catch (const std::exception &e) {
+    // 400エラー処理
+    // 仕様読まないとconfigで400エラーが指定できるのか、する必要があるのか不明。
+    // TODO: 本当にこれでよいの?? 2022/05/22 17:19 kohkubo nakamoto
+    // 現状、Requestが400だったときは、Responseクラスを呼び出さなくてもよい??
+    __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
+    __transction_state_ = SENDING;
   }
 }
 
@@ -24,9 +33,9 @@ void Transaction::create_response(const Config &conf) {
   if (get_tranction_state() != PENDING) {
     return;
   }
-  http_message_map response_info = create_response_info(conf, __requst_info_);
-  __response_                    = make_message_string(response_info);
-  __transction_state_            = SENDING;
+  Response response(conf, __requst_info_);
+  __response_         = response.get_response_string();
+  __transction_state_ = SENDING;
 }
 
 void Transaction::send_response(int socket_fd) {
