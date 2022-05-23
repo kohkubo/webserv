@@ -24,16 +24,27 @@ void Transaction::parse_header(const std::string &header) {
   }
 }
 
+void Transaction::detect_config(const confGroup &conf_group) {
+  confGroup::const_iterator it = conf_group.begin();
+  for (; it != conf_group.end(); it++) {
+    if ((*it)->server_name_ == __requst_info_.host_) {
+      __conf_ = *it;
+      return;
+    }
+  }
+  __conf_ = conf_group[0];
+}
+
 void Transaction::parse_body(const std::string &body) {
   __requst_info_.parse_request_body(body);
   __transction_state_ = PENDING;
 }
 
-void Transaction::create_response(const Config &conf) {
+void Transaction::create_response() {
   if (get_tranction_state() != PENDING) {
     return;
   }
-  Response response(conf, __requst_info_);
+  Response response(*__conf_, __requst_info_);
   __response_         = response.get_response_string();
   __transction_state_ = SENDING;
 }
