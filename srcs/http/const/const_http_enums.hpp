@@ -3,6 +3,8 @@
 
 enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 
+enum ContentType { URLENCODED, SOMETYPE, NONTYPE };
+
 enum HttpStatusCode {
   NONE                      = -1,
   OK_200                    = 200,
