@@ -1,17 +1,17 @@
-#ifndef SRCS_CONFIG_SOCKET_HPP
-#define SRCS_CONFIG_SOCKET_HPP
+#ifndef SRCS_CONFIG_SOCKETOPENER_HPP
+#define SRCS_CONFIG_SOCKETOPENER_HPP
 
 #include "config/Config.hpp"
 
-class Socket {
+class SocketOpener {
 private:
   listenFd __set_listen_fd(struct addrinfo *info);
   void     __set_bind_socket(listenFd listen_fd, struct addrinfo *info);
   void     __set_listen_passive_socket(listenFd listen_fd);
 
 public:
-  Socket() {}
-  ~Socket() {}
+  SocketOpener() {}
+  ~SocketOpener() {}
 
   listenFd operator()(struct addrinfo *info) {
     listenFd listen_fd = __set_listen_fd(info);
@@ -21,4 +21,4 @@ public:
   }
 };
 
-#endif /* SRCS_CONFIG_SOCKET_HPP */
+#endif /* SRCS_CONFIG_SOCKETOPENER_HPP */
