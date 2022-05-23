@@ -22,4 +22,8 @@ std::string to_string(T val) {
   return ss.str();
 }
 
+bool is_uint8(const std::string &str);
+bool is_ip(const std::string &str);
+bool is_digits(const std::string &str);
+
 #endif /* SRCS_UTILS_UTILS_HPP */
