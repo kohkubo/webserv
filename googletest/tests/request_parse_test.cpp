@@ -80,6 +80,7 @@ TEST(request_parse_test, query_body) {
   EXPECT_EQ(info.values_[2], "the=king");
   EXPECT_EQ(info.values_[3], "of=the");
   EXPECT_EQ(info.values_[4], "pirates!!");
+  // 今は'='がなくてもバリデートしてない
 }
 
 TEST(request_parse_test, exception_request_line_few_field) {
