@@ -42,7 +42,7 @@ std::string Response::__read_file_tostring_cgi(const std::string &path) {
     char *const argv[] = {(char *)"", (char *)path.c_str(), NULL};
     char *const env[]  = {(char *)"TEST=webserv_cgi_test", NULL};
     execve("/bin/sh", argv, env);
-    exit(0);
+    exit(EXIT_FAILURE);
   }
   // parent
   close(pipefd[WRITE_FD]);
