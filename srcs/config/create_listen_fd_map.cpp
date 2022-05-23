@@ -39,6 +39,7 @@ static bool is_include_same_server_name(const Config &conf,
 }
 
 std::map<listenFd, confGroup> create_socket_map(const serverList &server_list) {
+  Socket                        socket;
   std::map<listenFd, confGroup> listen_fd_map;
   serverList::const_iterator    sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
@@ -51,8 +52,7 @@ std::map<listenFd, confGroup> create_socket_map(const serverList &server_list) {
       }
       it->second.push_back(&(*sl_it));
     } else {
-      Socket   socket(sl_it->addrinfo_);
-      listenFd listen_fd = socket.get_listen_fd();
+      listenFd listen_fd = socket(sl_it->addrinfo_);
       listen_fd_map.insert(std::make_pair(listen_fd, confGroup()));
       listen_fd_map[listen_fd].push_back(&(*sl_it));
     }
