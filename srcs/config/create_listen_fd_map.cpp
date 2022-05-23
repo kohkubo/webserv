@@ -51,7 +51,7 @@ std::map<listenFd, confGroup> create_socket_map(const serverList &server_list) {
       }
       it->second.push_back(&(*sl_it));
     } else {
-      Socket socket(sl_it->addrinfo_);
+      Socket   socket(sl_it->addrinfo_);
       listenFd listen_fd = socket.get_listen_fd();
       listen_fd_map.insert(std::make_pair(listen_fd, confGroup()));
       listen_fd_map[listen_fd].push_back(&(*sl_it));
