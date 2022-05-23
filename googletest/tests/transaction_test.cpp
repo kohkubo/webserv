@@ -7,7 +7,7 @@
 TEST(transaction_test, detect_properconf) {
   ConfGroupMapGenerator conf_group_map_generator("tdata/transaction_test.conf");
   std::map<listenFd, confGroup> conf_group_map = conf_group_map_generator.generate();
-  confGroup  conf_group = conf_group_map[0];
+  confGroup  conf_group = conf_group_map.begin()->second;
 
   std::string apple_req  = "GET / HTTP/1.1\r\n"
                            "Host: apple.com\r\n"
