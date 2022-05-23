@@ -32,7 +32,7 @@ std::string Response::get_response_string() {
 }
 
 void Response::__set_status_phrase() {
-  __status_phrase_ = g_response_status_phrase_map.at(__status_code_);
+  __status_phrase_ = g_response_status_phrase_map[__status_code_];
 }
 
 void Response::__set_general_header() {

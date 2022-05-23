@@ -113,11 +113,12 @@ void Response::__check_filepath_status() {
 }
 
 void Response::__set_error_page_body() {
-  if (__config_.error_pages_.count(__status_code_)) {
-    // TODO: locationの扱いどうする?
-    __file_path_ =
-        __config_.root_ + "/" + __config_.error_pages_.at(__status_code_);
-    __body_ = read_file_tostring(__file_path_);
+  // TODO: locationの扱いどうする?
+  std::map<int, std::string>::const_iterator it =
+      __config_.error_pages_.find(__status_code_);
+  if (it != __config_.error_pages_.end()) {
+    __file_path_ = __config_.root_ + "/" + it->second;
+    __body_      = read_file_tostring(__file_path_);
   } else {
     __body_ = g_error_page_contents_map[__status_code_];
   }
