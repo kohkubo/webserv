@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <cstdlib>
+
 #include "config/Config.hpp"
 #include "utils/utils.hpp"
 
