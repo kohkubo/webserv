@@ -5,13 +5,15 @@
 #include <iostream>
 
 #include "config/Config.hpp"
-#include "http/const/const_html_filename.hpp"
-#include "http/const/const_response_key_map.hpp"
+#include "http/const/const_header_field_values.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 
 void Response::__delete_target_file() {
+  if (__status_code_ != NONE) {
+    return;
+  }
   if (__request_info_.is_expected_body()) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
     __status_code_ = BAD_REQUEST_400;
