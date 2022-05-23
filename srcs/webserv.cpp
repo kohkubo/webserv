@@ -23,9 +23,9 @@ static const char *resolve_config_file(int argc, char **argv) {
 int main(int argc, char **argv) {
   const char           *config_file_path = resolve_config_file(argc, argv);
   ConfGroupMapGenerator config_map_generator(config_file_path);
-  std::map<listenFd, confGroup> __confgroup_map_ =
+  std::map<listenFd, confGroup> conf_group_map =
       config_map_generator.generate();
-  Server server(__confgroup_map_);
+  Server server(conf_group_map);
   server.run_loop();
   return (0);
 }

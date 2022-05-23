@@ -39,7 +39,9 @@ public:
 
 public:
   Config();
-  Config(tokenIterator start, tokenIterator end) {
+  Config(tokenIterator start, tokenIterator end)
+      : autoindex_(true)
+      , addrinfo_(NULL) {
     try {
       __last_it_ = __parse(start, end);
     } catch (const std::exception &e) {
