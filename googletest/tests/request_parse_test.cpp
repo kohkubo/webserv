@@ -14,7 +14,7 @@ TEST(request_parse_test, normal) {
   RequestInfo info;
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, GET);
-  EXPECT_EQ(info.target_, "/");
+  EXPECT_EQ(info.uri_, "/");
   EXPECT_EQ(info.version_, "HTTP/1.1");
   EXPECT_EQ(info.host_, "127.0.0.1");
   EXPECT_EQ(info.port_, "5001");
@@ -33,7 +33,7 @@ TEST(request_parse_test, normal_delete) {
   RequestInfo info;
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, DELETE);
-  EXPECT_EQ(info.target_, "/delete_target.tmp");
+  EXPECT_EQ(info.uri_, "/delete_target.tmp");
   EXPECT_EQ(info.version_, "HTTP/1.1");
   EXPECT_EQ(info.host_, "127.0.0.1");
   EXPECT_EQ(info.port_, "5001");

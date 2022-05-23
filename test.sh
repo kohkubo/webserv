@@ -5,9 +5,17 @@ echo "======================"
 curl localhost:5000
 echo
 echo "======================"
-echo "normal 5001 404"
+echo "normal 5000 404"
 echo "======================"
 curl localhost:5000/jlksdfjklfsdjkldfs
+echo
+echo "======================"
+echo "5001 403"
+echo "normal 5000"
+echo "======================"
+chmod 000 html/index.html
+curl localhost:5000 -v
+chmod 744 html/index.html
 echo
 echo "======================"
 echo "get request path"
@@ -32,3 +40,9 @@ echo "index directive test"
 echo "normal 5002 index2! in dir1"
 echo "======================"
 curl localhost:5002
+echo
+echo "======================"
+echo "error_page directive test 404"
+echo "normal 5003"
+echo "======================"
+curl localhost:5003/dlkdsklsdf
