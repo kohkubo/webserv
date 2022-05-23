@@ -40,8 +40,18 @@ public:
 
 public:
   Config();
+  // TODO: この初期化はテスト用に残っているだけ
   Config(tokenIterator start, tokenIterator end)
-      : autoindex_(true)
+      : listen_address_("0.0.0.0")
+      , listen_port_("80")
+      , client_max_body_size_(0)
+      , server_name_("")
+      , root_("./html/")
+      , index_("index.html")
+      , error_pages_()
+      , return_()
+      , autoindex_(true)
+      , limit_except_()
       , addrinfo_(NULL) {
     try {
       __last_it_ = __parse(start, end);
