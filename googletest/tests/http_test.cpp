@@ -72,6 +72,31 @@ default error page\n\
 ");
 }
 
+TEST(http_test, create_response_info_get_403_config_error_pages) {
+  Config config = Config();
+  config.root_  = "../html";
+  config.index_ = "index.html";
+
+  config.error_pages_[403] = "../html/forbidden.html";
+  RequestInfo request_info;
+  request_info.method_  = GET;
+  request_info.uri_     = "/000.html";
+  request_info.version_ = "HTTP/1.1";
+  request_info.host_    = "localhost";
+
+  system("chmod 000 ../html/000.html");
+  Response response(config, request_info);
+  system("chmod 644 ../html/000.html");
+  EXPECT_EQ(response.get_response_string(), "\
+HTTP/1.1 403 Forbidden\r\n\
+Content-Length: 9\r\n\
+Content-Type: text/html\r\n\
+Connection: close\r\n\
+\r\n\
+forbidden\
+");
+}
+
 TEST(http_test, create_response_info_delete_normal) {
   std::string expected_response = "HTTP/1.1 204 No Content\r\n"
                                   "Connection: close\r\n\r\n";
