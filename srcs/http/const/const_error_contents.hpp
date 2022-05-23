@@ -91,4 +91,15 @@ const std::string content_505 = "<!DOCTYPE html>\n"
                                 "    </body>\n"
                                 "</html>";
 
+const std::string content_520 = "<!DOCTYPE html>\n"
+                                "<html>\n"
+                                "    <head>\n"
+                                "        <title>520</title>\n"
+                                "    </head>\n"
+                                "    <body>\n"
+                                "<h2>520 Unknown Error</h2>\n"
+                                "default error page\n"
+                                "    </body>\n"
+                                "</html>";
+
 #endif /* SRCS_HTTP_CONST_CONST_ERROR_CONTENTS */

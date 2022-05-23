@@ -24,12 +24,14 @@ private:
   TransactionState __transaction_state_;
   ssize_t          __send_count_;
   std::string      __response_;
-  RequestInfo      __request_info_;
+  RequestInfo      __requst_info_;
+  const Config    *__conf_;
 
 public:
   Transaction()
-      : __transaction_state_(RECEIVING_HEADER)
-      , __send_count_(0) {}
+      : __transction_state_(RECEIVING_HEADER)
+      , __send_count_(0)
+      , __conf_(NULL) {}
 
   TransactionState get_transaction_state() const {
     return __transaction_state_;
@@ -42,11 +44,14 @@ public:
   bool   is_send_completed() {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
+  // test用
+  const Config *get_conf() { return __conf_; }
 
-  void parse_header(const std::string &header);
-  void parse_body(const std::string &body);
-  void create_response(const Config &conf);
-  void send_response(int socket_fd);
+  void          parse_header(const std::string &header);
+  void          detect_config(const confGroup &conf_group);
+  void          parse_body(const std::string &body);
+  void          create_response();
+  void          send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */

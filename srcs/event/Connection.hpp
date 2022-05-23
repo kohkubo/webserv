@@ -51,7 +51,7 @@ public:
     return transaction_state == SENDING;
   }
 
-  void parse_buffer(const std::string &data);
+  void create_transaction(const std::string &data);
   void create_response_iter();
 };
 
