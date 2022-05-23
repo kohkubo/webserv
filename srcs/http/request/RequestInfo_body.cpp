@@ -11,16 +11,15 @@ void RequestInfo::__parse_request_values(const std::string &request_body) {
 
 // TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパース？
 void RequestInfo::parse_request_body(const std::string &request_body) {
-  if (content_type_)
-    switch (content_type_) {
-    case URLENCODED:
-      __parse_request_values(request_body);
-      break;
-    case SOMETYPE:
-      /* TODO */
-      break;
-    default:
-      /* TODO: content-typeがない時 */
-      break;
-    }
+  switch (content_type_) {
+  case URLENCODED:
+    __parse_request_values(request_body);
+    break;
+  case SOMETYPE:
+    /* TODO */
+    break;
+  default:
+    /* TODO: content-typeがない時 */
+    break;
+  }
 }
