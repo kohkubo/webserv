@@ -9,7 +9,7 @@ void RequestInfo::__parse_request_values(const std::string &request_body) {
   }
 }
 
-// TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパース？
+// TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパース
 void RequestInfo::parse_request_body(const std::string &request_body) {
   switch (content_type_) {
   case URLENCODED:
