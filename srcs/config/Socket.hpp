@@ -4,6 +4,10 @@
 #include "config/Config.hpp"
 
 class Socket {
+private:
+  struct addrinfo *__info_;
+  listenFd         __listen_fd_;
+
 public:
   Socket(struct addrinfo *info)
       : __info_(info) {
@@ -16,12 +20,10 @@ public:
 
 private:
   Socket(const Socket &other);
-  Socket          &operator=(const Socket &other);
-  struct addrinfo *__info_;
-  listenFd         __listen_fd_;
-  void             __set_listen_fd();
-  void             __set_bind_socket();
-  void             __set_listen_passive_socket();
+  Socket &operator=(const Socket &other);
+  void    __set_listen_fd();
+  void    __set_bind_socket();
+  void    __set_listen_passive_socket();
 };
 
 #endif /* SRCS_CONFIG_SOCKET_HPP */
