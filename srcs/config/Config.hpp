@@ -1,12 +1,12 @@
 #ifndef SRCS_CONFIG_CONFIG_HPP
 #define SRCS_CONFIG_CONFIG_HPP
 
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <cstdlib>
 
 #include "utils/tokenize.hpp"
 

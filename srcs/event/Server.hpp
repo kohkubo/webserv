@@ -19,9 +19,9 @@ private:
   Server(Server const &other);
   Server &operator=(Server const &other);
   void    __reset_pollfds() {
-       __pollfds_.clear();
-       __add_listenfd_to_pollfds();
-       __add_connfd_to_pollfds();
+    __pollfds_.clear();
+    __add_listenfd_to_pollfds();
+    __add_connfd_to_pollfds();
   }
   void __add_listenfd_to_pollfds();
   void __add_connfd_to_pollfds();
