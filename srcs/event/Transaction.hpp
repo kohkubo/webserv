@@ -9,7 +9,8 @@
 #include "http/request/RequestInfo.hpp"
 
 enum TransactionState {
-  NO_REQUEST,       // Connectionはリクエストを持たない。
+  NO_REQUEST, // Connectionはリクエストを持たない。
+  RECEIVING_STARTLINE,
   RECEIVING_HEADER, // リクエストはheaderを読み取り中。
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
   SENDING,          // レスポンスの送信中。
@@ -31,7 +32,7 @@ private:
 
 public:
   Transaction()
-      : __transaction_state_(RECEIVING_HEADER)
+      : __transaction_state_(RECEIVING_STARTLINE)
       , __send_count_(0)
       , __conf_(NULL) {}
 
@@ -52,6 +53,7 @@ public:
 
   bool          handle_transaction_state(std::string     &request_buffer,
                                          const confGroup &conf_group);
+  void          parse_startline(std::string &buf);
   void          parse_header(std::string &buf, const confGroup &conf_group);
   void          parse_body(std::string &buf);
   void          detect_config(const confGroup &conf_group);

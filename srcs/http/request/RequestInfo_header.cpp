@@ -27,7 +27,6 @@ bool RequestInfo::parse_request_header(std::string &request_buffer) {
   tokenVector   fields = tokenize(request_header, CRLF, CRLF);
   tokenIterator it     = fields.begin();
 
-  __parse_request_line(*it++);
   __create_header_map(it, fields.end());
 
   // call each field's parser
@@ -35,32 +34,6 @@ bool RequestInfo::parse_request_header(std::string &request_buffer) {
   __parse_request_connection();
   __parse_request_content_length();
   return true;
-}
-
-// request-line = method SP request-target SP HTTP-version (CRLF)
-void RequestInfo::__parse_request_line(const std::string &request_line) {
-  std::size_t first_sp = request_line.find_first_of(' ');
-  std::size_t last_sp  = request_line.find_last_of(' ');
-  if (first_sp == std::string::npos || first_sp == last_sp) {
-    throw BadRequestException();
-  }
-  std::string method_str = request_line.substr(0, first_sp);
-  method_                = __parse_request_method(method_str);
-  uri_     = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
-  version_ = request_line.substr(last_sp + 1);
-}
-
-HttpMethod RequestInfo::__parse_request_method(const std::string &method) {
-  if (method == "GET") {
-    return GET;
-  }
-  if (method == "POST") {
-    return POST;
-  }
-  if (method == "DELETE") {
-    return DELETE;
-  }
-  return UNKNOWN;
 }
 
 void RequestInfo::__create_header_map(tokenIterator it, tokenIterator end) {

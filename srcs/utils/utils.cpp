@@ -14,6 +14,13 @@ bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
   return false;
 }
 
+bool starts_with(const std::string &s, const std::string &prefix) {
+  std::string::size_type size = prefix.size();
+  if (s.size() < size)
+    return false;
+  return std::equal(prefix.begin(), prefix.end(), s.begin());
+}
+
 static char my_tolower(char ch) {
   return static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
 }

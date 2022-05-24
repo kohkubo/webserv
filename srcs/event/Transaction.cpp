@@ -18,15 +18,22 @@ void Transaction::__set_response_for_bad_request() {
 
 bool Transaction::handle_transaction_state(std::string     &request_buffer,
                                            const confGroup &conf_group) {
-  switch (__transaction_state_) {
-  case RECEIVING_HEADER:
-    parse_header(request_buffer, conf_group);
-    break;
-  case RECEIVING_BODY:
-    parse_body(request_buffer);
-    break;
-  default:
-    break;
+  try {
+    switch (__transaction_state_) {
+    case RECEIVING_STARTLINE:
+      parse_startline(request_buffer);
+      break;
+    case RECEIVING_HEADER:
+      parse_header(request_buffer, conf_group);
+      break;
+    case RECEIVING_BODY:
+      parse_body(request_buffer);
+      break;
+    default:
+      break;
+    }
+  } catch (const RequestInfo::BadRequestException &e) {
+    __set_response_for_bad_request();
   }
   if (!is_sending())
     return false;
@@ -35,19 +42,22 @@ bool Transaction::handle_transaction_state(std::string     &request_buffer,
   return true;
 }
 
+void Transaction::parse_startline(std::string &buf) {
+  if (!__request_info_.parse_request_startline(buf)) {
+    return;
+  }
+  __transaction_state_ = RECEIVING_HEADER;
+}
+
 void Transaction::parse_header(std::string &buf, const confGroup &conf_group) {
-  try {
-    if (!__request_info_.parse_request_header(buf)) {
-      return;
-    }
-    detect_config(conf_group);
-    if (__request_info_.is_expected_body()) {
-      __transaction_state_ = RECEIVING_BODY;
-    } else {
-      create_response();
-    }
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
+  if (!__request_info_.parse_request_header(buf)) {
+    return;
+  }
+  detect_config(conf_group);
+  if (__request_info_.is_expected_body()) {
+    __transaction_state_ = RECEIVING_BODY;
+  } else {
+    create_response();
   }
 }
 
@@ -63,14 +73,10 @@ void Transaction::detect_config(const confGroup &conf_group) {
 }
 
 void Transaction::parse_body(std::string &buf) {
-  try {
-    if (!__request_info_.parse_request_body(buf)) {
-      return;
-    }
-    create_response();
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
+  if (!__request_info_.parse_request_body(buf)) {
+    return;
   }
+  create_response();
 }
 
 void Transaction::create_response() {
