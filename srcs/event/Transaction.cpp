@@ -52,11 +52,13 @@ void Transaction::parse_header(const std::string &header,
     }
   } catch (const std::exception &e) {
     // 400エラー処理
-    // 仕様読まないとconfigで400エラーが指定できるのか、する必要があるのか不明。
-    // TODO: 本当にこれでよいの?? 2022/05/22 17:19 kohkubo nakamoto
-    // 現状、Requestが400だったときは、Responseクラスを呼び出さなくてもよい??
+    // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
+    // 指定できるとき、nginxはどうやってserverを決定しているか。
+    // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
+    // 現状は暫定的に、定型文を送信。
     __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-    __transaction_state_ = SENDING;
+    __transaction_state_      = SENDING;
+    __request_info_.is_close_ = true;
   }
 }
 
