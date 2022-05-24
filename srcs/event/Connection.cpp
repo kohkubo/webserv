@@ -12,9 +12,7 @@ Transaction &Connection::__get_last_request() {
 bool Connection::is_sending() const {
   if (__transaction_queue_.empty())
     return false;
-  TransactionState transaction_state =
-      __transaction_queue_.front().get_transaction_state();
-  return transaction_state == SENDING;
+  return get_front_request().is_sending();
 }
 
 void Connection::create_transaction(const std::string &data) {
@@ -26,6 +24,8 @@ void Connection::create_transaction(const std::string &data) {
     if (updated_state != SENDING) {
       return;
     }
+    // FIXME:
+    // stateがsendingでもConnectionがcloseのとき次のリクエストを読む必要はない
     __transaction_queue_.push_back(Transaction());
     continue;
   }

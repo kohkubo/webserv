@@ -27,10 +27,13 @@ public:
   ~Connection() {}
 
   Transaction &get_front_request() { return __transaction_queue_.front(); }
-  void         erase_front_req() { __transaction_queue_.pop_front(); }
+  const Transaction &get_front_request() const {
+    return __transaction_queue_.front();
+  }
+  void erase_front_req() { __transaction_queue_.pop_front(); }
 
-  bool         is_sending() const;
-  void         create_transaction(const std::string &data);
+  bool is_sending() const;
+  void create_transaction(const std::string &data);
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */

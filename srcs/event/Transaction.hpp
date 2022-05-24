@@ -41,9 +41,10 @@ public:
   void set_transaction_state(TransactionState state) {
     __transaction_state_ = state;
   }
-  bool   is_close() { return __request_info_.is_close_; }
-  size_t get_body_size() { return __request_info_.content_length_; }
-  bool   is_send_completed() {
+  bool   is_close() const { return __request_info_.is_close_; }
+  bool   is_sending() const { return __transaction_state_ == SENDING; }
+  size_t get_body_size() const { return __request_info_.content_length_; }
+  bool   is_send_completed() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
   // test用
