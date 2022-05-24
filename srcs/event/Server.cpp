@@ -63,7 +63,7 @@ void Server::__connection_send_handler(connFd conn_fd) {
       transaction.set_transaction_state(CLOSING);
       return;
     }
-    __conn_fd_map_[conn_fd].pop_front_transaction_queue();
+    __conn_fd_map_[conn_fd].erase_front_transaction();
   }
 }
 
