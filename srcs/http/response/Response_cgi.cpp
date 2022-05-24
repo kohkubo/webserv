@@ -31,6 +31,7 @@ static char *const *vector_to_array(const std::vector<std::string> &v) {
   return a;
 }
 
+// TODO: error処理
 std::string
 Response::__read_file_tostring_cgi(const std::string              &path,
                                    const std::vector<std::string> &env) {
