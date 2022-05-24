@@ -16,8 +16,8 @@ void Transaction::__set_response_for_bad_request() {
   __request_info_.is_close_ = true;
 }
 
-bool Transaction::handle_state(std::string     &request_buffer,
-                               const confGroup &conf_group) {
+bool Transaction::handle_transaction_state(std::string     &request_buffer,
+                                           const confGroup &conf_group) {
   try {
     switch (__transaction_state_) {
     case RECEIVING_STARTLINE:
