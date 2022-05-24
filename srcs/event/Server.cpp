@@ -25,6 +25,9 @@ void Server::__add_connfd_to_pollfds() {
     struct pollfd pfd = {it->first, 0, 0};
     if (it->second.is_sending()) {
       pfd.events = POLLIN | POLLOUT;
+    } else if (it->second.is_sending() &&
+               it->second.get_front_request().is_close()) {
+      pfd.events = POLLOUT;
     } else {
       pfd.events = POLLIN;
     }

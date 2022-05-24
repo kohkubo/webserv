@@ -23,8 +23,9 @@ void Connection::create_transaction(const std::string &data) {
     if (!transaction.is_sending()) {
       return;
     }
-    // FIXME:
-    // stateがsendingでもConnectionがcloseのとき次のリクエストを読む必要はない
+    if (transaction.is_close()) {
+      return;
+    }
     __transaction_queue_.push_back(Transaction());
     continue;
   }
