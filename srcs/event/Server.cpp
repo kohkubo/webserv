@@ -26,7 +26,7 @@ void Server::__add_connfd_to_pollfds() {
     if (it->second.is_sending()) {
       pfd.events = POLLIN | POLLOUT;
     } else if (it->second.is_sending() &&
-               it->second.get_front_request().is_close()) {
+               it->second.front_transaction().is_close()) {
       pfd.events = POLLOUT;
     } else {
       pfd.events = POLLIN;
@@ -55,7 +55,7 @@ void Server::__connection_receive_handler(connFd conn_fd) {
 }
 
 void Server::__connection_send_handler(connFd conn_fd) {
-  Transaction &transaction = __conn_fd_map_[conn_fd].get_front_request();
+  Transaction &transaction = __conn_fd_map_[conn_fd].front_transaction();
   transaction.send_response(conn_fd);
   if (transaction.is_send_completed()) {
     if (transaction.is_close()) {
@@ -63,7 +63,7 @@ void Server::__connection_send_handler(connFd conn_fd) {
       transaction.set_transaction_state(CLOSING);
       return;
     }
-    __conn_fd_map_[conn_fd].erase_front_req();
+    __conn_fd_map_[conn_fd].pop_front_queue();
   }
 }
 

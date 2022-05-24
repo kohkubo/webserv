@@ -18,7 +18,7 @@ private:
   confGroup               __conf_group_;
 
 private:
-  Transaction &__get_last_request();
+  Transaction &__get_last_transaction();
 
 public:
   Connection() {}
@@ -26,11 +26,11 @@ public:
       : __conf_group_(conf_group) {}
   ~Connection() {}
 
-  Transaction &get_front_request() { return __transaction_queue_.front(); }
-  const Transaction &get_front_request() const {
+  Transaction &front_transaction() { return __transaction_queue_.front(); }
+  const Transaction &front_transaction() const {
     return __transaction_queue_.front();
   }
-  void erase_front_req() { __transaction_queue_.pop_front(); }
+  void pop_front_queue() { __transaction_queue_.pop_front(); }
 
   bool is_sending() const;
   void create_transaction(const std::string &data);
