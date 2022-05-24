@@ -12,8 +12,8 @@ std::string Transaction::__cut_buffer(std::string &request_buffer,
   return res;
 }
 
-bool Transaction::handle_state(std::string     &request_buffer,
-                               const confGroup &conf_group) {
+bool Transaction::handle_transaction_state(std::string     &request_buffer,
+                                           const confGroup &conf_group) {
   std::size_t pos;
   switch (__transaction_state_) {
   case RECEIVING_HEADER:
