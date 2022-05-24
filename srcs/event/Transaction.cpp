@@ -12,8 +12,8 @@ std::string Transaction::__cut_buffer(std::string &request_buffer,
   return res;
 }
 
-TransactionState Transaction::handle_state(std::string     &request_buffer,
-                                           const confGroup &conf_group) {
+void Transaction::handle_state(std::string     &request_buffer,
+                               const confGroup &conf_group) {
   std::size_t pos;
   switch (__transaction_state_) {
   case RECEIVING_HEADER:
@@ -34,7 +34,7 @@ TransactionState Transaction::handle_state(std::string     &request_buffer,
   default:
     break;
   }
-  return __transaction_state_;
+  return;
 }
 
 // ヘッダーがパース出来たとき、configが決定できる。

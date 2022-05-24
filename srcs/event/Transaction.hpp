@@ -48,10 +48,9 @@ public:
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
   // test用
-  const Config    *get_conf() { return __conf_; }
+  const Config *get_conf() { return __conf_; }
 
-  TransactionState handle_state(std::string     &request_buffer,
-                                const confGroup &conf_group);
+  void handle_state(std::string &request_buffer, const confGroup &conf_group);
   void parse_header(const std::string &header, const confGroup &conf_group);
   void detect_config(const confGroup &conf_group);
   void parse_body(const std::string &body);

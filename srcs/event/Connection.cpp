@@ -18,10 +18,9 @@ bool Connection::is_sending() const {
 void Connection::create_transaction(const std::string &data) {
   __buffer_.append(data);
   while (1) {
-    Transaction     &transaction = __get_last_request();
-    TransactionState updated_state =
-        transaction.handle_state(__buffer_, __conf_group_);
-    if (updated_state != SENDING) {
+    Transaction &transaction = __get_last_request();
+    transaction.handle_state(__buffer_, __conf_group_);
+    if (!transaction.is_sending()) {
       return;
     }
     // FIXME:
