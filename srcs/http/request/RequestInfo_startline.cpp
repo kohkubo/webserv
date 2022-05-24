@@ -17,7 +17,8 @@ bool RequestInfo::parse_request_startline(std::string &request_buffer) {
   if (pos == std::string::npos) {
     return false;
   }
-  std::string request_line = __cut_buffer(request_buffer, pos + CRLF.size());
+  std::string request_line = __cut_buffer(request_buffer, pos);
+  __cut_buffer(request_buffer, CRLF.size());
   __parse_request_line(request_line);
   return true;
 }
