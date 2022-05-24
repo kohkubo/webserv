@@ -11,11 +11,17 @@ parse_request_value(std::string value) {
 
 // TODO: 今のところ Content-Type は無視している
 // TODO: 今のところ 一列でくるものと仮定
-void RequestInfo::parse_request_body(const std::string &request_body) {
-  tokenVector tokens = tokenize(request_body, "&", "&");
+bool RequestInfo::parse_request_body(std::string &request_buffer) {
+  // TODO: chunkedのサイズ判定
+  if (request_buffer.size() < __get_body_size()) {
+    return false;
+  }
+  std::string request_body = __cut_buffer(request_buffer, __get_body_size());
+  tokenVector tokens       = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
     // TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
     std::pair<std::string, std::string> value = parse_request_value(*it);
     values_[value.first]                      = value.second;
   }
+  return true;
 }

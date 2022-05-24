@@ -9,7 +9,7 @@ TEST(request_parse_test, normal) {
                     "Host: 127.0.0.1:5001\r\n"
                     "User-Agent: curl/7.68.0\r\n"
                     "Connection: close\r\n"
-                    "Accept: */*\r\n";
+                    "Accept: */*\r\n\r\n";
 
   RequestInfo info;
   info.parse_request_header(str);
@@ -28,7 +28,7 @@ TEST(request_parse_test, normal_delete) {
                     "Host: 127.0.0.1:5001\r\n"
                     "User-Agent: curl/7.68.0\r\n"
                     "Connection: close\r\n"
-                    "Accept: */*\r\n";
+                    "Accept: */*\r\n\r\n";
 
   RequestInfo info;
   info.parse_request_header(str);
@@ -44,7 +44,7 @@ TEST(request_parse_test, normal_delete) {
 
 TEST(request_parse_test, exception_request_line_few_field) {
   std::string str = "GET HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:5001\r\n";
+                    "Host: 127.0.0.1:5001\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
@@ -53,7 +53,7 @@ TEST(request_parse_test, exception_request_line_few_field) {
 
 TEST(request_parse_test, exception_request_line_no_space) {
   std::string str = "GET/HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:5001\r\n";
+                    "Host: 127.0.0.1:5001\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
@@ -62,7 +62,7 @@ TEST(request_parse_test, exception_request_line_no_space) {
 
 TEST(request_parse_test, exception_field_name_space) {
   std::string str = "GET / HTTP/1.1\r\n"
-                    "Host : 127.0.0.1:5001\r\n";
+                    "Host : 127.0.0.1:5001\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
@@ -71,7 +71,7 @@ TEST(request_parse_test, exception_field_name_space) {
 
 TEST(request_parse_test, exception_field_name_tab) {
   std::string str = "GET / HTTP/1.1\r\n"
-                    "Host\t: 127.0.0.1:5001\r\n";
+                    "Host\t: 127.0.0.1:5001\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
@@ -81,7 +81,7 @@ TEST(request_parse_test, exception_field_name_tab) {
 TEST(request_parse_test, exception_no_host) {
   std::string str = "GET / HTTP/1.1\r\n"
                     "Connection: close\r\n"
-                    "Accept: */*\r\n";
+                    "Accept: */*\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
@@ -90,7 +90,7 @@ TEST(request_parse_test, exception_no_host) {
 
 TEST(request_parse_test, exception_host_range) {
   std::string str = "GET / HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:99999\r\n";
+                    "Host: 127.0.0.1:99999\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
