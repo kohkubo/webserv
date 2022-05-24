@@ -50,7 +50,7 @@ public:
   // test用
   const Config *get_conf() { return __conf_; }
 
-  void handle_state(std::string &request_buffer, const confGroup &conf_group);
+  bool handle_state(std::string &request_buffer, const confGroup &conf_group);
   void parse_header(const std::string &header, const confGroup &conf_group);
   void detect_config(const confGroup &conf_group);
   void parse_body(const std::string &body);

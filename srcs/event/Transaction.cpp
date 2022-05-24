@@ -12,14 +12,14 @@ std::string Transaction::__cut_buffer(std::string &request_buffer,
   return res;
 }
 
-void Transaction::handle_state(std::string     &request_buffer,
+bool Transaction::handle_state(std::string     &request_buffer,
                                const confGroup &conf_group) {
   std::size_t pos;
   switch (__transaction_state_) {
   case RECEIVING_HEADER:
     pos = request_buffer.find(HEADER_SP);
     if (pos == std::string::npos) {
-      break;
+      return false;
     }
     parse_header(__cut_buffer(request_buffer, pos + HEADER_SP.size()),
                  conf_group);
@@ -27,14 +27,18 @@ void Transaction::handle_state(std::string     &request_buffer,
   case RECEIVING_BODY:
     // TODO: chunkedのサイズ判定
     if (request_buffer.size() < get_body_size()) {
-      break;
+      return false;
     }
     parse_body(__cut_buffer(request_buffer, get_body_size()));
     break;
   default:
     break;
   }
-  return;
+  if (!is_sending())
+    return false;
+  if (is_close())
+    return false;
+  return true;
 }
 
 // ヘッダーがパース出来たとき、configが決定できる。

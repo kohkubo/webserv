@@ -19,14 +19,12 @@ void Connection::create_transaction(const std::string &data) {
   __buffer_.append(data);
   while (1) {
     Transaction &transaction = __get_last_transaction();
-    transaction.handle_state(__buffer_, __conf_group_);
-    if (!transaction.is_sending()) {
+    bool is_continue = transaction.handle_state(__buffer_, __conf_group_);
+    if (is_continue) {
+      __transaction_queue_.push_back(Transaction());
+      continue;
+    } else {
       return;
     }
-    if (transaction.is_close()) {
-      return;
-    }
-    __transaction_queue_.push_back(Transaction());
-    continue;
   }
 }
