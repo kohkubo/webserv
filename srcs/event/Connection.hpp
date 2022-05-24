@@ -10,6 +10,7 @@
 // TODO: string -> vector<char>
 
 typedef class Config Config;
+typedef int          connFd;
 
 class Connection {
 private:
@@ -34,6 +35,8 @@ public:
 
   bool is_sending() const;
   void create_transaction(const std::string &data);
+  void send_response(connFd conn_fd);
+  bool receive_request(connFd conn_fd);
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */

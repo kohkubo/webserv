@@ -29,6 +29,9 @@ private:
 
 private:
   void __set_response_for_bad_request();
+  bool __is_send_completed() const {
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
+  }
 
 public:
   Transaction()
@@ -39,14 +42,8 @@ public:
   TransactionState get_transaction_state() const {
     return __transaction_state_;
   }
-  void set_transaction_state(TransactionState state) {
-    __transaction_state_ = state;
-  }
-  bool is_close() const { return __request_info_.is_close_; }
-  bool is_sending() const { return __transaction_state_ == SENDING; }
-  bool is_send_completed() const {
-    return __send_count_ == static_cast<ssize_t>(__response_.size());
-  }
+  bool          is_close() const { return __request_info_.is_close_; }
+  bool          is_sending() const { return __transaction_state_ == SENDING; }
   // test用
   const Config *get_conf() { return __conf_; }
 
