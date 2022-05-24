@@ -10,6 +10,7 @@
 
 class RequestInfo {
 private:
+  bool                               __is_first_line_;
   std::map<std::string, std::string> __field_map_;
 
 public:
@@ -25,7 +26,8 @@ public:
 
 public:
   RequestInfo()
-      : method_(UNKNOWN)
+      : __is_first_line_(true)
+      , method_(UNKNOWN)
       , is_close_(false)
       , content_length_(0) {}
 
@@ -34,6 +36,7 @@ public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
 
+  bool parse_request_startline(std::string &request_buffer);
   bool parse_request_header(std::string &request_buffer);
   bool parse_request_body(std::string &request_buffer);
 
