@@ -52,10 +52,11 @@ public:
 
   bool          handle_transaction_state(std::string     &request_buffer,
                                          const confGroup &conf_group);
-  void parse_header(const std::string &header, const confGroup &conf_group);
-  void detect_config(const confGroup &conf_group);
-  void create_response();
-  void send_response(int socket_fd);
+  void          parse_header(std::string &buf, const confGroup &conf_group);
+  void          parse_body(std::string &buf);
+  void          detect_config(const confGroup &conf_group);
+  void          create_response();
+  void          send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
