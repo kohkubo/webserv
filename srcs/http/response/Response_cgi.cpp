@@ -41,9 +41,11 @@ Response::__read_file_tostring_cgi(const std::string              &path,
     close(pipefd[READ_FD]);
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
-    char *const argv[]     = {(char *)"", (char *)path.c_str(), NULL};
-    char *const env_char[] = {(char *)env[0].c_str(), NULL};
-    execve("/bin/sh", argv, env_char);
+    char *const argv[]           = {(char *)"", (char *)path.c_str(), NULL};
+    char *const env_char_array[] = {(char *)env[0].c_str(), NULL};
+    // TODO: envを最初の要素だけでなく全て渡す
+    // NOTE: vector<string>で持っていると渡し方が難しいかも
+    execve("/bin/sh", argv, env_char_array);
     exit(0);
   }
   // parent
