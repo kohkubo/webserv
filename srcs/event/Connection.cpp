@@ -39,8 +39,9 @@ void Connection::create_transaction(const std::string &data) {
 
 void Connection::send_response(connFd conn_fd) {
   Transaction &transaction = front_transaction();
-  transaction.send_response(conn_fd);
-  erase_front_transaction();
+  if (transaction.send_response(conn_fd)) {
+    erase_front_transaction();
+  }
 }
 
 // 通信がクライアントから閉じられた時trueを返す。
