@@ -132,7 +132,13 @@ static ContentType content_type(const std::string &type) {
   if (type == "application/x-www-form-urlencoded") {
     return URLENCODED;
   }
-  return SOMETYPE;
+  if (type == "multipart/form-data") {
+    return MULTIPART;
+  }
+  if (type == "text/plain") {
+    return PLAIN;
+  }
+  return OTHER;
 }
 
 void RequestInfo::__parse_request_content_type() {

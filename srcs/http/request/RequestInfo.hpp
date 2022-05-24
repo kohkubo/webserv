@@ -28,7 +28,7 @@ public:
       : method_(UNKNOWN)
       , is_close_(false)
       , content_length_(0)
-      , content_type_(NONTYPE) {}
+      , content_type_(OTHER) {}
 
   class BadRequestException : public std::logic_error {
   public:

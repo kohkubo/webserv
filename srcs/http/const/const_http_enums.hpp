@@ -3,7 +3,7 @@
 
 enum HttpMethod { GET, POST, DELETE, UNKNOWN };
 
-enum ContentType { URLENCODED, SOMETYPE, NONTYPE };
+enum ContentType { URLENCODED, MULTIPART, PLAIN, OTHER };
 
 enum HttpStatusCode {
   NONE                      = -1,
