@@ -52,6 +52,9 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   case GET:
     __get_method_handler();
     break;
+  case POST:
+    __post_method_handler();
+    break;
   case DELETE:
     __delete_method_handler();
     break;
@@ -126,7 +129,8 @@ void Response::__set_error_page_body() {
 
 void Response::__set_body() {
   if (is_match_suffix_string(__file_path_, ".sh")) {
-    __body_ = __read_file_tostring_cgi(__file_path_);
+    __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
+  } else {
+    __body_ = read_file_tostring(__file_path_);
   }
-  __body_ = read_file_tostring(__file_path_);
 }

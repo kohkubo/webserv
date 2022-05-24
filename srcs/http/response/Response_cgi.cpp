@@ -23,7 +23,9 @@ static std::string read_fd_tostring(int fd) {
   return s;
 }
 
-std::string Response::__read_file_tostring_cgi(const std::string &path) {
+std::string
+Response::__read_file_tostring_cgi(const std::string              &path,
+                                   const std::vector<std::string> &env) {
   int pipefd[2];
   if (pipe(pipefd) == -1) {
     std::cout << "error: pipe in read_file_tostring_cgi" << std::endl;
@@ -39,9 +41,9 @@ std::string Response::__read_file_tostring_cgi(const std::string &path) {
     close(pipefd[READ_FD]);
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
-    char *const argv[] = {(char *)"", (char *)path.c_str(), NULL};
-    char *const env[]  = {(char *)"TEST=webserv_cgi_test", NULL};
-    execve("/bin/sh", argv, env);
+    char *const argv[]     = {(char *)"", (char *)path.c_str(), NULL};
+    char *const env_char[] = {(char *)env[0].c_str(), NULL};
+    execve("/bin/sh", argv, env_char);
     exit(0);
   }
   // parent
