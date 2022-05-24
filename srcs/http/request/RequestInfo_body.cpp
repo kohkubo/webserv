@@ -7,12 +7,12 @@ void RequestInfo::__parse_request_values(const std::string &request_body) {
   tokenVector tokens = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
     // TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
-    // TODO: "hoge=huga"の形になっているかのバリデート必要？
+    // TODO: "hoge=huga"の形になっているかのバリデート必要かも
     values_.push_back(*it);
   }
 }
 
-// TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパース?
+// TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも
 void RequestInfo::parse_request_body(const std::string &request_body) {
   switch (content_type_) {
   case URLENCODED:
@@ -28,8 +28,8 @@ void RequestInfo::parse_request_body(const std::string &request_body) {
     // NOTE: htmlを介してpostが送られる場合,
     //       上記3つのどれかになるはず(デフォルトはURLENCODED)
     //       この条件に入ることがあるのかまだわからない
-    std::cout << "parse body: unknown content-type" << std::endl; // tmp
-    exit(1);
+    std::cerr << "parse body: unknown content-type" << std::endl; // tmp
+    exit(EXIT_FAILURE);
     break;
   }
 }
