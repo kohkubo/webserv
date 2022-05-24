@@ -9,6 +9,9 @@ void Transaction::parse_header(const std::string &header,
                                const confGroup   &conf_group) {
   // requestのエラーは例外が送出されるのでここでキャッチする。
   // エラーの時のレスポンスの生成方法は要検討
+  std::cout << "=======" << std::endl;
+  std::cout << header << std::endl;
+  std::cout << "=======" << std::endl;
   try {
     __request_info_.parse_request_header(header);
     detect_config(conf_group);
@@ -39,6 +42,10 @@ void Transaction::detect_config(const confGroup &conf_group) {
 }
 
 void Transaction::parse_body(const std::string &body) {
+  std::cout << "~~~~~~~" << std::endl;
+  std::cout << body << std::endl;
+  std::cout << "size: " << body.size() << std::endl;
+  std::cout << "~~~~~~~" << std::endl;
   __request_info_.parse_request_body(body);
   create_response();
 }
