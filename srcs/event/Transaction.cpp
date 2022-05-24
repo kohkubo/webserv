@@ -2,7 +2,44 @@
 
 #include <sys/socket.h>
 
+#include "http/const/const_delimiter.hpp"
 #include "http/response/Response.hpp"
+
+std::string Transaction::__cut_buffer(std::string &request_buffer,
+                                      std::size_t  len) {
+  std::string res = request_buffer.substr(0, len);
+  request_buffer  = request_buffer.substr(len);
+  return res;
+}
+
+bool Transaction::handle_transaction_state(std::string     &request_buffer,
+                                           const confGroup &conf_group) {
+  std::size_t pos;
+  switch (__transaction_state_) {
+  case RECEIVING_HEADER:
+    pos = request_buffer.find(HEADER_SP);
+    if (pos == std::string::npos) {
+      return false;
+    }
+    parse_header(__cut_buffer(request_buffer, pos + HEADER_SP.size()),
+                 conf_group);
+    break;
+  case RECEIVING_BODY:
+    // TODO: chunkedのサイズ判定
+    if (request_buffer.size() < get_body_size()) {
+      return false;
+    }
+    parse_body(__cut_buffer(request_buffer, get_body_size()));
+    break;
+  default:
+    break;
+  }
+  if (!is_sending())
+    return false;
+  if (is_close())
+    return false;
+  return true;
+}
 
 // ヘッダーがパース出来たとき、configが決定できる。
 void Transaction::parse_header(const std::string &header,
@@ -19,11 +56,13 @@ void Transaction::parse_header(const std::string &header,
     }
   } catch (const std::exception &e) {
     // 400エラー処理
-    // 仕様読まないとconfigで400エラーが指定できるのか、する必要があるのか不明。
-    // TODO: 本当にこれでよいの?? 2022/05/22 17:19 kohkubo nakamoto
-    // 現状、Requestが400だったときは、Responseクラスを呼び出さなくてもよい??
+    // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
+    // 指定できるとき、nginxはどうやってserverを決定しているか。
+    // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
+    // 現状は暫定的に、定型文を送信。
     __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-    __transaction_state_ = SENDING;
+    __transaction_state_      = SENDING;
+    __request_info_.is_close_ = true;
   }
 }
 
