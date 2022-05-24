@@ -2,7 +2,40 @@
 
 #include <sys/socket.h>
 
+#include "http/const/const_delimiter.hpp"
 #include "http/response/Response.hpp"
+
+std::string Transaction::__cut_buffer(std::string &request_buffer,
+                                      std::size_t  len) {
+  std::string res = request_buffer.substr(0, len);
+  request_buffer  = request_buffer.substr(len);
+  return res;
+}
+
+TransactionState Transaction::handle_state(std::string     &request_buffer,
+                                           const confGroup &conf_group) {
+  std::size_t pos;
+  switch (__transaction_state_) {
+  case RECEIVING_HEADER:
+    pos = request_buffer.find(HEADER_SP);
+    if (pos == std::string::npos) {
+      break;
+    }
+    parse_header(__cut_buffer(request_buffer, pos + HEADER_SP.size()),
+                 conf_group);
+    break;
+  case RECEIVING_BODY:
+    // TODO: chunkedのサイズ判定
+    if (request_buffer.size() < get_body_size()) {
+      break;
+    }
+    parse_body(__cut_buffer(request_buffer, get_body_size()));
+    break;
+  default:
+    break;
+  }
+  return __transaction_state_;
+}
 
 // ヘッダーがパース出来たとき、configが決定できる。
 void Transaction::parse_header(const std::string &header,

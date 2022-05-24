@@ -26,6 +26,9 @@ private:
   RequestInfo      __request_info_;
   const Config    *__conf_;
 
+private:
+  std::string __cut_buffer(std::string &request_buffer, std::size_t len);
+
 public:
   Transaction()
       : __transaction_state_(RECEIVING_HEADER)
@@ -44,8 +47,10 @@ public:
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
   // test用
-  const Config *get_conf() { return __conf_; }
+  const Config    *get_conf() { return __conf_; }
 
+  TransactionState handle_state(std::string     &request_buffer,
+                                const confGroup &conf_group);
   void parse_header(const std::string &header, const confGroup &conf_group);
   void detect_config(const confGroup &conf_group);
   void parse_body(const std::string &body);
