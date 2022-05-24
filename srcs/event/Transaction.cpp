@@ -43,10 +43,9 @@ bool Transaction::handle_state(std::string     &request_buffer,
 }
 
 void Transaction::parse_startline(std::string &buf) {
-  if (!__request_info_.parse_request_startline(buf)) {
-    return;
+  if (__request_info_.parse_request_startline(buf)) {
+    __transaction_state_ = RECEIVING_HEADER;
   }
-  __transaction_state_ = RECEIVING_HEADER;
 }
 
 void Transaction::parse_header(std::string &buf, const confGroup &conf_group) {
@@ -73,10 +72,9 @@ void Transaction::detect_config(const confGroup &conf_group) {
 }
 
 void Transaction::parse_body(std::string &buf) {
-  if (!__request_info_.parse_request_body(buf)) {
-    return;
+  if (__request_info_.parse_request_body(buf)) {
+    create_response();
   }
-  create_response();
 }
 
 void Transaction::create_response() {
