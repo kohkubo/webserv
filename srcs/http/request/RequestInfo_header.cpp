@@ -24,11 +24,8 @@ bool RequestInfo::parse_request_header(std::string &request_buffer) {
   }
   std::string request_header =
       __cut_buffer(request_buffer, pos + HEADER_SP.size());
-  tokenVector   fields = tokenize(request_header, CRLF, CRLF);
-  tokenIterator it     = fields.begin();
-
-  __create_header_map(it, fields.end());
-
+  tokenVector fields = tokenize(request_header, CRLF, CRLF);
+  __create_header_map(fields.begin(), fields.end());
   // call each field's parser
   __parse_request_host();
   __parse_request_connection();
