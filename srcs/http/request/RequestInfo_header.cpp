@@ -21,7 +21,6 @@ void RequestInfo::parse_request_header(const std::string &request_string) {
   __parse_request_host();
   __parse_request_connection();
   __parse_request_content_length();
-  __parse_request_content_type();
 }
 
 // request-line = method SP request-target SP HTTP-version (CRLF)
@@ -125,24 +124,4 @@ void RequestInfo::__parse_request_content_length() {
     return;
   }
   content_length_ = atoi(__field_map_["Content-Length"].c_str());
-}
-
-static ContentType content_type(const std::string &type) {
-  if (type == "application/x-www-form-urlencoded") {
-    return URLENCODED;
-  }
-  if (type == "multipart/form-data") {
-    return MULTIPART;
-  }
-  if (type == "text/plain") {
-    return PLAIN;
-  }
-  return OTHER;
-}
-
-void RequestInfo::__parse_request_content_type() {
-  if (!__field_map_.count("Content-Type")) {
-    return;
-  }
-  content_type_ = content_type(__field_map_["Content-Type"].c_str());
 }

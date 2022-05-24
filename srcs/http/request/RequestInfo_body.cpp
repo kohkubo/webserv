@@ -14,22 +14,22 @@ void RequestInfo::__parse_request_values(const std::string &request_body) {
 
 // TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも
 void RequestInfo::parse_request_body(const std::string &request_body) {
-  switch (content_type_) {
-  case URLENCODED:
+  std::string ctype = __field_map_["Content-Type"].c_str();
+  if (ctype == "application/x-www-form-urlencoded") {
     __parse_request_values(request_body);
-    break;
-  case MULTIPART:
-    values_.push_back(request_body); // tmp
-    break;
-  case PLAIN:
-    values_.push_back(request_body); // tmp
-    break;
-  default:
-    // NOTE: htmlを介してpostが送られる場合,
-    //       上記3つのどれかになるはず(デフォルトはURLENCODED)
-    //       この条件に入ることがあるのかまだわからない
-    std::cerr << "parse body: unknown content-type" << std::endl; // tmp
-    exit(EXIT_FAILURE);
-    break;
+    return;
   }
+  if (ctype == "multipart/form-data") {
+    values_.push_back(request_body); // tmp
+    return;
+  }
+  if (ctype == "text/plain") {
+    values_.push_back(request_body); // tmp
+    return;
+  }
+  // htmlを介してpostが送られる場合,
+  // 上記3つのどれかになるはず(デフォルトは"application/x-www-form-urlencoded")
+  // それ以外になることがあるのかまだわからない
+  std::cerr << "parse body: unknown content-type" << std::endl; // tmp
+  exit(EXIT_FAILURE);
 }

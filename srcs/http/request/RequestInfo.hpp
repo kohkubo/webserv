@@ -20,15 +20,13 @@ public:
   std::string              port_;
   bool                     is_close_;
   std::size_t              content_length_;
-  ContentType              content_type_;
   std::vector<std::string> values_;
 
 public:
   RequestInfo()
       : method_(UNKNOWN)
       , is_close_(false)
-      , content_length_(0)
-      , content_type_(OTHER) {}
+      , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
   public:
@@ -55,7 +53,6 @@ private:
   void        __parse_request_host();
   void        __parse_request_connection();
   void        __parse_request_content_length();
-  void        __parse_request_content_type();
   void        __parse_request_values(const std::string &request_body);
 };
 
