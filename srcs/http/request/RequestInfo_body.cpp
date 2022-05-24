@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "utils/utils.hpp"
+
 void RequestInfo::__parse_request_values(const std::string &request_body) {
   tokenVector tokens = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
@@ -13,8 +15,9 @@ void RequestInfo::__parse_request_values(const std::string &request_body) {
 }
 
 // TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも
+// TODO: content-typeの文法を確認する -> headerのパースで確認すべきかもしれない
 void RequestInfo::parse_request_body(const std::string &request_body) {
-  std::string ctype = __field_map_["Content-Type"].c_str();
+  std::string ctype = tolower(__field_map_["Content-Type"].c_str());
   if (ctype == "application/x-www-form-urlencoded") {
     __parse_request_values(request_body);
     return;
