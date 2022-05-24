@@ -1,5 +1,6 @@
 #include "http/request/RequestInfo.hpp"
 
+#include <cstdlib>
 #include <iostream>
 
 void RequestInfo::__parse_request_values(const std::string &request_body) {
