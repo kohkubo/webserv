@@ -31,7 +31,7 @@ public:
   const Transaction &front_transaction() const {
     return __transaction_queue_.front();
   }
-  void pop_front_queue() { __transaction_queue_.pop_front(); }
+  void erase_front_transaction() { __transaction_queue_.pop_front(); }
 
   bool is_sending() const;
   void create_transaction(const std::string &data);

@@ -16,8 +16,8 @@ void Transaction::__set_response_for_bad_request() {
   __request_info_.is_close_ = true;
 }
 
-bool Transaction::handle_state(std::string     &request_buffer,
-                               const confGroup &conf_group) {
+bool Transaction::handle_transaction_state(std::string     &request_buffer,
+                                           const confGroup &conf_group) {
   try {
     switch (__transaction_state_) {
     case RECEIVING_STARTLINE:
@@ -88,7 +88,7 @@ void Transaction::send_response(int socket_fd) {
   size_t      rest_count = __response_.size() - __send_count_;
   ssize_t     sc         = send(socket_fd, rest_str, rest_count, MSG_DONTWAIT);
   __send_count_ += sc;
-  if (!__is_send_completed()) {
+  if (!__is_send_all()) {
     return;
   }
   if (is_close()) {

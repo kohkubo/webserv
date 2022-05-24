@@ -26,7 +26,8 @@ void Connection::create_transaction(const std::string &data) {
   __buffer_.append(data);
   while (1) {
     Transaction &transaction = __get_last_transaction();
-    bool is_continue = transaction.handle_state(__buffer_, __conf_group_);
+    bool         is_continue =
+        transaction.handle_transaction_state(__buffer_, __conf_group_);
     if (is_continue) {
       __transaction_queue_.push_back(Transaction());
       continue;
@@ -39,7 +40,7 @@ void Connection::create_transaction(const std::string &data) {
 void Connection::send_response(connFd conn_fd) {
   Transaction &transaction = front_transaction();
   transaction.send_response(conn_fd);
-  pop_front_queue();
+  erase_front_transaction();
 }
 
 // 通信がクライアントから閉じられた時trueを返す。

@@ -29,7 +29,7 @@ private:
 
 private:
   void __set_response_for_bad_request();
-  bool __is_send_completed() const {
+  bool __is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
 
@@ -47,13 +47,14 @@ public:
   // test用
   const Config *get_conf() { return __conf_; }
 
-  bool handle_state(std::string &request_buffer, const confGroup &conf_group);
-  void parse_startline(std::string &buf);
-  void parse_header(std::string &buf, const confGroup &conf_group);
-  void parse_body(std::string &buf);
-  void detect_config(const confGroup &conf_group);
-  void create_response();
-  void send_response(int socket_fd);
+  bool          handle_transaction_state(std::string     &request_buffer,
+                                         const confGroup &conf_group);
+  void          parse_startline(std::string &buf);
+  void          parse_header(std::string &buf, const confGroup &conf_group);
+  void          parse_body(std::string &buf);
+  void          detect_config(const confGroup &conf_group);
+  void          create_response();
+  void          send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
