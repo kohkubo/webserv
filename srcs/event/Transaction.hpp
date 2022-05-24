@@ -12,8 +12,7 @@ enum TransactionState {
   NO_REQUEST,       // Connectionはリクエストを持たない。
   RECEIVING_HEADER, // リクエストはheaderを読み取り中。
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
-  PENDING, // リクエストの読み取りは完了。レスポンスの生成待ち。
-  SENDING, // レスポンスの送信中。
+  SENDING,          // レスポンスの送信中。
   CLOSING,
 };
 
@@ -47,11 +46,11 @@ public:
   // test用
   const Config *get_conf() { return __conf_; }
 
-  void          parse_header(const std::string &header);
-  void          detect_config(const confGroup &conf_group);
-  void          parse_body(const std::string &body);
-  void          create_response();
-  void          send_response(int socket_fd);
+  void parse_header(const std::string &header, const confGroup &conf_group);
+  void detect_config(const confGroup &conf_group);
+  void parse_body(const std::string &body);
+  void create_response();
+  void send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
