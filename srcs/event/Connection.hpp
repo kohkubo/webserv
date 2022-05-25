@@ -29,7 +29,7 @@ public:
       : __conf_group_(conf_group) {}
   ~Connection() {}
 
-  struct pollfd pollfd(connFd conn_fd) const;
+  struct pollfd get_pollfd(connFd conn_fd) const;
   Transaction  &front_transaction() { return __transaction_queue_.front(); }
   const Transaction &front_transaction() const {
     return __transaction_queue_.front();
