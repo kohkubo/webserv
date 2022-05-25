@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_CONST_CONST_ERROR_CONTENTS
-#define SRCS_HTTP_CONST_CONST_ERROR_CONTENTS
+#ifndef SRCS_HTTP_CONST_CONST_ERROR_CONTENTS_HPP
+#define SRCS_HTTP_CONST_CONST_ERROR_CONTENTS_HPP
 
 #include <string>
 
@@ -102,4 +102,4 @@ const std::string content_520 = "<!DOCTYPE html>\n"
                                 "    </body>\n"
                                 "</html>";
 
-#endif /* SRCS_HTTP_CONST_CONST_ERROR_CONTENTS */
+#endif /* SRCS_HTTP_CONST_CONST_ERROR_CONTENTS_HPP */

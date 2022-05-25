@@ -3,7 +3,6 @@
 #include <fstream>
 #include <limits.h>
 
-#include "config/config_parser_utils.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 

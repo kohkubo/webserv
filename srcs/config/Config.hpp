@@ -1,6 +1,8 @@
-#ifndef SRCS_CONFIG_SERVERCONFIG_HPP
-#define SRCS_CONFIG_SERVERCONFIG_HPP
+#ifndef SRCS_CONFIG_CONFIG_HPP
+#define SRCS_CONFIG_CONFIG_HPP
 
+#include <cstdlib>
+#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -12,6 +14,9 @@ const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
 const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
 
 class Config {
+private:
+  tokenIterator __last_it_;
+
 public:
   std::string                listen_address_;
   std::string                listen_port_;
@@ -24,6 +29,7 @@ public:
   bool                       autoindex_;
   std::vector<std::string>   limit_except_;
   struct addrinfo           *addrinfo_;
+  tokenIterator              get_moved_it() { return __last_it_; }
 
   // error_page;
 public:
@@ -34,12 +40,32 @@ public:
 
 public:
   Config();
+  // TODO: この初期化はテスト用に残っているだけ
+  Config(tokenIterator start, tokenIterator end)
+      : listen_address_("0.0.0.0")
+      , listen_port_("80")
+      , client_max_body_size_(0)
+      , server_name_("")
+      , root_("./html/")
+      , index_("index.html")
+      , error_pages_()
+      , return_()
+      , autoindex_(true)
+      , limit_except_()
+      , addrinfo_(NULL) {
+    try {
+      __last_it_ = __parse(start, end);
+    } catch (const std::exception &e) {
+      std::cerr << e.what() << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  }
   ~Config();
   Config(const Config &other);
-  Config       &operator=(const Config &other);
-  tokenIterator parse(tokenIterator pos, tokenIterator end);
+  Config &operator=(const Config &other);
 
 private:
+  tokenIterator __parse(tokenIterator pos, tokenIterator end);
   void          __set_getaddrinfo();
   tokenIterator __parse_listen(tokenIterator pos, tokenIterator end);
   tokenIterator __parse_map_directive(std::string                 key,
@@ -62,4 +88,4 @@ typedef std::vector<Config>         serverList;
 typedef std::vector<const Config *> confGroup;
 typedef int                         listenFd;
 
-#endif /* SRCS_CONFIG_SERVERCONFIG_HPP */
+#endif /* SRCS_CONFIG_CONFIG_HPP */
