@@ -27,7 +27,7 @@ private:
   const Config    *__conf_;
 
 private:
-  std::string __cut_buffer(std::string &request_buffer, std::size_t len);
+  void __set_response_for_bad_request();
 
 public:
   Transaction()
@@ -52,11 +52,11 @@ public:
 
   bool          handle_transaction_state(std::string     &request_buffer,
                                          const confGroup &conf_group);
-  void parse_header(const std::string &header, const confGroup &conf_group);
-  void detect_config(const confGroup &conf_group);
-  void parse_body(const std::string &body);
-  void create_response();
-  void send_response(int socket_fd);
+  void          parse_header(std::string &buf, const confGroup &conf_group);
+  void          parse_body(std::string &buf);
+  void          detect_config(const confGroup &conf_group);
+  void          create_response();
+  void          send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
