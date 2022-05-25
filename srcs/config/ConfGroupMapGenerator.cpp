@@ -9,7 +9,7 @@
 #include <string>
 
 #include "config/Config.hpp"
-#include "config/Socket.hpp"
+#include "config/SocketOpener.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/tokenize.hpp"
 
@@ -64,6 +64,7 @@ static bool is_include_same_server_name(const Config &conf,
 
 std::map<listenFd, confGroup> ConfGroupMapGenerator::generate() {
   std::map<listenFd, confGroup> confgroup_map;
+  SocketOpener                  socket_opener;
   serverList::const_iterator    sl_it = __server_list_.begin();
   for (; sl_it != __server_list_.end(); sl_it++) {
     std::map<listenFd, confGroup>::iterator it =
@@ -75,8 +76,7 @@ std::map<listenFd, confGroup> ConfGroupMapGenerator::generate() {
       }
       it->second.push_back(&(*sl_it));
     } else {
-      Socket   socket(sl_it->addrinfo_);
-      listenFd listen_fd = socket.get_listen_fd();
+      listenFd listen_fd = socket_opener(sl_it->addrinfo_);
       confgroup_map.insert(std::make_pair(listen_fd, confGroup()));
       confgroup_map[listen_fd].push_back(&(*sl_it));
     }
