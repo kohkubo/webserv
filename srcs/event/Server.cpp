@@ -22,7 +22,7 @@ void Server::__add_connfd_to_pollfds() {
 }
 
 void Server::__connection_receive_handler(connFd conn_fd) {
-  bool is_close = __conn_fd_map_[conn_fd].receive_request(conn_fd);
+  bool is_close = __connection_map_[conn_fd].receive_request(conn_fd);
   if (is_close) {
     close(conn_fd);
     __connection_map_.erase(conn_fd);
@@ -30,7 +30,7 @@ void Server::__connection_receive_handler(connFd conn_fd) {
 }
 
 void Server::__connection_send_handler(connFd conn_fd) {
-  __conn_fd_map_[conn_fd].send_response(conn_fd);
+  __connection_map_[conn_fd].send_response(conn_fd);
 }
 
 void Server::__insert_connection_map(connFd conn_fd) {
