@@ -62,7 +62,7 @@ bool Connection::receive_request(connFd conn_fd) {
   return false;
 }
 
-struct pollfd Connection::get_pollfd(connFd conn_fd) const {
+struct pollfd Connection::create_pollfd(connFd conn_fd) const {
   struct pollfd pfd = {conn_fd, 0, 0};
   if (is_sending() && __front_transaction().is_close()) {
     pfd.events = POLLOUT;

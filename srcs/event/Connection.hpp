@@ -34,7 +34,7 @@ public:
       : __conf_group_(conf_group) {}
   ~Connection() {}
 
-  struct pollfd get_pollfd(connFd conn_fd) const;
+  struct pollfd create_pollfd(connFd conn_fd) const;
 
   bool          is_sending() const;
   void          create_transaction(const std::string &data);

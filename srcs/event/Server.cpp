@@ -17,7 +17,7 @@ void Server::__add_connfd_to_pollfds() {
   std::map<connFd, Connection>::const_iterator it = __connection_map_.begin();
   for (; it != __connection_map_.end(); it++) {
     const Connection &connection = it->second;
-    struct pollfd     pfd        = connection.get_pollfd(it->first);
+    struct pollfd     pfd        = connection.create_pollfd(it->first);
     __pollfds_.push_back(pfd);
   }
 }
