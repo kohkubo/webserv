@@ -22,6 +22,11 @@ private:
 
 private:
   Transaction &__get_last_transaction();
+  Transaction &__front_transaction() { return __transaction_queue_.front(); }
+  const Transaction &__front_transaction() const {
+    return __transaction_queue_.front();
+  }
+  void __erase_front_transaction() { __transaction_queue_.pop_front(); }
 
 public:
   Connection() {}
@@ -30,16 +35,11 @@ public:
   ~Connection() {}
 
   struct pollfd get_pollfd(connFd conn_fd) const;
-  Transaction  &front_transaction() { return __transaction_queue_.front(); }
-  const Transaction &front_transaction() const {
-    return __transaction_queue_.front();
-  }
-  void erase_front_transaction() { __transaction_queue_.pop_front(); }
 
-  bool is_sending() const;
-  void create_transaction(const std::string &data);
-  void send_response(connFd conn_fd);
-  bool receive_request(connFd conn_fd);
+  bool          is_sending() const;
+  void          create_transaction(const std::string &data);
+  void          send_response(connFd conn_fd);
+  bool          receive_request(connFd conn_fd);
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */

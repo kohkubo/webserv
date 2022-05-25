@@ -20,7 +20,7 @@ Transaction &Connection::__get_last_transaction() {
 bool Connection::is_sending() const {
   if (__transaction_queue_.empty())
     return false;
-  return front_transaction().is_sending();
+  return __front_transaction().is_sending();
 }
 
 void Connection::create_transaction(const std::string &data) {
@@ -39,9 +39,9 @@ void Connection::create_transaction(const std::string &data) {
 }
 
 void Connection::send_response(connFd conn_fd) {
-  Transaction &transaction = front_transaction();
+  Transaction &transaction = __front_transaction();
   if (transaction.send_response(conn_fd)) {
-    erase_front_transaction();
+    __erase_front_transaction();
   }
 }
 
@@ -64,7 +64,7 @@ bool Connection::receive_request(connFd conn_fd) {
 
 struct pollfd Connection::get_pollfd(connFd conn_fd) const {
   struct pollfd pfd = {conn_fd, 0, 0};
-  if (is_sending() && front_transaction().is_close()) {
+  if (is_sending() && __front_transaction().is_close()) {
     pfd.events = POLLOUT;
   } else if (is_sending()) {
     pfd.events = POLLIN | POLLOUT;
