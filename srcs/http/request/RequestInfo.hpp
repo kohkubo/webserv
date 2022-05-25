@@ -15,13 +15,12 @@ private:
 public:
   HttpMethod method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
-  std::string                        version_;
-  std::string                        host_;
-  std::string                        port_;
-  bool                               is_close_;
-  std::size_t                        content_length_;
-  // TODO: values_ CGIにわたす形式に合わせる。仮置でmap
-  std::map<std::string, std::string> values_;
+  std::string              version_;
+  std::string              host_;
+  std::string              port_;
+  bool                     is_close_;
+  std::size_t              content_length_;
+  std::vector<std::string> values_;
 
 public:
   RequestInfo()
@@ -54,6 +53,7 @@ private:
   void        __parse_request_host();
   void        __parse_request_connection();
   void        __parse_request_content_length();
+  void        __parse_request_values(const std::string &request_body);
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

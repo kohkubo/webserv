@@ -12,8 +12,7 @@ enum TransactionState {
   NO_REQUEST,       // Connectionはリクエストを持たない。
   RECEIVING_HEADER, // リクエストはheaderを読み取り中。
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
-  PENDING, // リクエストの読み取りは完了。レスポンスの生成待ち。
-  SENDING, // レスポンスの送信中。
+  SENDING,          // レスポンスの送信中。
   CLOSING,
 };
 
@@ -27,6 +26,9 @@ private:
   RequestInfo      __request_info_;
   const Config    *__conf_;
 
+private:
+  std::string __cut_buffer(std::string &request_buffer, std::size_t len);
+
 public:
   Transaction()
       : __transaction_state_(RECEIVING_HEADER)
@@ -39,19 +41,22 @@ public:
   void set_transaction_state(TransactionState state) {
     __transaction_state_ = state;
   }
-  bool   is_close() { return __request_info_.is_close_; }
-  size_t get_body_size() { return __request_info_.content_length_; }
-  bool   is_send_completed() {
+  bool   is_close() const { return __request_info_.is_close_; }
+  bool   is_sending() const { return __transaction_state_ == SENDING; }
+  size_t get_body_size() const { return __request_info_.content_length_; }
+  bool   is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
   // test用
   const Config *get_conf() { return __conf_; }
 
-  void          parse_header(const std::string &header);
-  void          detect_config(const confGroup &conf_group);
-  void          parse_body(const std::string &body);
-  void          create_response();
-  void          send_response(int socket_fd);
+  bool          handle_transaction_state(std::string     &request_buffer,
+                                         const confGroup &conf_group);
+  void parse_header(const std::string &header, const confGroup &conf_group);
+  void detect_config(const confGroup &conf_group);
+  void parse_body(const std::string &body);
+  void create_response();
+  void send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
