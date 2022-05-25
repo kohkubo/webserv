@@ -29,7 +29,8 @@ public:
 
 private:
   Response();
-  std::string __read_file_tostring_cgi(const std::string &path);
+  std::string __read_file_tostring_cgi(const std::string              &path,
+                                       const std::vector<std::string> &env);
 
   void        __set_status_phrase();
   void        __set_general_header();
@@ -47,6 +48,7 @@ private:
   void        __set_body();
 
   void        __get_method_handler() { __check_filepath_status(); }
+  void        __post_method_handler() { __check_filepath_status(); }
   void        __delete_target_file();
   void        __delete_method_handler() { __delete_target_file(); }
 };
