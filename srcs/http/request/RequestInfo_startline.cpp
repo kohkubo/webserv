@@ -9,7 +9,7 @@
 
 // リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
 bool RequestInfo::parse_request_startline(std::string &request_buffer) {
-  if (__is_first_line_ && starts_with(request_buffer, CRLF)) {
+  if (__is_first_line_ && has_prefix(request_buffer, CRLF)) {
     __cut_buffer(request_buffer, CRLF.size());
     __is_first_line_ = false;
   }

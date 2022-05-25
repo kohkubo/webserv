@@ -12,8 +12,8 @@ inline void error_log_with_errno(const std::string &msg) {
   std::cerr << msg << ": " << strerror(errno) << std::endl;
 }
 
-bool is_match_suffix_string(const std::string &str, const std::string &suffix);
-bool starts_with(const std::string &s, const std::string &prefix);
+bool        has_suffix(const std::string &str, const std::string &suffix);
+bool        has_prefix(const std::string &str, const std::string &prefix);
 std::string tolower(const std::string &str);
 
 template <typename T>
