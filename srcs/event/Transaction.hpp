@@ -28,6 +28,9 @@ private:
 
 private:
   std::string __cut_buffer(std::string &request_buffer, std::size_t len);
+  bool        __is_send_all() const {
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
+  }
 
 public:
   Transaction()
@@ -38,15 +41,9 @@ public:
   TransactionState get_transaction_state() const {
     return __transaction_state_;
   }
-  void set_transaction_state(TransactionState state) {
-    __transaction_state_ = state;
-  }
   bool   is_close() const { return __request_info_.is_close_; }
   bool   is_sending() const { return __transaction_state_ == SENDING; }
   size_t get_body_size() const { return __request_info_.content_length_; }
-  bool   is_send_all() const {
-    return __send_count_ == static_cast<ssize_t>(__response_.size());
-  }
   // test用
   const Config *get_conf() { return __conf_; }
 
@@ -56,7 +53,7 @@ public:
   void detect_config(const confGroup &conf_group);
   void parse_body(const std::string &body);
   void create_response();
-  void send_response(int socket_fd);
+  bool send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */

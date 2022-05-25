@@ -1,15 +1,9 @@
 #include "event/Server.hpp"
 
-#include <poll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
-
-#include <cstdlib>
 
 #include "event/Connection.hpp"
 #include "utils/syscall_wrapper.hpp"
-#include "utils/utils.hpp"
 
 void Server::__add_listenfd_to_pollfds() {
   std::map<listenFd, confGroup>::const_iterator it = __listen_fd_map_.begin();
@@ -36,35 +30,15 @@ void Server::__add_connfd_to_pollfds() {
 }
 
 void Server::__connection_receive_handler(connFd conn_fd) {
-  const int         buf_size = 2048;
-  std::vector<char> buf(buf_size);
-  ssize_t           rc = recv(conn_fd, &buf[0], buf_size, MSG_DONTWAIT);
-  switch (rc) {
-  case -1:
-    error_log_with_errno("recv() failed.");
-    break;
-  case 0:
+  bool is_close = __conn_fd_map_[conn_fd].receive_request(conn_fd);
+  if (is_close) {
     close(conn_fd);
     __conn_fd_map_.erase(conn_fd);
-    return;
-  default:
-    std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
-    __conn_fd_map_[conn_fd].create_transaction(recv_data);
-    break;
   }
 }
 
 void Server::__connection_send_handler(connFd conn_fd) {
-  Transaction &transaction = __conn_fd_map_[conn_fd].front_transaction();
-  transaction.send_response(conn_fd);
-  if (transaction.is_send_all()) {
-    if (transaction.is_close()) {
-      shutdown(conn_fd, SHUT_WR);
-      transaction.set_transaction_state(CLOSING);
-      return;
-    }
-    __conn_fd_map_[conn_fd].erase_front_transaction();
-  }
+  __conn_fd_map_[conn_fd].send_response(conn_fd);
 }
 
 void Server::__insert_connection_map(connFd conn_fd) {
