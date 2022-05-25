@@ -9,9 +9,22 @@
 RequestInfo::BadRequestException::BadRequestException(const std::string &msg)
     : logic_error(msg) {}
 
+std::string RequestInfo::__cut_buffer(std::string &buf, std::size_t len) {
+  std::string res = buf.substr(0, len);
+  buf             = buf.substr(len);
+  return res;
+}
+
 // 呼び出し元で例外をcatchする
-void RequestInfo::parse_request_header(const std::string &request_string) {
-  tokenVector   fields = tokenize(request_string, CRLF, CRLF);
+// リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
+bool RequestInfo::parse_request_header(std::string &request_buffer) {
+  std::size_t pos = request_buffer.find(HEADER_SP);
+  if (pos == std::string::npos) {
+    return false;
+  }
+  std::string request_header =
+      __cut_buffer(request_buffer, pos + HEADER_SP.size());
+  tokenVector   fields = tokenize(request_header, CRLF, CRLF);
   tokenIterator it     = fields.begin();
 
   __parse_request_line(*it++);
@@ -21,6 +34,7 @@ void RequestInfo::parse_request_header(const std::string &request_string) {
   __parse_request_host();
   __parse_request_connection();
   __parse_request_content_length();
+  return true;
 }
 
 // request-line = method SP request-target SP HTTP-version (CRLF)
