@@ -23,30 +23,6 @@ public:
   std::size_t              content_length_;
   std::vector<std::string> values_;
 
-public:
-  RequestInfo()
-      : __is_first_line_(true)
-      , method_(UNKNOWN)
-      , is_close_(false)
-      , content_length_(0) {}
-
-  class BadRequestException : public std::logic_error {
-  public:
-    BadRequestException(const std::string &msg = "Illegal request.");
-  };
-
-  bool parse_request_startline(std::string &request_buffer);
-  bool parse_request_header(std::string &request_buffer);
-  bool parse_request_body(std::string &request_buffer);
-
-  bool is_expected_body() const {
-    // TODO: chunked
-    return content_length_ != 0;
-  }
-  std::string &get_field_value(const std::string &field_name) {
-    return __field_map_[field_name];
-  }
-
 private:
   std::string __cut_buffer(std::string &buf, std::size_t len);
   void        __parse_request_line(const std::string &request_line);
@@ -59,6 +35,36 @@ private:
   void        __parse_request_connection();
   void        __parse_request_content_length();
   void        __parse_request_values(const std::string &request_body);
+
+public:
+  RequestInfo()
+      : __is_first_line_(true)
+      , method_(UNKNOWN)
+      , is_close_(false)
+      , content_length_(0) {}
+
+  class BadRequestException : public std::logic_error {
+  public:
+    BadRequestException(const std::string &msg = "Illegal request.");
+  };
+
+  bool        has_request_line(std::string &request_buffer);
+  std::string cut_request_line(std::string &request_buffer);
+  void        parse_request_request_line(std::string &request_buffer);
+
+  bool        has_header(std::string &request_buffer);
+  std::string cut_header(std::string &request_buffer);
+  bool        parse_request_header(const std::string &request_header);
+
+  bool        parse_request_body(std::string &request_buffer);
+
+  bool        is_expected_body() const {
+    // TODO: chunked
+    return content_length_ != 0;
+  }
+  std::string &get_field_value(const std::string &field_name) {
+    return __field_map_[field_name];
+  }
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

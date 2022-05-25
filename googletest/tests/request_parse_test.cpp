@@ -5,14 +5,14 @@
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_parse_test, normal) {
-  std::string str = "GET / HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:5001\r\n"
-                    "User-Agent: curl/7.68.0\r\n"
-                    "Connection: close\r\n"
-                    "Accept: */*\r\n\r\n";
+  std::string request_line = "GET / HTTP/1.1";
+  std::string str          = "Host: 127.0.0.1:5001\r\n"
+                             "User-Agent: curl/7.68.0\r\n"
+                             "Connection: close\r\n"
+                             "Accept: */*\r\n\r\n";
 
   RequestInfo info;
-  info.parse_request_startline(str);
+  info.parse_request_request_line(request_line);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, GET);
   EXPECT_EQ(info.uri_, "/");
@@ -25,14 +25,14 @@ TEST(request_parse_test, normal) {
 }
 
 TEST(request_parse_test, normal_delete) {
-  std::string str = "DELETE /delete_target.tmp HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:5001\r\n"
-                    "User-Agent: curl/7.68.0\r\n"
-                    "Connection: close\r\n"
-                    "Accept: */*\r\n\r\n";
+  std::string request_line = "DELETE /delete_target.tmp HTTP/1.1";
+  std::string str          = "Host: 127.0.0.1:5001\r\n"
+                             "User-Agent: curl/7.68.0\r\n"
+                             "Connection: close\r\n"
+                             "Accept: */*\r\n\r\n";
 
   RequestInfo info;
-  info.parse_request_startline(str);
+  info.parse_request_request_line(request_line);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, DELETE);
   EXPECT_EQ(info.uri_, "/delete_target.tmp");
@@ -45,16 +45,16 @@ TEST(request_parse_test, normal_delete) {
 }
 
 TEST(request_parse_test, normal_post) {
-  std::string str = "POST /target HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:5001\r\n"
-                    "User-Agent: curl/7.68.0\r\n"
-                    "Connection: close\r\n"
-                    "Accept: */*\r\n"
-                    "Content-Type: application/x-www-form-urlencoded\r\n"
-                    "Content-Length: 18\r\n\r\n";
+  std::string request_line = "POST /target HTTP/1.1";
+  std::string str          = "Host: 127.0.0.1:5001\r\n"
+                             "User-Agent: curl/7.68.0\r\n"
+                             "Connection: close\r\n"
+                             "Accept: */*\r\n"
+                             "Content-Type: application/x-www-form-urlencoded\r\n"
+                             "Content-Length: 18\r\n\r\n";
 
   RequestInfo info;
-  info.parse_request_startline(str);
+  info.parse_request_request_line(request_line);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, POST);
   EXPECT_EQ(info.uri_, "/target");
@@ -70,18 +70,18 @@ TEST(request_parse_test, normal_post) {
 }
 
 TEST(request_parse_test, query_body) {
-  std::string header = "POST /target HTTP/1.1\r\n"
-                       "Host: 127.0.0.1:5001\r\n"
-                       "Content-Type: application/x-www-form-urlencoded\r\n"
-                       "Content-Length: 45\r\n\r\n";
+  std::string request_line = "POST /target HTTP/1.1";
+  std::string header       = "Host: 127.0.0.1:5001\r\n"
+                             "Content-Type: application/x-www-form-urlencoded\r\n"
+                             "Content-Length: 45\r\n\r\n";
 
-  std::string body   = "I'm=going"
-                       "&to=become"
-                       "&the=king"
-                       "&of=the"
-                       "&pirates!!";
+  std::string body         = "I'm=going"
+                             "&to=become"
+                             "&the=king"
+                             "&of=the"
+                             "&pirates!!";
   RequestInfo info;
-  info.parse_request_startline(header);
+  info.parse_request_request_line(request_line);
   info.parse_request_header(header);
   info.parse_request_body(body);
   EXPECT_EQ(info.values_[0], "I'm=going");
@@ -93,17 +93,17 @@ TEST(request_parse_test, query_body) {
 }
 
 TEST(request_parse_test, query_body_capital) {
-  std::string header = "POST /target HTTP/1.1\r\n"
-                       "Host: 127.0.0.1:5001\r\n"
-                       "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
-                       "Content-Length: 38\r\n\r\n";
+  std::string request_line = "POST /target HTTP/1.1";
+  std::string header       = "Host: 127.0.0.1:5001\r\n"
+                             "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
+                             "Content-Length: 38\r\n\r\n";
 
-  std::string body   = "yabu=kara"
-                       "&stick="
-                       "&ishi=no"
-                       "&uenimo=3years";
+  std::string body         = "yabu=kara"
+                             "&stick="
+                             "&ishi=no"
+                             "&uenimo=3years";
   RequestInfo info;
-  info.parse_request_startline(header);
+  info.parse_request_request_line(request_line);
   info.parse_request_header(header);
   info.parse_request_body(body);
   EXPECT_EQ(info.values_[0], "yabu=kara");
@@ -113,8 +113,7 @@ TEST(request_parse_test, query_body_capital) {
 }
 
 TEST(request_parse_test, exception_field_name_space) {
-  std::string str = "GET / HTTP/1.1\r\n"
-                    "Host : 127.0.0.1:5001\r\n\r\n";
+  std::string str = "Host : 127.0.0.1:5001\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
@@ -122,8 +121,7 @@ TEST(request_parse_test, exception_field_name_space) {
 }
 
 TEST(request_parse_test, exception_field_name_tab) {
-  std::string str = "GET / HTTP/1.1\r\n"
-                    "Host\t: 127.0.0.1:5001\r\n\r\n";
+  std::string str = "Host\t: 127.0.0.1:5001\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),
@@ -131,8 +129,7 @@ TEST(request_parse_test, exception_field_name_tab) {
 }
 
 TEST(request_parse_test, exception_no_host) {
-  std::string str = "GET / HTTP/1.1\r\n"
-                    "Connection: close\r\n"
+  std::string str = "Connection: close\r\n"
                     "Accept: */*\r\n\r\n";
 
   RequestInfo info;
@@ -141,8 +138,7 @@ TEST(request_parse_test, exception_no_host) {
 }
 
 TEST(request_parse_test, exception_host_range) {
-  std::string str = "GET / HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:99999\r\n\r\n";
+  std::string str = "Host: 127.0.0.1:99999\r\n\r\n";
 
   RequestInfo info;
   EXPECT_THROW(info.parse_request_header(str),

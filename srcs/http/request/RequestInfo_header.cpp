@@ -6,24 +6,23 @@
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
-RequestInfo::BadRequestException::BadRequestException(const std::string &msg)
-    : logic_error(msg) {}
-
-std::string RequestInfo::__cut_buffer(std::string &buf, std::size_t len) {
-  std::string res = buf.substr(0, len);
-  buf             = buf.substr(len);
-  return res;
-}
-
-// 呼び出し元で例外をcatchする
-// リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
-bool RequestInfo::parse_request_header(std::string &request_buffer) {
+bool RequestInfo::has_header(std::string &request_buffer) {
   std::size_t pos = request_buffer.find(HEADER_SP);
   if (pos == std::string::npos) {
     return false;
   }
-  std::string request_header =
-      __cut_buffer(request_buffer, pos + HEADER_SP.size());
+  return true;
+}
+
+std::string RequestInfo::cut_header(std::string &request_buffer) {
+  std::size_t pos = request_buffer.find(HEADER_SP);
+  return __cut_buffer(request_buffer, pos + HEADER_SP.size());
+}
+
+// 呼び出し元で例外をcatchする
+// リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
+bool RequestInfo::parse_request_header(const std::string &request_header) {
+
   tokenVector fields = tokenize(request_header, CRLF, CRLF);
   __create_header_map(fields.begin(), fields.end());
   // call each field's parser
@@ -56,22 +55,6 @@ void RequestInfo::__create_header_map(tokenIterator it, tokenIterator end) {
       __field_map_[field_name] = field_value;
     }
   }
-}
-
-bool RequestInfo::__is_comma_sparated(std::string &field_name) {
-  (void)field_name;
-  // カンマ区切りが定義されたフィールドか判定する。
-  // tmp
-  return false;
-}
-
-std::string RequestInfo::__trim_optional_whitespace(std::string str) {
-  str.erase(0, str.find_first_not_of(" \t"));
-  std::size_t pos = str.find_last_not_of(" \t");
-  if (pos != std::string::npos) {
-    str.erase(pos + 1);
-  }
-  return str;
 }
 
 // TODO: hostとportで分ける必要あるか確認

@@ -43,15 +43,20 @@ bool Transaction::handle_transaction_state(std::string     &request_buffer,
 }
 
 void Transaction::parse_startline(std::string &buf) {
-  if (__request_info_.parse_request_startline(buf)) {
-    __transaction_state_ = RECEIVING_HEADER;
+  if (!__request_info_.has_request_line(buf)) {
+    return;
   }
+  std::string request_line = __request_info_.cut_request_line(buf);
+  __request_info_.parse_request_request_line(request_line);
+  __transaction_state_ = RECEIVING_HEADER;
 }
 
 void Transaction::parse_header(std::string &buf, const confGroup &conf_group) {
-  if (!__request_info_.parse_request_header(buf)) {
+  if (!__request_info_.has_header(buf)) {
     return;
   }
+  std::string request_header = __request_info_.cut_header(buf);
+  __request_info_.parse_request_header(request_header);
   detect_config(conf_group);
   if (__request_info_.is_expected_body()) {
     __transaction_state_ = RECEIVING_BODY;
