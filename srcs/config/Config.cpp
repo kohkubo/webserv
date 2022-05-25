@@ -9,7 +9,7 @@
 #include <iostream>
 #include <map>
 
-#include "config/config_parser_utils.hpp"
+#include "utils/utils.hpp"
 
 Config::UnexpectedTokenException::UnexpectedTokenException(
     const std::string &msg)
@@ -50,7 +50,7 @@ Config &Config::operator=(const Config &other) {
 
 Config::~Config() { freeaddrinfo(addrinfo_); }
 
-tokenIterator Config::parse(tokenIterator pos, tokenIterator end) {
+tokenIterator Config::__parse(tokenIterator pos, tokenIterator end) {
   pos++;
   if (*pos++ != "{")
     throw UnexpectedTokenException("server directive does not have context.");

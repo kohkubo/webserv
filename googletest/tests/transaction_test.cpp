@@ -1,16 +1,13 @@
 #include "gtest/gtest.h"
 
 #include "config/Config.hpp"
-#include "config/create_listen_fd_map.hpp"
+#include "config/ConfGroupMapGenerator.hpp"
 #include "event/Transaction.hpp"
 
 TEST(transaction_test, detect_properconf) {
-  serverList server_list = read_config("tdata/transaction_test.conf");
-  confGroup  conf_group;
-  for (serverList::iterator it = server_list.begin(); it != server_list.end();
-       it++) {
-    conf_group.push_back(&(*it));
-  }
+  ConfGroupMapGenerator conf_group_map_generator("tdata/transaction_test.conf");
+  std::map<listenFd, confGroup> conf_group_map = conf_group_map_generator.generate();
+  confGroup  conf_group = conf_group_map.begin()->second;
 
   std::string apple_req  = "GET / HTTP/1.1\r\n"
                            "Host: apple.com\r\n"
@@ -24,7 +21,6 @@ TEST(transaction_test, detect_properconf) {
   std::string peach_req  = "GET / HTTP/1.1\r\n"
                            "Host: peach.com\r\n"
                            "\r\n";
-
   {
     Transaction t;
     t.parse_header(apple_req, conf_group);
@@ -48,5 +44,10 @@ TEST(transaction_test, detect_properconf) {
     t.parse_header(peach_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "apple.com");
+  }
+  // close all sockets
+  std::map<listenFd, confGroup>::iterator it;
+  for (it = conf_group_map.begin(); it != conf_group_map.end(); it++) {
+    close(it->first);
   }
 }
