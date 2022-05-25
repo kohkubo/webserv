@@ -36,7 +36,6 @@ public:
   ~Connection() {}
 
   struct pollfd create_pollfd(connFd conn_fd) const;
-
   void          send_response(connFd conn_fd);
   bool          receive_request(connFd conn_fd);
 };
