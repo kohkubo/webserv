@@ -1,5 +1,6 @@
 #include "event/Connection.hpp"
 
+#include <poll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -59,4 +60,16 @@ bool Connection::receive_request(connFd conn_fd) {
   std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
   create_transaction(recv_data);
   return false;
+}
+
+struct pollfd Connection::pollfd(connFd conn_fd) const {
+  struct pollfd pfd = {conn_fd, 0, 0};
+  if (is_sending() && front_transaction().is_close()) {
+    pfd.events = POLLOUT;
+  } else if (is_sending()) {
+    pfd.events = POLLIN | POLLOUT;
+  } else {
+    pfd.events = POLLIN;
+  }
+  return pfd;
 }

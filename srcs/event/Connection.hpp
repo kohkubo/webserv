@@ -1,6 +1,8 @@
 #ifndef SRCS_EVENT_CONNECTION_HPP
 #define SRCS_EVENT_CONNECTION_HPP
 
+#include <poll.h>
+
 #include <deque>
 #include <string>
 #include <vector>
@@ -27,7 +29,8 @@ public:
       : __conf_group_(conf_group) {}
   ~Connection() {}
 
-  Transaction &front_transaction() { return __transaction_queue_.front(); }
+  struct pollfd pollfd(connFd conn_fd) const;
+  Transaction  &front_transaction() { return __transaction_queue_.front(); }
   const Transaction &front_transaction() const {
     return __transaction_queue_.front();
   }
