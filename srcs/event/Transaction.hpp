@@ -27,7 +27,7 @@ private:
   const Config    *__conf_;
 
 private:
-  void __set_response_for_bad_request();
+  void        __set_response_for_bad_request();
   std::string __cut_buffer(std::string &request_buffer, std::size_t len);
   bool        __is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
@@ -51,7 +51,7 @@ public:
   void          parse_body(std::string &buf);
   void          detect_config(const confGroup &conf_group);
   void          create_response();
-  void          send_response(int socket_fd);
+  bool          send_response(int socket_fd);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
