@@ -127,9 +127,38 @@ void Response::__set_error_page_body() {
   }
 }
 
+#include <dirent.h>
+#include <iostream>
+#include <vector>
+static std::string list_dir(const std::string &file_path) {
+  DIR                     *dir;
+  struct dirent           *diread;
+  std::vector<std::string> files;
+
+  if ((dir = opendir(file_path.c_str())) != nullptr) {
+    while ((diread = readdir(dir)) != nullptr) {
+      files.push_back(diread->d_name);
+    }
+    closedir(dir);
+  } else {
+    perror("opendir");
+    exit(EXIT_FAILURE);
+  }
+
+  std::string                        ret;
+  std::vector<std::string>::iterator it = files.begin();
+  for (; it != files.end(); it++) {
+    ret += " " + *it;
+  }
+
+  return ret;
+}
+
 void Response::__set_body() {
   if (is_match_suffix_string(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
+  } else if (__file_path_ == "./html/test_post") {
+    __body_ = list_dir(__file_path_);
   } else {
     __body_ = read_file_tostring(__file_path_);
   }
