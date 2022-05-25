@@ -12,6 +12,7 @@ TEST(request_parse_test, normal) {
                     "Accept: */*\r\n\r\n";
 
   RequestInfo info;
+  info.parse_request_startline(str);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, GET);
   EXPECT_EQ(info.uri_, "/");
@@ -31,6 +32,7 @@ TEST(request_parse_test, normal_delete) {
                     "Accept: */*\r\n\r\n";
 
   RequestInfo info;
+  info.parse_request_startline(str);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, DELETE);
   EXPECT_EQ(info.uri_, "/delete_target.tmp");
@@ -52,6 +54,7 @@ TEST(request_parse_test, normal_post) {
                     "Content-Length: 18\r\n\r\n";
 
   RequestInfo info;
+  info.parse_request_startline(str);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, POST);
   EXPECT_EQ(info.uri_, "/target");
@@ -78,6 +81,7 @@ TEST(request_parse_test, query_body) {
                        "&of=the"
                        "&pirates!!";
   RequestInfo info;
+  info.parse_request_startline(header);
   info.parse_request_header(header);
   info.parse_request_body(body);
   EXPECT_EQ(info.values_[0], "I'm=going");
@@ -99,30 +103,13 @@ TEST(request_parse_test, query_body_capital) {
                        "&ishi=no"
                        "&uenimo=3years";
   RequestInfo info;
+  info.parse_request_startline(header);
   info.parse_request_header(header);
   info.parse_request_body(body);
   EXPECT_EQ(info.values_[0], "yabu=kara");
   EXPECT_EQ(info.values_[1], "stick=");
   EXPECT_EQ(info.values_[2], "ishi=no");
   EXPECT_EQ(info.values_[3], "uenimo=3years");
-}
-
-TEST(request_parse_test, exception_request_line_few_field) {
-  std::string str = "GET HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:5001\r\n\r\n";
-
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_header(str),
-               RequestInfo::BadRequestException);
-}
-
-TEST(request_parse_test, exception_request_line_no_space) {
-  std::string str = "GET/HTTP/1.1\r\n"
-                    "Host: 127.0.0.1:5001\r\n\r\n";
-
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_header(str),
-               RequestInfo::BadRequestException);
 }
 
 TEST(request_parse_test, exception_field_name_space) {
