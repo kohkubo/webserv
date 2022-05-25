@@ -14,7 +14,7 @@ import (
 func main() {
 	tests.TestGET()
 	//tests.TestPOST()
-	//tests.TestDELETE()
+	tests.TestDELETE()
 	tests.TestIOMULT()
 
 	if tests.CountTestFail != 0 {

@@ -15,7 +15,7 @@ func TestDELETE() {
 	testHandler("simple", func() (bool, error) {
 		// setup file to delete
 		deleteFilePath := "tmp/delete.txt"
-		deleteFileRelativePath := "../" + deleteFilePath
+		deleteFileRelativePath := "../html/" + deleteFilePath
 		if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
 			return false, err
 		}
@@ -42,6 +42,7 @@ func TestDELETE() {
 		_, err := os.Stat(deleteFileRelativePath)
 		switch {
 		case errors.Is(err, os.ErrNotExist): // file does not exit
+			os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 			return true, nil
 		case err != nil:
 			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // error
