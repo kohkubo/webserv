@@ -79,9 +79,19 @@ void Transaction::create_response() {
   __transaction_state_ = SENDING;
 }
 
-void Transaction::send_response(int socket_fd) {
+// 送信が完了かつtransactionを保持する必要がないときtrueを返す。
+bool Transaction::send_response(int socket_fd) {
   const char *rest_str   = __response_.c_str() + __send_count_;
   size_t      rest_count = __response_.size() - __send_count_;
   ssize_t     sc         = send(socket_fd, rest_str, rest_count, MSG_DONTWAIT);
   __send_count_ += sc;
+  if (!__is_send_all()) {
+    return false;
+  }
+  if (is_close()) {
+    shutdown(socket_fd, SHUT_WR);
+    __transaction_state_ = CLOSING;
+    return false;
+  }
+  return true;
 }
