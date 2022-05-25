@@ -18,10 +18,15 @@ bool is_file_exists(const std::string &path) {
     std::cout << "error: is_file_exists: " << path << std::endl;
     return false; // TODO: エラーを呼び出し元に通知
   }
-  if ((file_info.st_mode & S_IFMT) == S_IFREG)
+  // TODO: 実行可能か確認する？
+  switch ((file_info.st_mode & S_IFMT)) {
+  case S_IFREG:
     return true;
-  else
+  case S_IFDIR:
+    return true;
+  default:
     return false;
+  }
 }
 
 std::string read_file_tostring(const std::string &path) {
