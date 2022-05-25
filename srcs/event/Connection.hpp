@@ -26,6 +26,7 @@ private:
   const Transaction &__front_transaction() const {
     return __transaction_queue_.front();
   }
+  void __create_transaction(const std::string &data);
   void __erase_front_transaction() { __transaction_queue_.pop_front(); }
 
 public:
@@ -36,8 +37,6 @@ public:
 
   struct pollfd create_pollfd(connFd conn_fd) const;
 
-  bool          is_sending() const;
-  void          create_transaction(const std::string &data);
   void          send_response(connFd conn_fd);
   bool          receive_request(connFd conn_fd);
 };

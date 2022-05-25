@@ -17,13 +17,7 @@ Transaction &Connection::__get_last_transaction() {
   return __transaction_queue_.back();
 }
 
-bool Connection::is_sending() const {
-  if (__transaction_queue_.empty())
-    return false;
-  return __front_transaction().is_sending();
-}
-
-void Connection::create_transaction(const std::string &data) {
+void Connection::__create_transaction(const std::string &data) {
   __buffer_.append(data);
   while (1) {
     Transaction &transaction = __get_last_transaction();
@@ -58,18 +52,19 @@ bool Connection::receive_request(connFd conn_fd) {
     return true;
   }
   std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
-  create_transaction(recv_data);
+  __create_transaction(recv_data);
   return false;
 }
 
 struct pollfd Connection::create_pollfd(connFd conn_fd) const {
-  struct pollfd pfd = {conn_fd, 0, 0};
-  if (is_sending() && __front_transaction().is_close()) {
+  struct pollfd pfd = {conn_fd, POLLIN, 0};
+  if (__transaction_queue_.empty()) {
+    return pfd;
+  }
+  if (__front_transaction().is_sending() && __front_transaction().is_close()) {
     pfd.events = POLLOUT;
-  } else if (is_sending()) {
+  } else if (__front_transaction().is_sending()) {
     pfd.events = POLLIN | POLLOUT;
-  } else {
-    pfd.events = POLLIN;
   }
   return pfd;
 }
