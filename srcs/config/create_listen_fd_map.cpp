@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "config/Config.hpp"
+#include "config/SocketOpener.hpp"
 
 static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
   struct sockaddr_in *x, *y;
@@ -38,6 +39,7 @@ static bool is_include_same_server_name(const Config &conf,
 }
 
 std::map<listenFd, confGroup> create_socket_map(const serverList &server_list) {
+  SocketOpener                  open_socket;
   std::map<listenFd, confGroup> listen_fd_map;
   serverList::const_iterator    sl_it = server_list.begin();
   for (; sl_it != server_list.end(); sl_it++) {
@@ -50,9 +52,9 @@ std::map<listenFd, confGroup> create_socket_map(const serverList &server_list) {
       }
       it->second.push_back(&(*sl_it));
     } else {
-      int new_socket = open_new_socket(*sl_it);
-      listen_fd_map.insert(std::make_pair(new_socket, confGroup()));
-      listen_fd_map[new_socket].push_back(&(*sl_it));
+      listenFd listen_fd = open_socket(sl_it->addrinfo_);
+      listen_fd_map.insert(std::make_pair(listen_fd, confGroup()));
+      listen_fd_map[listen_fd].push_back(&(*sl_it));
     }
   }
   return listen_fd_map;
