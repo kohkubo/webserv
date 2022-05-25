@@ -38,9 +38,6 @@ public:
       , __send_count_(0)
       , __conf_(NULL) {}
 
-  TransactionState get_transaction_state() const {
-    return __transaction_state_;
-  }
   bool   is_close() const { return __request_info_.is_close_; }
   bool   is_sending() const { return __transaction_state_ == SENDING; }
   size_t get_body_size() const { return __request_info_.content_length_; }
