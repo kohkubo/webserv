@@ -65,7 +65,7 @@ func TestDELETE() {
 			},
 			ExpectStatusCode: http.StatusNotFound,
 			ExpectHeader:     nil,
-			ExpectBody:       NOT_FOUND,
+			ExpectBody:       content_404,
 		})
 		return clientA.Test(), nil
 	})
