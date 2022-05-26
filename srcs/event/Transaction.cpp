@@ -24,7 +24,11 @@ bool Transaction::parse_single_request(std::string     &request_buffer,
     __parse_single_line(request_buffer, conf_group);
   }
   if (state == RECEIVING_BODY) {
-    parse_body(request_buffer);
+    if (__request_info_.is_chunked()) {
+      __parse_single_line(request_buffer, conf_group);
+    } else {
+      parse_body(request_buffer);
+    }
   }
   if (!is_sending())
     return false;
@@ -35,7 +39,7 @@ bool Transaction::parse_single_request(std::string     &request_buffer,
 
 void Transaction::__parse_single_line(std::string     &request_buffer,
                                       const confGroup &conf_group) {
-  while (__check_line(request_buffer)) {
+  while (__check_line(request_buffer) && __transaction_state_ != SENDING) {
     std::string line = __getline_from_buffer(request_buffer);
     switch (__transaction_state_) {
     case RECEIVING_STARTLINE:
@@ -44,6 +48,8 @@ void Transaction::__parse_single_line(std::string     &request_buffer,
     case RECEIVING_HEADER:
       parse_header(line, conf_group);
       break;
+    case RECEIVING_BODY:
+      parse_chunked_body(line);
     default:
       break;
     }
@@ -87,19 +93,26 @@ void Transaction::parse_header(std::string     &header_line,
   }
 }
 
-void Transaction::parse_body(std::string &request_buffer) {
-  if (__request_info_.is_chunked()) {
-    // parse_chunked_body();
-  } else {
-    if (__request_info_.has_request_body(request_buffer)) {
-    }
-    std::string request_body = __request_info_.cut_request_body(request_buffer);
-    try {
-      __request_info_.parse_request_body(request_body);
+void Transaction::parse_chunked_body(std::string &body_line) {
+  try {
+    if (__request_info_.parse_request_chunked_body(body_line)) {
       create_response();
-    } catch (const RequestInfo::BadRequestException &e) {
-      __set_response_for_bad_request();
     }
+  } catch (const RequestInfo::BadRequestException &e) {
+    __set_response_for_bad_request();
+  }
+}
+
+void Transaction::parse_body(std::string &request_buffer) {
+  if (!__request_info_.has_request_body(request_buffer)) {
+    return;
+  }
+  std::string request_body = __request_info_.cut_request_body(request_buffer);
+  try {
+    __request_info_.parse_request_body(request_body);
+    create_response();
+  } catch (const RequestInfo::BadRequestException &e) {
+    __set_response_for_bad_request();
   }
 }
 

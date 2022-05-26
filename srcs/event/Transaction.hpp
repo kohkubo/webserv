@@ -57,6 +57,7 @@ public:
   void          parse_start_line(std::string &buf);
   void          parse_header(std::string &buf, const confGroup &conf_group);
   void          parse_body(std::string &buf);
+  void          parse_chunked_body(std::string &request_buffer);
   void          detect_config(const confGroup &conf_group);
   void          create_response();
   bool          send_response(int socket_fd);

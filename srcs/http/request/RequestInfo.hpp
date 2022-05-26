@@ -57,6 +57,7 @@ public:
   bool         has_request_body(const std::string &request_buffer);
   std::string  cut_request_body(std::string &request_buffer);
   void         parse_request_body(std::string &request_body);
+  bool         parse_request_chunked_body(std::string &body_line);
 
   bool         has_body() const { return is_chunked_ || content_length_ != 0; }
   bool         is_chunked() const { return is_chunked_; }
