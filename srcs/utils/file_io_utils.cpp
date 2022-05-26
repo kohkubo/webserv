@@ -51,19 +51,14 @@ bool is_dir(const std::string &path) {
 // TODO: リファクタ
 // TODO: エラー処理
 std::string read_dir_tostring(const std::string &file_path) {
-  DIR                     *dir;
+  DIR                     *dir = opendir(file_path.c_str());
   struct dirent           *diread;
   std::vector<std::string> files;
 
-  if ((dir = opendir(file_path.c_str())) != nullptr) {
-    while ((diread = readdir(dir)) != nullptr) {
-      files.push_back(diread->d_name);
-    }
-    closedir(dir);
-  } else {
-    perror("opendir");
-    exit(EXIT_FAILURE);
+  while ((diread = readdir(dir)) != nullptr) {
+    files.push_back(diread->d_name);
   }
+  closedir(dir);
 
   std::string                        ret;
   std::vector<std::string>::iterator it = files.begin();
