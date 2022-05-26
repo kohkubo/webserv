@@ -27,7 +27,6 @@ std::string RequestInfo::cut_request_line(std::string &request_buffer) {
 }
 
 // request-line = method SP request-target SP HTTP-version (CRLF)
-// リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
 void RequestInfo::parse_request_start_line(const std::string &request_line) {
   std::size_t first_sp = request_line.find_first_of(' ');
   std::size_t last_sp  = request_line.find_last_of(' ');

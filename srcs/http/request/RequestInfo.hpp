@@ -54,11 +54,11 @@ public:
 
   bool        has_request_header(const std::string &request_buffer);
   std::string cut_request_header(std::string &request_buffer);
-  bool        parse_request_header(const std::string &request_header);
+  void        parse_request_header(const std::string &request_header);
 
   bool        has_request_body(const std::string &request_buffer);
   std::string cut_request_body(std::string &request_buffer);
-  bool        parse_request_body(std::string &request_body);
+  void        parse_request_body(std::string &request_body);
 
   bool        is_expected_body() const {
     // TODO: chunked

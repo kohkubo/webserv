@@ -21,15 +21,13 @@ std::string RequestInfo::cut_request_header(std::string &request_buffer) {
 
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
-bool RequestInfo::parse_request_header(const std::string &request_header) {
-
+void RequestInfo::parse_request_header(const std::string &request_header) {
   tokenVector fields = tokenize(request_header, CRLF, CRLF);
   __create_header_map(fields.begin(), fields.end());
   // call each field's parser
   __parse_request_host();
   __parse_request_connection();
   __parse_request_content_length();
-  return true;
 }
 
 void RequestInfo::__create_header_map(tokenIterator it, tokenIterator end) {
