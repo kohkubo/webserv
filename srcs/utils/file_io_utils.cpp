@@ -1,5 +1,6 @@
 #include "utils/file_io_utils.hpp"
 
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -8,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "utils/utils.hpp"
 
@@ -44,6 +46,32 @@ bool is_dir(const std::string &path) {
   default:
     return false;
   }
+}
+
+// TODO: リファクタ
+// TODO: エラー処理
+std::string read_dir_tostring(const std::string &file_path) {
+  DIR                     *dir;
+  struct dirent           *diread;
+  std::vector<std::string> files;
+
+  if ((dir = opendir(file_path.c_str())) != nullptr) {
+    while ((diread = readdir(dir)) != nullptr) {
+      files.push_back(diread->d_name);
+    }
+    closedir(dir);
+  } else {
+    perror("opendir");
+    exit(EXIT_FAILURE);
+  }
+
+  std::string                        ret;
+  std::vector<std::string>::iterator it = files.begin();
+  for (; it != files.end(); it++) {
+    ret += " " + *it;
+  }
+
+  return ret;
 }
 
 std::string read_file_tostring(const std::string &path) {
