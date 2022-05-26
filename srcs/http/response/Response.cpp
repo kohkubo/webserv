@@ -130,10 +130,14 @@ void Response::__set_error_page_body() {
 void Response::__set_body() {
   if (is_match_suffix_string(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
-  } else if (__config_.autoindex_ && is_dir(__file_path_)) {
-    // TODO: index.htmlがあるかどうかの確認
-    // TODO: directoryでautoindex offの時の処理
-    __body_ = read_dir_tostring(__file_path_);
+  } else if (is_dir(__file_path_)) {
+    if (__config_.autoindex_) {
+      // TODO: index.htmlがあるかどうかの確認
+      __body_ = read_dir_tostring(__file_path_);
+    } else {
+      // TODO: 適切なエラーページ
+      __body_ = "not dir";
+    }
   } else {
     __body_ = read_file_tostring(__file_path_);
   }
