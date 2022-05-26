@@ -89,20 +89,25 @@ TEST(request_parse_test, normal_post) {
 }
 
 TEST(request_parse_test, query_body) {
-  std::string request_line = "POST /target HTTP/1.1";
-  std::string header       = "Host: 127.0.0.1:5001\r\n"
-                             "Content-Type: application/x-www-form-urlencoded\r\n"
-                             "Content-Length: 45\r\n\r\n";
+  std::string request = "POST /target HTTP/1.1\r\n"
+                        "Host: 127.0.0.1:5001\r\n"
+                        "Content-Type: application/x-www-form-urlencoded\r\n"
+                        "Content-Length: 45\r\n\r\n"
+                        "I'm=going"
+                        "&to=become"
+                        "&the=king"
+                        "&of=the"
+                        "&pirates!!";
 
-  std::string body         = "I'm=going"
-                             "&to=become"
-                             "&the=king"
-                             "&of=the"
-                             "&pirates!!";
-  RequestInfo info;
-  info.parse_request_start_line(request_line);
-  info.parse_request_header(header);
-  info.parse_request_body(body);
+  Transaction t;
+  // tmp
+  confGroup   dummy_group;
+  Config      dummy_conf = Config();
+  dummy_group.push_back(&dummy_conf);
+
+  t.parse_single_request(request, dummy_group);
+  RequestInfo &info = t.get_request_info();
+
   EXPECT_EQ(info.values_[0], "I'm=going");
   EXPECT_EQ(info.values_[1], "to=become");
   EXPECT_EQ(info.values_[2], "the=king");
@@ -112,54 +117,26 @@ TEST(request_parse_test, query_body) {
 }
 
 TEST(request_parse_test, query_body_capital) {
-  std::string request_line = "POST /target HTTP/1.1";
-  std::string header       = "Host: 127.0.0.1:5001\r\n"
-                             "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
-                             "Content-Length: 38\r\n\r\n";
+  std::string request = "POST /target HTTP/1.1\r\n"
+                        "Host: 127.0.0.1:5001\r\n"
+                        "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
+                        "Content-Length: 38\r\n\r\n"
+                        "yabu=kara"
+                        "&stick="
+                        "&ishi=no"
+                        "&uenimo=3years";
 
-  std::string body         = "yabu=kara"
-                             "&stick="
-                             "&ishi=no"
-                             "&uenimo=3years";
-  RequestInfo info;
-  info.parse_request_start_line(request_line);
-  info.parse_request_header(header);
-  info.parse_request_body(body);
+  Transaction t;
+  // tmp
+  confGroup   dummy_group;
+  Config      dummy_conf = Config();
+  dummy_group.push_back(&dummy_conf);
+
+  t.parse_single_request(request, dummy_group);
+  RequestInfo &info = t.get_request_info();
+
   EXPECT_EQ(info.values_[0], "yabu=kara");
   EXPECT_EQ(info.values_[1], "stick=");
   EXPECT_EQ(info.values_[2], "ishi=no");
   EXPECT_EQ(info.values_[3], "uenimo=3years");
-}
-
-TEST(request_parse_test, exception_field_name_space) {
-  std::string str = "Host : 127.0.0.1:5001\r\n\r\n";
-
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_header(str),
-               RequestInfo::BadRequestException);
-}
-
-TEST(request_parse_test, exception_field_name_tab) {
-  std::string str = "Host\t: 127.0.0.1:5001\r\n\r\n";
-
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_header(str),
-               RequestInfo::BadRequestException);
-}
-
-TEST(request_parse_test, exception_no_host) {
-  std::string str = "Connection: close\r\n"
-                    "Accept: */*\r\n\r\n";
-
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_header(str),
-               RequestInfo::BadRequestException);
-}
-
-TEST(request_parse_test, exception_host_range) {
-  std::string str = "Host: 127.0.0.1:99999\r\n\r\n";
-
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_header(str),
-               RequestInfo::BadRequestException);
 }
