@@ -22,7 +22,7 @@ void Connection::__create_transaction(const std::string &data) {
   while (1) {
     Transaction &transaction = __get_last_transaction();
     bool         is_continue =
-        transaction.handle_transaction_state(__buffer_, __conf_group_);
+        transaction.parse_single_request(__buffer_, __conf_group_);
     if (is_continue) {
       __transaction_queue_.push_back(Transaction());
       continue;

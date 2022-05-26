@@ -27,7 +27,7 @@ private:
   std::string __cut_buffer(std::string &buf, std::size_t len);
   void        __parse_request_line(const std::string &request_line);
   HttpMethod  __parse_request_method(const std::string &method);
-  void        __create_header_map(tokenIterator it, tokenIterator end);
+  void        __add_header_field(const std::string &header_line);
   bool        __is_comma_sparated(std::string &field_name);
   std::string __trim_optional_whitespace(std::string str);
   size_t      __get_body_size() const { return content_length_; }
@@ -48,13 +48,9 @@ public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
 
-  bool        has_request_line(std::string &request_buffer);
-  std::string cut_request_line(std::string &request_buffer);
-  void        parse_request_start_line(const std::string &request_line);
+  bool        parse_request_start_line(const std::string &request_line);
 
-  bool        has_request_header(const std::string &request_buffer);
-  std::string cut_request_header(std::string &request_buffer);
-  void        parse_request_header(const std::string &request_header);
+  bool        parse_request_header(const std::string &header_line);
 
   bool        has_request_body(const std::string &request_buffer);
   std::string cut_request_body(std::string &request_buffer);

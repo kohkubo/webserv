@@ -1,13 +1,14 @@
 #include "gtest/gtest.h"
 
-#include "config/Config.hpp"
 #include "config/ConfGroupMapGenerator.hpp"
+#include "config/Config.hpp"
 #include "event/Transaction.hpp"
 
 TEST(transaction_test, detect_properconf) {
   ConfGroupMapGenerator conf_group_map_generator("tdata/transaction_test.conf");
-  std::map<listenFd, confGroup> conf_group_map = conf_group_map_generator.generate();
-  confGroup  conf_group = conf_group_map.begin()->second;
+  std::map<listenFd, confGroup> conf_group_map =
+      conf_group_map_generator.generate();
+  confGroup   conf_group = conf_group_map.begin()->second;
 
   std::string apple_req  = "GET / HTTP/1.1\r\n"
                            "Host: apple.com\r\n"
@@ -23,30 +24,25 @@ TEST(transaction_test, detect_properconf) {
                            "\r\n";
   {
     Transaction t;
-    t.parse_startline(apple_req);
-    t.parse_header(apple_req, conf_group);
+    t.parse_single_request(apple_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "apple.com");
   }
   {
     Transaction t;
-    t.parse_startline(orange_req);
-
-    t.parse_header(orange_req, conf_group);
+    t.parse_single_request(orange_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "orange.net");
   }
   {
     Transaction t;
-    t.parse_startline(banana_req);
-    t.parse_header(banana_req, conf_group);
+    t.parse_single_request(banana_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "banana.com");
   }
   {
     Transaction t;
-    t.parse_startline(peach_req);
-    t.parse_header(peach_req, conf_group);
+    t.parse_single_request(peach_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "apple.com");
   }
