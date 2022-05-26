@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 
+#include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
 // TODO: dirctoryについては別処理にする
@@ -48,10 +49,9 @@ bool is_dir(const std::string &path) {
   }
 }
 
-// TODO: リファクタ
-// TODO: エラー処理
+// TODO: htmlに変換する
 std::string read_dir_tostring(const std::string &file_path) {
-  DIR                     *dir = opendir(file_path.c_str());
+  DIR                     *dir = xopendir(file_path.c_str());
   struct dirent           *diread;
   std::vector<std::string> files;
 
