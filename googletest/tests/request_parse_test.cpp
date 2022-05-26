@@ -2,70 +2,89 @@
 
 #include <string>
 
+#include "event/Transaction.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_parse_test, normal) {
-  std::string request_line = "GET / HTTP/1.1";
-  std::string str          = "Host: 127.0.0.1:5001\r\n"
-                             "User-Agent: curl/7.68.0\r\n"
-                             "Connection: close\r\n"
-                             "Accept: */*\r\n\r\n";
+  std::string request = "GET / HTTP/1.1\r\n"
+                        "Host: 127.0.0.1:5001\r\n"
+                        "User-Agent: curl/7.68.0\r\n"
+                        "Connection: close\r\n"
+                        "Accept: */*\r\n\r\n";
 
-  RequestInfo info;
-  info.parse_request_start_line(request_line);
-  info.parse_request_header(str);
-  EXPECT_EQ(info.method_, GET);
-  EXPECT_EQ(info.uri_, "/");
-  EXPECT_EQ(info.version_, "HTTP/1.1");
-  EXPECT_EQ(info.host_, "127.0.0.1");
-  EXPECT_EQ(info.port_, "5001");
-  EXPECT_EQ(info.is_close_, true);
-  EXPECT_EQ(info.get_field_value("User-Agent"), "curl/7.68.0");
-  EXPECT_EQ(info.get_field_value("Accept"), "*/*");
+  Transaction t;
+  // tmp
+  confGroup   dummy_group;
+  Config      dummy_conf = Config();
+  dummy_group.push_back(&dummy_conf);
+
+  t.parse_single_request(request, dummy_group);
+  RequestInfo &r = t.get_request_info();
+
+  EXPECT_EQ(r.method_, GET);
+  EXPECT_EQ(r.uri_, "/");
+  EXPECT_EQ(r.version_, "HTTP/1.1");
+  EXPECT_EQ(r.host_, "127.0.0.1");
+  EXPECT_EQ(r.port_, "5001");
+  EXPECT_EQ(r.is_close_, true);
+  EXPECT_EQ(r.get_field_value("User-Agent"), "curl/7.68.0");
+  EXPECT_EQ(r.get_field_value("Accept"), "*/*");
 }
 
 TEST(request_parse_test, normal_delete) {
-  std::string request_line = "DELETE /delete_target.tmp HTTP/1.1";
-  std::string str          = "Host: 127.0.0.1:5001\r\n"
-                             "User-Agent: curl/7.68.0\r\n"
-                             "Connection: close\r\n"
-                             "Accept: */*\r\n\r\n";
+  std::string request = "DELETE /delete_target.tmp HTTP/1.1\r\n"
+                        "Host: 127.0.0.1:5001\r\n"
+                        "User-Agent: curl/7.68.0\r\n"
+                        "Connection: close\r\n"
+                        "Accept: */*\r\n\r\n";
 
-  RequestInfo info;
-  info.parse_request_start_line(request_line);
-  info.parse_request_header(str);
-  EXPECT_EQ(info.method_, DELETE);
-  EXPECT_EQ(info.uri_, "/delete_target.tmp");
-  EXPECT_EQ(info.version_, "HTTP/1.1");
-  EXPECT_EQ(info.host_, "127.0.0.1");
-  EXPECT_EQ(info.port_, "5001");
-  EXPECT_EQ(info.is_close_, true);
-  EXPECT_EQ(info.get_field_value("User-Agent"), "curl/7.68.0");
-  EXPECT_EQ(info.get_field_value("Accept"), "*/*");
+  Transaction t;
+  // tmp
+  confGroup   dummy_group;
+  Config      dummy_conf = Config();
+  dummy_group.push_back(&dummy_conf);
+
+  t.parse_single_request(request, dummy_group);
+  RequestInfo &r = t.get_request_info();
+
+  EXPECT_EQ(r.method_, DELETE);
+  EXPECT_EQ(r.uri_, "/delete_target.tmp");
+  EXPECT_EQ(r.version_, "HTTP/1.1");
+  EXPECT_EQ(r.host_, "127.0.0.1");
+  EXPECT_EQ(r.port_, "5001");
+  EXPECT_EQ(r.is_close_, true);
+  EXPECT_EQ(r.get_field_value("User-Agent"), "curl/7.68.0");
+  EXPECT_EQ(r.get_field_value("Accept"), "*/*");
 }
 
 TEST(request_parse_test, normal_post) {
-  std::string request_line = "POST /target HTTP/1.1";
-  std::string str          = "Host: 127.0.0.1:5001\r\n"
-                             "User-Agent: curl/7.68.0\r\n"
-                             "Connection: close\r\n"
-                             "Accept: */*\r\n"
-                             "Content-Type: application/x-www-form-urlencoded\r\n"
-                             "Content-Length: 18\r\n\r\n";
+  std::string request = "POST /target HTTP/1.1\r\n"
+                        "Host: 127.0.0.1:5001\r\n"
+                        "User-Agent: curl/7.68.0\r\n"
+                        "Connection: close\r\n"
+                        "Accept: */*\r\n"
+                        "Content-Type: application/x-www-form-urlencoded\r\n"
+                        "Content-Length: 18\r\n\r\n";
 
-  RequestInfo info;
-  info.parse_request_start_line(request_line);
-  info.parse_request_header(str);
-  EXPECT_EQ(info.method_, POST);
-  EXPECT_EQ(info.uri_, "/target");
-  EXPECT_EQ(info.version_, "HTTP/1.1");
-  EXPECT_EQ(info.host_, "127.0.0.1");
-  EXPECT_EQ(info.port_, "5001");
-  EXPECT_EQ(info.is_close_, true);
-  EXPECT_EQ(info.content_length_, 18);
-  EXPECT_EQ(info.get_field_value("User-Agent"), "curl/7.68.0");
-  EXPECT_EQ(info.get_field_value("Accept"), "*/*");
-  EXPECT_EQ(info.get_field_value("Content-Type"),
+  Transaction t;
+  // tmp
+  confGroup   dummy_group;
+  Config      dummy_conf = Config();
+  dummy_group.push_back(&dummy_conf);
+
+  t.parse_single_request(request, dummy_group);
+  RequestInfo &r = t.get_request_info();
+
+  EXPECT_EQ(r.method_, POST);
+  EXPECT_EQ(r.uri_, "/target");
+  EXPECT_EQ(r.version_, "HTTP/1.1");
+  EXPECT_EQ(r.host_, "127.0.0.1");
+  EXPECT_EQ(r.port_, "5001");
+  EXPECT_EQ(r.is_close_, true);
+  EXPECT_EQ(r.content_length_, 18);
+  EXPECT_EQ(r.get_field_value("User-Agent"), "curl/7.68.0");
+  EXPECT_EQ(r.get_field_value("Accept"), "*/*");
+  EXPECT_EQ(r.get_field_value("Content-Type"),
             "application/x-www-form-urlencoded");
 }
 
