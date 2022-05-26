@@ -157,7 +157,9 @@ static std::string list_dir(const std::string &file_path) {
 void Response::__set_body() {
   if (is_match_suffix_string(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
-  } else if (__file_path_ == "./html/test_post") {
+  } else if (__config_.autoindex_ && is_dir(__file_path_)) {
+    // TODO: index.htmlがあるかどうかの確認
+    // TODO: directoryでautoindex offの時の処理
     __body_ = list_dir(__file_path_);
   } else {
     __body_ = read_file_tostring(__file_path_);

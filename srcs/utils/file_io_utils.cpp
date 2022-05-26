@@ -11,6 +11,7 @@
 
 #include "utils/utils.hpp"
 
+// TODO: dirctoryについては別処理にする
 bool is_file_exists(const std::string &path) {
   struct stat file_info;
 
@@ -22,6 +23,22 @@ bool is_file_exists(const std::string &path) {
   switch ((file_info.st_mode & S_IFMT)) {
   case S_IFREG:
     return true;
+  case S_IFDIR:
+    return true;
+  default:
+    return false;
+  }
+}
+
+// TODO: is_file_existsと処理をまとめたい
+bool is_dir(const std::string &path) {
+  struct stat file_info;
+
+  if (stat(path.c_str(), &file_info) == -1) {
+    std::cout << "error: is_file_exists: " << path << std::endl;
+    return false; // TODO: エラーを呼び出し元に通知
+  }
+  switch ((file_info.st_mode & S_IFMT)) {
   case S_IFDIR:
     return true;
   default:
