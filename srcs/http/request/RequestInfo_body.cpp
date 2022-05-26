@@ -6,7 +6,6 @@
 #include "utils/utils.hpp"
 
 bool RequestInfo::has_request_body(const std::string &request_buffer) {
-  // TODO: chunkedのサイズ判定
   if (request_buffer.size() < __get_body_size()) {
     return false;
   }
@@ -17,7 +16,6 @@ std::string RequestInfo::cut_request_body(std::string &request_buffer) {
   return __cut_buffer(request_buffer, __get_body_size());
 }
 
-// TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも
 // TODO: content-typeの文法を確認する -> headerのパースで確認すべきかもしれない
 void RequestInfo::parse_request_body(std::string &request_body) {
   std::string ctype = tolower(__field_map_["Content-Type"].c_str());

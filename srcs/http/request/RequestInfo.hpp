@@ -16,6 +16,7 @@ private:
   std::map<std::string, std::string> __field_map_;
   NextLine                           __next_line_;
   std::size_t                        __next_chunk_size_;
+  std::string                        __unchunked_body_;
 
 public:
   HttpMethod method_;
