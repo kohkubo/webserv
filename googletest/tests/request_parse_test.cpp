@@ -12,7 +12,7 @@ TEST(request_parse_test, normal) {
                              "Accept: */*\r\n\r\n";
 
   RequestInfo info;
-  info.parse_request_request_line(request_line);
+  info.parse_request_start_line(request_line);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, GET);
   EXPECT_EQ(info.uri_, "/");
@@ -32,7 +32,7 @@ TEST(request_parse_test, normal_delete) {
                              "Accept: */*\r\n\r\n";
 
   RequestInfo info;
-  info.parse_request_request_line(request_line);
+  info.parse_request_start_line(request_line);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, DELETE);
   EXPECT_EQ(info.uri_, "/delete_target.tmp");
@@ -54,7 +54,7 @@ TEST(request_parse_test, normal_post) {
                              "Content-Length: 18\r\n\r\n";
 
   RequestInfo info;
-  info.parse_request_request_line(request_line);
+  info.parse_request_start_line(request_line);
   info.parse_request_header(str);
   EXPECT_EQ(info.method_, POST);
   EXPECT_EQ(info.uri_, "/target");
@@ -81,7 +81,7 @@ TEST(request_parse_test, query_body) {
                              "&of=the"
                              "&pirates!!";
   RequestInfo info;
-  info.parse_request_request_line(request_line);
+  info.parse_request_start_line(request_line);
   info.parse_request_header(header);
   info.parse_request_body(body);
   EXPECT_EQ(info.values_[0], "I'm=going");
@@ -103,7 +103,7 @@ TEST(request_parse_test, query_body_capital) {
                              "&ishi=no"
                              "&uenimo=3years";
   RequestInfo info;
-  info.parse_request_request_line(request_line);
+  info.parse_request_start_line(request_line);
   info.parse_request_header(header);
   info.parse_request_body(body);
   EXPECT_EQ(info.values_[0], "yabu=kara");

@@ -6,7 +6,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
-bool RequestInfo::has_header(std::string &request_buffer) {
+bool RequestInfo::has_request_header(const std::string &request_buffer) {
   std::size_t pos = request_buffer.find(HEADER_SP);
   if (pos == std::string::npos) {
     return false;
@@ -14,7 +14,7 @@ bool RequestInfo::has_header(std::string &request_buffer) {
   return true;
 }
 
-std::string RequestInfo::cut_header(std::string &request_buffer) {
+std::string RequestInfo::cut_request_header(std::string &request_buffer) {
   std::size_t pos = request_buffer.find(HEADER_SP);
   return __cut_buffer(request_buffer, pos + HEADER_SP.size());
 }

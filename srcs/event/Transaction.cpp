@@ -42,20 +42,22 @@ bool Transaction::handle_transaction_state(std::string     &request_buffer,
   return true;
 }
 
-void Transaction::parse_startline(std::string &buf) {
-  if (!__request_info_.has_request_line(buf)) {
+void Transaction::parse_startline(std::string &request_buffer) {
+  if (!__request_info_.has_request_line(request_buffer)) {
     return;
   }
-  std::string request_line = __request_info_.cut_request_line(buf);
-  __request_info_.parse_request_request_line(request_line);
+  std::string request_line = __request_info_.cut_request_line(request_buffer);
+  __request_info_.parse_request_start_line(request_line);
   __transaction_state_ = RECEIVING_HEADER;
 }
 
-void Transaction::parse_header(std::string &buf, const confGroup &conf_group) {
-  if (!__request_info_.has_header(buf)) {
+void Transaction::parse_header(std::string     &request_buffer,
+                               const confGroup &conf_group) {
+  if (!__request_info_.has_request_header(request_buffer)) {
     return;
   }
-  std::string request_header = __request_info_.cut_header(buf);
+  std::string request_header =
+      __request_info_.cut_request_header(request_buffer);
   __request_info_.parse_request_header(request_header);
   detect_config(conf_group);
   if (__request_info_.is_expected_body()) {
@@ -76,10 +78,13 @@ void Transaction::detect_config(const confGroup &conf_group) {
   __conf_ = conf_group[0];
 }
 
-void Transaction::parse_body(std::string &buf) {
-  if (__request_info_.parse_request_body(buf)) {
-    create_response();
+void Transaction::parse_body(std::string &request_buffer) {
+  if (!__request_info_.has_request_body(request_buffer)) {
+    return;
   }
+  std::string request_body = __request_info_.cut_request_body(request_buffer);
+  __request_info_.parse_request_body(request_body);
+  create_response();
 }
 
 void Transaction::create_response() {

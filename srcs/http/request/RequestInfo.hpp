@@ -50,13 +50,15 @@ public:
 
   bool        has_request_line(std::string &request_buffer);
   std::string cut_request_line(std::string &request_buffer);
-  void        parse_request_request_line(std::string &request_buffer);
+  void        parse_request_start_line(const std::string &request_line);
 
-  bool        has_header(std::string &request_buffer);
-  std::string cut_header(std::string &request_buffer);
+  bool        has_request_header(const std::string &request_buffer);
+  std::string cut_request_header(std::string &request_buffer);
   bool        parse_request_header(const std::string &request_header);
 
-  bool        parse_request_body(std::string &request_buffer);
+  bool        has_request_body(const std::string &request_buffer);
+  std::string cut_request_body(std::string &request_buffer);
+  bool        parse_request_body(std::string &request_body);
 
   bool        is_expected_body() const {
     // TODO: chunked
