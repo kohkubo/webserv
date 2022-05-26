@@ -14,8 +14,9 @@ func TestDELETE() {
 
 	testHandler("simple", func() (bool, error) {
 		// setup file to delete
-		deleteFilePath := "tmp/delete.txt"
-		deleteFileRelativePath := "../" + deleteFilePath
+		deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
+		rootRelativePath := "../html"                               // configで指定されているrootへの(integration_testからの)相対パス
+		deleteFileRelativePath := rootRelativePath + deleteFilePath // ターゲットURIへの相対パス
 		if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
 			return false, err
 		}
@@ -26,7 +27,7 @@ func TestDELETE() {
 		clientA := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
-				"DELETE /" + deleteFilePath + " HTTP/1.1\r\n",
+				"DELETE " + deleteFilePath + " HTTP/1.1\r\n",
 				"Host: localhost:5500\r\n",
 				"User-Agent: curl/7.79.1\r\n",
 				`Accept: */*` + "\r\n",
@@ -42,6 +43,7 @@ func TestDELETE() {
 		_, err := os.Stat(deleteFileRelativePath)
 		switch {
 		case errors.Is(err, os.ErrNotExist): // file does not exit
+			os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 			return true, nil
 		case err != nil:
 			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // error
