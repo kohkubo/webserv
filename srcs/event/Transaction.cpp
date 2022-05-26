@@ -16,15 +16,37 @@ void Transaction::__set_response_for_bad_request() {
   __request_info_.is_close_ = true;
 }
 
+std::string Transaction::__getline_from_buffer(std::string &buf) {
+  std::size_t pos = buf.find(CRLF);
+  std::string res = buf.substr(0, pos);
+  buf             = buf.substr(pos + CRLF.size());
+  return res;
+}
+
+void Transaction::__single_line_parser(std::string     &request_buffer,
+                                       const confGroup &conf_group) {
+  // 一行あるか、規定バイト超えていたら例外？
+  if (!__check_line(request_buffer)) {
+    return;
+  }
+  std::string line = __getline_from_buffer(request_buffer);
+  switch (__transaction_state_) {
+  case RECEIVING_STARTLINE:
+    break;
+  case RECEIVING_HEADER:
+    break;
+  default:
+    break;
+  }
+}
+
 bool Transaction::handle_transaction_state(std::string     &request_buffer,
                                            const confGroup &conf_group) {
   try {
     switch (__transaction_state_) {
     case RECEIVING_STARTLINE:
-      parse_startline(request_buffer);
-      break;
     case RECEIVING_HEADER:
-      parse_header(request_buffer, conf_group);
+      __single_line_parser(request_buffer, conf_group);
       break;
     case RECEIVING_BODY:
       parse_body(request_buffer);

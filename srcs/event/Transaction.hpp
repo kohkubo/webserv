@@ -33,6 +33,9 @@ private:
   bool        __is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
+  std::string __getline_from_buffer(std::string &buf);
+  void        __single_line_parser(std::string     &request_buffer,
+                                   const confGroup &conf_group);
 
 public:
   Transaction()
