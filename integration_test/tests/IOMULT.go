@@ -31,7 +31,7 @@ func TestIOMULT() {
 			},
 			ExpectStatusCode: http.StatusNotFound,
 			ExpectHeader:     nil,
-			ExpectBody:       NOT_FOUND,
+			ExpectBody:       content_404,
 		})
 		clientC := tester.NewClient(&tester.Client{
 			Port: "5001",
@@ -42,7 +42,7 @@ func TestIOMULT() {
 			},
 			ExpectStatusCode: http.StatusNotFound,
 			ExpectHeader:     nil,
-			ExpectBody:       NOT_FOUND,
+			ExpectBody:       content_404,
 		})
 
 		clientA.SendPartialRequest()
