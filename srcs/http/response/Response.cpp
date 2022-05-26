@@ -136,7 +136,7 @@ void Response::__set_body() {
       __body_ = read_dir_tostring(__file_path_);
     } else {
       // TODO: 適切なエラーページ
-      __body_ = "not dir";
+      __body_ = "autoindex off";
     }
   } else {
     __body_ = read_file_tostring(__file_path_);
