@@ -8,10 +8,14 @@
 #include "http/const/const_http_enums.hpp"
 #include "utils/tokenize.hpp"
 
+enum NextLine { CHUNK_SIZE, CHUNK_DATA };
+
 class RequestInfo {
 private:
   bool                               __is_first_line_;
   std::map<std::string, std::string> __field_map_;
+  NextLine                           __next_line_;
+  std::size_t                        __next_chunk_size_;
 
 public:
   HttpMethod method_;
@@ -40,6 +44,8 @@ private:
 public:
   RequestInfo()
       : __is_first_line_(true)
+      , __next_line_(CHUNK_SIZE)
+      , __next_chunk_size_(-1)
       , method_(UNKNOWN)
       , is_close_(false)
       , is_chunked_(false)
