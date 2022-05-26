@@ -23,8 +23,7 @@ bool Transaction::parse_single_request(std::string     &request_buffer,
   if (state == RECEIVING_STARTLINE || state == RECEIVING_HEADER) {
     __parse_single_line(request_buffer, conf_group);
   }
-  if (state == RECEIVING_BODY &&
-      __request_info_.has_request_body(request_buffer)) {
+  if (state == RECEIVING_BODY) {
     parse_body(request_buffer);
   }
   if (!is_sending())
@@ -77,7 +76,7 @@ void Transaction::parse_header(std::string     &header_line,
   try {
     if (__request_info_.parse_request_header(header_line)) {
       detect_config(conf_group);
-      if (__request_info_.is_expected_body()) {
+      if (__request_info_.has_body()) {
         __transaction_state_ = RECEIVING_BODY;
       } else {
         create_response();
@@ -89,12 +88,18 @@ void Transaction::parse_header(std::string     &header_line,
 }
 
 void Transaction::parse_body(std::string &request_buffer) {
-  std::string request_body = __request_info_.cut_request_body(request_buffer);
-  try {
-    __request_info_.parse_request_body(request_body);
-    create_response();
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
+  if (__request_info_.is_chunked()) {
+    // parse_chunked_body();
+  } else {
+    if (__request_info_.has_request_body(request_buffer)) {
+    }
+    std::string request_body = __request_info_.cut_request_body(request_buffer);
+    try {
+      __request_info_.parse_request_body(request_body);
+      create_response();
+    } catch (const RequestInfo::BadRequestException &e) {
+      __set_response_for_bad_request();
+    }
   }
 }
 

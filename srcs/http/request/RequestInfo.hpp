@@ -20,6 +20,7 @@ public:
   std::string              host_;
   std::string              port_;
   bool                     is_close_;
+  bool                     is_chunked_;
   std::size_t              content_length_;
   std::vector<std::string> values_;
 
@@ -41,6 +42,7 @@ public:
       : __is_first_line_(true)
       , method_(UNKNOWN)
       , is_close_(false)
+      , is_chunked_(false)
       , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
@@ -48,18 +50,16 @@ public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
 
-  bool        parse_request_start_line(const std::string &request_line);
+  bool         parse_request_start_line(const std::string &request_line);
 
-  bool        parse_request_header(const std::string &header_line);
+  bool         parse_request_header(const std::string &header_line);
 
-  bool        has_request_body(const std::string &request_buffer);
-  std::string cut_request_body(std::string &request_buffer);
-  void        parse_request_body(std::string &request_body);
+  bool         has_request_body(const std::string &request_buffer);
+  std::string  cut_request_body(std::string &request_buffer);
+  void         parse_request_body(std::string &request_body);
 
-  bool        is_expected_body() const {
-    // TODO: chunked
-    return content_length_ != 0;
-  }
+  bool         has_body() const { return is_chunked_ || content_length_ != 0; }
+  bool         is_chunked() const { return is_chunked_; }
   std::string &get_field_value(const std::string &field_name) {
     return __field_map_[field_name];
   }
