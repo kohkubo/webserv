@@ -44,6 +44,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   __resolve_uri();
+  __check_filepath_status();
   switch (__request_info_.method_) {
   // TODO:
   // methodの前処理をどこまで共通化するのか。一旦個別に実装して、最後リファクタで考えるのがよい。
@@ -71,9 +72,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 }
 
 void Response::__resolve_uri() {
-  if (__is_minus_depth()) {
-    __status_code_ = NOT_FOUND_404;
-  }
   // TODO: rootの末尾に/入ってるとき
   if (__request_info_.uri_ == "/") {
     __file_path_ = __config_.root_ + "/" + __config_.index_;
@@ -103,6 +101,9 @@ void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
   }
+  if (__is_minus_depth()) {
+    __status_code_ = NOT_FOUND_404;
+  }
   if (!is_file_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
     return;
@@ -111,6 +112,10 @@ void Response::__check_filepath_status() {
     // TODO: Permission error が 403なのか確かめてない
     __status_code_ = FORBIDDEN_403;
     return;
+  }
+  if (__request_info_.method_ == DELETE &&
+      __request_info_.content_length_ != 0) {
+    __status_code_ = BAD_REQUEST_400;
   }
   __status_code_ = OK_200;
 }
