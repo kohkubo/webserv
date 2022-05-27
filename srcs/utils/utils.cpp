@@ -5,7 +5,7 @@
 
 #include "utils/tokenize.hpp"
 
-bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
+bool has_suffix(const std::string &str, const std::string &suffix) {
   if (str.length() < suffix.length()) {
     return false;
   }
@@ -14,6 +14,13 @@ bool is_match_suffix_string(const std::string &str, const std::string &suffix) {
     return true;
   }
   return false;
+}
+
+bool has_prefix(const std::string &str, const std::string &prefix) {
+  std::string::size_type size = prefix.size();
+  if (str.size() < size)
+    return false;
+  return std::equal(prefix.begin(), prefix.end(), str.begin());
 }
 
 static char my_tolower(char ch) {
