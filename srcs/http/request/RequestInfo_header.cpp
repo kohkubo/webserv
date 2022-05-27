@@ -6,52 +6,40 @@
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
-bool RequestInfo::has_request_header(const std::string &request_buffer) {
-  std::size_t pos = request_buffer.find(HEADER_SP);
-  if (pos == std::string::npos) {
+// 呼び出し元で例外をcatchする
+// リクエストヘッダのパースが終了 true。エラー→例外
+bool RequestInfo::parse_request_header(const std::string &header_line) {
+  if (header_line != "") {
+    __add_header_field(header_line);
     return false;
   }
-  return true;
-}
-
-std::string RequestInfo::cut_request_header(std::string &request_buffer) {
-  std::size_t pos = request_buffer.find(HEADER_SP);
-  return __cut_buffer(request_buffer, pos + HEADER_SP.size());
-}
-
-// 呼び出し元で例外をcatchする
-// リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
-void RequestInfo::parse_request_header(const std::string &request_header) {
-  tokenVector fields = tokenize(request_header, CRLF, CRLF);
-  __create_header_map(fields.begin(), fields.end());
   // call each field's parser
   __parse_request_host();
   __parse_request_connection();
   __parse_request_content_length();
+  return true;
 }
 
-void RequestInfo::__create_header_map(tokenIterator it, tokenIterator end) {
-  for (; it != end; it++) {
-    std::string line = *it;
-    std::size_t pos  = line.find(':');
-    if (pos == std::string::npos) {
-      throw BadRequestException();
-    }
-    std::string field_name = line.substr(0, pos);
-    char        last_char  = field_name[field_name.size() - 1];
-    if (last_char == ' ' || last_char == '\t') {
-      throw BadRequestException();
-    }
-    std::string field_value = __trim_optional_whitespace(line.substr(pos + 1));
-    if (__field_map_.count(field_name)) {
-      if (__is_comma_sparated(field_name)) {
-        __field_map_[field_name] += ", " + field_value;
-      } else {
-        throw BadRequestException();
-      }
+void RequestInfo::__add_header_field(const std::string &header_line) {
+  std::size_t pos = header_line.find(':');
+  if (pos == std::string::npos) {
+    throw BadRequestException();
+  }
+  std::string field_name = header_line.substr(0, pos);
+  char        last_char  = field_name[field_name.size() - 1];
+  if (last_char == ' ' || last_char == '\t') {
+    throw BadRequestException();
+  }
+  std::string field_value =
+      __trim_optional_whitespace(header_line.substr(pos + 1));
+  if (__field_map_.count(field_name)) {
+    if (__is_comma_sparated(field_name)) {
+      __field_map_[field_name] += ", " + field_value;
     } else {
-      __field_map_[field_name] = field_value;
+      throw BadRequestException();
     }
+  } else {
+    __field_map_[field_name] = field_value;
   }
 }
 

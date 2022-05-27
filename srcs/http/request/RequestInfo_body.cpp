@@ -7,14 +7,14 @@
 
 bool RequestInfo::has_request_body(const std::string &request_buffer) {
   // TODO: chunkedのサイズ判定
-  if (request_buffer.size() < __get_body_size()) {
+  if (request_buffer.size() < content_length_) {
     return false;
   }
   return true;
 }
 
 std::string RequestInfo::cut_request_body(std::string &request_buffer) {
-  return __cut_buffer(request_buffer, __get_body_size());
+  return __cut_buffer(request_buffer, content_length_);
 }
 
 // TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも

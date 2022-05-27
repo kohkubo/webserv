@@ -28,11 +28,18 @@ private:
   const Config    *__conf_;
 
 private:
+  std::string __getline_from_buffer(std::string &buf);
+  bool        __check_line(const std::string &request_buffer);
+  void        __parse_single_line(std::string     &request_buffer,
+                                  const confGroup &conf_group);
   void        __set_response_for_bad_request();
-  std::string __cut_buffer(std::string &request_buffer, std::size_t len);
   bool        __is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
+  void __parse_start_line(std::string &buf);
+  void __parse_header(std::string &buf, const confGroup &conf_group);
+  void __parse_body(std::string &buf);
+  void __detect_config(const confGroup &conf_group);
 
 public:
   Transaction()
@@ -40,19 +47,15 @@ public:
       , __send_count_(0)
       , __conf_(NULL) {}
 
-  bool   is_close() const { return __request_info_.is_close_; }
-  bool   is_sending() const { return __transaction_state_ == SENDING; }
-  size_t get_body_size() const { return __request_info_.content_length_; }
+  const RequestInfo &get_request_info() const { return __request_info_; }
+  TransactionState   get_transaction_state() const {
+    return __transaction_state_;
+  }
   // test用
   const Config *get_conf() { return __conf_; }
-
-  bool          handle_transaction_state(std::string     &request_buffer,
-                                         const confGroup &conf_group);
-  void          parse_startline(std::string &buf);
-  void          parse_header(std::string &buf, const confGroup &conf_group);
-  void          parse_body(std::string &buf);
-  void          detect_config(const confGroup &conf_group);
   void          create_response();
+  bool          parse_single_request(std::string     &request_buffer,
+                                     const confGroup &conf_group);
   bool          send_response(int socket_fd);
 };
 

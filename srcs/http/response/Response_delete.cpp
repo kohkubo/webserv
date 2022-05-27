@@ -14,7 +14,7 @@ void Response::__delete_target_file() {
   if (__status_code_ != NONE) {
     return;
   }
-  if (__request_info_.is_expected_body()) {
+  if (__request_info_.content_length_ != 0) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
     __status_code_ = BAD_REQUEST_400;
     return;

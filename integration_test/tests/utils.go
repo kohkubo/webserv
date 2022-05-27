@@ -10,7 +10,16 @@ import (
 var (
 	CountTestFail uint
 	HELLO_WORLD   = fileToBytes("../html/index.html")
-	NOT_FOUND     = fileToBytes("../html/not_found.html")
+	content_404   = []byte(`<!DOCTYPE html>
+<html>
+    <head>
+        <title>404</title>
+    </head>
+    <body>
+<h2>404 Not Found</h2>
+default error page
+    </body>
+</html>`)
 )
 
 // for color print
