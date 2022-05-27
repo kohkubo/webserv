@@ -74,19 +74,15 @@ void Response::__resolve_uri() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
   }
-  // NOTE: rootは末尾が"/"ではないことが前提
+  // rootは末尾が"/"ではないことが前提
   __file_path_ = __config_.root_ + __request_info_.uri_;
-  std::cout << "root:" << __config_.root_ << std::endl;
-  std::cout << "uri:" << __request_info_.uri_ << std::endl;
-  // NOTE: 末尾が"/"でないとディレクトリと認識しない, 挙動としてはnginxもそう
+  // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
   if (has_suffix(__file_path_, "/") &&
       is_file_exists(__file_path_ + __config_.index_)) {
-    // NOTE: index追記パスが存在すれば採用, autoindexは無視される
-    //       index追記パスが存在しなければディレクトリのままで後のautoindexの処理に入る
+    // NOTE: indexを追記したパスが存在すれば採用, autoindexは無視される
+    //       存在しなければディレクトリのままで, 後のautoindexの処理に入る
     __file_path_ += __config_.index_;
   }
-  std::cout << "index:" << __config_.index_ << std::endl;
-  std::cout << "filepath:" << __file_path_ << std::endl;
 }
 
 bool Response::__is_minus_depth() {
@@ -111,7 +107,7 @@ void Response::__check_filepath_status() {
     return;
   }
   // TODO: POSTはディレクトリの時どう処理するのか
-  // TODO: 別関数にするか整理する
+  // TODO: 以下は別関数にするか整理する
   if (has_suffix(__file_path_, "/")) {
     if (is_dir_exists(__file_path_)) {
       if (!__config_.autoindex_) {
