@@ -124,7 +124,7 @@ bool Transaction::send_response(int socket_fd) {
   if (!__is_send_all()) {
     return false;
   }
-  if (is_close()) {
+  if (__request_info_.is_close_) {
     shutdown(socket_fd, SHUT_WR);
     __transaction_state_ = CLOSING;
     return false;

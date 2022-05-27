@@ -62,6 +62,7 @@ struct pollfd Connection::create_pollfd(connFd conn_fd) const {
     return pfd;
   }
   if (__front_transaction().get_transaction_state() == SENDING &&
+      __front_transaction().get_request_info().is_close_) {
     pfd.events = POLLOUT;
   } else if (__front_transaction().get_transaction_state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
