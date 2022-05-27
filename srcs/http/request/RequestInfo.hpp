@@ -30,7 +30,6 @@ private:
   void        __add_header_field(const std::string &header_line);
   bool        __is_comma_sparated(std::string &field_name);
   std::string __trim_optional_whitespace(std::string str);
-  size_t      __get_body_size() const { return content_length_; }
   void        __parse_request_host();
   void        __parse_request_connection();
   void        __parse_request_content_length();
