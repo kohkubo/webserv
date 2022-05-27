@@ -54,11 +54,6 @@ public:
   bool        has_request_body(const std::string &request_buffer);
   std::string cut_request_body(std::string &request_buffer);
   void        parse_request_body(std::string &request_body);
-
-  bool        is_expected_body() const {
-    // TODO: chunked
-    return content_length_ != 0;
-  }
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

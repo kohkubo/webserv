@@ -77,7 +77,7 @@ void Transaction::parse_header(std::string     &header_line,
   try {
     if (__request_info_.parse_request_header(header_line)) {
       detect_config(conf_group);
-      if (__request_info_.is_expected_body()) {
+      if (__request_info_.content_length_ != 0) {
         __transaction_state_ = RECEIVING_BODY;
       } else {
         create_response();
