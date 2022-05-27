@@ -236,6 +236,32 @@ TEST(server_config_test, parse_vector_directive) {
   }
 }
 
+TEST(server_config_test, parse_location_directive) {
+  {
+    std::string str = "server {\n"
+                      "location / {\n"
+                      "root /var/www;\n"
+                      "limit_except GET POST;\n"
+                      "}\n"
+                      "location /dir1 {\n"
+                      "root /var/www;\n"
+                      "limit_except GET POST;\n"
+                      "}\n"
+                      "}\n";
+    tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    Config      config(l.begin(), l.end());
+    EXPECT_EQ(config.locations_.size(), 2);
+    EXPECT_EQ(config.locations_[0].limit_except_.size(), 2);
+    EXPECT_EQ(config.locations_[0].limit_except_[0], "GET");
+    EXPECT_EQ(config.locations_[0].limit_except_[1], "POST");
+    EXPECT_EQ(config.locations_[1].limit_except_.size(), 2);
+    EXPECT_EQ(config.locations_[1].limit_except_[0], "GET");
+    EXPECT_EQ(config.locations_[1].limit_except_[1], "POST");
+  }
+}
+
+
+
 TEST(server_config_test, socket_list_test) {
   ConfGroupMapGenerator         config_map_generator(SAMPLE_CONF);
   std::map<listenFd, confGroup> conf_group_map =
