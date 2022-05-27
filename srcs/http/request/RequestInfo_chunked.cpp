@@ -23,6 +23,7 @@
 
 #include <sstream>
 
+// TODO: validate
 static std::size_t hexstr_to_size(const std::string &str) {
   std::size_t       x;
   std::stringstream ss;
@@ -31,6 +32,7 @@ static std::size_t hexstr_to_size(const std::string &str) {
   return x;
 }
 
+// TODO: trailer field の読み込み
 // chunkedの受信が完了したときtrueを返す。
 bool RequestInfo::parse_request_chunked_body(std::string &body_line) {
   switch (__next_line_) {
