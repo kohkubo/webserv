@@ -79,8 +79,8 @@ void Response::__resolve_uri() {
   // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
   if (has_suffix(__file_path_, "/") &&
       is_file_exists(__file_path_ + __config_.index_)) {
-    // NOTE: indexを追記したパスが存在すれば採用, autoindexは無視される
-    //       存在しなければディレクトリのままで, 後のautoindexの処理に入る
+    // indexを追記したパスが存在すれば採用, autoindexは無視される
+    // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
     __file_path_ += __config_.index_;
   }
 }

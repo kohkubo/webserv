@@ -21,11 +21,10 @@ bool is_file_exists(const std::string &path) {
     std::cout << "error: is_file_exists: " << path << std::endl;
     return false;
   }
-  if ((file_info.st_mode & S_IFMT) == S_IFREG) {
+  if ((file_info.st_mode & S_IFMT) == S_IFREG)
     return true;
-  } else {
+  else
     return false;
-  }
 }
 
 // 末尾が"/"でなくてもディレクトリとして扱われることに注意
@@ -43,12 +42,15 @@ bool is_dir_exists(const std::string &path) {
   }
 }
 
+// directory内のファイル・ディレクトリ名をstringに格納して返す
 // TODO: htmlに変換する
 std::string read_dir_tostring(const std::string &file_path) {
   DIR                     *dir = xopendir(file_path.c_str());
   struct dirent           *diread;
   std::vector<std::string> files;
 
+  // xopendir()が成功している時点でdirは有効なものなので
+  // 他のシステムコールはエラーを起こさないことが前提の実装
   while ((diread = readdir(dir)) != NULL) {
     files.push_back(diread->d_name);
   }
