@@ -22,7 +22,7 @@ private:
 
 private:
   Transaction &__get_last_transaction();
-  void         __create_transaction(const std::string &data);
+  void         __create_transaction();
 
 public:
   Connection() {}

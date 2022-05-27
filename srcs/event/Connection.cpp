@@ -14,19 +14,22 @@
 Transaction &Connection::__get_last_transaction() {
   if (__transaction_queue_.empty()) {
     // TODO: この分岐 必要?? kohkubo
+    // TODO: この中で生成のは__get_last_transactionという名前からずれている。
     __transaction_queue_.push_back(Transaction());
   }
   return __transaction_queue_.back();
 }
 
-void Connection::__create_transaction(const std::string &data) {
-  __buffer_.append(data);
+// TODO: 関数名を適切に変更したほうがよい?
+// transactionを作る以上のことをしている。
+void Connection::__create_transaction() {
   while (1) {
     Transaction &transaction = __get_last_transaction();
     // ここ何しているの??
     // リクエストのパース
     bool is_continue = transaction.handle_request(__buffer_, __conf_group_);
     if (is_continue) {
+      // TODO: continueのときに新たにTransactionを生成するのはなぜか? kohkubo
       __transaction_queue_.push_back(Transaction());
       continue;
     } else {
@@ -48,10 +51,11 @@ bool Connection::receive_request(connFd conn_fd) {
     return true;
   }
   std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
+  __buffer_.append(recv_data);
   // TODO:
   // conn_fdを__create_transactionに渡して、transactionが内部でconn_fdを持ったほうが良さそう?
   // kohkubo
-  __create_transaction(recv_data);
+  __create_transaction();
   return false;
 }
 
