@@ -15,7 +15,8 @@ TEST(request_parse_test, normal) {
   Transaction t;
   // tmp
   confGroup   dummy_group;
-  Config      dummy_conf = Config();
+  Config      dummy_conf;
+  dummy_conf.locations_.push_back(Location());
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
@@ -39,7 +40,8 @@ TEST(request_parse_test, normal_delete) {
   Transaction t;
   // tmp
   confGroup   dummy_group;
-  Config      dummy_conf = Config();
+  Config      dummy_conf;
+  dummy_conf.locations_.push_back(Location());
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
@@ -65,7 +67,8 @@ TEST(request_parse_test, normal_post) {
   Transaction t;
   // tmp
   confGroup   dummy_group;
-  Config      dummy_conf = Config();
+  Config      dummy_conf;
+  dummy_conf.locations_.push_back(Location());
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
@@ -94,7 +97,8 @@ TEST(request_parse_test, query_body) {
   Transaction t;
   // tmp
   confGroup   dummy_group;
-  Config      dummy_conf = Config();
+  Config      dummy_conf;
+  dummy_conf.locations_.push_back(Location());
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
@@ -121,7 +125,8 @@ TEST(request_parse_test, query_body_capital) {
   Transaction t;
   // tmp
   confGroup   dummy_group;
-  Config      dummy_conf = Config();
+  Config      dummy_conf;
+  dummy_conf.locations_.push_back(Location());
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);

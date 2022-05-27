@@ -76,9 +76,10 @@ void Response::__resolve_uri() {
   }
   // TODO: rootの末尾に/入ってるとき
   if (__request_info_.uri_ == "/") {
-    __file_path_ = __config_.root_ + "/" + __config_.index_;
+    __file_path_ =
+        __config_.locations_[0].root_ + "/" + __config_.locations_[0].index_;
   } else {
-    __file_path_ = __config_.root_ + __request_info_.uri_;
+    __file_path_ = __config_.locations_[0].root_ + __request_info_.uri_;
   }
 }
 
@@ -120,7 +121,7 @@ void Response::__set_error_page_body() {
   std::map<int, std::string>::const_iterator it =
       __config_.error_pages_.find(__status_code_);
   if (it != __config_.error_pages_.end()) {
-    __file_path_ = __config_.root_ + "/" + it->second;
+    __file_path_ = __config_.locations_[0].root_ + "/" + it->second;
     __body_      = read_file_tostring(__file_path_);
   } else {
     __body_ = g_error_page_contents_map[__status_code_];
