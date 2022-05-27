@@ -18,7 +18,7 @@ TEST(request_parse_test, normal) {
   Config      dummy_conf = Config();
   dummy_group.push_back(&dummy_conf);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request, dummy_group);
   const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, GET);
@@ -42,7 +42,7 @@ TEST(request_parse_test, normal_delete) {
   Config      dummy_conf = Config();
   dummy_group.push_back(&dummy_conf);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request, dummy_group);
   const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, DELETE);
@@ -68,7 +68,7 @@ TEST(request_parse_test, normal_post) {
   Config      dummy_conf = Config();
   dummy_group.push_back(&dummy_conf);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request, dummy_group);
   const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, POST);
@@ -97,7 +97,7 @@ TEST(request_parse_test, query_body) {
   Config      dummy_conf = Config();
   dummy_group.push_back(&dummy_conf);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request, dummy_group);
   const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.values_[0], "I'm=going");
@@ -124,7 +124,7 @@ TEST(request_parse_test, query_body_capital) {
   Config      dummy_conf = Config();
   dummy_group.push_back(&dummy_conf);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request, dummy_group);
   const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.values_[0], "yabu=kara");

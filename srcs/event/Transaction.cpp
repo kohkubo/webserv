@@ -17,15 +17,41 @@ void Transaction::__set_response_for_bad_request() {
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-bool Transaction::parse_single_request(std::string     &request_buffer,
-                                       const confGroup &conf_group) {
-  if (__transaction_state_ == RECEIVING_STARTLINE ||
-      __transaction_state_ == RECEIVING_HEADER) {
-    __parse_single_line(request_buffer, conf_group);
-  }
-  if (__transaction_state_ == RECEIVING_BODY &&
-      __request_info_.has_request_body(request_buffer)) {
-    __parse_body(request_buffer);
+bool Transaction::handle_request(std::string     &request_buffer,
+                                 const confGroup &conf_group) {
+  try {
+    if (__transaction_state_ == RECEIVING_STARTLINE ||
+        __transaction_state_ == RECEIVING_HEADER) {
+      while (__check_line(request_buffer)) {
+        std::string line = __getline_from_buffer(request_buffer);
+        if (__transaction_state_ == RECEIVING_STARTLINE) {
+          if (__request_info_.parse_request_start_line(line)) {
+            __transaction_state_ = RECEIVING_HEADER;
+          }
+        } else if (__transaction_state_ == RECEIVING_HEADER) {
+          if (__request_info_.parse_request_header(line)) {
+            __detect_config(conf_group);
+            if (__request_info_.content_length_ != 0) {
+              __transaction_state_ = RECEIVING_BODY;
+            } else {
+              create_response();
+              __transaction_state_ = SENDING;
+            }
+          }
+        }
+      }
+    }
+    if (__transaction_state_ == RECEIVING_BODY &&
+        __request_info_.has_request_body(request_buffer)) {
+      std::string request_body =
+          __request_info_.cut_request_body(request_buffer);
+
+      __request_info_.parse_request_body(request_body);
+      create_response();
+      __transaction_state_ = SENDING;
+    }
+  } catch (const RequestInfo::BadRequestException &e) {
+    __set_response_for_bad_request();
   }
   if (__transaction_state_ != SENDING)
     return false;
@@ -34,21 +60,13 @@ bool Transaction::parse_single_request(std::string     &request_buffer,
   return true;
 }
 
-void Transaction::__parse_single_line(std::string     &request_buffer,
-                                      const confGroup &conf_group) {
-  while (__check_line(request_buffer)) {
-    std::string line = __getline_from_buffer(request_buffer);
-    switch (__transaction_state_) {
-    case RECEIVING_STARTLINE:
-      __parse_start_line(line);
-      break;
-    case RECEIVING_HEADER:
-      __parse_header(line, conf_group);
-      break;
-    default:
-      break;
-    }
-  }
+bool Transaction::__getline(std::string &request_buffer, std::string &line) {
+  std::size_t pos = request_buffer.find(CRLF);
+  if (pos == std::string::npos)
+    return false;
+  line = request_buffer.substr(0, pos);
+  request_buffer.erase(0, pos + 2);
+  return true;
 }
 
 bool Transaction::__check_line(const std::string &request_buffer) {
@@ -61,41 +79,6 @@ std::string Transaction::__getline_from_buffer(std::string &buf) {
   std::string res = buf.substr(0, pos);
   buf             = buf.substr(pos + CRLF.size());
   return res;
-}
-
-void Transaction::__parse_start_line(std::string &request_line) {
-  try {
-    if (__request_info_.parse_request_start_line(request_line))
-      __transaction_state_ = RECEIVING_HEADER;
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
-  }
-}
-
-void Transaction::__parse_header(std::string     &header_line,
-                                 const confGroup &conf_group) {
-  try {
-    if (__request_info_.parse_request_header(header_line)) {
-      __detect_config(conf_group);
-      if (__request_info_.content_length_ != 0) {
-        __transaction_state_ = RECEIVING_BODY;
-      } else {
-        create_response();
-      }
-    }
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
-  }
-}
-
-void Transaction::__parse_body(std::string &request_buffer) {
-  std::string request_body = __request_info_.cut_request_body(request_buffer);
-  try {
-    __request_info_.parse_request_body(request_body);
-    create_response();
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
-  }
 }
 
 void Transaction::__detect_config(const confGroup &conf_group) {
@@ -111,8 +94,7 @@ void Transaction::__detect_config(const confGroup &conf_group) {
 
 void Transaction::create_response() {
   Response response(*__conf_, __request_info_);
-  __response_          = response.get_response_string();
-  __transaction_state_ = SENDING;
+  __response_ = response.get_response_string();
 }
 
 // 送信が完了かつtransactionを保持する必要がないときtrueを返す。

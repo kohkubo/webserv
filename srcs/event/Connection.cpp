@@ -21,8 +21,9 @@ void Connection::__create_transaction(const std::string &data) {
   __buffer_.append(data);
   while (1) {
     Transaction &transaction = __get_last_transaction();
-    bool         is_continue =
-        transaction.parse_single_request(__buffer_, __conf_group_);
+    // ここ何しているの??
+    // リクエストのパース
+    bool is_continue = transaction.handle_request(__buffer_, __conf_group_);
     if (is_continue) {
       __transaction_queue_.push_back(Transaction());
       continue;

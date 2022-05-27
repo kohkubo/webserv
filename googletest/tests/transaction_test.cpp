@@ -24,25 +24,25 @@ TEST(transaction_test, detect_properconf) {
                            "\r\n";
   {
     Transaction t;
-    t.parse_single_request(apple_req, conf_group);
+    t.handle_request(apple_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "apple.com");
   }
   {
     Transaction t;
-    t.parse_single_request(orange_req, conf_group);
+    t.handle_request(orange_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "orange.net");
   }
   {
     Transaction t;
-    t.parse_single_request(banana_req, conf_group);
+    t.handle_request(banana_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "banana.com");
   }
   {
     Transaction t;
-    t.parse_single_request(peach_req, conf_group);
+    t.handle_request(peach_req, conf_group);
     const Config *conf = t.get_conf();
     EXPECT_EQ(conf->server_name_, "apple.com");
   }
