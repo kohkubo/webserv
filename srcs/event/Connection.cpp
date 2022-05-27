@@ -22,7 +22,7 @@ void Connection::__create_transaction(const std::string &data) {
   while (1) {
     Transaction &transaction = __get_last_transaction();
     bool         is_continue =
-        transaction.handle_transaction_state(__buffer_, __conf_group_);
+        transaction.parse_single_request(__buffer_, __conf_group_);
     if (is_continue) {
       __transaction_queue_.push_back(Transaction());
       continue;
@@ -61,9 +61,10 @@ struct pollfd Connection::create_pollfd(connFd conn_fd) const {
   if (__transaction_queue_.empty()) {
     return pfd;
   }
-  if (__front_transaction().is_sending() && __front_transaction().is_close()) {
+  if (__front_transaction().get_transaction_state() == SENDING &&
+      __front_transaction().get_request_info().is_close_) {
     pfd.events = POLLOUT;
-  } else if (__front_transaction().is_sending()) {
+  } else if (__front_transaction().get_transaction_state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;

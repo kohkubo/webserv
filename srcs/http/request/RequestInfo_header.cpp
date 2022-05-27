@@ -6,30 +6,13 @@
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
-RequestInfo::BadRequestException::BadRequestException(const std::string &msg)
-    : logic_error(msg) {}
-
-std::string RequestInfo::__cut_buffer(std::string &buf, std::size_t len) {
-  std::string res = buf.substr(0, len);
-  buf             = buf.substr(len);
-  return res;
-}
-
 // 呼び出し元で例外をcatchする
-// リクエストヘッダのパースに成功 true、失敗 false。エラー→例外
-bool RequestInfo::parse_request_header(std::string &request_buffer) {
-  std::size_t pos = request_buffer.find(HEADER_SP);
-  if (pos == std::string::npos) {
+// リクエストヘッダのパースが終了 true。エラー→例外
+bool RequestInfo::parse_request_header(const std::string &header_line) {
+  if (header_line != "") {
+    __add_header_field(header_line);
     return false;
   }
-  std::string request_header =
-      __cut_buffer(request_buffer, pos + HEADER_SP.size());
-  tokenVector   fields = tokenize(request_header, CRLF, CRLF);
-  tokenIterator it     = fields.begin();
-
-  __parse_request_line(*it++);
-  __create_header_map(it, fields.end());
-
   // call each field's parser
   __parse_request_host();
   __parse_request_connection();
@@ -37,71 +20,27 @@ bool RequestInfo::parse_request_header(std::string &request_buffer) {
   return true;
 }
 
-// request-line = method SP request-target SP HTTP-version (CRLF)
-void RequestInfo::__parse_request_line(const std::string &request_line) {
-  std::size_t first_sp = request_line.find_first_of(' ');
-  std::size_t last_sp  = request_line.find_last_of(' ');
-  if (first_sp == std::string::npos || first_sp == last_sp) {
+void RequestInfo::__add_header_field(const std::string &header_line) {
+  std::size_t pos = header_line.find(':');
+  if (pos == std::string::npos) {
     throw BadRequestException();
   }
-  std::string method_str = request_line.substr(0, first_sp);
-  method_                = __parse_request_method(method_str);
-  uri_     = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
-  version_ = request_line.substr(last_sp + 1);
-}
-
-HttpMethod RequestInfo::__parse_request_method(const std::string &method) {
-  if (method == "GET") {
-    return GET;
+  std::string field_name = header_line.substr(0, pos);
+  char        last_char  = field_name[field_name.size() - 1];
+  if (last_char == ' ' || last_char == '\t') {
+    throw BadRequestException();
   }
-  if (method == "POST") {
-    return POST;
-  }
-  if (method == "DELETE") {
-    return DELETE;
-  }
-  return UNKNOWN;
-}
-
-void RequestInfo::__create_header_map(tokenIterator it, tokenIterator end) {
-  for (; it != end; it++) {
-    std::string line = *it;
-    std::size_t pos  = line.find(':');
-    if (pos == std::string::npos) {
-      throw BadRequestException();
-    }
-    std::string field_name = line.substr(0, pos);
-    char        last_char  = field_name[field_name.size() - 1];
-    if (last_char == ' ' || last_char == '\t') {
-      throw BadRequestException();
-    }
-    std::string field_value = __trim_optional_whitespace(line.substr(pos + 1));
-    if (__field_map_.count(field_name)) {
-      if (__is_comma_sparated(field_name)) {
-        __field_map_[field_name] += ", " + field_value;
-      } else {
-        throw BadRequestException();
-      }
+  std::string field_value =
+      __trim_optional_whitespace(header_line.substr(pos + 1));
+  if (__field_map_.count(field_name)) {
+    if (__is_comma_sparated(field_name)) {
+      __field_map_[field_name] += ", " + field_value;
     } else {
-      __field_map_[field_name] = field_value;
+      throw BadRequestException();
     }
+  } else {
+    __field_map_[field_name] = field_value;
   }
-}
-
-bool RequestInfo::__is_comma_sparated(std::string &field_name) {
-  (void)field_name;
-  // カンマ区切りが定義されたフィールドか判定する。
-  // tmp
-  return false;
-}
-
-std::string RequestInfo::__trim_optional_whitespace(std::string str) {
-  str.erase(0, str.find_first_not_of(" \t"));
-  std::size_t pos = str.find_last_not_of(" \t");
-  if (pos != std::string::npos) {
-    str.erase(pos + 1);
-  }
-  return str;
 }
 
 // TODO: hostとportで分ける必要あるか確認

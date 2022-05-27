@@ -128,7 +128,7 @@ void Response::__set_error_page_body() {
 }
 
 void Response::__set_body() {
-  if (is_match_suffix_string(__file_path_, ".sh")) {
+  if (has_suffix(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
   } else if (is_dir(__file_path_)) {
     if (__config_.autoindex_) {
