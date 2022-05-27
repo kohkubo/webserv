@@ -60,6 +60,8 @@ tokenIterator Config::__parse(tokenIterator pos, tokenIterator end) {
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
+  if (locations_.size() == 0)
+    throw UnexpectedTokenException("could not detect location directive.");
   return ++pos;
 }
 
