@@ -41,7 +41,7 @@ bool Transaction::handle_request(std::string     &request_buffer,
           } else {
             __transaction_state_ = SENDING;
             __conf_              = __detect_config(conf_group);
-            create_response(__conf_);
+            __create_response(__conf_);
             break;
           }
         }
@@ -54,7 +54,7 @@ bool Transaction::handle_request(std::string     &request_buffer,
       __request_info_.parse_request_body(request_body);
       __transaction_state_ = SENDING;
       __conf_              = __detect_config(conf_group);
-      create_response(__conf_);
+      __create_response(__conf_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
     __set_response_for_bad_request();
@@ -85,7 +85,7 @@ const Config *Transaction::__detect_config(const confGroup &conf_group) {
   return conf_group[0];
 }
 
-void Transaction::create_response(const Config *config) {
+void Transaction::__create_response(const Config *config) {
   Response response(*config, __request_info_);
   __response_ = response.get_response_string();
 }

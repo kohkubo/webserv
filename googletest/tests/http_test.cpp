@@ -12,7 +12,7 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-TEST(http_test, create_response_info_get_normal) {
+TEST(http_test, __create_response_info_get_normal) {
   std::string expect        = "HTTP/1.1 200 OK\r\n"
                               "Content-Length: 127\r\n"
                               "Content-Type: text/html\r\n"
@@ -40,7 +40,7 @@ TEST(http_test, create_response_info_get_normal) {
   EXPECT_EQ(response.get_response_string(), expect);
 }
 
-TEST(http_test, create_response_info_get_403) {
+TEST(http_test, __create_response_info_get_403) {
   Config config = Config();
   config.root_  = "../html";
   config.index_ = "index.html";
@@ -72,10 +72,10 @@ default error page\n\
 ");
 }
 
-TEST(http_test, create_response_info_get_403_config_error_pages) {
-  Config config = Config();
-  config.root_  = "../html";
-  config.index_ = "index.html";
+TEST(http_test, __create_response_info_get_403_config_error_pages) {
+  Config config            = Config();
+  config.root_             = "../html";
+  config.index_            = "index.html";
 
   config.error_pages_[403] = "../html/forbidden.html";
   RequestInfo request_info;
@@ -97,7 +97,7 @@ forbidden\
 ");
 }
 
-TEST(http_test, create_response_info_delete_normal) {
+TEST(http_test, __create_response_info_delete_normal) {
   std::string expected_response = "HTTP/1.1 204 No Content\r\n"
                                   "Connection: close\r\n\r\n";
   Config      config            = Config();
@@ -115,7 +115,7 @@ TEST(http_test, create_response_info_delete_normal) {
   EXPECT_EQ(response.get_response_string(), expected_response);
 }
 
-TEST(http_test, create_response_info_delete_404) {
+TEST(http_test, __create_response_info_delete_404) {
   Config config = Config();
   config.root_  = "../html";
   config.index_ = "index.html";
@@ -145,7 +145,7 @@ default error page\n\
 ");
 }
 
-TEST(http_test, create_response_info_delete_403) {
+TEST(http_test, __create_response_info_delete_403) {
   Config config = Config();
   config.root_  = "../html";
   config.index_ = "index.html";
@@ -180,7 +180,7 @@ default error page\n\
 ");
 }
 
-TEST(http_test, create_response_info_delete_400) {
+TEST(http_test, __create_response_info_delete_400) {
   Config config = Config();
   config.root_  = "../html";
   config.index_ = "index.html";
