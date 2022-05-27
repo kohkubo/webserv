@@ -53,7 +53,6 @@ public:
   // test用
   const Config *get_conf() { return __conf_; }
   void          create_response();
-
   bool          parse_single_request(std::string     &request_buffer,
                                      const confGroup &conf_group);
   bool          send_response(int socket_fd);
