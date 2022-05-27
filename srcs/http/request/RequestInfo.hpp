@@ -48,9 +48,7 @@ public:
   };
 
   bool        parse_request_start_line(const std::string &request_line);
-
   bool        parse_request_header(const std::string &header_line);
-
   bool        has_request_body(const std::string &request_buffer);
   std::string cut_request_body(std::string &request_buffer);
   void        parse_request_body(std::string &request_body);
