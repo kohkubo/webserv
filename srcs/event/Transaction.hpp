@@ -44,7 +44,7 @@ public:
 
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-      return __transaction_state_;
+    return __transaction_state_;
   }
   // TODO:
   // get_confを使わないようにテストの設計を変えた方が良いと思います。kohkubo
