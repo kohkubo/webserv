@@ -28,33 +28,30 @@ private:
   ssize_t          __send_count_;
   std::string      __response_;
   RequestInfo      __request_info_;
-  const Config    *__conf_;
 
 private:
-  void __set_response_for_bad_request();
   bool __getline(std::string &request_buffer, std::string &line);
-  void __create_response(const Config *config);
-  bool __is_send_all() const {
-    return __send_count_ == static_cast<ssize_t>(__response_.size());
-  }
-  const Config *__get_proper_config(const confGroup &conf_group);
 
 public:
   Transaction(connFd conn_fd)
       : __conn_fd_(conn_fd)
       , __transaction_state_(RECEIVING_STARTLINE)
-      , __send_count_(0)
-      , __conf_(NULL) {}
-
+      , __send_count_(0) {}
+  void               set_response_for_bad_request();
+  const Config      *get_proper_config(const confGroup &conf_group);
+  void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
       return __transaction_state_;
   }
-  // TODO:
-  // get_confを使わないようにテストの設計を変えた方が良いと思います。kohkubo
-  const Config *get_conf() { return __conf_; }
-  bool handle_request(std::string &request_buffer, const confGroup &conf_group);
-  bool send_response();
+  void set_transaction_state(TransactionState transaction_state) {
+    __transaction_state_ = transaction_state;
+  }
+  void handle_request(std::string &request_buffer);
+  void send_response();
+  bool is_send_all() const {
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
+  }
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */

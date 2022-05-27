@@ -11,27 +11,28 @@
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
 
-
-
-// TODO:
-// 関数名を適切に変更したほうがよい。create_transaction以外のことを行っている。
-void Connection::create_transaction() {
+void Connection::create_sequencial_transaction() {
   while (1) {
     Transaction &transaction = __transaction_queue_.back();
-    // ここ何しているの??
-    // リクエストのパース
-    // TODO: is_continue以外の名前が良さそう
-    bool is_continue = transaction.handle_request(__buffer_, __conf_group_);
-    if (is_continue == false) {
+    try {
+      transaction.handle_request(__buffer_);
+      if (transaction.get_transaction_state() != SENDING) {
+        return;
+      }
+      const Config *config = transaction.get_proper_config(__conf_group_);
+      transaction.create_response(config);
+    } catch (const RequestInfo::BadRequestException &e) {
+      transaction.set_response_for_bad_request();
+    }
+    if (transaction.get_request_info().is_close_ == true) {
       return;
     }
-    // TODO: continueのときに新たにTransactionを生成するのはなぜか? kohkubo
     __transaction_queue_.push_back(Transaction(__conn_fd_));
   }
 }
 
 // 通信がクライアントから閉じられた時trueを返す。
-bool Connection::receive_request() {
+bool Connection::append_receive_buffer() {
   const int         buf_size = 2048;
   std::vector<char> buf(buf_size);
   ssize_t           rc = recv(__conn_fd_, &buf[0], buf_size, MSG_DONTWAIT);

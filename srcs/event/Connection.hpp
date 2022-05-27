@@ -2,6 +2,7 @@
 #define SRCS_EVENT_CONNECTION_HPP
 
 #include <poll.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include <deque>
@@ -31,16 +32,31 @@ public:
   }
   ~Connection() { close(__conn_fd_); }
 
-  void          create_transaction();
+  void          create_sequencial_transaction();
   struct pollfd create_pollfd() const;
-  bool          receive_request();
+  bool          append_receive_buffer();
   void          erase_front_transaction() { __transaction_queue_.pop_front(); }
   Transaction  &get_front_transaction() { return __transaction_queue_.front(); }
   const Transaction &get_front_transaction() const {
     return __transaction_queue_.front();
   }
   Transaction &get_back_transaction() { return __transaction_queue_.back(); }
-  
+  void         shutdown_write() {
+            shutdown(__conn_fd_, SHUT_WR);
+            get_front_transaction().set_transaction_state(CLOSING);
+  }
+
+  void send_response() {
+    Transaction &transaction = get_front_transaction();
+    transaction.send_response();
+    if (transaction.get_request_info().is_close_ == true) {
+      shutdown_write();
+      return;
+    }
+    if (transaction.is_send_all()) {
+      erase_front_transaction();
+    }
+  }
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */

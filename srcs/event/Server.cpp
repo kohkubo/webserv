@@ -21,23 +21,12 @@ void Server::__add_connfd_to_pollfds() {
 }
 
 void Server::__connection_receive_handler(connFd conn_fd) {
-  bool is_close = __connection_map_[conn_fd].receive_request();
+  bool is_close = __connection_map_[conn_fd].append_receive_buffer();
   if (is_close) {
     __connection_map_.erase(conn_fd);
     return;
   }
-  __connection_map_[conn_fd].create_transaction();
-}
-
-void Server::__connection_send_handler(connFd conn_fd) {
-  // TODO:
-  // transactionはconn_fdを一意で持つので、send_responseに引数を不要にできる??
-  // kohkubo
-  bool is_closed =
-      __connection_map_[conn_fd].get_front_transaction().send_response();
-  if (is_closed) {
-    __connection_map_[conn_fd].erase_front_transaction();
-  }
+  __connection_map_[conn_fd].create_sequencial_transaction();
 }
 
 void Server::__insert_connection_map(connFd conn_fd) {
@@ -64,7 +53,7 @@ void Server::run_loop() {
         __connection_receive_handler(it->fd);
       }
       if (it->revents & POLLOUT) {
-        __connection_send_handler(it->fd);
+        __connection_map_[it->fd].send_response();
       }
     }
   }

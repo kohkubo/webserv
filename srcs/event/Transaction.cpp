@@ -5,7 +5,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/response/Response.hpp"
 
-void Transaction::__set_response_for_bad_request() {
+void Transaction::set_response_for_bad_request() {
   // 400エラー処理
   // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
   // 指定できるとき、nginxはどうやってserverを決定しているか。
@@ -17,8 +17,7 @@ void Transaction::__set_response_for_bad_request() {
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-bool Transaction::handle_request(std::string     &request_buffer,
-                                 const confGroup &conf_group) {
+void Transaction::handle_request(std::string &request_buffer) {
   try {
     if (__transaction_state_ == RECEIVING_STARTLINE ||
         __transaction_state_ == RECEIVING_HEADER) {
@@ -43,10 +42,7 @@ bool Transaction::handle_request(std::string     &request_buffer,
             __transaction_state_ = RECEIVING_BODY;
           } else {
             __transaction_state_ = SENDING;
-            __conf_              = __get_proper_config(conf_group);
-            //TODO: requestエラーのチェック
-            __create_response(__conf_);
-            break;
+            return;
           }
         }
       }
@@ -57,18 +53,10 @@ bool Transaction::handle_request(std::string     &request_buffer,
           __request_info_.cut_request_body(request_buffer);
       __request_info_.parse_request_body(request_body);
       __transaction_state_ = SENDING;
-      __conf_              = __get_proper_config(conf_group);
-      //TODO: requestエラーのチェック
-      __create_response(__conf_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
+    set_response_for_bad_request();
   }
-  if (__transaction_state_ != SENDING)
-    return false;
-  if (__request_info_.is_close_)
-    return false;
-  return true;
 }
 
 bool Transaction::__getline(std::string &request_buffer, std::string &line) {
@@ -80,7 +68,7 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
   return true;
 }
 
-const Config *Transaction::__get_proper_config(const confGroup &conf_group) {
+const Config *Transaction::get_proper_config(const confGroup &conf_group) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == __request_info_.host_) {
@@ -90,24 +78,15 @@ const Config *Transaction::__get_proper_config(const confGroup &conf_group) {
   return conf_group[0];
 }
 
-void Transaction::__create_response(const Config *config) {
+void Transaction::create_response(const Config *config) {
   Response response(*config, __request_info_);
   __response_ = response.get_response_string();
 }
 
 // 送信が完了かつtransactionを保持する必要がないときtrueを返す。
-bool Transaction::send_response() {
+void Transaction::send_response() {
   const char *rest_str   = __response_.c_str() + __send_count_;
   size_t      rest_count = __response_.size() - __send_count_;
   ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
   __send_count_ += sc;
-  if (!__is_send_all()) {
-    return false;
-  }
-  if (__request_info_.is_close_) {
-    shutdown(__conn_fd_, SHUT_WR);
-    __transaction_state_ = CLOSING;
-    return false;
-  }
-  return true;
 }
