@@ -46,7 +46,6 @@ public:
   public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
-
   bool        parse_request_start_line(const std::string &request_line);
   bool        parse_request_header(const std::string &header_line);
   bool        has_request_body(const std::string &request_buffer);

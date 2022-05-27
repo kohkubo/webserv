@@ -19,7 +19,7 @@ TEST(request_parse_test, normal) {
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
-  RequestInfo &r = t.get_request_info();
+  const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, GET);
   EXPECT_EQ(r.uri_, "/");
@@ -27,8 +27,6 @@ TEST(request_parse_test, normal) {
   EXPECT_EQ(r.host_, "127.0.0.1");
   EXPECT_EQ(r.port_, "5001");
   EXPECT_EQ(r.is_close_, true);
-  EXPECT_EQ(r.get_field_value("User-Agent"), "curl/7.68.0");
-  EXPECT_EQ(r.get_field_value("Accept"), "*/*");
 }
 
 TEST(request_parse_test, normal_delete) {
@@ -45,7 +43,7 @@ TEST(request_parse_test, normal_delete) {
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
-  RequestInfo &r = t.get_request_info();
+  const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, DELETE);
   EXPECT_EQ(r.uri_, "/delete_target.tmp");
@@ -53,8 +51,6 @@ TEST(request_parse_test, normal_delete) {
   EXPECT_EQ(r.host_, "127.0.0.1");
   EXPECT_EQ(r.port_, "5001");
   EXPECT_EQ(r.is_close_, true);
-  EXPECT_EQ(r.get_field_value("User-Agent"), "curl/7.68.0");
-  EXPECT_EQ(r.get_field_value("Accept"), "*/*");
 }
 
 TEST(request_parse_test, normal_post) {
@@ -73,7 +69,7 @@ TEST(request_parse_test, normal_post) {
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
-  RequestInfo &r = t.get_request_info();
+  const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, POST);
   EXPECT_EQ(r.uri_, "/target");
@@ -82,10 +78,6 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(r.port_, "5001");
   EXPECT_EQ(r.is_close_, true);
   EXPECT_EQ(r.content_length_, 18);
-  EXPECT_EQ(r.get_field_value("User-Agent"), "curl/7.68.0");
-  EXPECT_EQ(r.get_field_value("Accept"), "*/*");
-  EXPECT_EQ(r.get_field_value("Content-Type"),
-            "application/x-www-form-urlencoded");
 }
 
 TEST(request_parse_test, query_body) {
@@ -106,7 +98,7 @@ TEST(request_parse_test, query_body) {
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
-  RequestInfo &info = t.get_request_info();
+  const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.values_[0], "I'm=going");
   EXPECT_EQ(info.values_[1], "to=become");
@@ -133,7 +125,7 @@ TEST(request_parse_test, query_body_capital) {
   dummy_group.push_back(&dummy_conf);
 
   t.parse_single_request(request, dummy_group);
-  RequestInfo &info = t.get_request_info();
+  const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.values_[0], "yabu=kara");
   EXPECT_EQ(info.values_[1], "stick=");
