@@ -4,6 +4,12 @@ echo "normal 5000"
 echo "======================"
 curl localhost:5000
 echo
+echo
+echo "======================"
+echo "normal 5000"
+echo "======================"
+curl localhost:5000/dir1
+echo
 echo "======================"
 echo "normal 5000 404"
 echo "======================"
