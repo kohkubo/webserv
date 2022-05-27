@@ -29,12 +29,12 @@ private:
 
 private:
   void __set_response_for_bad_request();
+  bool __getline(std::string &request_buffer, std::string &line);
+  void __create_response(const Config *config);
   bool __is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
-  bool          __getline(std::string &request_buffer, std::string &line);
-  const Config *__detect_config(const confGroup &conf_group);
-  void          __create_response(const Config *config);
+  const Config *__get_proper_config(const confGroup &conf_group);
 
 public:
   Transaction()
@@ -46,7 +46,8 @@ public:
   TransactionState   get_transaction_state() const {
       return __transaction_state_;
   }
-  // TODO: get_confを使わないようにテストの設計を変えた方が良いと思います。kohkubo
+  // TODO:
+  // get_confを使わないようにテストの設計を変えた方が良いと思います。kohkubo
   const Config *get_conf() { return __conf_; }
   bool handle_request(std::string &request_buffer, const confGroup &conf_group);
   bool send_response(int socket_fd);

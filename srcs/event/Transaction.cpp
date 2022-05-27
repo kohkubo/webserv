@@ -40,7 +40,7 @@ bool Transaction::handle_request(std::string     &request_buffer,
             __transaction_state_ = RECEIVING_BODY;
           } else {
             __transaction_state_ = SENDING;
-            __conf_              = __detect_config(conf_group);
+            __conf_              = __get_proper_config(conf_group);
             __create_response(__conf_);
             break;
           }
@@ -53,7 +53,7 @@ bool Transaction::handle_request(std::string     &request_buffer,
           __request_info_.cut_request_body(request_buffer);
       __request_info_.parse_request_body(request_body);
       __transaction_state_ = SENDING;
-      __conf_              = __detect_config(conf_group);
+      __conf_              = __get_proper_config(conf_group);
       __create_response(__conf_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
@@ -75,7 +75,7 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
   return true;
 }
 
-const Config *Transaction::__detect_config(const confGroup &conf_group) {
+const Config *Transaction::__get_proper_config(const confGroup &conf_group) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == __request_info_.host_) {
