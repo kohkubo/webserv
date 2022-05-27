@@ -1,9 +1,9 @@
 #ifndef SRCS_CONFIG_LOCATION_HPP
 #define SRCS_CONFIG_LOCATION_HPP
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 struct Location {
   std::string                location_path_;

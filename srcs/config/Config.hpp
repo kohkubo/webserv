@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "utils/tokenize.hpp"
 #include "config/Location.hpp"
+#include "utils/tokenize.hpp"
 
 const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
 const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
@@ -53,8 +53,8 @@ public:
   }
   ~Config();
   Config(const Config &other);
-  Config &operator=(const Config &other);
-  tokenIterator              get_moved_it() { return __last_it_; }
+  Config       &operator=(const Config &other);
+  tokenIterator get_moved_it() { return __last_it_; }
 
 private:
   tokenIterator __parse(tokenIterator pos, tokenIterator end);
