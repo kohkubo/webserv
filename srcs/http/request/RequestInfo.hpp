@@ -10,7 +10,7 @@
 
 class RequestInfo {
 private:
-  bool                               __is_first_line_;
+  bool                               __is_first_time_;
   std::map<std::string, std::string> __field_map_;
 
 public:
@@ -26,8 +26,7 @@ public:
 private:
   std::string __cut_buffer(std::string &buf, std::size_t len);
   void        __parse_request_line(const std::string &request_line);
-  HttpMethod  __parse_request_method(const std::string &method);
-  void        __add_header_field(const std::string &header_line);
+  HttpMethod  __request_method_to_enum(const std::string &method);
   bool        __is_comma_sparated(std::string &field_name);
   std::string __trim_optional_whitespace(std::string str);
   void        __parse_request_host();
@@ -37,7 +36,7 @@ private:
 
 public:
   RequestInfo()
-      : __is_first_line_(true)
+      : __is_first_time_(true)
       , method_(UNKNOWN)
       , is_close_(false)
       , content_length_(0) {}
@@ -47,11 +46,14 @@ public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
 
-  bool        parse_request_start_line(const std::string &request_line);
-  bool        parse_request_header(const std::string &header_line);
+  void        parse_request_header_field(const std::string &header_line);
+  void        parse_request_start_line(const std::string &request_line);
+  void        parse_request_header();
   bool        has_request_body(const std::string &request_buffer);
   std::string cut_request_body(std::string &request_buffer);
   void        parse_request_body(std::string &request_body);
+  void        check_first_mulit_blank_line(const std::string &request_line);
+  void check_bad_parse_request_start_line(const std::string &request_line);
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

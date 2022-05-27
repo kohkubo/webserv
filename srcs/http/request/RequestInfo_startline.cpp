@@ -8,24 +8,34 @@
 // rfc 7230 3.5
 
 // request-line = method SP request-target SP HTTP-version (CRLF)
-bool RequestInfo::parse_request_start_line(const std::string &request_line) {
-  if (__is_first_line_ && request_line == "") {
-    __is_first_line_ = false;
-    return false;
+void RequestInfo::parse_request_start_line(const std::string &request_line) {
+  std::size_t first_sp   = request_line.find_first_of(' ');
+  std::size_t last_sp    = request_line.find_last_of(' ');
+  std::string method_str = request_line.substr(0, first_sp);
+  method_                = __request_method_to_enum(method_str);
+  uri_     = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
+  version_ = request_line.substr(last_sp + 1);
+}
+
+void RequestInfo::check_first_mulit_blank_line(
+    const std::string &request_line) {
+  if (__is_first_time_ == true && request_line == "") {
+    __is_first_time_ = false;
+    return;
   }
+  throw BadRequestException();
+}
+
+void RequestInfo::check_bad_parse_request_start_line(
+    const std::string &request_line) {
   std::size_t first_sp = request_line.find_first_of(' ');
   std::size_t last_sp  = request_line.find_last_of(' ');
   if (first_sp == std::string::npos || first_sp == last_sp) {
     throw BadRequestException();
   }
-  std::string method_str = request_line.substr(0, first_sp);
-  method_                = __parse_request_method(method_str);
-  uri_     = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
-  version_ = request_line.substr(last_sp + 1);
-  return true;
 }
 
-HttpMethod RequestInfo::__parse_request_method(const std::string &method) {
+HttpMethod RequestInfo::__request_method_to_enum(const std::string &method) {
   if (method == "GET") {
     return GET;
   }

@@ -22,21 +22,27 @@ bool Transaction::handle_request(std::string     &request_buffer,
   try {
     if (__transaction_state_ == RECEIVING_STARTLINE ||
         __transaction_state_ == RECEIVING_HEADER) {
-      while (__check_line(request_buffer)) {
-        std::string line = __getline_from_buffer(request_buffer);
+      std::string line;
+      while (__getline(request_buffer, line)) {
         if (__transaction_state_ == RECEIVING_STARTLINE) {
-          if (__request_info_.parse_request_start_line(line)) {
-            __transaction_state_ = RECEIVING_HEADER;
-          }
+          __request_info_.check_first_mulit_blank_line(line);
+          __request_info_.check_bad_parse_request_start_line(line);
+          __request_info_.parse_request_start_line(line);
+          __transaction_state_ = RECEIVING_HEADER;
         } else if (__transaction_state_ == RECEIVING_HEADER) {
-          if (__request_info_.parse_request_header(line)) {
-            __detect_config(conf_group);
-            if (__request_info_.content_length_ != 0) {
-              __transaction_state_ = RECEIVING_BODY;
-            } else {
-              create_response();
-              __transaction_state_ = SENDING;
-            }
+          if (line != "") {
+            __request_info_.parse_request_header_field(line);
+            continue;
+          }
+          __request_info_.parse_request_header();
+          // TODO: チャンク or content_length_ != 0
+          if (__request_info_.content_length_ != 0) {
+            __transaction_state_ = RECEIVING_BODY;
+          } else {
+            __transaction_state_ = SENDING;
+            __conf_              = __detect_config(conf_group);
+            create_response(__conf_);
+            break;
           }
         }
       }
@@ -45,10 +51,10 @@ bool Transaction::handle_request(std::string     &request_buffer,
         __request_info_.has_request_body(request_buffer)) {
       std::string request_body =
           __request_info_.cut_request_body(request_buffer);
-
       __request_info_.parse_request_body(request_body);
-      create_response();
       __transaction_state_ = SENDING;
+      __conf_              = __detect_config(conf_group);
+      create_response(__conf_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
     __set_response_for_bad_request();
@@ -69,31 +75,18 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
   return true;
 }
 
-bool Transaction::__check_line(const std::string &request_buffer) {
-  std::size_t pos = request_buffer.find(CRLF);
-  return pos != std::string::npos;
-}
-
-std::string Transaction::__getline_from_buffer(std::string &buf) {
-  std::size_t pos = buf.find(CRLF);
-  std::string res = buf.substr(0, pos);
-  buf             = buf.substr(pos + CRLF.size());
-  return res;
-}
-
-void Transaction::__detect_config(const confGroup &conf_group) {
+const Config *Transaction::__detect_config(const confGroup &conf_group) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == __request_info_.host_) {
-      __conf_ = *it;
-      return;
+      return *it;
     }
   }
-  __conf_ = conf_group[0];
+  return conf_group[0];
 }
 
-void Transaction::create_response() {
-  Response response(*__conf_, __request_info_);
+void Transaction::create_response(const Config *config) {
+  Response response(*config, __request_info_);
   __response_ = response.get_response_string();
 }
 

@@ -39,8 +39,8 @@ private:
   void __parse_start_line(std::string &buf);
   void __parse_header(std::string &buf, const confGroup &conf_group);
   void __parse_body(std::string &buf);
-  void __detect_config(const confGroup &conf_group);
   bool __getline(std::string &request_buffer, std::string &line);
+  const Config *__detect_config(const confGroup &conf_group);
 
 public:
   Transaction()
@@ -54,7 +54,7 @@ public:
   }
   // test用
   const Config *get_conf() { return __conf_; }
-  void          create_response();
+  void          create_response(const Config *config);
   bool handle_request(std::string &request_buffer, const confGroup &conf_group);
   bool send_response(int socket_fd);
 };
