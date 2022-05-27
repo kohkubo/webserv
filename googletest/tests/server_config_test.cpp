@@ -4,7 +4,7 @@
 #include "config/Config.hpp"
 #include "utils/tokenize.hpp"
 
-#define SAMPLE_CONF "../googletest/tdata/sample.config"
+#define SAMPLE_CONF "../googletest/tdata/sample.conf"
 
 TEST(server_config_test, server_exception) {
   {
