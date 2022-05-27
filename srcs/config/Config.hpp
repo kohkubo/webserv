@@ -50,7 +50,7 @@ public:
       , index_("")
       , error_pages_()
       , return_()
-      , autoindex_(true)
+      , autoindex_(false)
       , limit_except_()
       , addrinfo_(NULL) {
     try {

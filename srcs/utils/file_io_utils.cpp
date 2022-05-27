@@ -14,20 +14,31 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-bool is_path_exists(const std::string &path) {
+bool is_file_exists(const std::string &path) {
   struct stat file_info;
 
   if (stat(path.c_str(), &file_info) == -1) {
-    std::cout << "error: is_path_exists: " << path << std::endl;
+    std::cout << "error: is_file_exists: " << path << std::endl;
     return false;
   }
-  // TODO: POSTの時はS_IFDIR(ディレクトリ)を許容するか
-  switch ((file_info.st_mode & S_IFMT)) {
-  case S_IFREG:
+  if ((file_info.st_mode & S_IFMT) == S_IFREG) {
     return true;
-  case S_IFDIR:
+  } else {
+    return false;
+  }
+}
+
+// 末尾が"/"でなくてもディレクトリとして扱われることに注意
+bool is_dir_exists(const std::string &path) {
+  struct stat file_info;
+
+  if (stat(path.c_str(), &file_info) == -1) {
+    std::cout << "error: is_dir_exists: " << path << std::endl;
+    return false;
+  }
+  if ((file_info.st_mode & S_IFMT) == S_IFDIR) {
     return true;
-  default:
+  } else {
     return false;
   }
 }

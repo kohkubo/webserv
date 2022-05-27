@@ -80,7 +80,7 @@ void Response::__resolve_uri() {
   std::cout << "uri:" << __request_info_.uri_ << std::endl;
   // NOTE: 末尾が"/"でないとディレクトリと認識しない, 挙動としてはnginxもそう
   if (has_suffix(__file_path_, "/") &&
-      is_path_exists(__file_path_ + __config_.index_)) {
+      is_file_exists(__file_path_ + __config_.index_)) {
     // NOTE: index追記パスが存在すれば採用, autoindexは無視される
     //       index追記パスが存在しなければディレクトリのままで後のautoindexの処理に入る
     __file_path_ += __config_.index_;
@@ -110,12 +110,21 @@ void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
   }
-  // TODO: POSTはディレクトリの時どう処理するか確かめてない
-  if (has_suffix(__file_path_, "/") && !__config_.autoindex_) {
-    __status_code_ = FORBIDDEN_403; // nginxに合わせた
+  // TODO: POSTはディレクトリの時どう処理するのか
+  // TODO: 別関数にするか整理する
+  if (has_suffix(__file_path_, "/")) {
+    if (is_dir_exists(__file_path_)) {
+      if (!__config_.autoindex_) {
+        __status_code_ = FORBIDDEN_403; // nginxに合わせた
+      } else {
+        __status_code_ = OK_200;
+      }
+    } else {
+      __status_code_ = NOT_FOUND_404;
+    }
     return;
   }
-  if (!is_path_exists(__file_path_)) {
+  if (!is_file_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
     return;
   }
