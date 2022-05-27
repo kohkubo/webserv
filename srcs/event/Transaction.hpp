@@ -34,12 +34,12 @@ private:
                                   const confGroup &conf_group);
   void        __set_response_for_bad_request();
   bool        __is_send_all() const {
-           return __send_count_ == static_cast<ssize_t>(__response_.size());
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
-  void __parse_start_line(std::string &buf);
-  void __parse_header(std::string &buf, const confGroup &conf_group);
-  void __parse_body(std::string &buf);
-  bool __getline(std::string &request_buffer, std::string &line);
+  void          __parse_start_line(std::string &buf);
+  void          __parse_header(std::string &buf, const confGroup &conf_group);
+  void          __parse_body(std::string &buf);
+  bool          __getline(std::string &request_buffer, std::string &line);
   const Config *__detect_config(const confGroup &conf_group);
 
 public:
@@ -50,7 +50,7 @@ public:
 
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-      return __transaction_state_;
+    return __transaction_state_;
   }
   // test用
   const Config *get_conf() { return __conf_; }
