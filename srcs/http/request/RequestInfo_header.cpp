@@ -15,7 +15,8 @@ void RequestInfo::parse_request_header() {
   __parse_request_content_length();
 }
 
-void RequestInfo::parse_request_header_field(const std::string &header_line) {
+void RequestInfo::store_request_header_field_map(
+    const std::string &header_line) {
   std::size_t pos = header_line.find(':');
   if (pos == std::string::npos) {
     throw BadRequestException();

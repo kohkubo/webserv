@@ -19,11 +19,12 @@ void RequestInfo::parse_request_start_line(const std::string &request_line) {
 
 void RequestInfo::check_first_mulit_blank_line(
     const std::string &request_line) {
-  if (__is_first_time_ == true && request_line == "") {
-    __is_first_time_ = false;
+  if (is_blank_first_line_ == false && request_line == "") {
+    is_blank_first_line_ = true;
     return;
+  } else if (is_blank_first_line_ == true && request_line == "") {
+    throw BadRequestException();
   }
-  throw BadRequestException();
 }
 
 void RequestInfo::check_bad_parse_request_start_line(

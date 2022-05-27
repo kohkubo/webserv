@@ -10,10 +10,10 @@
 
 class RequestInfo {
 private:
-  bool                               __is_first_time_;
   std::map<std::string, std::string> __field_map_;
 
 public:
+  bool                     is_blank_first_line_;
   HttpMethod method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
   std::string              version_;
@@ -36,7 +36,7 @@ private:
 
 public:
   RequestInfo()
-      : __is_first_time_(true)
+      : is_blank_first_line_(false)
       , method_(UNKNOWN)
       , is_close_(false)
       , content_length_(0) {}
@@ -46,7 +46,7 @@ public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
 
-  void        parse_request_header_field(const std::string &header_line);
+  void        store_request_header_field_map(const std::string &header_line);
   void        parse_request_start_line(const std::string &request_line);
   void        parse_request_header();
   bool        has_request_body(const std::string &request_buffer);

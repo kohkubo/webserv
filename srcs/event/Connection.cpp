@@ -11,20 +11,13 @@
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
 
-Transaction &Connection::__get_last_transaction() {
-  if (__transaction_queue_.empty()) {
-    // TODO: この分岐 必要?? kohkubo
-    // TODO: この中で生成のは__get_last_transactionという名前からずれている。
-    __transaction_queue_.push_back(Transaction());
-  }
-  return __transaction_queue_.back();
-}
+
 
 // TODO:
 // 関数名を適切に変更したほうがよい。create_transaction以外のことを行っている。
-void Connection::__create_transaction() {
+void Connection::create_transaction() {
   while (1) {
-    Transaction &transaction = __get_last_transaction();
+    Transaction &transaction = __transaction_queue_.back();
     // ここ何しているの??
     // リクエストのパース
     // TODO: is_continue以外の名前が良さそう
@@ -33,17 +26,15 @@ void Connection::__create_transaction() {
       return;
     }
     // TODO: continueのときに新たにTransactionを生成するのはなぜか? kohkubo
-    __transaction_queue_.push_back(Transaction());
+    __transaction_queue_.push_back(Transaction(__conn_fd_));
   }
 }
 
 // 通信がクライアントから閉じられた時trueを返す。
-// TODO:
-// receive_request以上の仕事をしている感じがするので、__create_transactionを外に出してみて、アルゴリズムを見直して見るのがよいと思います
-bool Connection::receive_request(connFd conn_fd) {
+bool Connection::receive_request() {
   const int         buf_size = 2048;
   std::vector<char> buf(buf_size);
-  ssize_t           rc = recv(conn_fd, &buf[0], buf_size, MSG_DONTWAIT);
+  ssize_t           rc = recv(__conn_fd_, &buf[0], buf_size, MSG_DONTWAIT);
   if (rc == -1) {
     std::cerr << "recv() failed." << std::endl;
     exit(EXIT_FAILURE);
@@ -53,14 +44,11 @@ bool Connection::receive_request(connFd conn_fd) {
   }
   std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
   __buffer_.append(recv_data);
-  // TODO: conn_fdを__create_transactionに渡して
-  // transactionが内部でconn_fdを持ったほうが良さそう? kohkubo
-  __create_transaction();
   return false;
 }
 
-struct pollfd Connection::create_pollfd(connFd conn_fd) const {
-  struct pollfd pfd = {conn_fd, POLLIN, 0};
+struct pollfd Connection::create_pollfd() const {
+  struct pollfd pfd = {__conn_fd_, POLLIN, 0};
   if (__transaction_queue_.empty()) {
     return pfd;
   }

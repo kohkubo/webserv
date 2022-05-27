@@ -8,6 +8,8 @@
 #include "config/Config.hpp"
 #include "http/request/RequestInfo.hpp"
 
+typedef int connFd;
+
 enum TransactionState {
   NO_REQUEST, // Connectionはリクエストを持たない。
   RECEIVING_STARTLINE,
@@ -21,6 +23,7 @@ enum TransactionState {
 
 struct Transaction {
 private:
+  connFd           __conn_fd_;
   TransactionState __transaction_state_;
   ssize_t          __send_count_;
   std::string      __response_;
@@ -37,20 +40,21 @@ private:
   const Config *__get_proper_config(const confGroup &conf_group);
 
 public:
-  Transaction()
-      : __transaction_state_(RECEIVING_STARTLINE)
+  Transaction(connFd conn_fd)
+      : __conn_fd_(conn_fd)
+      , __transaction_state_(RECEIVING_STARTLINE)
       , __send_count_(0)
       , __conf_(NULL) {}
 
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-    return __transaction_state_;
+      return __transaction_state_;
   }
   // TODO:
   // get_confを使わないようにテストの設計を変えた方が良いと思います。kohkubo
   const Config *get_conf() { return __conf_; }
   bool handle_request(std::string &request_buffer, const confGroup &conf_group);
-  bool send_response(int socket_fd);
+  bool send_response();
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */

@@ -26,12 +26,15 @@ bool Transaction::handle_request(std::string     &request_buffer,
       while (__getline(request_buffer, line)) {
         if (__transaction_state_ == RECEIVING_STARTLINE) {
           __request_info_.check_first_mulit_blank_line(line);
+          if (__request_info_.is_blank_first_line_ == true) {
+            continue;
+          }
           __request_info_.check_bad_parse_request_start_line(line);
           __request_info_.parse_request_start_line(line);
           __transaction_state_ = RECEIVING_HEADER;
         } else if (__transaction_state_ == RECEIVING_HEADER) {
           if (line != "") {
-            __request_info_.parse_request_header_field(line);
+            __request_info_.store_request_header_field_map(line);
             continue;
           }
           __request_info_.parse_request_header();
@@ -41,6 +44,7 @@ bool Transaction::handle_request(std::string     &request_buffer,
           } else {
             __transaction_state_ = SENDING;
             __conf_              = __get_proper_config(conf_group);
+            //TODO: requestエラーのチェック
             __create_response(__conf_);
             break;
           }
@@ -54,6 +58,7 @@ bool Transaction::handle_request(std::string     &request_buffer,
       __request_info_.parse_request_body(request_body);
       __transaction_state_ = SENDING;
       __conf_              = __get_proper_config(conf_group);
+      //TODO: requestエラーのチェック
       __create_response(__conf_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
@@ -91,16 +96,16 @@ void Transaction::__create_response(const Config *config) {
 }
 
 // 送信が完了かつtransactionを保持する必要がないときtrueを返す。
-bool Transaction::send_response(int socket_fd) {
+bool Transaction::send_response() {
   const char *rest_str   = __response_.c_str() + __send_count_;
   size_t      rest_count = __response_.size() - __send_count_;
-  ssize_t     sc         = send(socket_fd, rest_str, rest_count, MSG_DONTWAIT);
+  ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
   __send_count_ += sc;
   if (!__is_send_all()) {
     return false;
   }
   if (__request_info_.is_close_) {
-    shutdown(socket_fd, SHUT_WR);
+    shutdown(__conn_fd_, SHUT_WR);
     __transaction_state_ = CLOSING;
     return false;
   }

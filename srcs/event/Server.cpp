@@ -1,7 +1,5 @@
 #include "event/Server.hpp"
 
-#include <unistd.h>
-
 #include "event/Connection.hpp"
 #include "utils/syscall_wrapper.hpp"
 
@@ -17,17 +15,18 @@ void Server::__add_connfd_to_pollfds() {
   std::map<connFd, Connection>::const_iterator it = __connection_map_.begin();
   for (; it != __connection_map_.end(); it++) {
     const Connection &connection = it->second;
-    struct pollfd     pfd        = connection.create_pollfd(it->first);
+    struct pollfd     pfd        = connection.create_pollfd();
     __pollfds_.push_back(pfd);
   }
 }
 
 void Server::__connection_receive_handler(connFd conn_fd) {
-  bool is_close = __connection_map_[conn_fd].receive_request(conn_fd);
+  bool is_close = __connection_map_[conn_fd].receive_request();
   if (is_close) {
-    close(conn_fd);
     __connection_map_.erase(conn_fd);
+    return;
   }
+  __connection_map_[conn_fd].create_transaction();
 }
 
 void Server::__connection_send_handler(connFd conn_fd) {
@@ -35,15 +34,15 @@ void Server::__connection_send_handler(connFd conn_fd) {
   // transactionはconn_fdを一意で持つので、send_responseに引数を不要にできる??
   // kohkubo
   bool is_closed =
-      __connection_map_[conn_fd].get_front_transaction().send_response(conn_fd);
+      __connection_map_[conn_fd].get_front_transaction().send_response();
   if (is_closed) {
     __connection_map_[conn_fd].erase_front_transaction();
   }
 }
 
 void Server::__insert_connection_map(connFd conn_fd) {
-  __connection_map_.insert(
-      std::make_pair(xaccept(conn_fd), Connection(__conf_group_map_[conn_fd])));
+  __connection_map_.insert(std::make_pair(
+      xaccept(conn_fd), Connection(conn_fd, __conf_group_map_[conn_fd])));
 }
 
 void Server::run_loop() {
