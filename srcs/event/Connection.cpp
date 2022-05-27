@@ -33,13 +33,6 @@ void Connection::__create_transaction(const std::string &data) {
   }
 }
 
-void Connection::send_response(connFd conn_fd) {
-  Transaction &transaction = __front_transaction();
-  if (transaction.send_response(conn_fd)) {
-    __erase_front_transaction();
-  }
-}
-
 // 通信がクライアントから閉じられた時trueを返す。
 bool Connection::receive_request(connFd conn_fd) {
   const int         buf_size = 2048;
@@ -62,10 +55,10 @@ struct pollfd Connection::create_pollfd(connFd conn_fd) const {
   if (__transaction_queue_.empty()) {
     return pfd;
   }
-  if (__front_transaction().get_transaction_state() == SENDING &&
-      __front_transaction().get_request_info().is_close_) {
+  if (get_front_transaction().get_transaction_state() == SENDING &&
+      get_front_transaction().get_request_info().is_close_) {
     pfd.events = POLLOUT;
-  } else if (__front_transaction().get_transaction_state() == SENDING) {
+  } else if (get_front_transaction().get_transaction_state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
