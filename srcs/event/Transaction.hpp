@@ -34,8 +34,12 @@ private:
                                   const confGroup &conf_group);
   void        __set_response_for_bad_request();
   bool        __is_send_all() const {
-    return __send_count_ == static_cast<ssize_t>(__response_.size());
+           return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
+  void __parse_start_line(std::string &buf);
+  void __parse_header(std::string &buf, const confGroup &conf_group);
+  void __parse_body(std::string &buf);
+  void __detect_config(const confGroup &conf_group);
 
 public:
   Transaction()
@@ -44,20 +48,16 @@ public:
       , __conf_(NULL) {}
 
   // for test
-  RequestInfo get_request_info() const { return __request_info_; }
+  RequestInfo      get_request_info() const { return __request_info_; }
   TransactionState get_transaction_state() const {
     return __transaction_state_;
   }
   // test用
   const Config *get_conf() { return __conf_; }
+  void          create_response();
 
   bool          parse_single_request(std::string     &request_buffer,
                                      const confGroup &conf_group);
-  void          parse_start_line(std::string &buf);
-  void          parse_header(std::string &buf, const confGroup &conf_group);
-  void          parse_body(std::string &buf);
-  void          detect_config(const confGroup &conf_group);
-  void          create_response();
   bool          send_response(int socket_fd);
 };
 

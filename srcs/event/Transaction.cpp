@@ -25,7 +25,7 @@ bool Transaction::parse_single_request(std::string     &request_buffer,
   }
   if (__transaction_state_ == RECEIVING_BODY &&
       __request_info_.has_request_body(request_buffer)) {
-    parse_body(request_buffer);
+    __parse_body(request_buffer);
   }
   if (__transaction_state_ != SENDING)
     return false;
@@ -40,10 +40,10 @@ void Transaction::__parse_single_line(std::string     &request_buffer,
     std::string line = __getline_from_buffer(request_buffer);
     switch (__transaction_state_) {
     case RECEIVING_STARTLINE:
-      parse_start_line(line);
+      __parse_start_line(line);
       break;
     case RECEIVING_HEADER:
-      parse_header(line, conf_group);
+      __parse_header(line, conf_group);
       break;
     default:
       break;
@@ -63,7 +63,7 @@ std::string Transaction::__getline_from_buffer(std::string &buf) {
   return res;
 }
 
-void Transaction::parse_start_line(std::string &request_line) {
+void Transaction::__parse_start_line(std::string &request_line) {
   try {
     if (__request_info_.parse_request_start_line(request_line))
       __transaction_state_ = RECEIVING_HEADER;
@@ -72,11 +72,11 @@ void Transaction::parse_start_line(std::string &request_line) {
   }
 }
 
-void Transaction::parse_header(std::string     &header_line,
-                               const confGroup &conf_group) {
+void Transaction::__parse_header(std::string     &header_line,
+                                 const confGroup &conf_group) {
   try {
     if (__request_info_.parse_request_header(header_line)) {
-      detect_config(conf_group);
+      __detect_config(conf_group);
       if (__request_info_.content_length_ != 0) {
         __transaction_state_ = RECEIVING_BODY;
       } else {
@@ -88,7 +88,7 @@ void Transaction::parse_header(std::string     &header_line,
   }
 }
 
-void Transaction::parse_body(std::string &request_buffer) {
+void Transaction::__parse_body(std::string &request_buffer) {
   std::string request_body = __request_info_.cut_request_body(request_buffer);
   try {
     __request_info_.parse_request_body(request_body);
@@ -98,7 +98,7 @@ void Transaction::parse_body(std::string &request_buffer) {
   }
 }
 
-void Transaction::detect_config(const confGroup &conf_group) {
+void Transaction::__detect_config(const confGroup &conf_group) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == __request_info_.host_) {
