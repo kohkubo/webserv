@@ -45,6 +45,9 @@ public:
 
   // for test
   RequestInfo get_request_info() const { return __request_info_; }
+  TransactionState get_transaction_state() const {
+    return __transaction_state_;
+  }
   // test用
   const Config *get_conf() { return __conf_; }
 
