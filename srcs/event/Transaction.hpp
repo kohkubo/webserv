@@ -47,7 +47,7 @@ public:
       , __send_count_(0)
       , __conf_(NULL) {}
 
-  TransactionState   get_transaction_state() const {
+  TransactionState get_transaction_state() const {
     return __transaction_state_;
   }
   // test用
