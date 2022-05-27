@@ -12,8 +12,10 @@
 #include "http/const/const_delimiter.hpp"
 
 Transaction &Connection::__get_last_transaction() {
-  if (__transaction_queue_.empty())
+  if (__transaction_queue_.empty()) {
+    // TODO: この分岐 必要?? kohkubo
     __transaction_queue_.push_back(Transaction());
+  }
   return __transaction_queue_.back();
 }
 
@@ -46,6 +48,9 @@ bool Connection::receive_request(connFd conn_fd) {
     return true;
   }
   std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
+  // TODO:
+  // conn_fdを__create_transactionに渡して、transactionが内部でconn_fdを持ったほうが良さそう?
+  // kohkubo
   __create_transaction(recv_data);
   return false;
 }

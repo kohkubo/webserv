@@ -31,7 +31,7 @@ void Server::__connection_receive_handler(connFd conn_fd) {
 }
 
 void Server::__connection_send_handler(connFd conn_fd) {
-  // TODO: transactionはconn_fdを一意で持つので、send_responseに引数を不要にできる??
+  // TODO: transactionはconn_fdを一意で持つので、send_responseに引数を不要にできる?? kohkubo
   bool is_closed =
       __connection_map_[conn_fd].get_front_transaction().send_response(conn_fd);
   if (is_closed) {
