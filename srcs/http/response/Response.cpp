@@ -71,9 +71,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 }
 
 void Response::__resolve_uri() {
-  if (__is_minus_depth()) {
-    __status_code_ = NOT_FOUND_404;
-  }
   // TODO: rootの末尾に/入ってるとき
   if (__request_info_.uri_ == "/") {
     __file_path_ =
@@ -103,6 +100,9 @@ bool Response::__is_minus_depth() {
 void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
+  }
+  if (__is_minus_depth()) {
+    __status_code_ = NOT_FOUND_404;
   }
   if (!is_file_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
