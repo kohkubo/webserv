@@ -19,7 +19,7 @@ void Response::__delete_target_file() {
     __status_code_ = BAD_REQUEST_400;
     return;
   }
-  if (!is_file_exists(__file_path_)) {
+  if (!is_path_exists(__file_path_)) {
     std::cerr << "target file is not found" << std::endl;
     __status_code_ = NOT_FOUND_404;
     return;

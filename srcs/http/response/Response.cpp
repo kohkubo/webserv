@@ -74,12 +74,18 @@ void Response::__resolve_uri() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
   }
-  // TODO: rootの末尾に/入ってるとき
-  if (__request_info_.uri_ == "/") {
-    __file_path_ = __config_.root_ + "/" + __config_.index_;
-  } else {
-    __file_path_ = __config_.root_ + __request_info_.uri_;
+  // NOTE: rootは末尾が"/"ではないことが前提
+  __file_path_ = __config_.root_ + __request_info_.uri_;
+  std::cout << "root:" << __config_.root_ << std::endl;
+  std::cout << "uri:" << __request_info_.uri_ << std::endl;
+  // NOTE: 末尾が"/"でないとディレクトリと認識しない, 挙動としてはnginxもそう
+  // NOTE: indexがなければディレクトリの形のままで, 後にautoindexの処理に入る
+  //       indexがあれば, ファイルの形になりautoindexは無視される
+  if (has_suffix(__file_path_, "/")) {
+    __file_path_ += __config_.index_;
   }
+  std::cout << "index:" << __config_.index_ << std::endl;
+  std::cout << "filepath:" << __file_path_ << std::endl;
 }
 
 bool Response::__is_minus_depth() {
@@ -103,13 +109,18 @@ void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
   }
-  if (!is_file_exists(__file_path_)) {
+  if (!is_path_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
     return;
   }
   if (!is_accessible(__file_path_, R_OK)) {
     // TODO: Permission error が 403なのか確かめてない
     __status_code_ = FORBIDDEN_403;
+    return;
+  }
+  // TODO: POSTはディレクトリの時どう処理するか確かめてない
+  if (has_suffix(__file_path_, "/") && !__config_.autoindex_) {
+    __status_code_ = FORBIDDEN_403; // nginxに合わせた
     return;
   }
   __status_code_ = OK_200;
@@ -130,14 +141,8 @@ void Response::__set_error_page_body() {
 void Response::__set_body() {
   if (has_suffix(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
-  } else if (is_dir(__file_path_)) {
-    if (__config_.autoindex_) {
-      // TODO: index.htmlがあるかどうかの確認
-      __body_ = read_dir_tostring(__file_path_);
-    } else {
-      // TODO: 適切なエラーページ
-      __body_ = "autoindex off";
-    }
+  } else if (has_suffix(__file_path_, "/")) {
+    __body_ = read_dir_tostring(__file_path_);
   } else {
     __body_ = read_file_tostring(__file_path_);
   }

@@ -92,9 +92,9 @@ TEST(util_test, test_read_file_tostring) {
 }
 
 TEST(util_test, test_is_file_exists) {
-  EXPECT_TRUE(is_file_exists(TEST_FILE));
-  EXPECT_TRUE(is_file_exists(EMPTY_FILE));
-  EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
+  EXPECT_TRUE(is_path_exists(TEST_FILE));
+  EXPECT_TRUE(is_path_exists(EMPTY_FILE));
+  EXPECT_FALSE(is_path_exists(NO_SUCH_FILE));
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 

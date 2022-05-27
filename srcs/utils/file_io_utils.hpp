@@ -3,8 +3,7 @@
 
 #include <string>
 
-bool        is_file_exists(const std::string &path);
-bool        is_dir(const std::string &path);
+bool        is_path_exists(const std::string &path);
 std::string read_dir_tostring(const std::string &file_path);
 std::string read_file_tostring(const std::string &file_path);
 bool        remove_file(const std::string &file_path);

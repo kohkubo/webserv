@@ -14,34 +14,17 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-// TODO: dirctoryについては別処理にする
-bool is_file_exists(const std::string &path) {
+bool is_path_exists(const std::string &path) {
   struct stat file_info;
 
   if (stat(path.c_str(), &file_info) == -1) {
-    std::cout << "error: is_file_exists: " << path << std::endl;
-    return false; // TODO: エラーを呼び出し元に通知
+    std::cout << "error: is_path_exists: " << path << std::endl;
+    return false;
   }
-  // TODO: 実行可能か確認する？
+  // TODO: POSTの時はS_IFDIR(ディレクトリ)を許容するか
   switch ((file_info.st_mode & S_IFMT)) {
   case S_IFREG:
     return true;
-  case S_IFDIR:
-    return true;
-  default:
-    return false;
-  }
-}
-
-// TODO: is_file_existsと処理をまとめたい
-bool is_dir(const std::string &path) {
-  struct stat file_info;
-
-  if (stat(path.c_str(), &file_info) == -1) {
-    std::cout << "error: is_file_exists: " << path << std::endl;
-    return false; // TODO: エラーを呼び出し元に通知
-  }
-  switch ((file_info.st_mode & S_IFMT)) {
   case S_IFDIR:
     return true;
   default:
