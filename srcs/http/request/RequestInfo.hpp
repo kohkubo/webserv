@@ -60,9 +60,6 @@ public:
     // TODO: chunked
     return content_length_ != 0;
   }
-  std::string &get_field_value(const std::string &field_name) {
-    return __field_map_[field_name];
-  }
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */
