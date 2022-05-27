@@ -30,7 +30,8 @@ TEST(http_test, create_response_info_get_normal) {
                        "</html>";
   Config      config;
   config.locations_.push_back(Location());
-  config.locations_[0].root_  = "../html";
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_  = "tdata/html";
   config.locations_[0].index_ = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
@@ -45,7 +46,8 @@ TEST(http_test, create_response_info_get_normal) {
 TEST(http_test, create_response_info_get_403) {
   Config config;
   config.locations_.push_back(Location());
-  config.locations_[0].root_  = "../html";
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_  = "tdata/html";
   config.locations_[0].index_ = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
@@ -53,9 +55,9 @@ TEST(http_test, create_response_info_get_403) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  system("chmod 000 ../html/000.html");
+  system("chmod 000 tdata/html/000.html");
   Response response(config, request_info);
-  system("chmod 644 ../html/000.html");
+  system("chmod 644 tdata/html/000.html");
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Content-Length: 145\r\n\
@@ -78,19 +80,20 @@ default error page\n\
 TEST(http_test, create_response_info_get_403_config_error_pages) {
   Config config;
   config.locations_.push_back(Location());
-  config.locations_[0].root_  = "../html";
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_  = "tdata/html";
   config.locations_[0].index_ = "index.html";
 
-  config.error_pages_[403]    = "../html/forbidden.html";
+  config.error_pages_[403]    = "tdata/html/forbidden.html";
   RequestInfo request_info;
   request_info.method_  = GET;
   request_info.uri_     = "/000.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  system("chmod 000 ../html/000.html");
+  system("chmod 000 tdata/html/000.html");
   Response response(config, request_info);
-  system("chmod 644 ../html/000.html");
+  system("chmod 644 tdata/html/000.html");
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Content-Length: 9\r\n\

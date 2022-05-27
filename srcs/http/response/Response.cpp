@@ -43,7 +43,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     , __status_code_(NONE) {
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
-  __resolve_uri();
+  __make_file_path();
   switch (__request_info_.method_) {
   // TODO:
   // methodの前処理をどこまで共通化するのか。一旦個別に実装して、最後リファクタで考えるのがよい。
@@ -70,14 +70,32 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   }
 }
 
-void Response::__resolve_uri() {
-  // TODO: rootの末尾に/入ってるとき
-  if (__request_info_.uri_ == "/") {
-    __file_path_ =
-        __config_.locations_[0].root_ + "/" + __config_.locations_[0].index_;
-  } else {
-    __file_path_ = __config_.locations_[0].root_ + __request_info_.uri_;
+static std::string filepath_dirname(const std::string &filepath) {
+  std::string res = filepath;
+  std::cout << "filepath_dirname: " << filepath << std::endl;
+  if (res.back() == '/') {
+    return res;
   }
+  return res.substr(0, res.find_last_of('/')) + "/";
+}
+
+void Response::__make_file_path() {
+  // TODO: rootの末尾に/入ってるとき
+  std::string dirname = filepath_dirname(__request_info_.uri_);
+  std::cout << "dirname: " << dirname << std::endl;
+  std::vector<Location>::const_iterator location_itr =
+      __config_.locations_.begin();
+  for (; location_itr != __config_.locations_.end(); ++location_itr) {
+    if (dirname == location_itr->location_path_) {
+      if (dirname == __request_info_.uri_) {
+        __file_path_ = location_itr->root_ + "/" + location_itr->index_;
+      } else {
+        __file_path_ = location_itr->root_ + __request_info_.uri_;
+      }
+      return ;
+    }
+  }
+  __status_code_ = UNKNOWN_ERROR_520;
 }
 
 bool Response::__is_minus_depth() {

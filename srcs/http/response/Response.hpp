@@ -40,7 +40,7 @@ private:
   void        __make_message_string();
   void        __make_bodiless_message_string();
 
-  void        __resolve_uri();
+  void        __make_file_path();
   bool        __is_error_status_code();
   bool        __is_minus_depth();
   void        __check_filepath_status();
