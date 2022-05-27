@@ -52,9 +52,8 @@ bool Connection::receive_request(connFd conn_fd) {
   }
   std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
   __buffer_.append(recv_data);
-  // TODO:
-  // conn_fdを__create_transactionに渡して、transactionが内部でconn_fdを持ったほうが良さそう?
-  // kohkubo
+  // TODO: conn_fdを__create_transactionに渡して
+  // transactionが内部でconn_fdを持ったほうが良さそう? kohkubo
   __create_transaction();
   return false;
 }
