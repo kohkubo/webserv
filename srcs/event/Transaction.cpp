@@ -19,17 +19,17 @@ void Transaction::__set_response_for_bad_request() {
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 bool Transaction::parse_single_request(std::string     &request_buffer,
                                        const confGroup &conf_group) {
-  TransactionState &state = __transaction_state_;
-  if (state == RECEIVING_STARTLINE || state == RECEIVING_HEADER) {
+  if (__transaction_state_ == RECEIVING_STARTLINE ||
+      __transaction_state_ == RECEIVING_HEADER) {
     __parse_single_line(request_buffer, conf_group);
   }
-  if (state == RECEIVING_BODY &&
+  if (__transaction_state_ == RECEIVING_BODY &&
       __request_info_.has_request_body(request_buffer)) {
     parse_body(request_buffer);
   }
-  if (!is_sending())
+  if (__transaction_state_ != SENDING)
     return false;
-  if (is_close())
+  if (__request_info_.is_close_)
     return false;
   return true;
 }
