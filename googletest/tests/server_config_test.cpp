@@ -38,7 +38,9 @@ TEST(server_config_test, server_exception) {
 TEST(server_config_test, parse_string_derective_exception) {
   {
     std::string str = "server {\n"
+                      "location / {\n"
                       "root ;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -47,7 +49,9 @@ TEST(server_config_test, parse_string_derective_exception) {
   }
   {
     std::string str = "server {\n"
+                      "location / {\n"
                       "root 80\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -60,6 +64,9 @@ TEST(server_config_test, parse_string_derective) {
   {
     std::string str = "server {\n"
                       "server_name example.com;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -69,6 +76,9 @@ TEST(server_config_test, parse_string_derective) {
   {
     std::string str = "server {\n"
                       "server_name    example.com    ;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -81,6 +91,9 @@ TEST(server_config_test, listen_except) {
   {
     std::string str = "server {\n"
                       "listen 888\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -90,6 +103,9 @@ TEST(server_config_test, listen_except) {
   {
     std::string str = "server {\n"
                       "listen ;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -102,6 +118,9 @@ TEST(server_config_test, parse_listen) {
   {
     std::string str = "server {\n"
                       "listen 888;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -111,6 +130,9 @@ TEST(server_config_test, parse_listen) {
   {
     std::string str = "server {\n"
                       "listen 192.168.0.1;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -120,6 +142,9 @@ TEST(server_config_test, parse_listen) {
   {
     std::string str = "server {\n"
                       "listen 192.168.0.1:80;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -130,6 +155,9 @@ TEST(server_config_test, parse_listen) {
   {
     std::string str = "server {\n"
                       "listen localhost:80;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
 
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -144,6 +172,9 @@ TEST(server_config_test, parse_map_directive) {
     std::string str = "server {\n"
                       "error_page 404 /404.html;\n"
                       "error_page 500 /500.html;\n"
+                      "location / {\n"
+                      "root /var/www/html;\n"
+                      "}\n"
                       "}\n";
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config      config(l.begin(), l.end());
@@ -156,7 +187,9 @@ TEST(server_config_test, parse_map_directive) {
 TEST(server_config_test, parse_boolean_directive) {
   {
     std::string str = "server {\n"
+                      "location / {\n"
                       "autoindex on;\n"
+                      "}\n"
                       "}\n";
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config      config(l.begin(), l.end());
@@ -164,7 +197,9 @@ TEST(server_config_test, parse_boolean_directive) {
   }
   {
     std::string str = "server {\n"
+                      "location / {\n"
                       "autoindex off;\n"
+                      "}\n"
                       "}\n";
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config      config(l.begin(), l.end());
@@ -176,6 +211,9 @@ TEST(server_config_test, parse_sizet_directive) {
   {
     std::string str = "server {\n"
                       "client_max_body_size 1000;\n"
+                      "location / {\n"
+                      "root /var/www;\n"
+                      "}\n"
                       "}\n";
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config      config(l.begin(), l.end());
@@ -186,7 +224,9 @@ TEST(server_config_test, parse_sizet_directive) {
 TEST(server_config_test, parse_vector_directive) {
   {
     std::string str = "server {\n"
+                      "location / {\n"
                       "limit_except GET POST;\n"
+                      "}\n"
                       "}\n";
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config      config(l.begin(), l.end());
