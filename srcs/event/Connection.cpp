@@ -20,25 +20,26 @@ Transaction &Connection::__get_last_transaction() {
   return __transaction_queue_.back();
 }
 
-// TODO: 関数名を適切に変更したほうがよい?
-// transactionを作る以上のことをしている。
+// TODO:
+// 関数名を適切に変更したほうがよい。create_transaction以外のことを行っている。
 void Connection::__create_transaction() {
   while (1) {
     Transaction &transaction = __get_last_transaction();
     // ここ何しているの??
     // リクエストのパース
+    // TODO: is_continue以外の名前が良さそう
     bool is_continue = transaction.handle_request(__buffer_, __conf_group_);
-    if (is_continue) {
-      // TODO: continueのときに新たにTransactionを生成するのはなぜか? kohkubo
-      __transaction_queue_.push_back(Transaction());
-      continue;
-    } else {
+    if (is_continue == false) {
       return;
     }
+    // TODO: continueのときに新たにTransactionを生成するのはなぜか? kohkubo
+    __transaction_queue_.push_back(Transaction());
   }
 }
 
 // 通信がクライアントから閉じられた時trueを返す。
+// TODO:
+// receive_request以上の仕事をしている感じがするので、__create_transactionを外に出してみて、アルゴリズムを見直して見るのがよいと思います
 bool Connection::receive_request(connFd conn_fd) {
   const int         buf_size = 2048;
   std::vector<char> buf(buf_size);
