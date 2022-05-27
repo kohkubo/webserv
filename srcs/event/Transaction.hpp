@@ -28,17 +28,10 @@ private:
   const Config    *__conf_;
 
 private:
-  std::string __getline_from_buffer(std::string &buf);
-  bool        __check_line(const std::string &request_buffer);
-  void        __parse_single_line(std::string     &request_buffer,
-                                  const confGroup &conf_group);
   void        __set_response_for_bad_request();
   bool        __is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
-  void          __parse_start_line(std::string &buf);
-  void          __parse_header(std::string &buf, const confGroup &conf_group);
-  void          __parse_body(std::string &buf);
   bool          __getline(std::string &request_buffer, std::string &line);
   const Config *__detect_config(const confGroup &conf_group);
 
