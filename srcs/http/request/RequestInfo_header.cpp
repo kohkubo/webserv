@@ -16,6 +16,7 @@ bool RequestInfo::parse_request_header(const std::string &header_line) {
   // call each field's parser
   __parse_request_host();
   __parse_request_connection();
+  __parse_request_transfer_encoding();
   __parse_request_content_length();
   return true;
 }
@@ -72,9 +73,21 @@ void RequestInfo::__parse_request_connection() {
   }
 }
 
+// TODO: Transfer-Encodingはカンマ区切りのフィールド
+void RequestInfo::__parse_request_transfer_encoding() {
+  if (!__field_map_.count("Transfer-Encoding")) {
+    return;
+  }
+  std::string value = __field_map_["Transfer-Encoding"];
+  if (value == "chunked") {
+    is_chunked_ = true;
+  }
+}
+
 void RequestInfo::__parse_request_content_length() {
   if (!__field_map_.count("Content-Length")) {
     return;
   }
+  // TODO: 例外確認する必要あり？
   content_length_ = atoi(__field_map_["Content-Length"].c_str());
 }

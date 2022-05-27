@@ -39,6 +39,7 @@ private:
   size_t      __get_body_size() const { return content_length_; }
   void        __parse_request_host();
   void        __parse_request_connection();
+  void        __parse_request_transfer_encoding();
   void        __parse_request_content_length();
   void        __parse_request_values(const std::string &request_body);
 
