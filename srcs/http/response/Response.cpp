@@ -71,11 +71,14 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 }
 
 void Response::__resolve_uri() {
-  // TODO: rootの末尾に/入ってるとき
-  if (__request_info_.uri_ == "/") {
-    __file_path_ = __config_.root_ + "/" + __config_.index_;
-  } else {
-    __file_path_ = __config_.root_ + __request_info_.uri_;
+  // rootは末尾が"/"ではないことが前提
+  __file_path_ = __config_.root_ + __request_info_.uri_;
+  // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
+  if (has_suffix(__file_path_, "/") &&
+      is_file_exists(__file_path_ + __config_.index_)) {
+    // indexを追記したパスが存在すれば採用, autoindexは無視される
+    // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
+    __file_path_ += __config_.index_;
   }
 }
 
@@ -102,6 +105,20 @@ void Response::__check_filepath_status() {
   }
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
+  }
+  // TODO: POSTはディレクトリの時どう処理するのか
+  // TODO: 以下は別関数にするか整理する
+  if (has_suffix(__file_path_, "/")) {
+    if (is_dir_exists(__file_path_)) {
+      if (!__config_.autoindex_) {
+        __status_code_ = FORBIDDEN_403; // nginxに合わせた
+      } else {
+        __status_code_ = OK_200;
+      }
+    } else {
+      __status_code_ = NOT_FOUND_404;
+    }
+    return;
   }
   if (!is_file_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
@@ -130,6 +147,8 @@ void Response::__set_error_page_body() {
 void Response::__set_body() {
   if (has_suffix(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
+  } else if (has_suffix(__file_path_, "/")) {
+    __body_ = __create_autoindex_body(__file_path_);
   } else {
     __body_ = read_file_tostring(__file_path_);
   }

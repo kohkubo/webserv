@@ -31,6 +31,7 @@ private:
   Response();
   std::string __read_file_tostring_cgi(const std::string              &path,
                                        const std::vector<std::string> &env);
+  std::string __create_autoindex_body(const std::string &file_path);
 
   void        __set_status_phrase();
   void        __set_general_header();

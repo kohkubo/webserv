@@ -46,11 +46,11 @@ public:
       , listen_port_("80")
       , client_max_body_size_(0)
       , server_name_("")
-      , root_("./html/")
-      , index_("index.html")
+      , root_("")
+      , index_("")
       , error_pages_()
       , return_()
-      , autoindex_(true)
+      , autoindex_(false)
       , limit_except_()
       , addrinfo_(NULL) {
     try {
