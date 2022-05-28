@@ -18,44 +18,40 @@ void Transaction::set_response_for_bad_request() {
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 void Transaction::handle_request(std::string &request_buffer) {
-  try {
-    if (__transaction_state_ == RECEIVING_STARTLINE ||
-        __transaction_state_ == RECEIVING_HEADER) {
-      std::string line;
-      while (__getline(request_buffer, line)) {
-        if (__transaction_state_ == RECEIVING_STARTLINE) {
-          __request_info_.check_first_mulit_blank_line(line);
-          if (__request_info_.is_blank_first_line_ == true) {
-            continue;
-          }
-          __request_info_.check_bad_parse_request_start_line(line);
-          __request_info_.parse_request_start_line(line);
-          __transaction_state_ = RECEIVING_HEADER;
-        } else if (__transaction_state_ == RECEIVING_HEADER) {
-          if (line != "") {
-            __request_info_.store_request_header_field_map(line);
-            continue;
-          }
-          __request_info_.parse_request_header();
-          // TODO: チャンク or content_length_ != 0
-          if (__request_info_.content_length_ != 0) {
-            __transaction_state_ = RECEIVING_BODY;
-          } else {
-            __transaction_state_ = SENDING;
-            return;
-          }
+  if (__transaction_state_ == RECEIVING_STARTLINE ||
+      __transaction_state_ == RECEIVING_HEADER) {
+    std::string line;
+    while (__getline(request_buffer, line)) {
+      if (__transaction_state_ == RECEIVING_STARTLINE) {
+        __request_info_.check_first_mulit_blank_line(line);
+        if (__request_info_.is_blank_first_line_ == true) {
+          continue;
+        }
+        __request_info_.check_bad_parse_request_start_line(line);
+        __request_info_.parse_request_start_line(line);
+        __transaction_state_ = RECEIVING_HEADER;
+      } else if (__transaction_state_ == RECEIVING_HEADER) {
+        if (line != "") {
+          __request_info_.store_request_header_field_map(line);
+          continue;
+        }
+        __request_info_.parse_request_header();
+        // TODO: チャンク or content_length_ != 0
+        if (__request_info_.content_length_ != 0) {
+          __transaction_state_ = RECEIVING_BODY;
+        } else {
+          __transaction_state_ = SENDING;
+          return;
         }
       }
     }
-    if (__transaction_state_ == RECEIVING_BODY) {
-      std::string request_body;
-      if (__get_request_body(request_buffer, request_body)) {
-        __request_info_.parse_request_body(request_body);
-        __transaction_state_ = SENDING;
-      }
+  }
+  if (__transaction_state_ == RECEIVING_BODY) {
+    std::string request_body;
+    if (__get_request_body(request_buffer, request_body)) {
+      __request_info_.parse_request_body(request_body);
+      __transaction_state_ = SENDING;
     }
-  } catch (const RequestInfo::BadRequestException &e) {
-    set_response_for_bad_request();
   }
 }
 

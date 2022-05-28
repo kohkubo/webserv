@@ -24,9 +24,6 @@ void Connection::create_sequential_transaction() {
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }
-    if (transaction.get_request_info().is_close_ == true) {
-      return;
-    }
     __transaction_queue_.push_back(Transaction(__conn_fd_));
   }
 }
