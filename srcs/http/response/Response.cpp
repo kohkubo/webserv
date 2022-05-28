@@ -73,10 +73,11 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 
 static std::string filepath_dirname(const std::string &filepath) {
   std::string res = filepath;
-  if (res.back() == '/') {
-    return res;
+  size_t pos = res.find_last_of("/");
+  if (pos != std::string::npos) {
+    res = res.substr(0, pos);
   }
-  return res.substr(0, res.find_last_of('/')) + "/";
+  return res + "/";
 }
 
 void Response::__make_file_path() {
