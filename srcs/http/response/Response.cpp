@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <map>
 
 #include "config/Config.hpp"
 #include "http/const/const_error_contents.hpp"
@@ -72,7 +73,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 
 static std::string filepath_dirname(const std::string &filepath) {
   std::string res = filepath;
-  std::cout << "filepath_dirname: " << filepath << std::endl;
   if (res.back() == '/') {
     return res;
   }
@@ -82,7 +82,6 @@ static std::string filepath_dirname(const std::string &filepath) {
 void Response::__make_file_path() {
   // TODO: rootの末尾に/入ってるとき
   std::string dirname = filepath_dirname(__request_info_.uri_);
-  std::cout << "dirname: " << dirname << std::endl;
   std::vector<Location>::const_iterator location_itr =
       __config_.locations_.begin();
   for (; location_itr != __config_.locations_.end(); ++location_itr) {
@@ -135,15 +134,23 @@ void Response::__check_filepath_status() {
 }
 
 void Response::__set_error_page_body() {
-  // TODO: locationの扱いどうする?
-  std::map<int, std::string>::const_iterator it =
-      __config_.error_pages_.find(__status_code_);
-  if (it != __config_.error_pages_.end()) {
-    __file_path_ = __config_.locations_[0].root_ + "/" + it->second;
-    __body_      = read_file_tostring(__file_path_);
-  } else {
-    __body_ = g_error_page_contents_map[__status_code_];
+  std::string dirname = filepath_dirname(__request_info_.uri_);
+  std::vector<Location>::const_iterator location_itr =
+      __config_.locations_.begin();
+  for (; location_itr != __config_.locations_.end(); ++location_itr) {
+    if (dirname == location_itr->location_path_) {
+      std::map<int, std::string>::const_iterator it =
+          __config_.error_pages_.find(__status_code_);
+      if (it != __config_.error_pages_.end()) {
+        __file_path_ = location_itr->root_ + "/" + it->second;
+        __body_      = read_file_tostring(__file_path_);
+      } else {
+        __body_ = g_error_page_contents_map[__status_code_];
+      }
+      return ;
+    }
   }
+  __status_code_ = UNKNOWN_ERROR_520;
 }
 
 void Response::__set_body() {
