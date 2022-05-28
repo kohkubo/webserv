@@ -36,8 +36,9 @@ void Transaction::handle_request(std::string &request_buffer) {
           continue;
         }
         __request_info_.parse_request_header();
-        // TODO: チャンク or content_length_ != 0
-        if (__request_info_.content_length_ != 0) {
+        // TODO: validate request_header
+        if (__request_info_.content_length_ != 0 ||
+            __request_info_.is_chunked_ == true) {
           __transaction_state_ = RECEIVING_BODY;
         } else {
           __transaction_state_ = SENDING;
@@ -47,10 +48,14 @@ void Transaction::handle_request(std::string &request_buffer) {
     }
   }
   if (__transaction_state_ == RECEIVING_BODY) {
-    std::string request_body;
-    if (__get_request_body(request_buffer, request_body)) {
-      __request_info_.parse_request_body(request_body);
-      __transaction_state_ = SENDING;
+    if (__request_info_.is_chunked_ == true) {
+      // parse_chunk
+    } else {
+      std::string request_body;
+      if (__get_request_body(request_buffer, request_body)) {
+        __request_info_.parse_request_body(request_body);
+        __transaction_state_ = SENDING;
+      }
     }
   }
 }
