@@ -50,11 +50,7 @@ bool Connection::append_receive_buffer() {
 
 struct pollfd Connection::create_pollfd() const {
   struct pollfd pfd = {__conn_fd_, POLLIN, 0};
-  if (__transaction_queue_.empty()) {
-    return pfd;
-  }
-  if (get_front_transaction().get_transaction_state() == SENDING &&
-      get_front_transaction().get_request_info().is_close_) {
+  if (get_front_transaction().get_transaction_state() == CLOSING) {
     pfd.events = POLLOUT;
   } else if (get_front_transaction().get_transaction_state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
