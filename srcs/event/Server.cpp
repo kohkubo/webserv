@@ -23,15 +23,17 @@ void Server::__add_connfd_to_pollfds() {
 void Server::__connection_receive_handler(connFd conn_fd) {
   bool is_close = __connection_map_[conn_fd].append_receive_buffer();
   if (is_close) {
+    close(conn_fd);
     __connection_map_.erase(conn_fd);
     return;
   }
   __connection_map_[conn_fd].create_sequential_transaction();
 }
 
-void Server::__insert_connection_map(connFd conn_fd) {
+void Server::__insert_connection_map(int listen_fd) {
+  connFd conn_fd = xaccept(listen_fd);
   __connection_map_.insert(std::make_pair(
-      xaccept(conn_fd), Connection(conn_fd, __conf_group_map_[conn_fd])));
+      conn_fd, Connection(conn_fd, __conf_group_map_[listen_fd])));
 }
 
 void Server::run_loop() {

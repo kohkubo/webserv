@@ -30,7 +30,7 @@ public:
       , __conf_group_(conf_group) {
     __transaction_queue_.push_back(Transaction(conn_fd));
   }
-  ~Connection() { close(__conn_fd_); }
+  ~Connection() {}
 
   void          create_sequential_transaction();
   struct pollfd create_pollfd() const;
