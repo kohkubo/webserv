@@ -148,7 +148,7 @@ void Response::__set_body() {
   if (has_suffix(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
   } else if (has_suffix(__file_path_, "/")) {
-    __body_ = read_dir_tostring(__file_path_);
+    __body_ = __create_autoindex_body(__file_path_);
   } else {
     __body_ = read_file_tostring(__file_path_);
   }
