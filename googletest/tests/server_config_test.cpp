@@ -50,7 +50,7 @@ TEST(server_config_test, parse_string_derective_exception) {
   {
     std::string str = "server {\n"
                       "location / {\n"
-                      "root 80\n"
+                      "root 80/\n"
                       "}\n"
                       "}\n";
 
@@ -65,7 +65,7 @@ TEST(server_config_test, parse_string_derective) {
     std::string str = "server {\n"
                       "server_name example.com;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 
@@ -77,7 +77,7 @@ TEST(server_config_test, parse_string_derective) {
     std::string str = "server {\n"
                       "server_name    example.com    ;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 
@@ -92,7 +92,7 @@ TEST(server_config_test, listen_except) {
     std::string str = "server {\n"
                       "listen 888\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 
@@ -104,7 +104,7 @@ TEST(server_config_test, listen_except) {
     std::string str = "server {\n"
                       "listen ;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 
@@ -119,7 +119,7 @@ TEST(server_config_test, parse_listen) {
     std::string str = "server {\n"
                       "listen 888;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 
@@ -131,7 +131,7 @@ TEST(server_config_test, parse_listen) {
     std::string str = "server {\n"
                       "listen 192.168.0.1;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 
@@ -143,7 +143,7 @@ TEST(server_config_test, parse_listen) {
     std::string str = "server {\n"
                       "listen 192.168.0.1:80;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 

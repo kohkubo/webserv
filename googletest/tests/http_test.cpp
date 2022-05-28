@@ -31,8 +31,8 @@ TEST(http_test, create_response_info_get_normal) {
   Config      config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_  = "tdata/html";
-  config.locations_[0].index_ = "index.html";
+  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
   request_info.uri_     = "/";
@@ -47,8 +47,8 @@ TEST(http_test, create_response_info_get_403) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_  = "tdata/html";
-  config.locations_[0].index_ = "index.html";
+  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
   request_info.uri_     = "/000.html";
@@ -81,10 +81,10 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_  = "tdata/html";
-  config.locations_[0].index_ = "index.html";
+  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].index_         = "index.html";
 
-  config.error_pages_[403]    = "forbidden.html";
+  config.error_pages_[403]            = "forbidden.html";
   RequestInfo request_info;
   request_info.method_  = GET;
   request_info.uri_     = "/000.html";
@@ -110,8 +110,8 @@ TEST(http_test, create_response_info_delete_normal) {
   Config      config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_    = "tdata/html";
-  config.locations_[0].index_   = "index.html";
+  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
   request_info.uri_     = "/delete_target.html";
@@ -128,8 +128,8 @@ TEST(http_test, create_response_info_delete_404) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_  = "tdata/html";
-  config.locations_[0].index_ = "index.html";
+  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
   request_info.uri_     = "/delete_target.html";
@@ -160,8 +160,8 @@ TEST(http_test, create_response_info_delete_403) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_  = "tdata/html";
-  config.locations_[0].index_ = "index.html";
+  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
   request_info.uri_     = "/000.html";
@@ -197,8 +197,8 @@ TEST(http_test, create_response_info_delete_400) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_  = "tdata/html";
-  config.locations_[0].index_ = "index.html";
+  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_         = DELETE;
   request_info.uri_            = "/hogehoge.html";
