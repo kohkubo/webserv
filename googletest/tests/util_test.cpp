@@ -98,15 +98,15 @@ TEST(util_test, test_is_file_exists) {
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 
-// TEST(util_test, is_minus_depth_test) {
-//   EXPECT_TRUE(is_minus_depth("../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("/../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("hoge/../../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("/hoge/../../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("hoge/../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("/hoge/../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("hoge/../hoge/../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
-// }
+TEST(util_test, is_minus_depth_test) {
+  EXPECT_TRUE(is_minus_depth("../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("hoge/../../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/hoge/../../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("/hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("hoge/../hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
+}

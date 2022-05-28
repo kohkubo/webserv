@@ -82,3 +82,20 @@ bool is_digits(const std::string &str) {
   }
   return true;
 }
+
+bool is_minus_depth(const std::string &filepath) {
+  tokenVector   tokens = tokenize(filepath, "/", "/");
+  tokenIterator it     = tokens.begin();
+
+  for (long depth = 0; it != tokens.end(); it++) {
+    if (*it == "..") {
+      depth--;
+    } else if (*it != ".") {
+      depth++;
+    }
+    if (depth < 0) {
+      return true;
+    }
+  }
+  return false;
+}
