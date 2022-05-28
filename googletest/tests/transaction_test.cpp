@@ -23,27 +23,27 @@ TEST(transaction_test, detect_properconf) {
                            "Host: peach.com\r\n"
                            "\r\n";
   {
-    Transaction t;
-    t.handle_request(apple_req, conf_group);
-    const Config *conf = t.get_conf();
+    Transaction t(-1);
+    t.handle_request(apple_req);
+    const Config *conf = t.get_proper_config(conf_group);
     EXPECT_EQ(conf->server_name_, "apple.com");
   }
   {
-    Transaction t;
-    t.handle_request(orange_req, conf_group);
-    const Config *conf = t.get_conf();
+    Transaction t(-1);
+    t.handle_request(orange_req);
+    const Config *conf = t.get_proper_config(conf_group);
     EXPECT_EQ(conf->server_name_, "orange.net");
   }
   {
-    Transaction t;
-    t.handle_request(banana_req, conf_group);
-    const Config *conf = t.get_conf();
+    Transaction t(-1);
+    t.handle_request(banana_req);
+    const Config *conf = t.get_proper_config(conf_group);
     EXPECT_EQ(conf->server_name_, "banana.com");
   }
   {
-    Transaction t;
-    t.handle_request(peach_req, conf_group);
-    const Config *conf = t.get_conf();
+    Transaction t(-1);
+    t.handle_request(peach_req);
+    const Config *conf = t.get_proper_config(conf_group);
     EXPECT_EQ(conf->server_name_, "apple.com");
   }
   // close all sockets
