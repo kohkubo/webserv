@@ -93,7 +93,6 @@ void Transaction::create_response(const Config *config) {
   __response_ = response.get_response_string();
 }
 
-// 送信が完了かつtransactionを保持する必要がないときtrueを返す。
 void Transaction::send_response() {
   const char *rest_str   = __response_.c_str() + __send_count_;
   size_t      rest_count = __response_.size() - __send_count_;
