@@ -40,7 +40,7 @@ public:
   Config(tokenIterator start, tokenIterator end)
       : listen_address_("0.0.0.0")
       , listen_port_("80")
-      , client_max_body_size_(0)
+      , client_max_body_size_(1024)
       , server_name_("")
       , error_pages_()
       , addrinfo_(NULL) {

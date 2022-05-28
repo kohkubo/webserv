@@ -15,11 +15,12 @@ struct Location {
   bool                       cgi_extension_;
 
   Location()
-      : root_("/")
+      : root_("html")
       , index_("index.html")
       , autoindex_(false)
       , return_()
-      , limit_except_() {}
+      , limit_except_()
+      , cgi_extension_(false) {}
 };
 
 #endif /* SRCS_CONFIG_LOCATION_HPP */
