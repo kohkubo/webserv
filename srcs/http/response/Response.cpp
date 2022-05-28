@@ -79,8 +79,6 @@ static std::string filepath_dirname(const std::string &filepath) {
   return res.substr(0, res.find_last_of('/')) + "/";
 }
 
-
-
 void Response::__make_file_path() {
   // TODO: rootの末尾に/入ってるとき
   std::string dirname = filepath_dirname(__request_info_.uri_);
@@ -108,28 +106,11 @@ void Response::__make_file_path() {
   __status_code_ = UNKNOWN_ERROR_520;
 }
 
-bool Response::__is_minus_depth() {
-  tokenVector   tokens = tokenize(__request_info_.uri_, "/", "/");
-  tokenIterator it     = tokens.begin();
-
-  for (long depth = 0; it != tokens.end(); it++) {
-    if (*it == "..") {
-      depth--;
-    } else if (*it != ".") {
-      depth++;
-    }
-    if (depth < 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
   }
-  if (__is_minus_depth()) {
+  if (is_minus_depth(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
   }
   // TODO: POSTはディレクトリの時どう処理するのか

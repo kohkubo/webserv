@@ -98,19 +98,6 @@ TEST(util_test, test_is_file_exists) {
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 
-// TEST(util_test, is_minus_depth_test) {
-//   EXPECT_TRUE(is_minus_depth("../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("/../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("hoge/../../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("/hoge/../../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("hoge/../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("/hoge/../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("hoge/../hoge/../fuga.html"));
-//   EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
-//   EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
-// }
-
 #define TEST_DIR "tdata/test_dir"
 #define EMPTY_DIR "tdata/empty_dir"
 
@@ -120,4 +107,17 @@ TEST(util_test, is_dir) {
   EXPECT_FALSE(is_dir(TEST_FILE));
   EXPECT_FALSE(is_dir(EMPTY_FILE));
   EXPECT_FALSE(is_dir(NO_SUCH_FILE));
+}
+
+TEST(util_test, is_minus_depth_test) {
+  EXPECT_TRUE(is_minus_depth("../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("hoge/../../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/hoge/../../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("/hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("hoge/../hoge/../fuga.html"));
+  EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
+  EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
 }
