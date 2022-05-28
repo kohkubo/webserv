@@ -32,6 +32,7 @@ private:
 private:
   bool __getline(std::string &request_buffer, std::string &line);
   bool __get_request_body(std::string &request_buffer, std::string &body);
+  bool __get_next_chunk(std::string &request_buffer, std::string &chunk);
 
 public:
   Transaction(connFd conn_fd)

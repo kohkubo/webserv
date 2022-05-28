@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 
 #include "http/const/const_delimiter.hpp"
+#include "http/request/RequestInfo.hpp"
 #include "http/response/Response.hpp"
 
 void Transaction::set_response_for_bad_request() {
@@ -48,10 +49,12 @@ void Transaction::handle_request(std::string &request_buffer) {
     }
   }
   if (__transaction_state_ == RECEIVING_BODY) {
+    std::string request_body;
     if (__request_info_.is_chunked_ == true) {
-      // parse_chunk
+      while (__get_next_chunk(request_buffer, request_body)) {
+        // add chunk_buffer
+      }
     } else {
-      std::string request_body;
       if (__get_request_body(request_buffer, request_body)) {
         __request_info_.parse_request_body(request_body);
         __transaction_state_ = SENDING;
@@ -76,6 +79,23 @@ bool Transaction::__get_request_body(std::string &request_buffer,
   }
   body = request_buffer.substr(0, __request_info_.content_length_);
   request_buffer.erase(0, __request_info_.content_length_);
+  return true;
+}
+
+bool Transaction::__get_next_chunk(std::string &request_buffer,
+                                   std::string &chunk) {
+  if (__request_info_.next_chunk_ == CHUNK_SIZE) {
+    return __getline(request_buffer, chunk);
+  }
+  if (request_buffer.size() < __request_info_.next_chunk_size_ + CRLF.size()) {
+    return false;
+  }
+  chunk = request_buffer.substr(0, __request_info_.next_chunk_size_);
+  request_buffer.erase(0, __request_info_.content_length_);
+  if (not has_prefix(request_buffer, CRLF)) {
+    throw RequestInfo::BadRequestException();
+  }
+  request_buffer.erase(0, CRLF.size());
   return true;
 }
 

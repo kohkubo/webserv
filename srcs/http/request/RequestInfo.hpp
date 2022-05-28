@@ -8,6 +8,8 @@
 #include "http/const/const_http_enums.hpp"
 #include "utils/tokenize.hpp"
 
+enum NextChunk { CHUNK_SIZE, CHUNK_DATA };
+
 class RequestInfo {
 private:
   std::map<std::string, std::string> __field_map_;
@@ -21,6 +23,8 @@ public:
   std::string              port_;
   bool                     is_close_;
   bool                     is_chunked_;
+  NextChunk                next_chunk_;
+  std::size_t              next_chunk_size_;
   std::size_t              content_length_;
   std::vector<std::string> values_;
 
@@ -40,6 +44,8 @@ public:
       , method_(UNKNOWN)
       , is_close_(false)
       , is_chunked_(false)
+      , next_chunk_(CHUNK_SIZE)
+      , next_chunk_size_(-1)
       , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
