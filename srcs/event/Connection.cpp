@@ -49,9 +49,8 @@ bool Connection::append_receive_buffer() {
 }
 
 struct pollfd Connection::create_pollfd() const {
-  struct pollfd    pfd   = {__conn_fd_, POLLIN, 0};
-  TransactionState state = __transaction_queue_.front().get_transaction_state();
-  if (state == SENDING) {
+  struct pollfd pfd = {__conn_fd_, POLLIN, 0};
+  if (__transaction_queue_.front().get_transaction_state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
