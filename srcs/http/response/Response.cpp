@@ -88,6 +88,7 @@ void Response::__make_file_path() {
     if (dirname == location_itr->location_path_) {
       if (dirname == __request_info_.uri_) {
         __file_path_ = location_itr->root_ + "/" + location_itr->index_;
+        std::cout << "__file_path_: " << __file_path_ << std::endl;
       } else {
         // rootは末尾が"/"ではないことが前提
         __file_path_ = location_itr->root_ + __request_info_.uri_;
@@ -99,8 +100,8 @@ void Response::__make_file_path() {
           // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
           __file_path_ += location_itr->index_;
         }
-        return;
       }
+      return;
     }
   }
   __status_code_ = UNKNOWN_ERROR_520;
