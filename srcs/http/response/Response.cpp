@@ -79,6 +79,14 @@ static std::string filepath_dirname(const std::string &filepath) {
   return res.substr(0, res.find_last_of('/')) + "/";
 }
 
+static bool is_dir(const std::string &filepath) {
+  struct stat st;
+  if (stat(filepath.c_str(), &st) == 0) {
+    return S_ISDIR(st.st_mode);
+  }
+  return false;
+}
+
 void Response::__make_file_path() {
   // TODO: rootの末尾に/入ってるとき
   std::string dirname = filepath_dirname(__request_info_.uri_);
@@ -89,9 +97,18 @@ void Response::__make_file_path() {
       if (dirname == __request_info_.uri_) {
         __file_path_ = location_itr->root_ + "/" + location_itr->index_;
       } else {
+        // rootは末尾が"/"ではないことが前提
         __file_path_ = location_itr->root_ + __request_info_.uri_;
+        // 末尾が"/"のものをディレクトリとして扱う,
+        // 挙動としてはnginxもそうだと思う
+        if (has_suffix(__file_path_, "/") &&
+            is_file_exists(__file_path_ + location_itr->index_)) {
+          // indexを追記したパスが存在すれば採用, autoindexは無視される
+          // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
+          __file_path_ += location_itr->index_;
+        }
+        return;
       }
-      return ;
     }
   }
   __status_code_ = UNKNOWN_ERROR_520;
@@ -121,6 +138,20 @@ void Response::__check_filepath_status() {
   if (__is_minus_depth()) {
     __status_code_ = NOT_FOUND_404;
   }
+  // TODO: POSTはディレクトリの時どう処理するのか
+  // TODO: 以下は別関数にするか整理する
+  if (has_suffix(__file_path_, "/")) {
+    if (is_dir_exists(__file_path_)) {
+      if (!__config_.locations_[0].autoindex_) {
+        __status_code_ = FORBIDDEN_403; // nginxに合わせた
+      } else {
+        __status_code_ = OK_200;
+      }
+    } else {
+      __status_code_ = NOT_FOUND_404;
+    }
+    return;
+  }
   if (!is_file_exists(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
     return;
@@ -147,7 +178,7 @@ void Response::__set_error_page_body() {
       } else {
         __body_ = g_error_page_contents_map[__status_code_];
       }
-      return ;
+      return;
     }
   }
   __status_code_ = UNKNOWN_ERROR_520;
@@ -156,6 +187,8 @@ void Response::__set_error_page_body() {
 void Response::__set_body() {
   if (has_suffix(__file_path_, ".sh")) {
     __body_ = __read_file_tostring_cgi(__file_path_, __request_info_.values_);
+  } else if (has_suffix(__file_path_, "/")) {
+    __body_ = __create_autoindex_body(__file_path_);
   } else {
     __body_ = read_file_tostring(__file_path_);
   }
