@@ -57,3 +57,15 @@ struct pollfd Connection::create_pollfd() const {
   }
   return pfd;
 }
+
+void Connection::send_response() {
+  Transaction &transaction = get_front_transaction();
+  transaction.send_response();
+  if (transaction.get_request_info().is_close_ == true) {
+    shutdown_write();
+    return;
+  }
+  if (transaction.is_send_all()) {
+    erase_front_transaction();
+  }
+}
