@@ -30,7 +30,7 @@ void Server::__connection_receive_handler(connFd conn_fd) {
   __connection_map_[conn_fd].create_sequential_transaction();
 }
 
-void Server::__insert_connection_map(int listen_fd) {
+void Server::__insert_connection_map(listenFd listen_fd) {
   connFd conn_fd = xaccept(listen_fd);
   __connection_map_.insert(std::make_pair(
       conn_fd, Connection(conn_fd, __conf_group_map_[listen_fd])));
