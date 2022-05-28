@@ -41,6 +41,7 @@ void Transaction::handle_request(std::string &request_buffer) {
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_ == true) {
           __transaction_state_ = RECEIVING_BODY;
+          break;
         } else {
           __transaction_state_ = SENDING;
           return;
@@ -100,7 +101,7 @@ bool Transaction::__get_next_chunk(std::string &request_buffer,
     return false;
   }
   chunk = request_buffer.substr(0, __request_info_.next_chunk_size_);
-  request_buffer.erase(0, __request_info_.content_length_);
+  request_buffer.erase(0, __request_info_.next_chunk_size_);
   if (not has_prefix(request_buffer, CRLF)) {
     throw RequestInfo::BadRequestException();
   }
