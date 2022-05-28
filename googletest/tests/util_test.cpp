@@ -6,10 +6,10 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-#define TEST_FILE          "../googletest/tdata/test.txt"
+#define TEST_FILE          "tdata/test.txt"
 #define TEST_CONTENT       "test"
-#define EMPTY_FILE         "../googletest/tdata/empty.txt"
-#define NO_PERMISSION_FILE "../googletest/tdata/no_permission.txt"
+#define EMPTY_FILE         "tdata/empty.txt"
+#define NO_PERMISSION_FILE "tdata/no_permission.txt"
 #define NO_SUCH_FILE       "no such file"
 
 TEST(util_test, test_has_suffix) {
@@ -110,3 +110,14 @@ TEST(util_test, test_is_file_exists) {
 //   EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
 //   EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
 // }
+
+#define TEST_DIR "tdata/test_dir"
+#define EMPTY_DIR "tdata/empty_dir"
+
+TEST(util_test, is_dir) {
+  EXPECT_TRUE(is_dir(TEST_DIR));
+  EXPECT_TRUE(is_dir(EMPTY_DIR));
+  EXPECT_FALSE(is_dir(TEST_FILE));
+  EXPECT_FALSE(is_dir(EMPTY_FILE));
+  EXPECT_FALSE(is_dir(NO_SUCH_FILE));
+}
