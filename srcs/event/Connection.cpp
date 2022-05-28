@@ -11,7 +11,7 @@
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
 
-void Connection::create_sequencial_transaction() {
+void Connection::create_sequential_transaction() {
   while (1) {
     Transaction &transaction = __transaction_queue_.back();
     try {

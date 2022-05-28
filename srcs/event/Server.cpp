@@ -26,7 +26,7 @@ void Server::__connection_receive_handler(connFd conn_fd) {
     __connection_map_.erase(conn_fd);
     return;
   }
-  __connection_map_[conn_fd].create_sequencial_transaction();
+  __connection_map_[conn_fd].create_sequential_transaction();
 }
 
 void Server::__insert_connection_map(connFd conn_fd) {

@@ -32,7 +32,7 @@ public:
   }
   ~Connection() { close(__conn_fd_); }
 
-  void          create_sequencial_transaction();
+  void          create_sequential_transaction();
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
   void          erase_front_transaction() { __transaction_queue_.pop_front(); }
@@ -42,8 +42,8 @@ public:
   }
   Transaction &get_back_transaction() { return __transaction_queue_.back(); }
   void         shutdown_write() {
-            shutdown(__conn_fd_, SHUT_WR);
-            get_front_transaction().set_transaction_state(CLOSING);
+    shutdown(__conn_fd_, SHUT_WR);
+    get_front_transaction().set_transaction_state(CLOSING);
   }
 
   void send_response() {
