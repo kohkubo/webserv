@@ -52,7 +52,16 @@ void Transaction::handle_request(std::string &request_buffer) {
     std::string request_body;
     if (__request_info_.is_chunked_ == true) {
       while (__get_next_chunk(request_buffer, request_body)) {
-        // add chunk_buffer
+        if (__request_info_.next_chunk_ == CHUNK_SIZE) {
+          __request_info_.set_next_chunk_size(request_body);
+        } else {
+          if (__request_info_.next_chunk_size_ == 0 && request_body == "") {
+            __request_info_.parse_request_body(__request_info_.unchunked_body_);
+            __transaction_state_ = SENDING;
+            return;
+          }
+          __request_info_.store_unchunked_body(request_body);
+        }
       }
     } else {
       if (__get_request_body(request_buffer, request_body)) {
