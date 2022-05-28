@@ -79,13 +79,7 @@ static std::string filepath_dirname(const std::string &filepath) {
   return res.substr(0, res.find_last_of('/')) + "/";
 }
 
-static bool is_dir(const std::string &filepath) {
-  struct stat st;
-  if (stat(filepath.c_str(), &st) == 0) {
-    return S_ISDIR(st.st_mode);
-  }
-  return false;
-}
+
 
 void Response::__make_file_path() {
   // TODO: rootの末尾に/入ってるとき
