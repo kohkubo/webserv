@@ -47,12 +47,12 @@ void Transaction::handle_request(std::string &request_buffer) {
         }
       }
     }
-    if (__transaction_state_ == RECEIVING_BODY &&
-        __request_info_.has_request_body(request_buffer)) {
-      std::string request_body =
-          __request_info_.cut_request_body(request_buffer);
-      __request_info_.parse_request_body(request_body);
-      __transaction_state_ = SENDING;
+    if (__transaction_state_ == RECEIVING_BODY) {
+      std::string request_body;
+      if (__get_request_body(request_buffer, request_body)) {
+        __request_info_.parse_request_body(request_body);
+        __transaction_state_ = SENDING;
+      }
     }
   } catch (const RequestInfo::BadRequestException &e) {
     set_response_for_bad_request();
@@ -65,6 +65,16 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
     return false;
   line = request_buffer.substr(0, pos);
   request_buffer.erase(0, pos + 2);
+  return true;
+}
+
+bool Transaction::__get_request_body(std::string &request_buffer,
+                                     std::string &body) {
+  if (request_buffer.size() < __request_info_.content_length_) {
+    return false;
+  }
+  body = request_buffer.substr(0, __request_info_.content_length_);
+  request_buffer.erase(0, __request_info_.content_length_);
   return true;
 }
 
