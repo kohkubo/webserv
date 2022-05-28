@@ -49,23 +49,24 @@ bool Connection::append_receive_buffer() {
 }
 
 struct pollfd Connection::create_pollfd() const {
-  struct pollfd pfd = {__conn_fd_, POLLIN, 0};
-  if (get_front_transaction().get_transaction_state() == CLOSING) {
+  struct pollfd    pfd   = {__conn_fd_, POLLIN, 0};
+  TransactionState state = __transaction_queue_.front().get_transaction_state();
+  if (state == CLOSING) {
     pfd.events = POLLOUT;
-  } else if (get_front_transaction().get_transaction_state() == SENDING) {
+  } else if (state == SENDING) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
 }
 
 void Connection::send_response() {
-  Transaction &transaction = get_front_transaction();
+  Transaction &transaction = __transaction_queue_.front();
   transaction.send_response();
   if (transaction.get_request_info().is_close_ == true) {
     shutdown_write();
     return;
   }
   if (transaction.is_send_all()) {
-    erase_front_transaction();
+    __transaction_queue_.pop_front();
   }
 }

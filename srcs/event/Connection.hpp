@@ -36,15 +36,9 @@ public:
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
   void          send_response();
-  void          erase_front_transaction() { __transaction_queue_.pop_front(); }
-  Transaction  &get_front_transaction() { return __transaction_queue_.front(); }
-  const Transaction &get_front_transaction() const {
-    return __transaction_queue_.front();
-  }
-  Transaction &get_back_transaction() { return __transaction_queue_.back(); }
-  void         shutdown_write() {
+  void          shutdown_write() {
     shutdown(__conn_fd_, SHUT_WR);
-    get_front_transaction().set_transaction_state(CLOSING);
+    __transaction_queue_.front().set_transaction_state(CLOSING);
   }
 };
 
