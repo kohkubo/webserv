@@ -71,7 +71,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 }
 
 void Response::__resolve_uri() {
-  if (__is_minus_depth()) {
+  if (is_minus_depth(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
   }
   // rootは末尾が"/"ではないことが前提
@@ -83,23 +83,6 @@ void Response::__resolve_uri() {
     // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
     __file_path_ += __config_.index_;
   }
-}
-
-bool Response::__is_minus_depth() {
-  tokenVector   tokens = tokenize(__request_info_.uri_, "/", "/");
-  tokenIterator it     = tokens.begin();
-
-  for (long depth = 0; it != tokens.end(); it++) {
-    if (*it == "..") {
-      depth--;
-    } else if (*it != ".") {
-      depth++;
-    }
-    if (depth < 0) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void Response::__check_filepath_status() {
