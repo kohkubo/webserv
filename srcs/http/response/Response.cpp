@@ -82,23 +82,6 @@ void Response::__resolve_uri() {
   }
 }
 
-bool Response::__is_minus_depth() {
-  tokenVector   tokens = tokenize(__request_info_.uri_, "/", "/");
-  tokenIterator it     = tokens.begin();
-
-  for (long depth = 0; it != tokens.end(); it++) {
-    if (*it == "..") {
-      depth--;
-    } else if (*it != ".") {
-      depth++;
-    }
-    if (depth < 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
