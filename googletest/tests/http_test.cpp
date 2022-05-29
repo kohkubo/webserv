@@ -73,9 +73,9 @@ default error page\n\
 }
 
 TEST(http_test, create_response_info_get_403_config_error_pages) {
-  Config config = Config();
-  config.root_  = "../html";
-  config.index_ = "index.html";
+  Config config            = Config();
+  config.root_             = "../html";
+  config.index_            = "index.html";
 
   config.error_pages_[403] = "../html/forbidden.html";
   RequestInfo request_info;

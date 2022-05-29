@@ -3,12 +3,6 @@
 RequestInfo::BadRequestException::BadRequestException(const std::string &msg)
     : logic_error(msg) {}
 
-std::string RequestInfo::__cut_buffer(std::string &buf, std::size_t len) {
-  std::string res = buf.substr(0, len);
-  buf             = buf.substr(len);
-  return res;
-}
-
 // TODO: フィールド追加
 bool RequestInfo::__is_comma_sparated(std::string &field_name) {
   (void)field_name;

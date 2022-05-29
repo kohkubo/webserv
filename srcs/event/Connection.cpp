@@ -11,39 +11,28 @@
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
 
-Transaction &Connection::__get_last_transaction() {
-  if (__transaction_queue_.empty())
-    __transaction_queue_.push_back(Transaction());
-  return __transaction_queue_.back();
-}
-
-void Connection::__create_transaction(const std::string &data) {
-  __buffer_.append(data);
+void Connection::create_sequential_transaction() {
   while (1) {
-    Transaction &transaction = __get_last_transaction();
-    bool         is_continue =
-        transaction.parse_single_request(__buffer_, __conf_group_);
-    if (is_continue) {
-      __transaction_queue_.push_back(Transaction());
-      continue;
-    } else {
-      return;
+    Transaction &transaction = __transaction_queue_.back();
+    try {
+      transaction.handle_request(__buffer_);
+      if (transaction.get_transaction_state() != SENDING) {
+        return;
+      }
+      const Config *config = transaction.get_proper_config(__conf_group_);
+      transaction.create_response(config);
+    } catch (const RequestInfo::BadRequestException &e) {
+      transaction.set_response_for_bad_request();
     }
-  }
-}
-
-void Connection::send_response(connFd conn_fd) {
-  Transaction &transaction = __front_transaction();
-  if (transaction.send_response(conn_fd)) {
-    __erase_front_transaction();
+    __transaction_queue_.push_back(Transaction(__conn_fd_));
   }
 }
 
 // 通信がクライアントから閉じられた時trueを返す。
-bool Connection::receive_request(connFd conn_fd) {
+bool Connection::append_receive_buffer() {
   const int         buf_size = 2048;
   std::vector<char> buf(buf_size);
-  ssize_t           rc = recv(conn_fd, &buf[0], buf_size, MSG_DONTWAIT);
+  ssize_t           rc = recv(__conn_fd_, &buf[0], buf_size, MSG_DONTWAIT);
   if (rc == -1) {
     std::cerr << "recv() failed." << std::endl;
     exit(EXIT_FAILURE);
@@ -52,20 +41,26 @@ bool Connection::receive_request(connFd conn_fd) {
     return true;
   }
   std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
-  __create_transaction(recv_data);
+  __buffer_.append(recv_data);
   return false;
 }
 
-struct pollfd Connection::create_pollfd(connFd conn_fd) const {
-  struct pollfd pfd = {conn_fd, POLLIN, 0};
-  if (__transaction_queue_.empty()) {
-    return pfd;
-  }
-  if (__front_transaction().get_transaction_state() == SENDING &&
-      __front_transaction().get_request_info().is_close_) {
-    pfd.events = POLLOUT;
-  } else if (__front_transaction().get_transaction_state() == SENDING) {
+struct pollfd Connection::create_pollfd() const {
+  struct pollfd pfd = {__conn_fd_, POLLIN, 0};
+  if (__transaction_queue_.front().get_transaction_state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
+}
+
+void Connection::send_response() {
+  Transaction &transaction = __transaction_queue_.front();
+  transaction.send_response();
+  if (transaction.get_request_info().is_close_ == true) {
+    shutdown_write();
+    return;
+  }
+  if (transaction.is_send_all()) {
+    __transaction_queue_.pop_front();
+  }
 }
