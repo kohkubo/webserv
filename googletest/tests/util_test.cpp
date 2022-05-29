@@ -110,3 +110,13 @@ TEST(util_test, test_is_file_exists) {
 //   EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
 //   EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
 // }
+
+TEST(util_test, test_hexstr_to_size) {
+  EXPECT_EQ(hexstr_to_size("0"), 0);
+  EXPECT_EQ(hexstr_to_size("1"), 1);
+  EXPECT_EQ(hexstr_to_size("b"), 11);
+  EXPECT_EQ(hexstr_to_size("f"), 15);
+  EXPECT_EQ(hexstr_to_size("20"), 32);
+  EXPECT_EQ(hexstr_to_size("ff"), 255);
+  EXPECT_EQ(hexstr_to_size("ffffffffffffffff"), SIZE_MAX);
+}

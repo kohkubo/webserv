@@ -12,12 +12,14 @@ TEST(request_chunked_test, chunked_body) {
                                 "Content-Type: text/plain\r\n"
                                 "Transfer-Encoding: chunked\r\n"
                                 "\r\n"
-                                "7\r\n"
-                                "Mozilla\r\n"
-                                "9\r\n"
-                                "Developer\r\n"
-                                "7\r\n"
-                                "Network\r\n"
+                                "8\r\n"
+                                "Mozilla \r\n"
+                                "28\r\n"
+                                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n"
+                                "8\r\n"
+                                " Network\r\n"
+                                "10\r\n"
+                                "hello world\ntest\r\n "
                                 "0\r\n"
                                 "\r\n";
 
@@ -27,5 +29,6 @@ TEST(request_chunked_test, chunked_body) {
   const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  EXPECT_EQ(info.values_[0], "MozillaDeveloperNetwork");
+  EXPECT_EQ(info.values_[0], "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+                             "Networkhello world\ntest");
 }
