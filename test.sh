@@ -10,7 +10,7 @@ echo >> output.txt
 echo "======================" >> output.txt
 echo "normal 5000" >> output.txt
 echo "======================" >> output.txt
-curl localhost:5000/dir1 >> output.txt
+curl localhost:5000/dir1/ >> output.txt
 echo >> output.txt
 echo "======================" >> output.txt
 echo "normal 5000 404" >> output.txt
