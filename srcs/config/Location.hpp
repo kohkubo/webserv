@@ -15,7 +15,7 @@ struct Location {
   bool                       cgi_extension_;
 
   Location()
-      : root_("html")
+      : root_("html/")
       , index_("index.html")
       , autoindex_(false)
       , return_()
