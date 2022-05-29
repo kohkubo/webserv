@@ -2,6 +2,8 @@
 #define SRCS_EVENT_CONNECTION_HPP
 
 #include <poll.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #include <deque>
 #include <string>
@@ -16,28 +18,28 @@ typedef int          connFd;
 
 class Connection {
 private:
+  connFd                  __conn_fd_;
+  confGroup               __conf_group_;
   std::deque<Transaction> __transaction_queue_;
   std::string             __buffer_;
-  confGroup               __conf_group_;
-
-private:
-  Transaction &__get_last_transaction();
-  Transaction &__front_transaction() { return __transaction_queue_.front(); }
-  const Transaction &__front_transaction() const {
-    return __transaction_queue_.front();
-  }
-  void __create_transaction(const std::string &data);
-  void __erase_front_transaction() { __transaction_queue_.pop_front(); }
 
 public:
   Connection() {}
-  Connection(confGroup conf_group)
-      : __conf_group_(conf_group) {}
+  Connection(connFd conn_fd, confGroup conf_group)
+      : __conn_fd_(conn_fd)
+      , __conf_group_(conf_group) {
+    __transaction_queue_.push_back(Transaction(conn_fd));
+  }
   ~Connection() {}
 
-  struct pollfd create_pollfd(connFd conn_fd) const;
-  void          send_response(connFd conn_fd);
-  bool          receive_request(connFd conn_fd);
+  void          create_sequential_transaction();
+  struct pollfd create_pollfd() const;
+  bool          append_receive_buffer();
+  void          send_response();
+  void          shutdown_write() {
+    shutdown(__conn_fd_, SHUT_WR);
+    __transaction_queue_.front().set_transaction_state(CLOSING);
+  }
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */

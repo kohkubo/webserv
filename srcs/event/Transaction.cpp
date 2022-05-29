@@ -5,7 +5,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/response/Response.hpp"
 
-void Transaction::__set_response_for_bad_request() {
+void Transaction::set_response_for_bad_request() {
   // 400エラー処理
   // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
   // 指定できるとき、nginxはどうやってserverを決定しているか。
@@ -17,117 +17,81 @@ void Transaction::__set_response_for_bad_request() {
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-bool Transaction::parse_single_request(std::string     &request_buffer,
-                                       const confGroup &conf_group) {
+void Transaction::handle_request(std::string &request_buffer) {
   if (__transaction_state_ == RECEIVING_STARTLINE ||
       __transaction_state_ == RECEIVING_HEADER) {
-    __parse_single_line(request_buffer, conf_group);
+    std::string line;
+    while (__getline(request_buffer, line)) {
+      if (__transaction_state_ == RECEIVING_STARTLINE) {
+        __request_info_.check_first_multi_blank_line(line);
+        if (__request_info_.is_blank_first_line_ == true) {
+          continue;
+        }
+        __request_info_.check_bad_parse_request_start_line(line);
+        __request_info_.parse_request_start_line(line);
+        __transaction_state_ = RECEIVING_HEADER;
+      } else if (__transaction_state_ == RECEIVING_HEADER) {
+        if (line != "") {
+          __request_info_.store_request_header_field_map(line);
+          continue;
+        }
+        __request_info_.parse_request_header();
+        // TODO: チャンク or content_length_ != 0
+        if (__request_info_.content_length_ != 0) {
+          __transaction_state_ = RECEIVING_BODY;
+        } else {
+          __transaction_state_ = SENDING;
+          return;
+        }
+      }
+    }
   }
-  if (__transaction_state_ == RECEIVING_BODY &&
-      __request_info_.has_request_body(request_buffer)) {
-    __parse_body(request_buffer);
+  if (__transaction_state_ == RECEIVING_BODY) {
+    std::string request_body;
+    if (__get_request_body(request_buffer, request_body)) {
+      __request_info_.parse_request_body(request_body);
+      __transaction_state_ = SENDING;
+    }
   }
-  if (__transaction_state_ != SENDING)
+}
+
+bool Transaction::__getline(std::string &request_buffer, std::string &line) {
+  std::size_t pos = request_buffer.find(CRLF);
+  if (pos == std::string::npos)
     return false;
-  if (__request_info_.is_close_)
-    return false;
+  line = request_buffer.substr(0, pos);
+  request_buffer.erase(0, pos + 2);
   return true;
 }
 
-void Transaction::__parse_single_line(std::string     &request_buffer,
-                                      const confGroup &conf_group) {
-  while (__check_line(request_buffer)) {
-    std::string line = __getline_from_buffer(request_buffer);
-    switch (__transaction_state_) {
-    case RECEIVING_STARTLINE:
-      __parse_start_line(line);
-      break;
-    case RECEIVING_HEADER:
-      __parse_header(line, conf_group);
-      break;
-    default:
-      break;
-    }
+bool Transaction::__get_request_body(std::string &request_buffer,
+                                     std::string &body) {
+  if (request_buffer.size() < __request_info_.content_length_) {
+    return false;
   }
+  body = request_buffer.substr(0, __request_info_.content_length_);
+  request_buffer.erase(0, __request_info_.content_length_);
+  return true;
 }
 
-bool Transaction::__check_line(const std::string &request_buffer) {
-  std::size_t pos = request_buffer.find(CRLF);
-  return pos != std::string::npos;
-}
-
-std::string Transaction::__getline_from_buffer(std::string &buf) {
-  std::size_t pos = buf.find(CRLF);
-  std::string res = buf.substr(0, pos);
-  buf             = buf.substr(pos + CRLF.size());
-  return res;
-}
-
-void Transaction::__parse_start_line(std::string &request_line) {
-  try {
-    if (__request_info_.parse_request_start_line(request_line))
-      __transaction_state_ = RECEIVING_HEADER;
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
-  }
-}
-
-void Transaction::__parse_header(std::string     &header_line,
-                                 const confGroup &conf_group) {
-  try {
-    if (__request_info_.parse_request_header(header_line)) {
-      __detect_config(conf_group);
-      if (__request_info_.content_length_ != 0) {
-        __transaction_state_ = RECEIVING_BODY;
-      } else {
-        create_response();
-      }
-    }
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
-  }
-}
-
-void Transaction::__parse_body(std::string &request_buffer) {
-  std::string request_body = __request_info_.cut_request_body(request_buffer);
-  try {
-    __request_info_.parse_request_body(request_body);
-    create_response();
-  } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
-  }
-}
-
-void Transaction::__detect_config(const confGroup &conf_group) {
+const Config *Transaction::get_proper_config(const confGroup &conf_group) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == __request_info_.host_) {
-      __conf_ = *it;
-      return;
+      return *it;
     }
   }
-  __conf_ = conf_group[0];
+  return conf_group[0];
 }
 
-void Transaction::create_response() {
-  Response response(*__conf_, __request_info_);
-  __response_          = response.get_response_string();
-  __transaction_state_ = SENDING;
+void Transaction::create_response(const Config *config) {
+  Response response(*config, __request_info_);
+  __response_ = response.get_response_string();
 }
 
-// 送信が完了かつtransactionを保持する必要がないときtrueを返す。
-bool Transaction::send_response(int socket_fd) {
+void Transaction::send_response() {
   const char *rest_str   = __response_.c_str() + __send_count_;
   size_t      rest_count = __response_.size() - __send_count_;
-  ssize_t     sc         = send(socket_fd, rest_str, rest_count, MSG_DONTWAIT);
+  ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
   __send_count_ += sc;
-  if (!__is_send_all()) {
-    return false;
-  }
-  if (__request_info_.is_close_) {
-    shutdown(socket_fd, SHUT_WR);
-    __transaction_state_ = CLOSING;
-    return false;
-  }
-  return true;
 }
