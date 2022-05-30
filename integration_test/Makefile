@@ -23,4 +23,4 @@ re: clean all
 
 .PHONY: run
 run: build
-	bash ./run.sh
+	./integration_test
