@@ -61,7 +61,7 @@ public:
   void parse_request_body(std::string &request_body);
   void set_next_chunk_size(std::string &chunk_size_line);
   void store_unchunked_body(std::string &chunk_line);
-  void check_first_mulit_blank_line(const std::string &request_line);
+  void check_first_multi_blank_line(const std::string &request_line);
   void check_bad_parse_request_start_line(const std::string &request_line);
 };
 
