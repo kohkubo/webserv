@@ -6,10 +6,10 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-#define TEST_FILE          "tdata/test.txt"
+#define TEST_FILE          "../html/test.txt"
 #define TEST_CONTENT       "test"
-#define EMPTY_FILE         "tdata/empty.txt"
-#define NO_PERMISSION_FILE "tdata/no_permission.txt"
+#define EMPTY_FILE         "../html/empty.txt"
+#define NO_PERMISSION_FILE "../html/no_permission.txt"
 #define NO_SUCH_FILE       "no such file"
 
 TEST(util_test, test_has_suffix) {
@@ -84,7 +84,6 @@ TEST(util_test, test_is_digits) {
 }
 
 TEST(util_test, test_read_file_tostring) {
-  std::cout << "test_read_file_tostring" << std::endl;
   EXPECT_EQ(read_file_tostring(TEST_FILE), TEST_CONTENT);
   EXPECT_EQ(read_file_tostring(EMPTY_FILE), "");
   EXPECT_EQ(read_file_tostring(NO_SUCH_FILE), ""); // TODO: エラーを拾う
@@ -98,8 +97,8 @@ TEST(util_test, test_is_file_exists) {
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 
-#define TEST_DIR "tdata/test_dir"
-#define EMPTY_DIR "tdata/empty_dir"
+#define TEST_DIR "../html/test_dir"
+#define EMPTY_DIR "../html/empty_dir"
 
 TEST(util_test, is_dir) {
   EXPECT_TRUE(is_dir(TEST_DIR));

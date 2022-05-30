@@ -31,7 +31,7 @@ TEST(http_test, create_response_info_get_normal) {
   Config      config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
@@ -47,7 +47,7 @@ TEST(http_test, create_response_info_get_403) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
@@ -55,9 +55,9 @@ TEST(http_test, create_response_info_get_403) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  system("chmod 000 tdata/html/000.html");
+  system("chmod 000 ../html/000.html");
   Response response(config, request_info);
-  system("chmod 644 tdata/html/000.html");
+  system("chmod 644 ../html/000.html");
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Content-Length: 145\r\n\
@@ -81,7 +81,7 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
 
   config.error_pages_[403]            = "forbidden.html";
@@ -91,9 +91,9 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  system("chmod 000 tdata/html/000.html");
+  system("chmod 000 ../html/000.html");
   Response response(config, request_info);
-  system("chmod 644 tdata/html/000.html");
+  system("chmod 644 ../html/000.html");
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
 Content-Length: 9\r\n\
@@ -110,7 +110,7 @@ TEST(http_test, create_response_info_delete_normal) {
   Config      config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
@@ -118,7 +118,7 @@ TEST(http_test, create_response_info_delete_normal) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  system("touch tdata/html/delete_target.html");
+  system("touch ../html/delete_target.html");
 
   Response response(config, request_info);
   EXPECT_EQ(response.get_response_string(), expected_response);
@@ -128,7 +128,7 @@ TEST(http_test, create_response_info_delete_404) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
@@ -160,7 +160,7 @@ TEST(http_test, create_response_info_delete_403) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
@@ -168,11 +168,11 @@ TEST(http_test, create_response_info_delete_403) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  system("chmod 000 tdata/html/000.html");
+  system("chmod 000 ../html/000.html");
 
   Response response(config, request_info);
 
-  system("chmod 644 tdata/html/000.html");
+  system("chmod 644 ../html/000.html");
 
   EXPECT_EQ(response.get_response_string(), "\
 HTTP/1.1 403 Forbidden\r\n\
@@ -197,7 +197,7 @@ TEST(http_test, create_response_info_delete_400) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "tdata/html/";
+  config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_         = DELETE;
