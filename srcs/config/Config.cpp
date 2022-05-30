@@ -89,6 +89,7 @@ tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
   Location location;
+  location.limit_except_.clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
   pos++;
   if (pos == end)
     throw UnexpectedTokenException("could not detect directive value.");
@@ -114,6 +115,12 @@ tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
+  // TODO: 雑だけど他に思いつかない。案ほしい。
+  if (location.limit_except_.size() == 0){
+    location.limit_except_.push_back("GET");
+    location.limit_except_.push_back("POST");
+    location.limit_except_.push_back("DELETE");
+  }
   locations_.push_back(location);
   return ++pos;
 }

@@ -62,13 +62,13 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   // 2018/05/22 16:21 kohkubo nakamoto 話し合い
   // 現状はmethod handlerに
   case GET:
-    __get_method_handler();
+    __get_method_handler(*location);
     break;
   case POST:
-    __post_method_handler();
+    __post_method_handler(*location);
     break;
   case DELETE:
-    __delete_method_handler();
+    __delete_method_handler(*location);
     break;
   default:
     std::cout << "unsupported method" << std::endl;
@@ -119,7 +119,7 @@ void Response::__set_file_path(const std::string &request_uri,
   }
 }
 
-void Response::__check_filepath_status() {
+void Response::__check_filepath_status(const Location &location) {
   if (__status_code_ != NONE) {
     return;
   }
@@ -130,7 +130,7 @@ void Response::__check_filepath_status() {
   // TODO: 以下は別関数にするか整理する
   if (has_suffix(__file_path_, "/")) {
     if (is_dir_exists(__file_path_)) {
-      if (!__config_.locations_[0].autoindex_) {
+      if (!location.autoindex_) {
         __status_code_ = FORBIDDEN_403; // nginxに合わせた
       } else {
         __status_code_ = OK_200;

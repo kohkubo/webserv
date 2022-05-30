@@ -28,32 +28,56 @@ public:
   std::string get_response_string();
 
 private:
-  Response();
   std::string     __read_file_tostring_cgi(const std::string              &path,
                                            const std::vector<std::string> &env);
   std::string     __create_autoindex_body(const std::string &file_path);
   const Location *__get_proper_location(const std::string &request_uri,
                                         const std::vector<Location> &locations);
 
-  void            __set_status_phrase();
-  void            __set_general_header();
-  void            __set_entity_header();
-  void            __set_content_len();
-  void            __set_content_type();
-  void            __make_message_string();
-  void            __make_bodiless_message_string();
+  Response();
+  void __set_status_phrase();
+  void __set_general_header();
+  void __set_entity_header();
+  void __set_content_len();
+  void __set_content_type();
+  void __make_message_string();
+  void __make_bodiless_message_string();
 
-  void            __set_file_path(const std::string &request_uri,
-                                  const Location    &location);
-  bool            __is_error_status_code();
-  void            __check_filepath_status();
-  void            __set_error_page_body(const Location &location);
-  void            __set_body();
+  void __set_file_path(const std::string &request_uri,
+                       const Location    &location);
+  bool __is_error_status_code();
+  void __check_filepath_status(const Location &location);
+  void __set_error_page_body(const Location &location);
+  void __set_body();
 
-  void            __get_method_handler() { __check_filepath_status(); }
-  void            __post_method_handler() { __check_filepath_status(); }
-  void            __delete_target_file();
-  void            __delete_method_handler() { __delete_target_file(); }
+  void __post_method_handler(const Location &location) {
+    // TODO: ここらへんの処理、未定なので雑に書いています。
+    if (std::find(location.limit_except_.begin(), location.limit_except_.end(),
+                  "POST") == location.limit_except_.end()) {
+      __status_code_ = NOT_ALLOWED_405;
+      return;
+      __check_filepath_status(location);
+    }
+  }
+  void __get_method_handler(const Location &location) {
+    // TODO: ここらへんの処理、未定なので雑に書いています。
+    if (std::find(location.limit_except_.begin(), location.limit_except_.end(),
+                  "GET") == location.limit_except_.end()) {
+      __status_code_ = NOT_ALLOWED_405;
+      return;
+    }
+    __check_filepath_status(location);
+  }
+  void __delete_target_file();
+  void __delete_method_handler(const Location &location) {
+    // TODO: ここらへんの処理、未定なので雑に書いています。
+    if (std::find(location.limit_except_.begin(), location.limit_except_.end(),
+                  "DELETE") == location.limit_except_.end()) {
+      __status_code_ = NOT_ALLOWED_405;
+      return;
+    }
+    __delete_target_file();
+  }
 };
 
 std::map<int, std::string> init_response_status_phrase_map();
