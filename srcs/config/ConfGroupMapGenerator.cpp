@@ -12,6 +12,7 @@
 #include "config/SocketOpener.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/tokenize.hpp"
+#include "utils/utils.hpp"
 
 ConfGroupMapGenerator::ConfGroupMapGenerator(const char *config_file_path) {
   __read_config(config_file_path);
@@ -71,7 +72,7 @@ std::map<listenFd, confGroup> ConfGroupMapGenerator::generate() {
         find_same_socket(*sl_it, confgroup_map);
     if (it != confgroup_map.end()) {
       if (is_include_same_server_name(*sl_it, it->second)) {
-        std::cout << "server_name conflicts." << std::endl;
+        LOG("server_name conflicts.");
         continue;
       }
       it->second.push_back(&(*sl_it));

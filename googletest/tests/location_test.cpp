@@ -18,7 +18,6 @@ std::string get_http_response_body(const std::string &response_string) {
 int get_http_response_status_code(const std::string &response_string) {
   std::string code_str =
       response_string.substr(response_string.find("<title>") + 7, 3);
-  std::cout << code_str << std::endl;
   return std::stoi(code_str);
 }
 

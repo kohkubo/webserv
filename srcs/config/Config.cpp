@@ -107,7 +107,6 @@ tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
     pos = __parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
     // clang-format on
     if (pos == head) {
-      std::cout << "pos: " << *pos << std::endl;
       throw UnexpectedTokenException("parse location directive failed.");
     }
   }
@@ -200,7 +199,7 @@ void Config::__set_getaddrinfo() {
   int error = getaddrinfo(listen_address_.c_str(), listen_port_.c_str(), &hints,
                           &addrinfo_);
   if (error) {
-    std::cerr << "getaddrinfo: " << gai_strerror(error) << std::endl;
+    ERROR_LOG("getaddrinfo: " << gai_strerror(error));
     exit(EXIT_FAILURE);
   }
 }
