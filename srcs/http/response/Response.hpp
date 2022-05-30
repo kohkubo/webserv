@@ -1,6 +1,8 @@
 #ifndef SRCS_HTTP_RESPONSE_RESPONSE_HPP
 #define SRCS_HTTP_RESPONSE_RESPONSE_HPP
 
+#include <algorithm>
+
 #include "config/Config.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "http/const/const_header_field_values.hpp"
