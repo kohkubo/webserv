@@ -1,14 +1,11 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/tester"
 	"net/http"
 )
 
 func TestGET() {
-	fmt.Println("GET test")
-
 	testHandler("simple_5500", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
