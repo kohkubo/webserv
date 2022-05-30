@@ -24,7 +24,7 @@ void Transaction::handle_request(std::string &request_buffer) {
     std::string line;
     while (__getline(request_buffer, line)) {
       if (__transaction_state_ == RECEIVING_STARTLINE) {
-        __request_info_.check_first_mulit_blank_line(line);
+        __request_info_.check_first_multi_blank_line(line);
         if (__request_info_.is_blank_first_line_ == true) {
           continue;
         }
