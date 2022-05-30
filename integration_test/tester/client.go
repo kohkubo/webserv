@@ -51,27 +51,29 @@ func resolveMethod(reqPayload []string) string {
 }
 
 // リクエスト送信
-func (c *Client) SendRequest() {
+func (c *Client) SendRequest() error {
 	for _, r := range c.ReqPayload {
 		_, err := fmt.Fprintf(c.conn, r)
 		if err != nil {
-			log.Fatalf("sendRequest: %v", err)
+			return fmt.Errorf("sendRequest: %v", err)
 		}
 	}
 	c.ReqPayload = nil
+	return nil
 }
 
 // 先頭のReqPayloadのみ送信
-func (c *Client) SendPartialRequest() {
+func (c *Client) SendPartialRequest() error {
 	if len(c.ReqPayload) != 0 {
 		r := c.ReqPayload[0]
 		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除したものに更新
 		_, err := fmt.Fprintf(c.conn, r)
 		time.Sleep(1 * time.Millisecond) // 連続で使用された場合にリクエストが分かれるように
 		if err != nil {
-			log.Fatalf("sendPartialRequest: %v", err)
+			return fmt.Errorf("sendPartialRequest: %v", err)
 		}
 	}
+	return nil
 }
 
 // レスポンスを受ける

@@ -54,26 +54,44 @@ func TestIOMULT() {
 			return false, err
 		}
 
-		clientA.SendPartialRequest()
-		clientB.SendPartialRequest()
-		clientC.SendPartialRequest()
-		clientB.SendPartialRequest()
-		clientA.SendPartialRequest()
-		clientC.SendPartialRequest()
-		clientB.SendPartialRequest()
+		if err := clientA.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientB.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientC.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientB.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientA.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientC.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientB.SendPartialRequest(); err != nil {
+			return false, err
+		}
 
 		clientB.RecvResponse()
 		if !clientB.IsExpectedResponse() {
 			return false, nil
 		}
 
-		clientC.SendPartialRequest()
+		if err := clientC.SendPartialRequest(); err != nil {
+			return false, err
+		}
 		clientC.RecvResponse()
 		if !clientC.IsExpectedResponse() {
 			return false, nil
 		}
 
-		clientA.SendPartialRequest()
+		if err := clientA.SendPartialRequest(); err != nil {
+			return false, err
+		}
 		clientA.RecvResponse()
 		if !clientA.IsExpectedResponse() {
 			return false, nil
