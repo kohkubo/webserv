@@ -53,15 +53,15 @@ void Transaction::handle_request(std::string &request_buffer) {
     std::string request_body;
     if (__request_info_.is_chunked_ == true) {
       while (__get_next_chunk(request_buffer, request_body)) {
-        if (__request_info_.next_chunk_ == CHUNK_SIZE) {
-          __request_info_.set_next_chunk_size(request_body);
+        if (__next_chunk_ == CHUNK_SIZE) {
+          __set_next_chunk_size(request_body);
         } else {
-          if (__request_info_.next_chunk_size_ == 0 && request_body == "") {
-            __request_info_.parse_request_body(__request_info_.unchunked_body_);
+          if (__next_chunk_size_ == 0 && request_body == "") {
+            __request_info_.parse_request_body(__unchunked_body_);
             __transaction_state_ = SENDING;
             return;
           }
-          __request_info_.store_unchunked_body(request_body);
+          __store_unchunked_body(request_body);
         }
       }
     } else {
@@ -94,14 +94,14 @@ bool Transaction::__get_request_body(std::string &request_buffer,
 
 bool Transaction::__get_next_chunk(std::string &request_buffer,
                                    std::string &chunk) {
-  if (__request_info_.next_chunk_ == CHUNK_SIZE) {
+  if (__next_chunk_ == CHUNK_SIZE) {
     return __getline(request_buffer, chunk);
   }
-  if (request_buffer.size() < __request_info_.next_chunk_size_ + CRLF.size()) {
+  if (request_buffer.size() < __next_chunk_size_ + CRLF.size()) {
     return false;
   }
-  chunk = request_buffer.substr(0, __request_info_.next_chunk_size_);
-  request_buffer.erase(0, __request_info_.next_chunk_size_);
+  chunk = request_buffer.substr(0, __next_chunk_size_);
+  request_buffer.erase(0, __next_chunk_size_);
   if (not has_prefix(request_buffer, CRLF)) {
     throw RequestInfo::BadRequestException();
   }
@@ -129,4 +129,14 @@ void Transaction::send_response() {
   size_t      rest_count = __response_.size() - __send_count_;
   ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
   __send_count_ += sc;
+}
+
+void Transaction::__set_next_chunk_size(std::string &chunk_size_line) {
+  __next_chunk_size_ = hexstr_to_size(chunk_size_line);
+  __next_chunk_      = CHUNK_DATA;
+}
+
+void Transaction::__store_unchunked_body(std::string &chunk_line) {
+  __unchunked_body_.append(chunk_line);
+  __next_chunk_ = CHUNK_SIZE;
 }
