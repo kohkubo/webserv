@@ -1,6 +1,7 @@
 #include "http/response/Response.hpp"
 
 #include <dirent.h>
+#include <sstream>
 
 #include "utils/syscall_wrapper.hpp"
 
@@ -24,5 +25,23 @@ std::string Response::__create_autoindex_body(const std::string &file_path) {
     ret += " " + *it;
   }
 
-  return ret;
+  std::stringstream buffer;
+  buffer << "<!DOCTYPE html>\n"
+         << "<html>\n"
+         << "   <head>\n"
+         << "      <title>Index of " << file_path << "</title>\n"
+         << "   </head>\n"
+         << "   <body>\n"
+         << "      <h1>Index of " << file_path << "</h1>\n"
+         << "      <ul style=\"list-style:none\">\n";
+  buffer << "        <li><a href=\"" << files[0] << "\">" << files[0]
+         << " </a></li>\n";
+  buffer << "        <li><a href=\"" << files[1] << "\">" << files[1]
+         << " </a></li>\n";
+  buffer << "        <li><a href=\"" << files[2] << "\">" << files[2]
+         << " </a></li>\n";
+  buffer << "    </ul>\n"
+         << "   </body>\n"
+         << "</html>";
+  return buffer.str();
 }
