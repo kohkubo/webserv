@@ -12,13 +12,9 @@ TEST(request_parse_test, normal) {
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
 
-  Transaction t;
-  // tmp
-  confGroup   dummy_group;
-  Config      dummy_conf = Config();
-  dummy_group.push_back(&dummy_conf);
+  Transaction t(-1);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request);
   const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, GET);
@@ -36,13 +32,9 @@ TEST(request_parse_test, normal_delete) {
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
 
-  Transaction t;
-  // tmp
-  confGroup   dummy_group;
-  Config      dummy_conf = Config();
-  dummy_group.push_back(&dummy_conf);
+  Transaction t(-1);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request);
   const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, DELETE);
@@ -62,13 +54,9 @@ TEST(request_parse_test, normal_post) {
                         "Content-Type: application/x-www-form-urlencoded\r\n"
                         "Content-Length: 18\r\n\r\n";
 
-  Transaction t;
-  // tmp
-  confGroup   dummy_group;
-  Config      dummy_conf = Config();
-  dummy_group.push_back(&dummy_conf);
+  Transaction t(-1);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request);
   const RequestInfo &r = t.get_request_info();
 
   EXPECT_EQ(r.method_, POST);
@@ -91,13 +79,9 @@ TEST(request_parse_test, query_body) {
                         "&of=the"
                         "&pirates!!";
 
-  Transaction t;
-  // tmp
-  confGroup   dummy_group;
-  Config      dummy_conf = Config();
-  dummy_group.push_back(&dummy_conf);
+  Transaction t(-1);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request);
   const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.values_[0], "I'm=going");
@@ -118,13 +102,9 @@ TEST(request_parse_test, query_body_capital) {
                         "&ishi=no"
                         "&uenimo=3years";
 
-  Transaction t;
-  // tmp
-  confGroup   dummy_group;
-  Config      dummy_conf = Config();
-  dummy_group.push_back(&dummy_conf);
+  Transaction t(-1);
 
-  t.parse_single_request(request, dummy_group);
+  t.handle_request(request);
   const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.values_[0], "yabu=kara");
