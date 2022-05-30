@@ -67,7 +67,7 @@ func compareResponse(resp *http.Response, expectStatusCode int, expectHeader htt
 			return 0, fmt.Errorf("failt to read response: %v", err)
 		}
 		if !reflect.DeepEqual(body, expectBody) {
-			fmt.Printf("body diff: actual=%v, expect=%v\n", body, expectBody)
+			fmt.Printf("body diff: actual=%s, expect=%s\n", body, expectBody)
 			diff_flag++
 		}
 	}
