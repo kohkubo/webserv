@@ -105,6 +105,7 @@ tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
     pos = __parse_map_directive("return", location.return_, pos, end);
     pos = __parse_vector_directive("limit_except", location.limit_except_, pos, end);
     pos = __parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
+    pos = __parse_bool_directive("sendfile", location.sendfile_, pos, end);
     // clang-format on
     if (pos == head) {
       std::cout << "pos: " << *pos << std::endl;
