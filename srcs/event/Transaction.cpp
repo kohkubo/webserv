@@ -104,7 +104,7 @@ bool Transaction::__get_next_chunk(std::string &request_buffer,
   }
   chunk = request_buffer.substr(0, __next_chunk_size_);
   request_buffer.erase(0, __next_chunk_size_);
-  if (not has_prefix(request_buffer, CRLF)) {
+  if (has_prefix(request_buffer, CRLF) == false) {
     throw RequestInfo::BadRequestException();
   }
   request_buffer.erase(0, CRLF.size());
