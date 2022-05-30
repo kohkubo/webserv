@@ -29,6 +29,6 @@ bool        is_digits(const std::string &str);
 
 std::size_t hexstr_to_size(const std::string &str);
 
-bool is_minus_depth(const std::string &filepath);
+bool        is_minus_depth(const std::string &filepath);
 
 #endif /* SRCS_UTILS_UTILS_HPP */
