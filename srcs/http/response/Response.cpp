@@ -24,6 +24,7 @@ std::map<int, std::string> init_page_contents_map() {
   res[400] = content_400;
   res[403] = content_403;
   res[404] = content_404;
+  res[405] = content_405;
   res[500] = content_500;
   res[501] = content_501;
   res[520] = content_520;
