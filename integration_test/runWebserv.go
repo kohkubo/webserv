@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os/exec"
-	"time"
 )
 
 var current_process *exec.Cmd = nil
@@ -20,15 +20,21 @@ func RestartWebserv(configPath string) {
 	current_process.Dir = "../"
 	stderr, _ = current_process.StderrPipe()
 	current_process.Start()
-	time.Sleep(time.Millisecond * 10)
+	scanner := bufio.NewScanner(stderr)
+	for scanner.Scan() {
+		if scanner.Text() == "start server process" {
+			return
+		}
+	}
+	// TODO: error処理
 }
 
 func KillWebserv(printErrorLog bool) {
 	current_process.Process.Kill()
-	current_process.Wait()
 	if printErrorLog {
 		str, _ := io.ReadAll(stderr)
 		fmt.Printf("%s\n", str)
 	}
+	current_process.Wait()
 	current_process = nil
 }
