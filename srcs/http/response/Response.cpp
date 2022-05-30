@@ -86,7 +86,7 @@ void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
   }
-  if (__is_minus_depth()) {
+  if (is_minus_depth(__file_path_)) {
     __status_code_ = NOT_FOUND_404;
   }
   // TODO: POSTはディレクトリの時どう処理するのか
