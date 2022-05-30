@@ -108,7 +108,6 @@ void Response::__set_file_path(const std::string &request_uri,
   if (has_suffix(request_uri, "/")) {
     __file_path_ = location.root_ + location.location_path_ + location.index_;
   } else {
-
     __file_path_ = location.root_ + request_uri;
   }
   // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
