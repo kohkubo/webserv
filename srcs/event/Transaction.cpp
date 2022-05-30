@@ -55,6 +55,7 @@ void Transaction::handle_request(std::string &request_buffer) {
       while (__get_next_chunk(request_buffer, request_body)) {
         if (__next_chunk_ == CHUNK_SIZE) {
           __set_next_chunk_size(request_body);
+          __next_chunk_      = CHUNK_DATA;
         } else {
           if (__next_chunk_size_ == 0 && request_body == "") {
             __request_info_.parse_request_body(__unchunked_body_);
@@ -62,6 +63,7 @@ void Transaction::handle_request(std::string &request_buffer) {
             return;
           }
           __store_unchunked_body(request_body);
+          __next_chunk_ = CHUNK_SIZE;
         }
       }
     } else {
@@ -133,10 +135,8 @@ void Transaction::send_response() {
 
 void Transaction::__set_next_chunk_size(std::string &chunk_size_line) {
   __next_chunk_size_ = hexstr_to_size(chunk_size_line);
-  __next_chunk_      = CHUNK_DATA;
 }
 
 void Transaction::__store_unchunked_body(std::string &chunk_line) {
   __unchunked_body_.append(chunk_line);
-  __next_chunk_ = CHUNK_SIZE;
 }
