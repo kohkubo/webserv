@@ -76,24 +76,36 @@ func TestIOMULT() {
 			return false, err
 		}
 
-		clientB.RecvResponse()
-		if !clientB.IsExpectedResponse() {
+		if err := clientB.RecvResponse(); err != nil {
+			return false, err
+		}
+		if ok, err := clientB.IsExpectedResponse(); err != nil {
+			return false, err
+		} else if !ok {
 			return false, nil
 		}
 
 		if err := clientC.SendPartialRequest(); err != nil {
 			return false, err
 		}
-		clientC.RecvResponse()
-		if !clientC.IsExpectedResponse() {
+		if err := clientC.RecvResponse(); err != nil {
+			return false, err
+		}
+		if ok, err := clientC.IsExpectedResponse(); err != nil {
+			return false, err
+		} else if !ok {
 			return false, nil
 		}
 
 		if err := clientA.SendPartialRequest(); err != nil {
 			return false, err
 		}
-		clientA.RecvResponse()
-		if !clientA.IsExpectedResponse() {
+		if err := clientA.RecvResponse(); err != nil {
+			return false, err
+		}
+		if ok, err := clientA.IsExpectedResponse(); err != nil {
+			return false, err
+		} else if !ok {
 			return false, nil
 		}
 		return true, nil

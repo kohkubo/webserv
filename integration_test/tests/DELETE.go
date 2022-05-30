@@ -23,6 +23,7 @@ func TestDELETE() {
 		if _, err := os.Create(deleteFileRelativePath); err != nil {
 			return false, err
 		}
+		defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
@@ -40,19 +41,20 @@ func TestDELETE() {
 		if err != nil {
 			return false, err
 		}
-		clientA.Test()
+		if ok, err := clientA.Test(); err != nil {
+			return false, err
+		} else if !ok {
+			return false, nil
+		}
 
 		// check file exists or deleted
 		_, err = os.Stat(deleteFileRelativePath)
 		switch {
 		case errors.Is(err, os.ErrNotExist): // file does not exit
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 			return true, nil
-		case err != nil:
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // error
+		case err != nil: // error
 			return false, err
-		default:
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // file still exists
+		default: // file still exists
 			fmt.Fprintf(os.Stderr, "file wasn't deleted")
 			return false, nil
 		}
@@ -75,7 +77,7 @@ func TestDELETE() {
 		if err != nil {
 			return false, err
 		}
-		return clientA.Test(), nil
+		return clientA.Test()
 	})
 
 }

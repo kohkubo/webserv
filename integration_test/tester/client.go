@@ -2,7 +2,6 @@ package tester
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -77,35 +76,42 @@ func (c *Client) SendPartialRequest() error {
 }
 
 // レスポンスを受ける
-func (c *Client) RecvResponse() {
+func (c *Client) RecvResponse() error {
 	if len(c.ReqPayload) != 0 {
-		log.Fatalf("recvResponse: ReqPayload is not empty!")
+		return fmt.Errorf("recvResponse: ReqPayload is not empty!")
 	}
 	resp, err := readParseResponse(c.conn, c.method)
 	if err != nil {
-		log.Fatalf("recvResponse: %v", err)
+		return fmt.Errorf("recvResponse: %v", err)
 	}
 	c.resp = resp
 	c.conn.Close()
+	return nil
 }
 
 // レスポンスが期待するものか確認する
-func (c *Client) IsExpectedResponse() bool {
+func (c *Client) IsExpectedResponse() (bool, error) {
 	result, err := compareResponse(c.resp, c.ExpectStatusCode, c.ExpectHeader, c.ExpectBody)
 	if err != nil {
-		log.Fatalf("isExpectedResult: %v", err)
+		return false, fmt.Errorf("isExpectedResult: %v", err)
 	}
 	c.resp.Body.Close()
-	return result == 0
+	return result == 0, nil
 }
 
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
-func (c *Client) Test() bool {
-	c.SendRequest()
-	c.RecvResponse()
-	if !c.IsExpectedResponse() {
-		return false
+func (c *Client) Test() (bool, error) {
+	if err := c.SendRequest(); err != nil {
+		return false, err
 	}
-	return true
+	if err := c.RecvResponse(); err != nil {
+		return false, err
+	}
+	if ok, err := c.IsExpectedResponse(); err != nil {
+		return false, err
+	} else if !ok {
+		return false, nil
+	}
+	return true, nil
 }

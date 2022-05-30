@@ -26,7 +26,7 @@ func TestGET() {
 		if err != nil {
 			return false, err
 		}
-		return clientA.Test(), nil
+		return clientA.Test()
 	})
 
 	testHandler("simple_5001", func() (bool, error) {
@@ -46,7 +46,7 @@ func TestGET() {
 		if err != nil {
 			return false, err
 		}
-		return clientA.Test(), nil
+		return clientA.Test()
 	})
 
 	testHandler("no_such_file", func() (bool, error) {
@@ -66,7 +66,7 @@ func TestGET() {
 		if err != nil {
 			return false, err
 		}
-		return clientA.Test(), nil
+		return clientA.Test()
 	})
 
 }

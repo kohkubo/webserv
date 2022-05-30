@@ -27,7 +27,7 @@ func TestPOST() {
 		if err != nil {
 			return false, err
 		}
-		return clientA.Test(), nil
+		return clientA.Test()
 	})
 
 }
