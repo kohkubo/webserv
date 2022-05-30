@@ -10,8 +10,6 @@ import (
 )
 
 func TestDELETE() {
-	fmt.Println("DELETE test")
-
 	testHandler("simple", func() (bool, error) {
 		// setup file to delete
 		deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI

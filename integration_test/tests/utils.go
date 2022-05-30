@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"runtime"
+	"strings"
 )
 
 var (
@@ -32,10 +34,23 @@ const (
 
 // 実行するテストの名前と関数を渡してその結果に合わせたメッセージを出力する関数です
 func testHandler(name string, test func() (bool, error)) {
+
+	// Fatalなerrorが起きてる場合はテスト無視
 	if IsFatal() {
 		return
 	}
-	fmt.Print("[ " + name + " ] ")
+
+	// 呼び出し関数の名前取得
+	pc, _, _, ok := runtime.Caller(1)
+	if !ok {
+		fmt.Fprintf(os.Stderr, "not possible to recover the information")
+		CountTestFatal++
+	}
+	callerFuncInfo := runtime.FuncForPC(pc).Name()
+	callerFunc := callerFuncInfo[strings.LastIndex(callerFuncInfo, ".")+1:]
+
+	// テスト実行
+	fmt.Print("[" + callerFunc + " " + name + "] ")
 	ok, err := test()
 	switch {
 	case err != nil:

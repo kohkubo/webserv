@@ -1,15 +1,12 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/tester"
 	"net/http"
 )
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 func TestIOMULT() {
-	fmt.Println("IOMULT test")
-
 	testHandler("3client", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
