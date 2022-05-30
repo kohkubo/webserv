@@ -13,7 +13,7 @@ var stderr io.ReadCloser
 // 指定したpathのconfigファイルでwebservを立ち上げる。
 func RestartWebserv(configPath string) {
 	if current_process != nil {
-		KillWebserv()
+		KillWebserv(false)
 	}
 	current_process = exec.Command("./webserv", configPath)
 	// itestの実行ファイルがintegration_test/integration_testを期待
@@ -23,11 +23,12 @@ func RestartWebserv(configPath string) {
 	time.Sleep(time.Millisecond * 10)
 }
 
-func KillWebserv() {
+func KillWebserv(printErrorLog bool) {
 	current_process.Process.Kill()
 	current_process.Wait()
-	// if err
-	str, _ := io.ReadAll(stderr)
-	fmt.Printf("%s\n", str)
+	if printErrorLog {
+		str, _ := io.ReadAll(stderr)
+		fmt.Printf("%s\n", str)
+	}
 	current_process = nil
 }
