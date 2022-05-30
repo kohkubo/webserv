@@ -10,8 +10,6 @@ import (
 )
 
 func TestDELETE() {
-	fmt.Println("DELETE test")
-
 	testHandler("simple", func() (bool, error) {
 		// setup file to delete
 		deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
@@ -23,8 +21,9 @@ func TestDELETE() {
 		if _, err := os.Create(deleteFileRelativePath); err != nil {
 			return false, err
 		}
+		defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
-		clientA := tester.NewClient(&tester.Client{
+		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"DELETE " + deleteFilePath + " HTTP/1.1\r\n",
@@ -37,26 +36,30 @@ func TestDELETE() {
 			ExpectHeader:     nil,
 			ExpectBody:       nil,
 		})
-		clientA.Test()
+		if err != nil {
+			return false, err
+		}
+		if ok, err := clientA.Test(); err != nil {
+			return false, err
+		} else if !ok {
+			return false, nil
+		}
 
 		// check file exists or deleted
-		_, err := os.Stat(deleteFileRelativePath)
+		_, err = os.Stat(deleteFileRelativePath)
 		switch {
 		case errors.Is(err, os.ErrNotExist): // file does not exit
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 			return true, nil
-		case err != nil:
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // error
+		case err != nil: // error
 			return false, err
-		default:
-			os.RemoveAll(filepath.Dir(deleteFileRelativePath)) // file still exists
+		default: // file still exists
 			fmt.Fprintf(os.Stderr, "file wasn't deleted")
 			return false, nil
 		}
 	})
 
 	testHandler("no_such_file", func() (bool, error) {
-		clientA := tester.NewClient(&tester.Client{
+		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"DELETE /no_such_file HTTP/1.1\r\n",
@@ -69,7 +72,10 @@ func TestDELETE() {
 			ExpectHeader:     nil,
 			ExpectBody:       content_404,
 		})
-		return clientA.Test(), nil
+		if err != nil {
+			return false, err
+		}
+		return clientA.Test()
 	})
 
 }

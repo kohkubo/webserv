@@ -5,12 +5,15 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"runtime"
+	"strings"
 )
 
 var (
-	CountTestFail uint
-	HELLO_WORLD   = fileToBytes("../html/index.html")
-	content_404   = []byte(`<!DOCTYPE html>
+	CountTestFatal uint
+	CountTestFail  uint
+	HELLO_WORLD    = fileToBytes("../html/index.html")
+	content_404    = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>404</title>
@@ -31,17 +34,42 @@ const (
 
 // 実行するテストの名前と関数を渡してその結果に合わせたメッセージを出力する関数です
 func testHandler(name string, test func() (bool, error)) {
-	fmt.Print("[ " + name + " ] ")
-	ok, err := test()
-	if err != nil {
-		log.Fatalf("erro occured!: %v", err)
+
+	// Fatalなerrorが起きてる場合はテスト無視
+	if IsFatal() {
+		return
 	}
-	if ok {
+
+	// 呼び出し関数の名前取得
+	pc, _, _, ok := runtime.Caller(1)
+	if !ok {
+		fmt.Fprintf(os.Stderr, "not possible to recover the information")
+		CountTestFatal++
+	}
+	callerFuncInfo := runtime.FuncForPC(pc).Name()
+	callerFunc := callerFuncInfo[strings.LastIndex(callerFuncInfo, ".")+1:]
+
+	// テスト実行
+	fmt.Print("[" + callerFunc + " " + name + "] ")
+	ok, err := test()
+	switch {
+	case err != nil:
+		fmt.Fprintf(os.Stderr, "fatal error : %v", err)
+		CountTestFatal++
+	case ok:
 		fmt.Println(green, "ok", reset)
-	} else {
+	default:
 		fmt.Println(red, "error", reset)
 		CountTestFail++
 	}
+}
+
+func IsFatal() bool {
+	return CountTestFatal != 0
+}
+
+func IsFail() bool {
+	return CountTestFail != 0
 }
 
 // FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
