@@ -11,7 +11,7 @@ func TestIOMULT() {
 	fmt.Println("IOMULT test")
 
 	testHandler("3client", func() (bool, error) {
-		clientA := tester.NewClient(&tester.Client{
+		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"GET /",
@@ -22,7 +22,10 @@ func TestIOMULT() {
 			ExpectHeader:     nil,
 			ExpectBody:       HELLO_WORLD,
 		})
-		clientB := tester.NewClient(&tester.Client{
+		if err != nil {
+			return false, err
+		}
+		clientB, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
 				"GET /nosuch HT",
@@ -33,7 +36,10 @@ func TestIOMULT() {
 			ExpectHeader:     nil,
 			ExpectBody:       content_404,
 		})
-		clientC := tester.NewClient(&tester.Client{
+		if err != nil {
+			return false, err
+		}
+		clientC, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
 				"DELETE /nosuch HTTP/1.1\r",
@@ -44,29 +50,62 @@ func TestIOMULT() {
 			ExpectHeader:     nil,
 			ExpectBody:       content_404,
 		})
+		if err != nil {
+			return false, err
+		}
 
-		clientA.SendPartialRequest()
-		clientB.SendPartialRequest()
-		clientC.SendPartialRequest()
-		clientB.SendPartialRequest()
-		clientA.SendPartialRequest()
-		clientC.SendPartialRequest()
-		clientB.SendPartialRequest()
+		if err := clientA.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientB.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientC.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientB.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientA.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientC.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientB.SendPartialRequest(); err != nil {
+			return false, err
+		}
 
-		clientB.RecvResponse()
-		if !clientB.IsExpectedResponse() {
+		if err := clientB.RecvResponse(); err != nil {
+			return false, err
+		}
+		if ok, err := clientB.IsExpectedResponse(); err != nil {
+			return false, err
+		} else if !ok {
 			return false, nil
 		}
 
-		clientC.SendPartialRequest()
-		clientC.RecvResponse()
-		if !clientC.IsExpectedResponse() {
+		if err := clientC.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientC.RecvResponse(); err != nil {
+			return false, err
+		}
+		if ok, err := clientC.IsExpectedResponse(); err != nil {
+			return false, err
+		} else if !ok {
 			return false, nil
 		}
 
-		clientA.SendPartialRequest()
-		clientA.RecvResponse()
-		if !clientA.IsExpectedResponse() {
+		if err := clientA.SendPartialRequest(); err != nil {
+			return false, err
+		}
+		if err := clientA.RecvResponse(); err != nil {
+			return false, err
+		}
+		if ok, err := clientA.IsExpectedResponse(); err != nil {
+			return false, err
+		} else if !ok {
 			return false, nil
 		}
 		return true, nil
