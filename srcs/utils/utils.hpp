@@ -8,9 +8,18 @@
 #include <string>
 #include <vector>
 
-inline void error_log_with_errno(const std::string &msg) {
-  std::cerr << msg << ": " << strerror(errno) << std::endl;
-}
+#define ERROR_LOG(msg)                                                         \
+  do {                                                                         \
+    std::cerr << msg << std::endl;                                             \
+  } while (0)
+#define ERROR_LOG_WITH_ERRNO(msg)                                              \
+  do {                                                                         \
+    std::cerr << msg << ": " << strerror(errno) << std::endl;                  \
+  } while (0)
+#define LOG(msg)                                                               \
+  do {                                                                         \
+    std::cout << msg << std::endl;                                             \
+  } while (0)
 
 bool        has_suffix(const std::string &str, const std::string &suffix);
 bool        has_prefix(const std::string &str, const std::string &prefix);

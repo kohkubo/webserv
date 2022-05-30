@@ -59,7 +59,7 @@ std::string read_file_tostring(const std::string &path) {
 bool remove_file(const std::string &file_path) {
   int ret = std::remove(file_path.c_str());
   if (ret == -1) {
-    error_log_with_errno("remove_file");
+    ERROR_LOG_WITH_ERRNO("remove_file");
     return false;
   }
   return true;
