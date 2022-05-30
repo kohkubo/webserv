@@ -23,10 +23,10 @@ struct Location {
       , limit_except_()
       , cgi_extension_(false)
       , sendfile_(false) {
-        limit_except_.push_back("GET");
-        limit_except_.push_back("POST");
-        limit_except_.push_back("DELETE");
-      }
+    limit_except_.push_back("GET");
+    limit_except_.push_back("POST");
+    limit_except_.push_back("DELETE");
+  }
 };
 
 #endif /* SRCS_CONFIG_LOCATION_HPP */

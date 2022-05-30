@@ -116,7 +116,7 @@ tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
   // TODO: 雑だけど他に思いつかない。案ほしい。
-  if (location.limit_except_.size() == 0){
+  if (location.limit_except_.size() == 0) {
     location.limit_except_.push_back("GET");
     location.limit_except_.push_back("POST");
     location.limit_except_.push_back("DELETE");
