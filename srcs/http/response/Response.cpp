@@ -71,9 +71,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
 }
 
 void Response::__resolve_uri() {
-  if (is_minus_depth(__file_path_)) {
-    __status_code_ = NOT_FOUND_404;
-  }
   // rootは末尾が"/"ではないことが前提
   __file_path_ = __config_.root_ + __request_info_.uri_;
   // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
@@ -88,6 +85,9 @@ void Response::__resolve_uri() {
 void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
+  }
+  if (is_minus_depth(__file_path_)) {
+    __status_code_ = NOT_FOUND_404;
   }
   // TODO: POSTはディレクトリの時どう処理するのか
   // TODO: 以下は別関数にするか整理する
