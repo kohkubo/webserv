@@ -103,21 +103,13 @@ Response::__get_proper_location(const std::string           &request_uri,
   return ret_location;
 }
 
-static std::string basename(const std::string &path) {
-  std::string res = path;
-  size_t pos = res.find_last_of('/');
-  if (pos != std::string::npos) {
-    res = res.substr(pos + 1);
-  }
-  return res;
-}
-
 void Response::__set_file_path(const std::string &request_uri,
                                const Location    &location) {
   if (has_suffix(request_uri, "/")) {
-    __file_path_ = location.root_ + location.index_;
+    __file_path_ = location.root_ + location.location_path_ + location.index_;
   } else {
-    __file_path_ = location.root_ + basename(request_uri);
+
+    __file_path_ = location.root_ + request_uri;
   }
   // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
   if (has_suffix(__file_path_, "/") &&
