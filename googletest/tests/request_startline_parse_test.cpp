@@ -28,7 +28,7 @@ TEST(request_startline_parse_test, exception_request_line_few_field) {
   std::string str = "GET HTTP/1.1";
 
   RequestInfo info;
-  EXPECT_THROW(info.parse_request_start_line(str),
+  EXPECT_THROW(info.check_bad_parse_request_start_line(str),
                RequestInfo::BadRequestException);
 }
 
@@ -36,6 +36,6 @@ TEST(request_startline_parse_test, exception_request_line_no_space) {
   std::string str = "GET/HTTP/1.1";
 
   RequestInfo info;
-  EXPECT_THROW(info.parse_request_start_line(str),
+  EXPECT_THROW(info.check_bad_parse_request_start_line(str),
                RequestInfo::BadRequestException);
 }

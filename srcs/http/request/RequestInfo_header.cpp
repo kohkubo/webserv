@@ -8,19 +8,15 @@
 
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースが終了 true。エラー→例外
-bool RequestInfo::parse_request_header(const std::string &header_line) {
-  if (header_line != "") {
-    __add_header_field(header_line);
-    return false;
-  }
+void RequestInfo::parse_request_header() {
   // call each field's parser
   __parse_request_host();
   __parse_request_connection();
   __parse_request_content_length();
-  return true;
 }
 
-void RequestInfo::__add_header_field(const std::string &header_line) {
+void RequestInfo::store_request_header_field_map(
+    const std::string &header_line) {
   std::size_t pos = header_line.find(':');
   if (pos == std::string::npos) {
     throw BadRequestException();
