@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-// NOTE: 呼び出し元でのエラー処理が面倒なので,
-//       予期しないエラーに関してはlog.Fatal()してる
-
 type Client struct {
 	Port             string
 	ReqPayload       []string
@@ -24,14 +21,14 @@ type Client struct {
 }
 
 // constructor
-func NewClient(c *Client) *Client {
+func NewClient(c *Client) (*Client, error) {
 	conn, err := connect(c.Port)
 	if err != nil {
-		log.Fatalf("NewClient: fail to connect: %v", err)
+		return nil, fmt.Errorf("NewClient: fail to connect: %v", err)
 	}
 	c.conn = conn
 	c.method = resolveMethod(c.ReqPayload)
-	return c
+	return c, nil
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する

@@ -10,7 +10,7 @@ func TestPOST() {
 	fmt.Println("POST test")
 
 	testHandler("simple", func() (bool, error) {
-		clientA := tester.NewClient(&tester.Client{
+		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
 				"POST / HTTP/1.1\r\n",
@@ -24,6 +24,9 @@ func TestPOST() {
 			ExpectHeader:     nil,
 			ExpectBody:       nil,
 		})
+		if err != nil {
+			return false, err
+		}
 		return clientA.Test(), nil
 	})
 
