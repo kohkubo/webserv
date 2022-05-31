@@ -7,8 +7,8 @@
 // directory内のファイル・ディレクトリ名をstringに格納して返す
 // TODO: htmlに変換する
 std::string Response::__create_autoindex_body(const std::string &file_path) {
-  DIR                     *dir = xopendir(file_path.c_str());
-  struct dirent           *diread;
+  DIR                     *dir    = xopendir(file_path.c_str());
+  struct dirent           *diread = NULL;
   std::vector<std::string> files;
 
   // xopendir()が成功している時点でdirは有効なものなので

@@ -86,7 +86,7 @@ bool is_digits(const std::string &str) {
 }
 
 std::size_t hexstr_to_size(const std::string &str) {
-  std::size_t       x;
+  std::size_t       x = 0;
   std::stringstream ss;
   ss << std::hex << str;
   ss >> x;
