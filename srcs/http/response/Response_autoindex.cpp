@@ -6,8 +6,7 @@
 #include "utils/syscall_wrapper.hpp"
 
 // TODO: DT_DIR系のマクロが定義されてない場合を考慮すべきかわからない
-// TODO: DT_DIR(ディレクトリ), DT_REG(通常ファイル)
-//       以外のファイルシステムの時どうするか調べきれてない
+// TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外はどうするか
 static std::string dir_list_lines(const std::string &file_path) {
   std::string    lines;
   DIR           *dir = xopendir(file_path.c_str());
@@ -18,7 +17,7 @@ static std::string dir_list_lines(const std::string &file_path) {
       continue;
     if (diread->d_type & DT_DIR)
       name += "/";
-    else if (!(diread->d_type & DT_REG))
+    else if (!((diread->d_type & DT_REG) || (diread->d_type & DT_LNK)))
       continue;
     lines += "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
   }
