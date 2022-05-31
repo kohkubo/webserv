@@ -25,14 +25,15 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 struct Transaction {
 private:
-  connFd           __conn_fd_;
-  TransactionState __transaction_state_;
-  ssize_t          __send_count_;
-  std::string      __response_;
-  RequestInfo      __request_info_;
-  NextChunkType    __next_chunk_;
-  std::size_t      __next_chunk_size_;
-  std::string      __unchunked_body_;
+  connFd                             __conn_fd_;
+  TransactionState                   __transaction_state_;
+  ssize_t                            __send_count_;
+  std::string                        __response_;
+  RequestInfo                        __request_info_;
+  NextChunkType                      __next_chunk_;
+  std::size_t                        __next_chunk_size_;
+  std::string                        __unchunked_body_;
+  std::map<std::string, std::string> __field_map_;
 
 private:
   static bool __getline(std::string &request_buffer, std::string &line);
@@ -51,12 +52,17 @@ public:
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
+  class BadRequestException : public std::logic_error {
+  public:
+    BadRequestException(const std::string &msg = "Illegal request.");
+  };
+
   void               set_response_for_bad_request();
   const Config      *get_proper_config(const confGroup &conf_group) const;
   void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-    return __transaction_state_;
+      return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;

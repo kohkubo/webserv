@@ -36,11 +36,11 @@ void Transaction::handle_request(std::string &request_buffer) {
       } else if (__transaction_state_ == RECEIVING_HEADER) {
         if (line != "") {
           __request_info_.store_request_header_field_map(
-              line, __request_info_.field_map_); // throws BadRequestException
+              line, __field_map_); // throws BadRequestException
           continue;
         }
         __request_info_.parse_request_header(
-            __request_info_.field_map_); // throws BadRequestException
+            __field_map_); // throws BadRequestException
         // TODO: validate request_header
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_) {
@@ -72,7 +72,13 @@ void Transaction::handle_request(std::string &request_buffer) {
       }
     } else {
       if (__get_request_body(request_buffer, request_body)) {
-        __request_info_.parse_request_body(request_body);
+        std::map<std::string, std::string>::const_iterator it =
+            __field_map_.find("Content-Type");
+        if (it == __field_map_.end()) {
+          // TODO: 例外投げていいのか? kohkubo
+          throw BadRequestException("Content-Type is not found.");
+        }
+        __request_info_.parse_request_body(request_body, it->second.c_str());
         __transaction_state_ = SENDING;
       }
     }

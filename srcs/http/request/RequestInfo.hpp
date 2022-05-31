@@ -14,14 +14,13 @@ public:
   bool       is_blank_first_line_;
   HttpMethod method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
-  std::string                        version_;
-  std::string                        host_;
-  std::string                        port_;
-  bool                               is_close_;
-  bool                               is_chunked_;
-  std::size_t                        content_length_;
-  std::map<std::string, std::string> field_map_;
-  std::vector<std::string>           values_;
+  std::string              version_;
+  std::string              host_;
+  std::string              port_;
+  bool                     is_close_;
+  bool                     is_chunked_;
+  std::size_t              content_length_;
+  std::vector<std::string> env_values_;
 
 private:
   static HttpMethod  __request_method_to_enum(const std::string &method);
@@ -53,7 +52,8 @@ public:
   void parse_request_start_line(const std::string &request_line);
   void parse_request_header(
       const std::map<std::string, std::string> &header_field_map);
-  void parse_request_body(std::string &request_body);
+  void parse_request_body(std::string       &request_body,
+                          const std::string &content_type);
   void check_first_multi_blank_line(const std::string &request_line);
   static void
   check_bad_parse_request_start_line(const std::string &request_line);

@@ -84,11 +84,11 @@ TEST(request_parse_test, query_body) {
   t.handle_request(request);
   const RequestInfo &info = t.get_request_info();
 
-  EXPECT_EQ(info.values_[0], "I'm=going");
-  EXPECT_EQ(info.values_[1], "to=become");
-  EXPECT_EQ(info.values_[2], "the=king");
-  EXPECT_EQ(info.values_[3], "of=the");
-  EXPECT_EQ(info.values_[4], "pirates!!");
+  EXPECT_EQ(info.env_values_[0], "I'm=going");
+  EXPECT_EQ(info.env_values_[1], "to=become");
+  EXPECT_EQ(info.env_values_[2], "the=king");
+  EXPECT_EQ(info.env_values_[3], "of=the");
+  EXPECT_EQ(info.env_values_[4], "pirates!!");
   // 今は"hoge=huga"の形でなくてもバリデートしてない
 }
 
@@ -107,8 +107,8 @@ TEST(request_parse_test, query_body_capital) {
   t.handle_request(request);
   const RequestInfo &info = t.get_request_info();
 
-  EXPECT_EQ(info.values_[0], "yabu=kara");
-  EXPECT_EQ(info.values_[1], "stick=");
-  EXPECT_EQ(info.values_[2], "ishi=no");
-  EXPECT_EQ(info.values_[3], "uenimo=3years");
+  EXPECT_EQ(info.env_values_[0], "yabu=kara");
+  EXPECT_EQ(info.env_values_[1], "stick=");
+  EXPECT_EQ(info.env_values_[2], "ishi=no");
+  EXPECT_EQ(info.env_values_[3], "uenimo=3years");
 }

@@ -29,8 +29,9 @@ TEST(request_chunked_test, chunked_body) {
   const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  EXPECT_EQ(info.values_[0], "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
-                             "Networkhello world\ntest");
+  EXPECT_EQ(info.env_values_[0],
+            "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+            "Networkhello world\ntest");
 }
 
 TEST(request_chunked_test, chunked_body_length_exception) {
@@ -80,6 +81,7 @@ TEST(request_chunked_test, chunked_body_split) {
   const RequestInfo &info = t.get_request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  EXPECT_EQ(info.values_[0], "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
-                             "Networkhello world\ntest");
+  EXPECT_EQ(info.env_values_[0],
+            "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+            "Networkhello world\ntest");
 }
