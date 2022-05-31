@@ -52,7 +52,8 @@ void Transaction::handle_request(std::string &request_buffer) {
   if (__transaction_state_ == RECEIVING_BODY) {
     std::string request_body;
     if (__request_info_.is_chunked_ == true) {
-      while (__get_next_chunk(request_buffer, request_body)) {
+      while (
+          __get_next_chunk_line(__next_chunk_, request_buffer, request_body)) {
         if (__next_chunk_ == CHUNK_SIZE) {
           __set_next_chunk_size(request_body);
           __next_chunk_ = CHUNK_DATA;
@@ -94,9 +95,10 @@ bool Transaction::__get_request_body(std::string &request_buffer,
   return true;
 }
 
-bool Transaction::__get_next_chunk(std::string &request_buffer,
-                                   std::string &chunk) {
-  if (__next_chunk_ == CHUNK_SIZE) {
+bool Transaction::__get_next_chunk_line(NextChunk    chunk_type,
+                                        std::string &request_buffer,
+                                        std::string &chunk) {
+  if (chunk_type == CHUNK_SIZE) {
     return __getline(request_buffer, chunk);
   }
   if (request_buffer.size() < __next_chunk_size_ + CRLF.size()) {
