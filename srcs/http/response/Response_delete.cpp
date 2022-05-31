@@ -36,5 +36,4 @@ void Response::__delete_target_file() {
   }
   std::cerr << "deleted file successfully" << std::endl;
   __status_code_ = NO_CONTENT_204;
-  return;
 }
