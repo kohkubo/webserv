@@ -20,6 +20,7 @@ public:
   std::string              host_;
   std::string              port_;
   bool                     is_close_;
+  bool                     is_chunked_;
   std::size_t              content_length_;
   std::vector<std::string> values_;
 
@@ -31,6 +32,7 @@ private:
   void        __parse_request_host();
   void        __parse_request_connection();
   void        __parse_request_content_length();
+  void        __parse_request_transfer_encoding();
   void        __parse_request_values(const std::string &request_body);
 
 public:
@@ -38,6 +40,7 @@ public:
       : is_blank_first_line_(false)
       , method_(UNKNOWN)
       , is_close_(false)
+      , is_chunked_(false)
       , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
