@@ -14,7 +14,7 @@
 #include "utils/utils.hpp"
 
 bool is_file_exists(const std::string &path) {
-  struct stat file_info;
+  struct stat file_info = {};
 
   if (stat(path.c_str(), &file_info) == -1) {
     ERROR_LOG("error: is_file_exists: " << path);
@@ -28,7 +28,7 @@ bool is_file_exists(const std::string &path) {
 
 // 末尾が"/"でなくてもディレクトリとして扱われることに注意
 bool is_dir_exists(const std::string &path) {
-  struct stat file_info;
+  struct stat file_info = {};
 
   if (stat(path.c_str(), &file_info) == -1) {
     ERROR_LOG("error: is_dir_exists: " << path);

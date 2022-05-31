@@ -192,7 +192,7 @@ tokenIterator Config::__parse_vector_directive(std::string               key,
 }
 
 void Config::__set_getaddrinfo() {
-  struct addrinfo hints;
+  struct addrinfo hints = {};
 
   memset(&hints, 0, sizeof(hints));
   hints.ai_family   = AF_INET;
