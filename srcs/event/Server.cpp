@@ -43,7 +43,7 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 }
 
 void Server::run_loop() {
-  LOG("start server process");
+  ERROR_LOG("start server process");
   while (true) {
     __reset_pollfds();
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
@@ -54,7 +54,7 @@ void Server::run_loop() {
       }
       nready--;
       int listen_flg = __conf_group_map_.count(it->fd);
-      if (listen_flg == 0) {
+      if (listen_flg == 1) {
         __insert_connection_map(it->fd);
         continue;
       }
