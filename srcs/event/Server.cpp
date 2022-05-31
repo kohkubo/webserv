@@ -44,7 +44,7 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 
 void Server::run_loop() {
   LOG("start server process");
-  while (1) {
+  while (true) {
     __reset_pollfds();
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
