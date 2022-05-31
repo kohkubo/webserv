@@ -68,7 +68,7 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
 }
 
 bool Transaction::__get_request_body(std::string &request_buffer,
-                                     std::string &body) {
+                                     std::string &body) const {
   if (request_buffer.size() < __request_info_.content_length_) {
     return false;
   }
@@ -77,7 +77,8 @@ bool Transaction::__get_request_body(std::string &request_buffer,
   return true;
 }
 
-const Config *Transaction::get_proper_config(const confGroup &conf_group) {
+const Config *
+Transaction::get_proper_config(const confGroup &conf_group) const {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == __request_info_.host_) {

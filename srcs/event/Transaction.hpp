@@ -31,7 +31,7 @@ private:
 
 private:
   bool __getline(std::string &request_buffer, std::string &line);
-  bool __get_request_body(std::string &request_buffer, std::string &body);
+  bool __get_request_body(std::string &request_buffer, std::string &body) const;
 
 public:
   Transaction(connFd conn_fd)
@@ -39,7 +39,7 @@ public:
       , __transaction_state_(RECEIVING_STARTLINE)
       , __send_count_(0) {}
   void               set_response_for_bad_request();
-  const Config      *get_proper_config(const confGroup &conf_group);
+  const Config      *get_proper_config(const confGroup &conf_group) const;
   void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
