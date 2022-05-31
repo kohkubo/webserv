@@ -16,7 +16,6 @@ public:
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
   std::string              version_;
   std::string              host_;
-  std::string              port_;
   bool                     is_close_;
   bool                     is_chunked_;
   std::size_t              content_length_;
@@ -49,14 +48,14 @@ public:
   static void store_request_header_field_map(
       const std::string                  &header_line,
       std::map<std::string, std::string> &header_field_map);
+  static void
+       check_bad_parse_request_start_line(const std::string &request_line);
   void parse_request_start_line(const std::string &request_line);
   void parse_request_header(
       const std::map<std::string, std::string> &header_field_map);
   void parse_request_body(std::string       &request_body,
                           const std::string &content_type);
   void check_first_multi_blank_line(const std::string &request_line);
-  static void
-  check_bad_parse_request_start_line(const std::string &request_line);
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */
