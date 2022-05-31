@@ -51,8 +51,6 @@ bool test_request_status_code(const Config *config, const std::string &uri,
   return res;
 }
 
-
-
 TEST(location_test, multi_location) {
   {
     ConfGroupMapGenerator         config_map_generator(SAMPLE_CONF);
