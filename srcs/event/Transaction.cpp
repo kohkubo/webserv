@@ -35,7 +35,7 @@ void Transaction::handle_request(std::string &request_buffer) {
         __transaction_state_ = RECEIVING_HEADER;
       } else if (__transaction_state_ == RECEIVING_HEADER) {
         if (line != "") {
-          __request_info_.store_request_header_field_map(
+          RequestInfo::store_request_header_field_map(
               line, __field_map_); // throws BadRequestException
           continue;
         }
@@ -58,21 +58,26 @@ void Transaction::handle_request(std::string &request_buffer) {
       __transaction_state_ =
           __chunk_loop(request_buffer, request_body,
                        __transaction_state_); // throws BadRequestException
-      if (__transaction_state_ == SENDING) {
-        __request_info_.parse_request_body(__unchunked_body_);
+    } else {
+      //__set_request_body == trueだったらparse_request_bodyを呼べる
+      // TODO: request_buffer.size() ==
+      // __request_info_.content_length_が同じとき、bodyのパースに入れる??
+      // kohkubo
+      if (request_buffer.size() < __request_info_.content_length_) {
         return;
       }
-    } else {
-      if (__get_request_body(request_buffer, request_body)) {
-        std::map<std::string, std::string>::const_iterator it =
-            __field_map_.find("Content-Type");
-        if (it == __field_map_.end()) {
-          // TODO: 例外投げていいのか? kohkubo
-          throw BadRequestException("Content-Type is not found.");
-        }
-        __request_info_.parse_request_body(request_body, it->second.c_str());
-        __transaction_state_ = SENDING;
+      __set_request_body(request_buffer, request_body,
+                         __request_info_.content_length_);
+      __transaction_state_ = SENDING;
+    }
+    if (__transaction_state_ == SENDING) {
+      std::map<std::string, std::string>::const_iterator it =
+          __field_map_.find("Content-Type");
+      if (it == __field_map_.end()) {
+        // TODO: 例外投げていいのか? kohkubo
+        throw RequestInfo::BadRequestException("Content-Type is not found.");
       }
+      __request_info_.parse_request_body(__unchunked_body_, it->second);
     }
   }
 }
@@ -86,14 +91,10 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
   return true;
 }
 
-bool Transaction::__get_request_body(std::string &request_buffer,
-                                     std::string &body) const {
-  if (request_buffer.size() < __request_info_.content_length_) {
-    return false;
-  }
-  body = request_buffer.substr(0, __request_info_.content_length_);
-  request_buffer.erase(0, __request_info_.content_length_);
-  return true;
+void Transaction::__set_request_body(std::string &request_buffer,
+                                     std::string &body, size_t content_length) {
+  body = request_buffer.substr(0, content_length);
+  request_buffer.erase(0, content_length);
 }
 
 bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,

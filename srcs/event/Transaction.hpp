@@ -37,10 +37,11 @@ private:
 
 private:
   static bool __getline(std::string &request_buffer, std::string &line);
-  bool __get_request_body(std::string &request_buffer, std::string &body) const;
-  static bool      __get_next_chunk_line(NextChunkType chunk_type,
-                                         std::string  &request_buffer,
-                                         std::string &chunk, size_t next_chunk_size);
+  static void __set_request_body(std::string &request_buffer, std::string &body,
+                                 size_t content_length);
+  static bool __get_next_chunk_line(NextChunkType chunk_type,
+                                    std::string  &request_buffer,
+                                    std::string &chunk, size_t next_chunk_size);
   TransactionState __chunk_loop(std::string     &request_buffer,
                                 std::string     &request_body,
                                 TransactionState transaction_state);
@@ -53,17 +54,12 @@ public:
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
-  class BadRequestException : public std::logic_error {
-  public:
-    BadRequestException(const std::string &msg = "Illegal request.");
-  };
-
   void               set_response_for_bad_request();
   const Config      *get_proper_config(const confGroup &conf_group) const;
   void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-      return __transaction_state_;
+    return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
