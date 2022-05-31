@@ -32,11 +32,12 @@ std::string to_string(T val) {
   return ss.str();
 }
 
-bool is_uint8(const std::string &str);
-bool is_ip(const std::string &str);
-bool is_digits(const std::string &str);
+bool        is_uint8(const std::string &str);
+bool        is_ip(const std::string &str);
+bool        is_digits(const std::string &str);
 
-bool is_dir(const std::string &filepath);
-bool is_minus_depth(const std::string &filepath);
+std::size_t hexstr_to_size(const std::string &str);
+bool        is_dir(const std::string &filepath);
+bool        is_minus_depth(const std::string &filepath);
 
 #endif /* SRCS_UTILS_UTILS_HPP */
