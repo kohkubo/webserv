@@ -55,20 +55,12 @@ void Transaction::handle_request(std::string &request_buffer) {
   if (__transaction_state_ == RECEIVING_BODY) {
     std::string request_body;
     if (__request_info_.is_chunked_) {
-      while (__get_next_chunk_line(__next_chunk_, request_buffer, request_body,
-                                   __next_chunk_size_)) {
-        if (__next_chunk_ == CHUNK_SIZE) {
-          __set_next_chunk_size(request_body);
-          __next_chunk_ = CHUNK_DATA;
-        } else {
-          if (__next_chunk_size_ == 0 && request_body == "") {
-            __request_info_.parse_request_body(__unchunked_body_);
-            __transaction_state_ = SENDING;
-            return;
-          }
-          __store_unchunked_body(request_body);
-          __next_chunk_ = CHUNK_SIZE;
-        }
+      __transaction_state_ =
+          __chunk_loop(request_buffer, request_body,
+                       __transaction_state_); // throws BadRequestException
+      if (__transaction_state_ == SENDING) {
+        __request_info_.parse_request_body(__unchunked_body_);
+        return;
       }
     } else {
       if (__get_request_body(request_buffer, request_body)) {
@@ -146,10 +138,22 @@ void Transaction::send_response() {
   __send_count_ += sc;
 }
 
-void Transaction::__set_next_chunk_size(const std::string &chunk_size_line) {
-  __next_chunk_size_ = hexstr_to_size(chunk_size_line);
-}
-
-void Transaction::__store_unchunked_body(const std::string &chunk_line) {
-  __unchunked_body_.append(chunk_line);
+// 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく
+TransactionState Transaction::__chunk_loop(std::string     &request_buffer,
+                                           std::string     &request_body,
+                                           TransactionState transaction_state) {
+  while (__get_next_chunk_line(__next_chunk_, request_buffer, request_body,
+                               __next_chunk_size_)) {
+    if (__next_chunk_ == CHUNK_SIZE) {
+      __next_chunk_size_ = hexstr_to_size(request_body);
+      __next_chunk_      = CHUNK_DATA;
+    } else {
+      if (__next_chunk_size_ == 0 && request_body == "") {
+        return SENDING;
+      }
+      __unchunked_body_.append(request_body);
+      __next_chunk_ = CHUNK_SIZE;
+    }
+  }
+  return transaction_state;
 }
