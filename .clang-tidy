@@ -4,10 +4,18 @@ Checks:
   readability-make-member-function-const,
   readability-non-const-parameter,
   readability-convert-member-functions-to-static,
+  readability-qualified-auto,
+  readability-redundant-control-flow,
+  readability-redundant-member-init,
+  readability-const-return-type,
   cppcoreguidelines-init-variables,
   cppcoreguidelines-virtual-class-destructor,
   llvm-include-order,
-  misc-definitions-in-headers
+  misc-definitions-in-headers,
+  modernize-redundant-void-arg,
+  modernize-use-bool-literals,
+  bugprone-copy-constructor-init,
+  bugprone-virtual-near-miss
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: 'llvm'
