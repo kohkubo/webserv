@@ -29,7 +29,7 @@ void Transaction::handle_request(std::string &request_buffer) {
         if (__request_info_.is_blank_first_line_) {
           continue;
         }
-        __request_info_.check_bad_parse_request_start_line(
+        RequestInfo::check_bad_parse_request_start_line(
             line); // throws BadRequestException
         __request_info_.parse_request_start_line(line); // noexcept
         __transaction_state_ = RECEIVING_HEADER;
@@ -45,10 +45,9 @@ void Transaction::handle_request(std::string &request_buffer) {
             __request_info_.is_chunked_) {
           __transaction_state_ = RECEIVING_BODY;
           break;
-        } else {
-          __transaction_state_ = SENDING;
-          return;
         }
+        __transaction_state_ = SENDING;
+        return;
       }
     }
   }
@@ -110,7 +109,7 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   }
   chunk = request_buffer.substr(0, next_chunk_size);
   request_buffer.erase(0, next_chunk_size);
-  if (has_prefix(request_buffer, CRLF) == false) {
+  if (!has_prefix(request_buffer, CRLF)) {
     throw RequestInfo::BadRequestException();
   }
   request_buffer.erase(0, CRLF.size());
