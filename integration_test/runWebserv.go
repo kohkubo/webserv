@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"integration_test/tests"
 	"io"
 	"os"
 	"os/exec"
@@ -14,9 +15,9 @@ var stderr io.ReadCloser
 // 指定したpathのconfigファイルでwebservを立ち上げる。
 func RestartWebserv(configPath string) {
 	if current_process != nil {
-		KillWebserv(false)
-		fmt.Fprintln(os.Stderr, "fail to start webserv")
-		os.Exit(1)
+		KillWebserv()
+		fmt.Fprintln(os.Stderr, "current process not available")
+		return
 	}
 	current_process = exec.Command("./webserv", configPath)
 	// itestの実行ファイルがintegration_test/integration_testを期待
@@ -29,12 +30,14 @@ func RestartWebserv(configPath string) {
 			return
 		}
 	}
-	// TODO: error処理
 }
 
-func KillWebserv(printErrorLog bool) {
+func KillWebserv() {
+	if current_process == nil {
+		return
+	}
 	current_process.Process.Kill()
-	if printErrorLog {
+	if tests.IsFatal() {
 		str, _ := io.ReadAll(stderr)
 		fmt.Printf("%s\n", str)
 	}
