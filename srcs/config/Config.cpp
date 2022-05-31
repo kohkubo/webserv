@@ -34,7 +34,7 @@ Config &Config::operator=(const Config &other) {
   server_name_          = other.server_name_;
   error_pages_          = other.error_pages_;
   locations_            = other.locations_;
-  __set_getaddrinfo();
+  __set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return *this;
 }
 
@@ -80,7 +80,7 @@ tokenIterator Config::__parse_listen(tokenIterator pos, tokenIterator end) {
     }
     it++;
   }
-  __set_getaddrinfo();
+  __set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return pos + 2;
 }
 
@@ -211,14 +211,13 @@ tokenIterator Config::__parse_vector_directive(std::string               key,
   return pos + 1;
 }
 
-void Config::__set_getaddrinfo() {
+void Config::__set_getaddrinfo(const std::string &host, const std::string &port,
+                               struct addrinfo **addrinfo) {
   struct addrinfo hints = {};
 
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family   = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  int error = getaddrinfo(listen_address_.c_str(), listen_port_.c_str(), &hints,
-                          &addrinfo_);
+  hints.ai_family       = AF_INET;
+  hints.ai_socktype     = SOCK_STREAM;
+  int error = getaddrinfo(host.c_str(), port.c_str(), &hints, addrinfo);
   if (error != 0) {
     ERROR_LOG("getaddrinfo: " << gai_strerror(error));
     exit(EXIT_FAILURE);

@@ -56,7 +56,9 @@ public:
 
 private:
   tokenIterator        __parse(tokenIterator pos, tokenIterator end);
-  void                 __set_getaddrinfo();
+  static void          __set_getaddrinfo(const std::string &host,
+                                         const std::string &port,
+                                         struct addrinfo  **addrinfo);
   tokenIterator        __parse_listen(tokenIterator pos, tokenIterator end);
   tokenIterator        __parse_location(tokenIterator pos, tokenIterator end);
   static tokenIterator __parse_map_directive(std::string                 key,
