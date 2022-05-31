@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-const autoindex_html = `<!DOCTYPE html>
+const expect_html_dir2 = `<!DOCTYPE html>
 <html>
    <head>
       <title>Index of /autoindex/</title>
@@ -34,7 +34,7 @@ func TestAUTOINDEX() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       []byte(autoindex_html),
+			ExpectBody:       []byte(expect_html_dir2),
 		})
 		if err != nil {
 			return false, err
