@@ -75,6 +75,7 @@ void Transaction::handle_request(std::string &request_buffer) {
           __field_map_.find("Content-Type");
       if (it == __field_map_.end()) {
         // TODO: 例外投げていいのか? kohkubo
+        // TODO: header パースで入れたほうがよくない??
         throw RequestInfo::BadRequestException("Content-Type is not found.");
       }
       __request_info_.parse_request_body(__unchunked_body_, it->second);
