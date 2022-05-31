@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 
 #include "http/const/const_delimiter.hpp"
+#include "http/request/RequestInfo.hpp"
 #include "http/response/Response.hpp"
 
 void Transaction::set_response_for_bad_request() {
@@ -38,10 +39,12 @@ void Transaction::handle_request(std::string &request_buffer) {
               line); // throws BadRequestException
           continue;
         }
-        __request_info_.parse_request_header(); // throws BadRequestException
-        // TODO: チャンク or content_length_ != 0
-        if (__request_info_.content_length_ != 0) {
+        __request_info_.parse_request_header();
+        // TODO: validate request_header
+        if (__request_info_.content_length_ != 0 ||
+            __request_info_.is_chunked_ == true) {
           __transaction_state_ = RECEIVING_BODY;
+          break;
         } else {
           __transaction_state_ = SENDING;
           return;
@@ -51,9 +54,27 @@ void Transaction::handle_request(std::string &request_buffer) {
   }
   if (__transaction_state_ == RECEIVING_BODY) {
     std::string request_body;
-    if (__get_request_body(request_buffer, request_body)) {
-      __request_info_.parse_request_body(request_body);
-      __transaction_state_ = SENDING;
+    if (__request_info_.is_chunked_ == true) {
+      while (
+          __get_next_chunk_line(__next_chunk_, request_buffer, request_body)) {
+        if (__next_chunk_ == CHUNK_SIZE) {
+          __set_next_chunk_size(request_body);
+          __next_chunk_ = CHUNK_DATA;
+        } else {
+          if (__next_chunk_size_ == 0 && request_body == "") {
+            __request_info_.parse_request_body(__unchunked_body_);
+            __transaction_state_ = SENDING;
+            return;
+          }
+          __store_unchunked_body(request_body);
+          __next_chunk_ = CHUNK_SIZE;
+        }
+      }
+    } else {
+      if (__get_request_body(request_buffer, request_body)) {
+        __request_info_.parse_request_body(request_body);
+        __transaction_state_ = SENDING;
+      }
     }
   }
 }
@@ -77,6 +98,24 @@ bool Transaction::__get_request_body(std::string &request_buffer,
   return true;
 }
 
+bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
+                                        std::string  &request_buffer,
+                                        std::string  &chunk) {
+  if (chunk_type == CHUNK_SIZE) {
+    return __getline(request_buffer, chunk);
+  }
+  if (request_buffer.size() < __next_chunk_size_ + CRLF.size()) {
+    return false;
+  }
+  chunk = request_buffer.substr(0, __next_chunk_size_);
+  request_buffer.erase(0, __next_chunk_size_);
+  if (has_prefix(request_buffer, CRLF) == false) {
+    throw RequestInfo::BadRequestException();
+  }
+  request_buffer.erase(0, CRLF.size());
+  return true;
+}
+
 const Config *
 Transaction::get_proper_config(const confGroup &conf_group) const {
   confGroup::const_iterator it = conf_group.begin();
@@ -85,7 +124,6 @@ Transaction::get_proper_config(const confGroup &conf_group) const {
       return *it;
     }
   }
-  // TODO: なかった場合、先頭のconfigを返しているのなぜ??
   return conf_group[0];
 }
 
@@ -99,4 +137,12 @@ void Transaction::send_response() {
   size_t      rest_count = __response_.size() - __send_count_;
   ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
   __send_count_ += sc;
+}
+
+void Transaction::__set_next_chunk_size(const std::string &chunk_size_line) {
+  __next_chunk_size_ = hexstr_to_size(chunk_size_line);
+}
+
+void Transaction::__store_unchunked_body(const std::string &chunk_line) {
+  __unchunked_body_.append(chunk_line);
 }

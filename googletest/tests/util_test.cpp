@@ -6,10 +6,10 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-#define TEST_FILE          "../googletest/tdata/test.txt"
+#define TEST_FILE          "../html/test.txt"
 #define TEST_CONTENT       "test"
-#define EMPTY_FILE         "../googletest/tdata/empty.txt"
-#define NO_PERMISSION_FILE "../googletest/tdata/no_permission.txt"
+#define EMPTY_FILE         "../html/empty.txt"
+#define NO_PERMISSION_FILE "../html/no_permission.txt"
 #define NO_SUCH_FILE       "no such file"
 
 TEST(util_test, test_has_suffix) {
@@ -84,7 +84,6 @@ TEST(util_test, test_is_digits) {
 }
 
 TEST(util_test, test_read_file_tostring) {
-  std::cout << "test_read_file_tostring" << std::endl;
   EXPECT_EQ(read_file_tostring(TEST_FILE), TEST_CONTENT);
   EXPECT_EQ(read_file_tostring(EMPTY_FILE), "");
   EXPECT_EQ(read_file_tostring(NO_SUCH_FILE), ""); // TODO: エラーを拾う
@@ -98,6 +97,17 @@ TEST(util_test, test_is_file_exists) {
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 
+#define TEST_DIR "../html/test_dir"
+#define EMPTY_DIR "../html/empty_dir"
+
+TEST(util_test, is_dir) {
+  EXPECT_TRUE(is_dir(TEST_DIR));
+  EXPECT_TRUE(is_dir(EMPTY_DIR));
+  EXPECT_FALSE(is_dir(TEST_FILE));
+  EXPECT_FALSE(is_dir(EMPTY_FILE));
+  EXPECT_FALSE(is_dir(NO_SUCH_FILE));
+}
+
 TEST(util_test, is_minus_depth_test) {
   EXPECT_TRUE(is_minus_depth("../fuga.html"));
   EXPECT_TRUE(is_minus_depth("/../fuga.html"));
@@ -109,4 +119,14 @@ TEST(util_test, is_minus_depth_test) {
   EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
   EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
   EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
+}
+
+TEST(util_test, test_hexstr_to_size) {
+  EXPECT_EQ(hexstr_to_size("0"), 0);
+  EXPECT_EQ(hexstr_to_size("1"), 1);
+  EXPECT_EQ(hexstr_to_size("b"), 11);
+  EXPECT_EQ(hexstr_to_size("f"), 15);
+  EXPECT_EQ(hexstr_to_size("20"), 32);
+  EXPECT_EQ(hexstr_to_size("ff"), 255);
+  EXPECT_EQ(hexstr_to_size("ffffffffffffffff"), SIZE_MAX);
 }

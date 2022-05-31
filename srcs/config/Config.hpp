@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "config/Location.hpp"
 #include "utils/tokenize.hpp"
 
 const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
@@ -22,14 +23,9 @@ public:
   std::string                listen_port_;
   size_t                     client_max_body_size_;
   std::string                server_name_;
-  std::string                root_;
-  std::string                index_;
   std::map<int, std::string> error_pages_;
-  std::map<int, std::string> return_;
-  bool                       autoindex_;
-  std::vector<std::string>   limit_except_;
   struct addrinfo           *addrinfo_;
-  tokenIterator              get_moved_it() { return __last_it_; }
+  std::vector<Location>      locations_;
 
   // error_page;
 public:
@@ -44,14 +40,9 @@ public:
   Config(tokenIterator start, tokenIterator end)
       : listen_address_("0.0.0.0")
       , listen_port_("80")
-      , client_max_body_size_(0)
+      , client_max_body_size_(1024)
       , server_name_("")
-      , root_("")
-      , index_("")
       , error_pages_()
-      , return_()
-      , autoindex_(false)
-      , limit_except_()
       , addrinfo_(NULL) {
     try {
       __last_it_ = __parse(start, end);
@@ -62,7 +53,8 @@ public:
   }
   ~Config();
   Config(const Config &other);
-  Config &operator=(const Config &other);
+  Config       &operator=(const Config &other);
+  tokenIterator get_moved_it() { return __last_it_; }
 
 private:
   tokenIterator        __parse(tokenIterator pos, tokenIterator end);
