@@ -4,7 +4,8 @@ Checks:
   readability-make-member-function-const,
   readability-non-const-parameter,
   readability-convert-member-functions-to-static,
-  cppcoreguidelines-init-variables
+  cppcoreguidelines-init-variables,
+  cppcoreguidelines-virtual-class-destructor
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: 'llvm'
