@@ -29,28 +29,29 @@ public:
 
 private:
   Response();
-  std::string __read_file_tostring_cgi(const std::string              &path,
-                                       const std::vector<std::string> &env);
-  std::string __create_autoindex_body(const std::string &file_path);
+  static std::string
+                     __read_file_tostring_cgi(const std::string              &path,
+                                              const std::vector<std::string> &env);
+  static std::string __create_autoindex_body(const std::string &file_path);
 
-  void        __set_status_phrase();
-  void        __set_general_header();
-  void        __set_entity_header();
-  void        __set_content_len();
-  void        __set_content_type();
-  void        __make_message_string();
-  void        __make_bodiless_message_string();
+  void               __set_status_phrase();
+  void               __set_general_header();
+  void               __set_entity_header();
+  void               __set_content_len();
+  void               __set_content_type();
+  void               __make_message_string();
+  void               __make_bodiless_message_string();
 
-  void        __resolve_uri();
-  bool        __is_error_status_code();
-  void        __check_filepath_status();
-  void        __set_error_page_body();
-  void        __set_body();
+  void               __resolve_uri();
+  bool               __is_error_status_code();
+  void               __check_filepath_status();
+  void               __set_error_page_body();
+  void               __set_body();
 
-  void        __get_method_handler() { __check_filepath_status(); }
-  void        __post_method_handler() { __check_filepath_status(); }
-  void        __delete_target_file();
-  void        __delete_method_handler() { __delete_target_file(); }
+  void               __get_method_handler() { __check_filepath_status(); }
+  void               __post_method_handler() { __check_filepath_status(); }
+  void               __delete_target_file();
+  void               __delete_method_handler() { __delete_target_file(); }
 };
 
 std::map<int, std::string> init_response_status_phrase_map();

@@ -30,7 +30,7 @@ private:
   RequestInfo      __request_info_;
 
 private:
-  bool __getline(std::string &request_buffer, std::string &line);
+  static bool __getline(std::string &request_buffer, std::string &line);
   bool __get_request_body(std::string &request_buffer, std::string &body) const;
 
 public:

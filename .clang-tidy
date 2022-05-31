@@ -2,7 +2,8 @@ Checks:
   readability-identifier-naming,
   -clang-analyzer-security.insecureAPI.bzero,
   readability-make-member-function-const,
-  readability-non-const-parameter
+  readability-non-const-parameter,
+  readability-convert-member-functions-to-static
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: 'llvm'
