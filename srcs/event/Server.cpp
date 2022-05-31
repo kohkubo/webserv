@@ -2,6 +2,7 @@
 
 #include "event/Connection.hpp"
 #include "utils/syscall_wrapper.hpp"
+#include "utils/utils.hpp"
 
 void Server::__add_listenfd_to_pollfds() {
   std::map<listenFd, confGroup>::const_iterator it = __conf_group_map_.begin();
