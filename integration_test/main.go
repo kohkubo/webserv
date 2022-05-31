@@ -23,4 +23,5 @@ func main() {
 	//tests.TestPOST()
 	tests.TestDELETE()
 	tests.TestIOMULT()
+	tests.TestBADREQ()
 }

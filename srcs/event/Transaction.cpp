@@ -22,21 +22,24 @@ void Transaction::handle_request(std::string &request_buffer) {
   if (__transaction_state_ == RECEIVING_STARTLINE ||
       __transaction_state_ == RECEIVING_HEADER) {
     std::string line;
-    while (__getline(request_buffer, line)) {
+    while (__getline(request_buffer, line)) { // noexcept
       if (__transaction_state_ == RECEIVING_STARTLINE) {
-        __request_info_.check_first_multi_blank_line(line);
+        __request_info_.check_first_multi_blank_line(
+            line); // throws BadRequestException
         if (__request_info_.is_blank_first_line_ == true) {
           continue;
         }
-        __request_info_.check_bad_parse_request_start_line(line);
-        __request_info_.parse_request_start_line(line);
+        __request_info_.check_bad_parse_request_start_line(
+            line); // throws BadRequestException
+        __request_info_.parse_request_start_line(line); // noexcept
         __transaction_state_ = RECEIVING_HEADER;
       } else if (__transaction_state_ == RECEIVING_HEADER) {
         if (line != "") {
-          __request_info_.store_request_header_field_map(line);
+          __request_info_.store_request_header_field_map(
+              line); // throws BadRequestException
           continue;
         }
-        __request_info_.parse_request_header();
+        __request_info_.parse_request_header(); // throws BadRequestException
         // TODO: validate request_header
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_ == true) {
@@ -86,7 +89,7 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
 }
 
 bool Transaction::__get_request_body(std::string &request_buffer,
-                                     std::string &body) {
+                                     std::string &body) const {
   if (request_buffer.size() < __request_info_.content_length_) {
     return false;
   }
@@ -113,7 +116,8 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *Transaction::get_proper_config(const confGroup &conf_group) {
+const Config *
+Transaction::get_proper_config(const confGroup &conf_group) const {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == __request_info_.host_) {
