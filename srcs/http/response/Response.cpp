@@ -24,6 +24,7 @@ std::map<int, std::string> init_page_contents_map() {
   res[400] = content_400;
   res[403] = content_403;
   res[404] = content_404;
+  res[405] = content_405;
   res[500] = content_500;
   res[501] = content_501;
   res[520] = content_520;
@@ -58,13 +59,13 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   __set_file_path(__request_info_.uri_, *location);
   switch (__request_info_.method_) {
   case GET:
-    __get_method_handler();
+    __get_method_handler(*location);
     break;
   case POST:
-    __post_method_handler();
+    __post_method_handler(*location);
     break;
   case DELETE:
-    __delete_method_handler();
+    __delete_method_handler(*location);
     break;
   default:
     LOG("unknown method:" << __request_info_.method_);
@@ -115,7 +116,7 @@ void Response::__set_file_path(const std::string &request_uri,
   }
 }
 
-void Response::__check_filepath_status() {
+void Response::__check_filepath_status(const Location &location) {
   if (__status_code_ != NONE) {
     return;
   }
@@ -126,7 +127,7 @@ void Response::__check_filepath_status() {
   // TODO: 以下は別関数にするか整理する
   if (has_suffix(__file_path_, "/")) {
     if (is_dir_exists(__file_path_)) {
-      if (!__config_.locations_[0].autoindex_) {
+      if (!location.autoindex_) {
         __status_code_ = FORBIDDEN_403; // nginxに合わせた
       } else {
         __status_code_ = OK_200;
