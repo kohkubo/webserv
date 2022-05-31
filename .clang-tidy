@@ -5,7 +5,9 @@ Checks:
   readability-non-const-parameter,
   readability-convert-member-functions-to-static,
   cppcoreguidelines-init-variables,
-  cppcoreguidelines-virtual-class-destructor
+  cppcoreguidelines-virtual-class-destructor,
+  llvm-include-order,
+  misc-definitions-in-headers
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: 'llvm'
