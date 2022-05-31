@@ -18,10 +18,15 @@ typedef int          connFd;
 
 class Connection {
 private:
-  connFd                  __conn_fd_;
-  confGroup               __conf_group_;
-  std::deque<Transaction> __transaction_queue_;
-  std::string             __buffer_;
+  connFd                   __conn_fd_;
+  confGroup                __conf_group_;
+  std::deque<Transaction>  __transaction_queue_;
+  std::string              __buffer_;
+  static const std::size_t buffer_max_length_ = 8192;
+
+private:
+  void __check_buffer_length_exception(std::string &request_buffer,
+                                       std::size_t  buffer_limit_length) const;
 
 public:
   Connection() {}

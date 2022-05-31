@@ -85,6 +85,18 @@ tokenIterator Config::__parse_listen(tokenIterator pos, tokenIterator end) {
   return pos + 2;
 }
 
+static bool
+is_location_path_duplication(const std::string           &location_path,
+                             const std::vector<Location> &locations) {
+  std::vector<Location>::const_iterator it = locations.begin();
+  for (; it != locations.end(); it++) {
+    if (it->location_path_ == location_path) {
+      return true;
+    }
+  }
+  return false;
+}
+
 tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
@@ -113,6 +125,15 @@ tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
+  if (has_suffix(location.index_, "/"))
+    throw UnexpectedTokenException("index directive failed.");
+  if (!has_suffix(location.root_, "/"))
+    throw UnexpectedTokenException("root directive failed.");
+  if (is_location_path_duplication(location.location_path_, locations_))
+    throw UnexpectedTokenException("location path duplication.");
+  if (is_minus_depth(location.location_path_) ||
+      is_minus_depth(location.root_) || is_minus_depth(location.index_))
+    throw UnexpectedTokenException("minus depth path failed.");
   locations_.push_back(location);
   return ++pos;
 }
