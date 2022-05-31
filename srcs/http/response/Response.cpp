@@ -50,6 +50,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   const Location *location =
       __get_proper_location(__request_info_.uri_, __config_.locations_);
   if (location == NULL) {
+    std::cout << "--->uri:" << request_info.uri_ << std::endl;
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     __status_code_ = NOT_FOUND_404;
     __set_error_page_body(Location());
@@ -106,17 +107,14 @@ Response::__get_proper_location(const std::string           &request_uri,
 void Response::__set_file_path(const std::string &request_uri,
                                const Location    &location) {
   if (has_suffix(request_uri, "/")) {
-    __file_path_ = location.root_ + location.location_path_ + location.index_;
+    __file_path_ = location.root_ + request_uri;
+    if (is_file_exists(__file_path_ + location.index_)) {
+      __file_path_ += location.index_;
+    }
   } else {
     __file_path_ = location.root_ + request_uri;
   }
-  // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
-  if (has_suffix(__file_path_, "/") &&
-      is_file_exists(__file_path_ + location.index_)) {
-    // indexを追記したパスが存在すれば採用, autoindexは無視される
-    // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
-    __file_path_ += location.index_;
-  }
+  std::cout << "--->filepath:" << __file_path_ << std::endl;
 }
 
 // TODO: リンクやその他のファイルシステムの時どうするか
