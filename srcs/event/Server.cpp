@@ -37,7 +37,7 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 }
 
 void Server::run_loop() {
-  std::cerr << "start server process" << std::endl;
+  LOG("start server process");
   while (1) {
     __reset_pollfds();
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
