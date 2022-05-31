@@ -40,6 +40,8 @@ private:
   static bool __get_next_chunk_line(NextChunkType chunk_type,
                                     std::string  &request_buffer,
                                     std::string &chunk, size_t next_chunk_size);
+  void        __set_next_chunk_size(const std::string &chunk_size_line);
+  void        __store_unchunked_body(const std::string &chunk_line);
 
 public:
   Transaction(connFd conn_fd)
@@ -54,7 +56,7 @@ public:
   void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-      return __transaction_state_;
+    return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
