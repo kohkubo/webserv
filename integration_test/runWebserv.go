@@ -24,8 +24,7 @@ func RestartWebserv(configPath string) {
 	// webservが始まった瞬間終わるとこのEOFが原因でこのScanがfalse返ってしまう
 	// つまりwebserv側の出力が取れない
 	for scanner.Scan() {
-		txt := scanner.Text()
-		if txt == "start server process" {
+		if scanner.Text() == "start server process" {
 			return
 		}
 	}
