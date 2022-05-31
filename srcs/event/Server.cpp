@@ -22,13 +22,18 @@ void Server::__add_connfd_to_pollfds() {
 }
 
 void Server::__connection_receive_handler(connFd conn_fd) {
-  bool is_close = __connection_map_[conn_fd].append_receive_buffer();
-  if (is_close) {
+  std::map<connFd, Connection>::iterator it = __connection_map_.find(conn_fd);
+  if (it == __connection_map_.end()) {
+    // TODO: この分岐には入らないはず いらなかったら消す?
+    return;
+  }
+  bool is_full_buffer = it->second.append_receive_buffer();
+  if (is_full_buffer) {
     close(conn_fd);
     __connection_map_.erase(conn_fd);
     return;
   }
-  __connection_map_[conn_fd].create_sequential_transaction();
+  it->second.create_sequential_transaction();
 }
 
 void Server::__insert_connection_map(listenFd listen_fd) {
@@ -57,7 +62,8 @@ void Server::run_loop() {
         __connection_receive_handler(it->fd);
       }
       if (it->revents & POLLOUT) {
-        __connection_map_[it->fd].send_response();
+        // TODO: []からの書き換え、findできないケースある??
+        __connection_map_.find(it->fd)->second.send_response();
       }
     }
   }
