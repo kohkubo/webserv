@@ -16,6 +16,7 @@ void Connection::create_sequential_transaction() {
     Transaction &transaction = __transaction_queue_.back();
     try {
       transaction.handle_request(__buffer_);
+      __check_buffer_length_exception();
       if (transaction.get_transaction_state() != SENDING) {
         return;
       }
@@ -62,5 +63,13 @@ void Connection::send_response() {
   }
   if (transaction.is_send_all()) {
     __transaction_queue_.pop_front();
+  }
+}
+
+void Connection::__check_buffer_length_exception() {
+  const std::size_t buffer_length_limit = 8192;
+  if (__buffer_.size() >= buffer_length_limit) {
+    __buffer_.clear();
+    throw RequestInfo::BadRequestException();
   }
 }

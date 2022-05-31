@@ -23,6 +23,9 @@ private:
   std::deque<Transaction> __transaction_queue_;
   std::string             __buffer_;
 
+private:
+  void __check_buffer_length_exception();
+
 public:
   Connection() {}
   Connection(connFd conn_fd, confGroup conf_group)
