@@ -5,15 +5,22 @@
 
 #include "utils/syscall_wrapper.hpp"
 
+// TODO: DT_DIR系のマクロが定義されてない場合を考慮すべきかわからない
+// TODO: DT_DIR(ディレクトリ), DT_REG(通常ファイル)
+//       以外のファイルシステムの時どうするか調べきれてない
 static std::string dir_list_lines(const std::string &file_path) {
   std::string    lines;
   DIR           *dir = xopendir(file_path.c_str());
   struct dirent *diread;
   while ((diread = readdir(dir)) != NULL) {
-    std::string file_name = diread->d_name;
-    // clang-format off
-    lines += "        <li><a href=\"" + file_name + "\">" + file_name + " </a></li>\n";
-    // clang-format on
+    std::string name = diread->d_name;
+    if (name == ".")
+      continue;
+    if (diread->d_type & DT_DIR)
+      name += "/";
+    else if (!(diread->d_type & DT_REG))
+      continue;
+    lines += "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
   }
   closedir(dir);
   return lines;
