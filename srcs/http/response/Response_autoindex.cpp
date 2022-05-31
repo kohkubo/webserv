@@ -11,7 +11,7 @@ static std::string dir_list_lines(const std::string &file_path) {
   std::string    lines;
   DIR           *dir = xopendir(file_path.c_str());
   struct dirent *diread;
-  while ((diread = readdir(dir)) != NULL) {
+  while ((diread = xreaddir(dir)) != NULL) {
     std::string name = diread->d_name;
     if (name == ".")
       continue;
@@ -24,7 +24,7 @@ static std::string dir_list_lines(const std::string &file_path) {
       continue;
     lines += "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
   }
-  closedir(dir);
+  xclosedir(dir);
   return lines;
 }
 
