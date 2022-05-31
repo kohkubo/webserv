@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"time"
 )
 
 var current_process *exec.Cmd = nil
@@ -23,13 +24,27 @@ func RestartWebserv(configPath string) {
 	current_process.Dir = "../"
 	stderr, _ = current_process.StderrPipe()
 	current_process.Start()
-	scanner := bufio.NewScanner(stderr)
-	for scanner.Scan() {
-		if scanner.Text() == "start server process" {
-			return
-		}
+	select {
+	case <-time.After(10 * time.Second):
+		fmt.Fprintln(os.Stderr, "timout to check webserv starts")
+		KillWebserv(true)
+		os.Exit(1)
+	case <-waitServerLaunch():
 	}
-	// TODO: error処理
+}
+
+func waitServerLaunch() chan struct{} {
+	done := make(chan struct{})
+	go func() {
+		scanner := bufio.NewScanner(stderr)
+		for scanner.Scan() {
+			if scanner.Text() == "start server process" {
+				close(done)
+				return
+			}
+		}
+	}()
+	return done
 }
 
 func KillWebserv(printErrorLog bool) {
