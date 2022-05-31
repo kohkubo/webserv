@@ -82,6 +82,7 @@ void Response::__resolve_uri() {
   }
 }
 
+// TODO: リンクやその他のファイルシステムの時どうするか
 void Response::__check_filepath_status() {
   if (__status_code_ != NONE) {
     return;
