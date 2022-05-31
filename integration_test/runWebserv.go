@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 )
 
@@ -14,6 +15,8 @@ var stderr io.ReadCloser
 func RestartWebserv(configPath string) {
 	if current_process != nil {
 		KillWebserv(false)
+		fmt.Fprintln(os.Stderr, "fail to start webserv")
+		os.Exit(1)
 	}
 	current_process = exec.Command("./webserv", configPath)
 	// itestの実行ファイルがintegration_test/integration_testを期待
