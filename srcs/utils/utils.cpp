@@ -94,7 +94,7 @@ std::size_t hexstr_to_size(const std::string &str) {
 }
 
 bool is_dir(const std::string &filepath) {
-  struct stat st;
+  struct stat st = {};
   if (stat(filepath.c_str(), &st) == 0) {
     return S_ISDIR(st.st_mode);
   }
