@@ -30,8 +30,8 @@ TEST(request_chunked_test, chunked_body) {
 
   EXPECT_EQ(info.is_chunked_, true);
   EXPECT_EQ(info.env_values_[0],
-            "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
-            "Networkhello world\ntest");
+            "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello "
+            "world\ntest");
 }
 
 TEST(request_chunked_test, chunked_body_length_exception) {
@@ -82,6 +82,6 @@ TEST(request_chunked_test, chunked_body_split) {
 
   EXPECT_EQ(info.is_chunked_, true);
   EXPECT_EQ(info.env_values_[0],
-            "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
-            "Networkhello world\ntest");
+            "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello "
+            "world\ntest");
 }

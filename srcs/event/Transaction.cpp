@@ -58,6 +58,11 @@ void Transaction::handle_request(std::string &request_buffer) {
       __transaction_state_ =
           __chunk_loop(request_buffer, request_body,
                        __transaction_state_); // throws BadRequestException
+      if (__transaction_state_ == SENDING) {
+        __request_info_.parse_request_body(__unchunked_body_,
+                                           __request_info_.content_type_);
+        return;
+      }
     } else {
       //__set_request_body == trueだったらparse_request_bodyを呼べる
       // TODO: request_buffer.size() ==
@@ -71,14 +76,8 @@ void Transaction::handle_request(std::string &request_buffer) {
       __transaction_state_ = SENDING;
     }
     if (__transaction_state_ == SENDING) {
-      std::map<std::string, std::string>::const_iterator it =
-          __field_map_.find("Content-Type");
-      if (it == __field_map_.end()) {
-        // TODO: 例外投げていいのか? kohkubo
-        // TODO: header パースで入れたほうがよくない??
-        throw RequestInfo::BadRequestException("Content-Type is not found.");
-      }
-      __request_info_.parse_request_body(__unchunked_body_, it->second);
+      __request_info_.parse_request_body(request_body,
+                                         __request_info_.content_type_);
     }
   }
 }

@@ -31,4 +31,3 @@ TEST(request_header_parse_test, exception_no_host) {
   EXPECT_THROW(info.store_request_header_field_map(str, header_field_map),
                RequestInfo::BadRequestException);
 }
-

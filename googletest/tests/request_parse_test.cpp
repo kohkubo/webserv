@@ -80,7 +80,6 @@ TEST(request_parse_test, query_body) {
 
   t.handle_request(request);
   const RequestInfo &info = t.get_request_info();
-
   EXPECT_EQ(info.env_values_[0], "I'm=going");
   EXPECT_EQ(info.env_values_[1], "to=become");
   EXPECT_EQ(info.env_values_[2], "the=king");
