@@ -12,7 +12,7 @@
 connFd xaccept(listenFd listen_fd) {
   connFd conn_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL);
   if (conn_fd == -1) {
-    error_log_with_errno("accept()) failed.");
+    ERROR_LOG_WITH_ERRNO("accept()) failed.");
     exit(EXIT_FAILURE);
   }
   return conn_fd;
@@ -22,7 +22,7 @@ connFd xaccept(listenFd listen_fd) {
 int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
   int nready = poll(fds, nfds, timeout);
   if (nready == -1) {
-    error_log_with_errno("poll() failed");
+    ERROR_LOG_WITH_ERRNO("poll() failed");
     exit(EXIT_FAILURE);
   }
   return nready;
@@ -32,7 +32,7 @@ int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
 DIR *xopendir(const char *name) {
   DIR *dir = opendir(name);
   if (dir == NULL) {
-    error_log_with_errno("opendir() failed");
+    ERROR_LOG_WITH_ERRNO("opendir() failed");
     exit(EXIT_FAILURE);
   }
   return dir;

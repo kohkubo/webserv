@@ -4,6 +4,8 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <map>
+#include <stdexcept>
 
 #include "config/Config.hpp"
 #include "http/const/const_error_contents.hpp"
@@ -43,7 +45,17 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     , __status_code_(NONE) {
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
-  __resolve_uri();
+  // TODO:locationを決定する処理をResponseの前に挟むと、
+  // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
+  const Location *location =
+      __get_proper_location(__request_info_.uri_, __config_.locations_);
+  if (location == NULL) {
+    // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
+    __status_code_ = NOT_FOUND_404;
+    __set_error_page_body(Location());
+    return;
+  }
+  __set_file_path(__request_info_.uri_, *location);
   switch (__request_info_.method_) {
   // TODO:
   // methodの前処理をどこまで共通化するのか。一旦個別に実装して、最後リファクタで考えるのがよい。
@@ -59,26 +71,51 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     __delete_method_handler();
     break;
   default:
-    std::cout << "unsupported method" << std::endl;
+    LOG("unknown method:" << __request_info_.method_);
     __status_code_ = NOT_IMPLEMENTED_501;
     break;
   }
   if (__is_error_status_code()) {
-    __set_error_page_body();
+    // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
+    __set_error_page_body(*location);
   } else {
     __set_body();
   }
 }
 
-void Response::__resolve_uri() {
-  // rootは末尾が"/"ではないことが前提
-  __file_path_ = __config_.root_ + __request_info_.uri_;
+// 最長マッチ
+const Location *
+Response::__get_proper_location(const std::string           &request_uri,
+                                const std::vector<Location> &locations) {
+  // clang-format off
+  std::string     path;
+  const Location *ret_location = NULL;
+  // clang-format on
+  std::vector<Location>::const_iterator it = locations.begin();
+  for (; it != locations.end(); ++it) {
+    if (request_uri.find(it->location_path_) == 0) {
+      if (path.size() < it->location_path_.size()) {
+        path         = it->location_path_;
+        ret_location = &(*it);
+      }
+    }
+  }
+  return ret_location;
+}
+
+void Response::__set_file_path(const std::string &request_uri,
+                               const Location    &location) {
+  if (has_suffix(request_uri, "/")) {
+    __file_path_ = location.root_ + location.location_path_ + location.index_;
+  } else {
+    __file_path_ = location.root_ + request_uri;
+  }
   // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
   if (has_suffix(__file_path_, "/") &&
-      is_file_exists(__file_path_ + __config_.index_)) {
+      is_file_exists(__file_path_ + location.index_)) {
     // indexを追記したパスが存在すれば採用, autoindexは無視される
     // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
-    __file_path_ += __config_.index_;
+    __file_path_ += location.index_;
   }
 }
 
@@ -94,7 +131,7 @@ void Response::__check_filepath_status() {
   // TODO: 以下は別関数にするか整理する
   if (has_suffix(__file_path_, "/")) {
     if (is_dir_exists(__file_path_)) {
-      if (!__config_.autoindex_) {
+      if (!__config_.locations_[0].autoindex_) {
         __status_code_ = FORBIDDEN_403; // nginxに合わせた
       } else {
         __status_code_ = OK_200;
@@ -116,12 +153,11 @@ void Response::__check_filepath_status() {
   __status_code_ = OK_200;
 }
 
-void Response::__set_error_page_body() {
-  // TODO: locationの扱いどうする?
+void Response::__set_error_page_body(const Location &location) {
   std::map<int, std::string>::const_iterator it =
       __config_.error_pages_.find(__status_code_);
   if (it != __config_.error_pages_.end()) {
-    __file_path_ = __config_.root_ + "/" + it->second;
+    __file_path_ = location.root_ + it->second;
     __body_      = read_file_tostring(__file_path_);
   } else {
     __body_ = g_error_page_contents_map[__status_code_];
