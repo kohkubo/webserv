@@ -16,11 +16,13 @@ void Connection::create_sequential_transaction() {
     Transaction &transaction = __transaction_queue_.back();
     try {
       transaction.handle_request(__buffer_);
-      if (transaction.get_transaction_state() != SENDING) {
+      __check_buffer_length_exception(__buffer_, buffer_max_length_);
+      if (transaction.get_transaction_state() != SENDING) { // noexcept
         return;
       }
-      const Config *config = transaction.get_proper_config(__conf_group_);
-      transaction.create_response(config);
+      const Config *config =
+          transaction.get_proper_config(__conf_group_); // noexcept
+      transaction.create_response(config);              // noexcept
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }
@@ -62,5 +64,13 @@ void Connection::send_response() {
   }
   if (transaction.is_send_all()) {
     __transaction_queue_.pop_front();
+  }
+}
+
+void Connection::__check_buffer_length_exception(
+    std::string &request_buffer, std::size_t buffer_max_length) const {
+  if (request_buffer.size() >= buffer_max_length) {
+    request_buffer.clear();
+    throw RequestInfo::BadRequestException();
   }
 }
