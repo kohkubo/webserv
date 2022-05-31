@@ -68,7 +68,7 @@ void Connection::send_response() {
 }
 
 void Connection::__check_buffer_length_exception(
-    std::string &request_buffer, std::size_t buffer_max_length) const {
+    std::string &request_buffer, std::size_t buffer_max_length) {
   if (request_buffer.size() >= buffer_max_length) {
     request_buffer.clear();
     throw RequestInfo::BadRequestException();

@@ -25,8 +25,8 @@ private:
   static const std::size_t buffer_max_length_ = 8192;
 
 private:
-  void __check_buffer_length_exception(std::string &request_buffer,
-                                       std::size_t  buffer_limit_length) const;
+  static void __check_buffer_length_exception(std::string &request_buffer,
+                                              std::size_t  buffer_limit_length);
 
 public:
   Connection() {}

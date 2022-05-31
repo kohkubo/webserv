@@ -30,13 +30,15 @@ public:
   std::string get_response_string();
 
 private:
-  std::string     __read_file_tostring_cgi(const std::string              &path,
-                                           const std::vector<std::string> &env);
-  std::string     __create_autoindex_body(const std::string &file_path);
-  const Location *__get_proper_location(const std::string &request_uri,
-                                        const std::vector<Location> &locations);
-
   Response();
+  static std::string
+                     __read_file_tostring_cgi(const std::string              &path,
+                                              const std::vector<std::string> &env);
+  static std::string __create_autoindex_body(const std::string &file_path);
+  static const Location      *
+  __get_proper_location(const std::string           &request_uri,
+                             const std::vector<Location> &locations);
+
   void __set_status_phrase();
   void __set_general_header();
   void __set_entity_header();
