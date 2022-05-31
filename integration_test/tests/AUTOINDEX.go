@@ -41,4 +41,44 @@ func TestAUTOINDEX() {
 		}
 		return clientA.Test()
 	})
+
+	testHandler("forbidden", func() (bool, error) {
+		clientA, err := tester.NewClient(&tester.Client{
+			Port: "5001",
+			ReqPayload: []string{
+				"GET /autoindex/dir2/ HTTP/1.1\r\n",
+				"Host: localhost:5001\r\n",
+				"User-Agent: curl/7.79.1\r\n",
+				`Accept: */*` + "\r\n",
+				"\r\n",
+			},
+			ExpectStatusCode: http.StatusForbidden,
+			ExpectHeader:     nil,
+			ExpectBody:       nil,
+		})
+		if err != nil {
+			return false, err
+		}
+		return clientA.Test()
+	})
+
+	testHandler("index_priority", func() (bool, error) {
+		clientA, err := tester.NewClient(&tester.Client{
+			Port: "5001",
+			ReqPayload: []string{
+				"GET /autoindex/dir1/ HTTP/1.1\r\n",
+				"Host: localhost:5001\r\n",
+				"User-Agent: curl/7.79.1\r\n",
+				`Accept: */*` + "\r\n",
+				"\r\n",
+			},
+			ExpectStatusCode: http.StatusOK,
+			ExpectHeader:     nil,
+			ExpectBody:       []byte("in test_autoindex/dir1"),
+		})
+		if err != nil {
+			return false, err
+		}
+		return clientA.Test()
+	})
 }
