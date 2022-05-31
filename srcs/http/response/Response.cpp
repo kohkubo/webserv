@@ -101,13 +101,6 @@ Response::__get_proper_location(const std::string           &request_uri,
 
 void Response::__set_file_path(const std::string &request_uri,
                                const Location    &location) {
-  // if (has_suffix(request_uri, "/")) {
-  //   __file_path_ = location.root_ + location.location_path_ +
-  //   location.index_;
-  // } else {
-  //   __file_path_ = location.root_ + request_uri;
-  // }
-  // std::cout << "--->filepath:" << __file_path_ << std::endl;
   __file_path_ = location.root_ + request_uri;
   if (has_suffix(__file_path_, "/") &&
       is_file_exists(__file_path_ + location.index_)) {
