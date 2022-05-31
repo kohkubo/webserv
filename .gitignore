@@ -16,6 +16,7 @@
 !*.drawio.svg
 !.clang-format
 !.clang-tidy
+!.gitkeep
 !Makefile
 test
 !pre-push
