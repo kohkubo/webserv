@@ -36,7 +36,7 @@ private:
 
 private:
   bool __getline(std::string &request_buffer, std::string &line);
-  bool __get_request_body(std::string &request_buffer, std::string &body);
+  bool __get_request_body(std::string &request_buffer, std::string &body) const;
   bool __get_next_chunk_line(NextChunkType chunk_type,
                              std::string &request_buffer, std::string &chunk);
   void __set_next_chunk_size(const std::string &chunk_size_line);
@@ -51,7 +51,7 @@ public:
       , __next_chunk_size_(-1) {}
 
   void               set_response_for_bad_request();
-  const Config      *get_proper_config(const confGroup &conf_group);
+  const Config      *get_proper_config(const confGroup &conf_group) const;
   void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
