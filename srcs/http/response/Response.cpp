@@ -71,7 +71,7 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     __delete_method_handler();
     break;
   default:
-    std::cout << "unsupported method" << std::endl;
+    LOG("unknown method:" << __request_info_.method_);
     __status_code_ = NOT_IMPLEMENTED_501;
     break;
   }
