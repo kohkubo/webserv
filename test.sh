@@ -1,3 +1,7 @@
+make
+./webserv conf/test.conf &
+pid=$!
+
 rm -rf output.txt
 touch output.txt
 echo >> output.txt
@@ -8,7 +12,7 @@ curl localhost:5000 >> output.txt
 echo >> output.txt
 echo >> output.txt
 echo "======================" >> output.txt
-echo "normal 5000" >> output.txt
+echo "normal 5000/dir1" >> output.txt
 echo "======================" >> output.txt
 curl localhost:5000/dir1/ >> output.txt
 echo >> output.txt
@@ -54,3 +58,26 @@ echo "error_page directive test 404" >> output.txt
 echo "normal 5003" >> output.txt
 echo "======================" >> output.txt
 curl localhost:5003/dlkdsklsdf >> output.txt
+echo >> output.txt
+echo "======================" >> output.txt
+echo "limit_except test" >> output.txt
+echo "200 OK 5003" >> output.txt
+echo "======================" >> output.txt
+curl localhost:5003 >> output.txt
+echo >> output.txt
+echo "======================" >> output.txt
+echo "limit_except test" >> output.txt
+echo "405 error 5003" >> output.txt
+echo "======================" >> output.txt
+curl -X POST -d 'name=taro' localhost:5003/html/cgi.sh >> output.txt
+
+kill $pid
+
+diff -u output.txt expect.txt
+if [ $? -eq 0 ]; then
+    echo "OK"
+    exit 0
+else
+    echo "NG"
+    exit 1
+fi
