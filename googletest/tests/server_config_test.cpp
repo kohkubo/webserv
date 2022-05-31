@@ -156,7 +156,7 @@ TEST(server_config_test, parse_listen) {
     std::string str = "server {\n"
                       "listen localhost:80;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
 
@@ -173,7 +173,7 @@ TEST(server_config_test, parse_map_directive) {
                       "error_page 404 /404.html;\n"
                       "error_page 500 /500.html;\n"
                       "location / {\n"
-                      "root /var/www/html;\n"
+                      "root /var/www/html/;\n"
                       "}\n"
                       "}\n";
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -212,7 +212,7 @@ TEST(server_config_test, parse_sizet_directive) {
     std::string str = "server {\n"
                       "client_max_body_size 1000;\n"
                       "location / {\n"
-                      "root /var/www;\n"
+                      "root /var/www/;\n"
                       "}\n"
                       "}\n";
     tokenVector l   = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
@@ -240,11 +240,11 @@ TEST(server_config_test, parse_location_directive) {
   {
     std::string str = "server {\n"
                       "location / {\n"
-                      "root /var/www;\n"
+                      "root /var/www/;\n"
                       "limit_except GET POST;\n"
                       "}\n"
                       "location /dir1 {\n"
-                      "root /var/www;\n"
+                      "root /var/www/;\n"
                       "limit_except GET POST;\n"
                       "}\n"
                       "}\n";
