@@ -130,8 +130,6 @@ void Response::__check_filepath_status(const Location &location) {
   // TODO: POSTはディレクトリの時どう処理するのか
   // TODO: 以下は別関数にするか整理する
   if (has_suffix(__file_path_, "/")) {
-    std::cout << "----->" << location.location_path_ << std::endl;
-
     if (is_dir_exists(__file_path_)) {
       if (!location.autoindex_) {
         __status_code_ = FORBIDDEN_403; // nginxに合わせた
