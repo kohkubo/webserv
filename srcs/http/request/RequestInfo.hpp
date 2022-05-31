@@ -25,7 +25,6 @@ public:
   std::vector<std::string> values_;
 
 private:
-  void               __parse_request_line(const std::string &request_line);
   static HttpMethod  __request_method_to_enum(const std::string &method);
   static bool        __is_comma_sparated(std::string &field_name);
   void               __parse_request_host();
