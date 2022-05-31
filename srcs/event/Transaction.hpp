@@ -37,10 +37,9 @@ private:
 private:
   static bool __getline(std::string &request_buffer, std::string &line);
   bool __get_request_body(std::string &request_buffer, std::string &body) const;
-  bool __get_next_chunk_line(NextChunkType chunk_type,
-                             std::string &request_buffer, std::string &chunk);
-  void __set_next_chunk_size(const std::string &chunk_size_line);
-  void __store_unchunked_body(const std::string &chunk_line);
+  static bool __get_next_chunk_line(NextChunkType chunk_type,
+                                    std::string  &request_buffer,
+                                    std::string &chunk, size_t next_chunk_size);
 
 public:
   Transaction(connFd conn_fd)
