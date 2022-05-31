@@ -28,7 +28,7 @@ void RequestInfo::store_request_header_field_map(
     throw BadRequestException();
   }
   std::string field_value =
-      __trim_optional_whitespace(header_line.substr(pos + 1));
+      trim_optional_whitespace(header_line.substr(pos + 1), " \t");
   if (__field_map_.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       __field_map_[field_name] += ", " + field_value;

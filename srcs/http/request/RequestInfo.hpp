@@ -28,7 +28,6 @@ private:
   void               __parse_request_line(const std::string &request_line);
   static HttpMethod  __request_method_to_enum(const std::string &method);
   static bool        __is_comma_sparated(std::string &field_name);
-  static std::string __trim_optional_whitespace(std::string str);
   void               __parse_request_host();
   void               __parse_request_connection();
   void               __parse_request_content_length();
