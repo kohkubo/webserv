@@ -95,9 +95,9 @@ bool Transaction::__get_request_body(std::string &request_buffer,
   return true;
 }
 
-bool Transaction::__get_next_chunk_line(NextChunk    chunk_type,
-                                        std::string &request_buffer,
-                                        std::string &chunk) {
+bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
+                                        std::string  &request_buffer,
+                                        std::string  &chunk) {
   if (chunk_type == CHUNK_SIZE) {
     return __getline(request_buffer, chunk);
   }
@@ -135,10 +135,10 @@ void Transaction::send_response() {
   __send_count_ += sc;
 }
 
-void Transaction::__set_next_chunk_size(std::string &chunk_size_line) {
+void Transaction::__set_next_chunk_size(const std::string &chunk_size_line) {
   __next_chunk_size_ = hexstr_to_size(chunk_size_line);
 }
 
-void Transaction::__store_unchunked_body(std::string &chunk_line) {
+void Transaction::__store_unchunked_body(const std::string &chunk_line) {
   __unchunked_body_.append(chunk_line);
 }

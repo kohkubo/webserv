@@ -19,7 +19,7 @@ enum TransactionState {
   CLOSING,
 };
 
-enum NextChunk { CHUNK_SIZE, CHUNK_DATA };
+enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 // TODO: string -> vector<char>
 
@@ -30,17 +30,17 @@ private:
   ssize_t          __send_count_;
   std::string      __response_;
   RequestInfo      __request_info_;
-  NextChunk        __next_chunk_;
+  NextChunkType    __next_chunk_;
   std::size_t      __next_chunk_size_;
   std::string      __unchunked_body_;
 
 private:
   bool __getline(std::string &request_buffer, std::string &line);
   bool __get_request_body(std::string &request_buffer, std::string &body);
-  bool __get_next_chunk_line(NextChunk chunk_type, std::string &request_buffer,
-                             std::string &chunk);
-  void __set_next_chunk_size(std::string &chunk_size_line);
-  void __store_unchunked_body(std::string &chunk_line);
+  bool __get_next_chunk_line(NextChunkType chunk_type,
+                             std::string &request_buffer, std::string &chunk);
+  void __set_next_chunk_size(const std::string &chunk_size_line);
+  void __store_unchunked_body(const std::string &chunk_line);
 
 public:
   Transaction(connFd conn_fd)
@@ -55,7 +55,7 @@ public:
   void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-    return __transaction_state_;
+      return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
