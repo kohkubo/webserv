@@ -15,6 +15,9 @@ static std::string dir_list_lines(const std::string &file_path) {
     std::string name = diread->d_name;
     if (name == ".")
       continue;
+    // ブラウザ上でlist表示された時,
+    // ディレクトリが選択された場合にディレクトリとして再度リクエストが出されるために末尾に"/"
+    // nginxでもディレクトリは末尾に"/"ついて表示されていた
     if (diread->d_type & DT_DIR)
       name += "/";
     else if (!((diread->d_type & DT_REG) || (diread->d_type & DT_LNK)))
