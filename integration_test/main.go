@@ -26,7 +26,7 @@ func main() {
 func test() chan struct{} {
 	done := make(chan struct{})
 	go func() {
-		defer close(done)
+		defer close(done) // テスト終了時にチャネルを閉じることでmain()に終了を知らせる
 		RestartWebserv("integration_test/conf/webserv.conf")
 		tests.TestGET()
 		//tests.TestPOST()
