@@ -17,11 +17,12 @@ void Connection::create_sequential_transaction() {
     try {
       transaction.handle_request(__buffer_);
       __check_buffer_length_exception(__buffer_, buffer_max_length_);
-      if (transaction.get_transaction_state() != SENDING) {
+      if (transaction.get_transaction_state() != SENDING) { // noexcept
         return;
       }
-      const Config *config = transaction.get_proper_config(__conf_group_);
-      transaction.create_response(config);
+      const Config *config =
+          transaction.get_proper_config(__conf_group_); // noexcept
+      transaction.create_response(config);              // noexcept
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }
