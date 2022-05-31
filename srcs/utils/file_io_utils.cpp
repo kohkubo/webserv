@@ -17,7 +17,7 @@ bool is_file_exists(const std::string &path) {
   struct stat file_info;
 
   if (stat(path.c_str(), &file_info) == -1) {
-    std::cout << "error: is_file_exists: " << path << std::endl;
+    ERROR_LOG("error: is_file_exists: " << path);
     return false;
   }
   if ((file_info.st_mode & S_IFMT) == S_IFREG)
@@ -31,7 +31,7 @@ bool is_dir_exists(const std::string &path) {
   struct stat file_info;
 
   if (stat(path.c_str(), &file_info) == -1) {
-    std::cout << "error: is_dir_exists: " << path << std::endl;
+    ERROR_LOG("error: is_dir_exists: " << path);
     return false;
   }
   if ((file_info.st_mode & S_IFMT) == S_IFDIR) {
@@ -44,8 +44,8 @@ bool is_dir_exists(const std::string &path) {
 std::string read_file_tostring(const std::string &path) {
   std::ifstream file(path.c_str());
   if (file.fail()) {
-    std::cout << path << " is not found." << std::endl;
-    std::cout << "error: read_file_tostring" << std::endl;
+    ERROR_LOG(path << " is not found.");
+    ERROR_LOG("error: read_file_tostring");
     return ""; // TODO: エラーを呼び出し元に通知
   }
   std::stringstream buffer;
