@@ -47,7 +47,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
-  // TODO: uri="/"でlocation=NULLが返ってくる rakiyama
   const Location *location =
       __get_proper_location(__request_info_.uri_, __config_.locations_);
   if (location == NULL) {
