@@ -85,7 +85,6 @@ Transaction::get_proper_config(const confGroup &conf_group) const {
       return *it;
     }
   }
-  // TODO: なかった場合、先頭のconfigを返しているのなぜ??
   return conf_group[0];
 }
 
