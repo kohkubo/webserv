@@ -39,7 +39,7 @@ void Transaction::handle_request(std::string &request_buffer) {
               line); // throws BadRequestException
           continue;
         }
-        __request_info_.parse_request_header();
+        __request_info_.parse_request_header(); // throws BadRequestException
         // TODO: validate request_header
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_ == true) {
