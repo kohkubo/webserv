@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"time"
 )
 
 // コネクションを確立, connを通して送受信できる
@@ -22,27 +21,15 @@ func connect(port string) (net.Conn, error) {
 
 // src(conn)からリクエストを受け取りパースする
 func readParseResponse(src io.Reader, method string) (*http.Response, error) {
-	ch_resp := make(chan *http.Response)
-	ch_error := make(chan error)
-	go func() {
-		r := bufio.NewReader(src)
-		req := &http.Request{
-			Method: method,
-		}
-		resp, err := http.ReadResponse(r, req)
-		if err != nil {
-			ch_error <- err
-		}
-		ch_resp <- resp
-	}()
-	select {
-	case <-time.After(10 * time.Second): // 他case文が10秒以上止まると当case文が動く
-		return nil, fmt.Errorf("read response: time out!")
-	case resp := <-ch_resp:
-		return resp, nil
-	case err := <-ch_error:
+	r := bufio.NewReader(src)
+	req := &http.Request{
+		Method: method,
+	}
+	resp, err := http.ReadResponse(r, req)
+	if err != nil {
 		return nil, err
 	}
+	return resp, nil
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認

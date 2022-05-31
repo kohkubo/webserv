@@ -3,9 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"integration_test/tests"
 	"io"
-	"os"
 	"os/exec"
 )
 
@@ -15,9 +13,7 @@ var stderr io.ReadCloser
 // 指定したpathのconfigファイルでwebservを立ち上げる。
 func RestartWebserv(configPath string) {
 	if current_process != nil {
-		KillWebserv()
-		fmt.Fprintln(os.Stderr, "current process not available")
-		return
+		KillWebserv(false)
 	}
 	current_process = exec.Command("./webserv", configPath)
 	// itestの実行ファイルがintegration_test/integration_testを期待
@@ -25,19 +21,22 @@ func RestartWebserv(configPath string) {
 	stderr, _ = current_process.StderrPipe()
 	current_process.Start()
 	scanner := bufio.NewScanner(stderr)
+	// webservが始まった瞬間終わるとこのEOFが原因でこのScanがfalse返ってしまう
+	// つまりwebserv側の出力が取れない
 	for scanner.Scan() {
-		if scanner.Text() == "start server process" {
+		txt := scanner.Text()
+		if txt == "start server process" {
 			return
 		}
 	}
 }
 
-func KillWebserv() {
+func KillWebserv(printLog bool) {
 	if current_process == nil {
 		return
 	}
 	current_process.Process.Kill()
-	if tests.IsFatal() {
+	if printLog {
 		str, _ := io.ReadAll(stderr)
 		fmt.Printf("%s\n", str)
 	}

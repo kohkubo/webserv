@@ -13,8 +13,8 @@ import (
 func main() {
 	select {
 	case <-time.After(30 * time.Second):
-		fmt.Fprintln(os.Stderr, "itest timeout")
-		KillWebserv()
+		fmt.Fprintln(os.Stderr, "itest: unexpected timeout")
+		KillWebserv(true)
 		os.Exit(1)
 	case <-test():
 		if tests.IsFail() || tests.IsFatal() {
@@ -33,7 +33,7 @@ func test() chan struct{} {
 		tests.TestDELETE()
 		tests.TestIOMULT()
 		tests.TestBADREQ()
-		KillWebserv()
+		KillWebserv(tests.IsFatal())
 	}()
 	return done
 }
