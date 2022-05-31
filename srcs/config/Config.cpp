@@ -198,7 +198,7 @@ void Config::__set_getaddrinfo() {
   hints.ai_socktype = SOCK_STREAM;
   int error = getaddrinfo(listen_address_.c_str(), listen_port_.c_str(), &hints,
                           &addrinfo_);
-  if (error) {
+  if (error != 0) {
     ERROR_LOG("getaddrinfo: " << gai_strerror(error));
     exit(EXIT_FAILURE);
   }

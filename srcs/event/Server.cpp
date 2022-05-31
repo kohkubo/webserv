@@ -49,19 +49,19 @@ void Server::run_loop() {
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
-      if (!it->revents) {
+      if (it->revents == 0) {
         continue;
       }
       nready--;
       int listen_flg = __conf_group_map_.count(it->fd);
-      if (listen_flg) {
+      if (listen_flg == 0) {
         __insert_connection_map(it->fd);
         continue;
       }
-      if (it->revents & POLLIN) {
+      if ((it->revents & POLLIN) != 0) {
         __connection_receive_handler(it->fd);
       }
-      if (it->revents & POLLOUT) {
+      if ((it->revents & POLLOUT) != 0) {
         // TODO: []からの書き換え、findできないケースある??
         __connection_map_.find(it->fd)->second.send_response();
       }

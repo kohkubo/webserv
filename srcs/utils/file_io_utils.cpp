@@ -20,10 +20,7 @@ bool is_file_exists(const std::string &path) {
     ERROR_LOG("error: is_file_exists: " << path);
     return false;
   }
-  if ((file_info.st_mode & S_IFMT) == S_IFREG)
-    return true;
-  else
-    return false;
+  return ((file_info.st_mode & S_IFMT) == S_IFREG);
 }
 
 // 末尾が"/"でなくてもディレクトリとして扱われることに注意
@@ -34,11 +31,7 @@ bool is_dir_exists(const std::string &path) {
     ERROR_LOG("error: is_dir_exists: " << path);
     return false;
   }
-  if ((file_info.st_mode & S_IFMT) == S_IFDIR) {
-    return true;
-  } else {
-    return false;
-  }
+  return ((file_info.st_mode & S_IFMT) == S_IFDIR);
 }
 
 std::string read_file_tostring(const std::string &path) {

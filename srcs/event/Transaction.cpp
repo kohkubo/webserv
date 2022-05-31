@@ -26,7 +26,7 @@ void Transaction::handle_request(std::string &request_buffer) {
       if (__transaction_state_ == RECEIVING_STARTLINE) {
         __request_info_.check_first_multi_blank_line(
             line); // throws BadRequestException
-        if (__request_info_.is_blank_first_line_ == true) {
+        if (__request_info_.is_blank_first_line_) {
           continue;
         }
         __request_info_.check_bad_parse_request_start_line(
@@ -42,7 +42,7 @@ void Transaction::handle_request(std::string &request_buffer) {
         __request_info_.parse_request_header(); // throws BadRequestException
         // TODO: validate request_header
         if (__request_info_.content_length_ != 0 ||
-            __request_info_.is_chunked_ == true) {
+            __request_info_.is_chunked_) {
           __transaction_state_ = RECEIVING_BODY;
           break;
         } else {
@@ -54,7 +54,7 @@ void Transaction::handle_request(std::string &request_buffer) {
   }
   if (__transaction_state_ == RECEIVING_BODY) {
     std::string request_body;
-    if (__request_info_.is_chunked_ == true) {
+    if (__request_info_.is_chunked_) {
       while (__get_next_chunk_line(__next_chunk_, request_buffer, request_body,
                                    __next_chunk_size_)) {
         if (__next_chunk_ == CHUNK_SIZE) {

@@ -59,7 +59,7 @@ struct pollfd Connection::create_pollfd() const {
 void Connection::send_response() {
   Transaction &transaction = __transaction_queue_.front();
   transaction.send_response();
-  if (transaction.get_request_info().is_close_ == true) {
+  if (transaction.get_request_info().is_close_) {
     shutdown_write();
     return;
   }

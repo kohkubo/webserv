@@ -29,7 +29,7 @@ void RequestInfo::store_request_header_field_map(
   }
   std::string field_value =
       __trim_optional_whitespace(header_line.substr(pos + 1));
-  if (__field_map_.count(field_name)) {
+  if (__field_map_.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       __field_map_[field_name] += ", " + field_value;
     } else {
@@ -42,7 +42,7 @@ void RequestInfo::store_request_header_field_map(
 
 // TODO: hostとportで分ける必要あるか確認
 void RequestInfo::__parse_request_host() {
-  if (!__field_map_.count("Host")) {
+  if (__field_map_.count("Host") == 0u) {
     throw BadRequestException();
   }
   std::size_t pos = __field_map_["Host"].find(':');
@@ -60,7 +60,7 @@ void RequestInfo::__parse_request_host() {
 }
 
 void RequestInfo::__parse_request_connection() {
-  if (!__field_map_.count("Connection")) {
+  if (__field_map_.count("Connection") == 0u) {
     return;
   }
   std::string value = tolower(__field_map_["Connection"]);
@@ -70,7 +70,7 @@ void RequestInfo::__parse_request_connection() {
 }
 
 void RequestInfo::__parse_request_content_length() {
-  if (!__field_map_.count("Content-Length")) {
+  if (__field_map_.count("Content-Length") == 0u) {
     return;
   }
   content_length_ = atoi(__field_map_["Content-Length"].c_str());
@@ -78,7 +78,7 @@ void RequestInfo::__parse_request_content_length() {
 
 // TODO: Transfer-Encodingはカンマ区切りのフィールド
 void RequestInfo::__parse_request_transfer_encoding() {
-  if (!__field_map_.count("Transfer-Encoding")) {
+  if (__field_map_.count("Transfer-Encoding") == 0u) {
     return;
   }
   std::string value = __field_map_["Transfer-Encoding"];

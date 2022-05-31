@@ -2,15 +2,11 @@
 #include <vector>
 
 static bool is_delimiter(const char &c, const std::string &delimiter) {
-  if (delimiter.find(c) != std::string::npos)
-    return true;
-  return false;
+  return delimiter.find(c) != std::string::npos;
 }
 
 static bool is_skip(const char &c, const std::string &skip) {
-  if (skip.find(c) != std::string::npos)
-    return true;
-  return false;
+  return skip.find(c) != std::string::npos;
 }
 
 std::vector<std::string> tokenize(const std::string &text,
@@ -18,7 +14,7 @@ std::vector<std::string> tokenize(const std::string &text,
                                   const std::string &skip) {
   std::vector<std::string> res;
   std::string::size_type   pos = 0;
-  while (text[pos]) {
+  while (text[pos] != '\0') {
     std::string::size_type i = 0;
     if (is_delimiter(text[pos], delimiter)) {
       i = 1;

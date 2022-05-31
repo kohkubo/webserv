@@ -19,10 +19,11 @@ void RequestInfo::parse_request_start_line(const std::string &request_line) {
 
 void RequestInfo::check_first_multi_blank_line(
     const std::string &request_line) {
-  if (is_blank_first_line_ == false && request_line == "") {
+  if (!is_blank_first_line_ && request_line == "") {
     is_blank_first_line_ = true;
     return;
-  } else if (is_blank_first_line_ == true && request_line == "") {
+  }
+  if (is_blank_first_line_ && request_line == "") {
     throw BadRequestException();
   }
 }
