@@ -10,9 +10,9 @@
 // リクエストヘッダのパースが終了 true。エラー→例外
 void RequestInfo::parse_request_header() {
   // call each field's parser
-  __parse_request_host();
-  __parse_request_connection();
-  __parse_request_content_length();
+  __parse_request_host();           // throws BadRequestException
+  __parse_request_connection();     // noexcept
+  __parse_request_content_length(); // noexcept
 }
 
 void RequestInfo::store_request_header_field_map(
