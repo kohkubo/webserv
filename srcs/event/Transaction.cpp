@@ -21,21 +21,24 @@ void Transaction::handle_request(std::string &request_buffer) {
   if (__transaction_state_ == RECEIVING_STARTLINE ||
       __transaction_state_ == RECEIVING_HEADER) {
     std::string line;
-    while (__getline(request_buffer, line)) {
+    while (__getline(request_buffer, line)) { // noexcept
       if (__transaction_state_ == RECEIVING_STARTLINE) {
-        __request_info_.check_first_multi_blank_line(line);
+        __request_info_.check_first_multi_blank_line(
+            line); // throws BadRequestException
         if (__request_info_.is_blank_first_line_ == true) {
           continue;
         }
-        __request_info_.check_bad_parse_request_start_line(line);
-        __request_info_.parse_request_start_line(line);
+        __request_info_.check_bad_parse_request_start_line(
+            line); // throws BadRequestException
+        __request_info_.parse_request_start_line(line); // noexcept
         __transaction_state_ = RECEIVING_HEADER;
       } else if (__transaction_state_ == RECEIVING_HEADER) {
         if (line != "") {
-          __request_info_.store_request_header_field_map(line);
+          __request_info_.store_request_header_field_map(
+              line); // throws BadRequestException
           continue;
         }
-        __request_info_.parse_request_header();
+        __request_info_.parse_request_header(); // throws BadRequestException
         // TODO: チャンク or content_length_ != 0
         if (__request_info_.content_length_ != 0) {
           __transaction_state_ = RECEIVING_BODY;
@@ -81,6 +84,7 @@ const Config *Transaction::get_proper_config(const confGroup &conf_group) {
       return *it;
     }
   }
+  // TODO: なかった場合、先頭のconfigを返しているのなぜ??
   return conf_group[0];
 }
 
