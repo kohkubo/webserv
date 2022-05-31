@@ -46,14 +46,18 @@ private:
   void            __set_file_path(const std::string &request_uri,
                                   const Location    &location);
   bool            __is_error_status_code();
-  void            __check_filepath_status();
+  void            __check_filepath_status(const Location &location);
   void            __set_error_page_body(const Location &location);
   void            __set_body();
 
-  void            __get_method_handler() { __check_filepath_status(); }
-  void            __post_method_handler() { __check_filepath_status(); }
-  void            __delete_target_file();
-  void            __delete_method_handler() { __delete_target_file(); }
+  void            __get_method_handler(const Location &location) {
+    __check_filepath_status(location);
+  }
+  void __post_method_handler(const Location &location) {
+    __check_filepath_status(location);
+  }
+  void __delete_target_file();
+  void __delete_method_handler() { __delete_target_file(); }
 };
 
 std::map<int, std::string> init_response_status_phrase_map();
