@@ -125,8 +125,10 @@ tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
-  if (has_suffix(location.index_, "/") || !has_suffix(location.root_, "/"))
-    throw UnexpectedTokenException("index or root directive failed.");
+  if (has_suffix(location.index_, "/"))
+    throw UnexpectedTokenException("index directive failed.");
+  if (!has_suffix(location.root_, "/"))
+    throw UnexpectedTokenException("root directive failed.");
   if (is_location_path_duplication(location.location_path_, locations_))
     throw UnexpectedTokenException("location path duplication.");
   if (is_minus_depth(location.location_path_) ||
