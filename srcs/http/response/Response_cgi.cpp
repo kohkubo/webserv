@@ -37,12 +37,12 @@ Response::__read_file_tostring_cgi(const std::string              &path,
                                    const std::vector<std::string> &env) {
   int pipefd[2];
   if (pipe(pipefd) == -1) {
-    std::cout << "error: pipe in read_file_tostring_cgi" << std::endl;
+    ERROR_LOG("error: pipe in read_file_tostring_cgi");
     return "";
   }
   pid_t pid = fork();
   if (pid == -1) {
-    std::cout << "error: fork in read_file_tostring_cgi" << std::endl;
+    ERROR_LOG("error: fork in read_file_tostring_cgi");
     return "";
   }
   // child
@@ -61,7 +61,7 @@ Response::__read_file_tostring_cgi(const std::string              &path,
   std::string s = read_fd_tostring(pipefd[READ_FD]);
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {
-    std::cout << "error: waitpid in read_file_tostring_cgi" << std::endl;
+    ERROR_LOG("error: waitpid in read_file_tostring_cgi");
     return "";
   }
   return s;

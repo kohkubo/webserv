@@ -13,6 +13,7 @@ void RequestInfo::parse_request_header() {
   __parse_request_host();           // throws BadRequestException
   __parse_request_connection();     // noexcept
   __parse_request_content_length(); // noexcept
+  __parse_request_transfer_encoding();
 }
 
 void RequestInfo::store_request_header_field_map(
@@ -73,4 +74,15 @@ void RequestInfo::__parse_request_content_length() {
     return;
   }
   content_length_ = atoi(__field_map_["Content-Length"].c_str());
+}
+
+// TODO: Transfer-Encodingはカンマ区切りのフィールド
+void RequestInfo::__parse_request_transfer_encoding() {
+  if (!__field_map_.count("Transfer-Encoding")) {
+    return;
+  }
+  std::string value = __field_map_["Transfer-Encoding"];
+  if (value == "chunked") {
+    is_chunked_ = true;
+  }
 }
