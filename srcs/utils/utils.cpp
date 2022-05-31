@@ -1,5 +1,7 @@
 #include "utils/utils.hpp"
 
+#include <sys/stat.h>
+
 #include <algorithm>
 #include <cctype>
 
@@ -81,6 +83,14 @@ bool is_digits(const std::string &str) {
       return false;
   }
   return true;
+}
+
+bool is_dir(const std::string &filepath) {
+  struct stat st;
+  if (stat(filepath.c_str(), &st) == 0) {
+    return S_ISDIR(st.st_mode);
+  }
+  return false;
 }
 
 bool is_minus_depth(const std::string &filepath) {

@@ -2,7 +2,7 @@ NAME := tester
 
 SHELL := /bin/bash
 CXX := clang++
-CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=undefined -fsanitize=address
+CXXFLAGS = -std=c++11 -MMD -MP -DDEBUG -g -fsanitize=undefined -fsanitize=address -ftrivial-auto-var-init=pattern -Wtautological-compare -Wsign-compare -gfull -fstandalone-debug -gdwarf-5 -gz
 LIBS := -lpthread -lgtest_main -lgtest
 INCLUDES := -I./includes -I../srcs
 LIBINCLUDES = -L./$(LIBDIR)

@@ -5,6 +5,7 @@
 #include <sys/types.h>
 
 #include "config/Config.hpp"
+#include "config/Location.hpp"
 #include "http/const/const_header_field_values.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
@@ -13,37 +14,41 @@
 #include "utils/utils.hpp"
 
 TEST(http_test, create_response_info_get_normal) {
-  std::string expect        = "HTTP/1.1 200 OK\r\n"
-                              "Content-Length: 127\r\n"
-                              "Content-Type: text/html\r\n"
-                              "Connection: close\r\n"
-                              "\r\n"
-                              "<!DOCTYPE html>\n"
-                              "<html>\n"
-                              "    <head>\n"
-                              "        <title>Basic Web Page</title>\n"
-                              "    </head>\n"
-                              "    <body>\n"
-                              "Hello World!\n"
-                              "    </body>\n"
-                              "</html>";
-  Config      server_config = Config();
-  server_config.root_       = "../html";
-  server_config.index_      = "index.html";
+  std::string expect = "HTTP/1.1 200 OK\r\n"
+                       "Content-Length: 127\r\n"
+                       "Content-Type: text/html\r\n"
+                       "Connection: close\r\n"
+                       "\r\n"
+                       "<!DOCTYPE html>\n"
+                       "<html>\n"
+                       "    <head>\n"
+                       "        <title>Basic Web Page</title>\n"
+                       "    </head>\n"
+                       "    <body>\n"
+                       "Hello World!\n"
+                       "    </body>\n"
+                       "</html>";
+  Config      config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "../html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
   request_info.uri_     = "/";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  Response response(server_config, request_info);
+  Response response(config, request_info);
   EXPECT_EQ(response.get_response_string(), expect);
 }
 
 TEST(http_test, create_response_info_get_403) {
-  Config config = Config();
-  config.root_  = "../html";
-  config.index_ = "index.html";
+  Config config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "../html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = GET;
   request_info.uri_     = "/000.html";
@@ -73,11 +78,13 @@ default error page\n\
 }
 
 TEST(http_test, create_response_info_get_403_config_error_pages) {
-  Config config            = Config();
-  config.root_             = "../html";
-  config.index_            = "index.html";
+  Config config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "../html/";
+  config.locations_[0].index_         = "index.html";
 
-  config.error_pages_[403] = "../html/forbidden.html";
+  config.error_pages_[403]            = "forbidden.html";
   RequestInfo request_info;
   request_info.method_  = GET;
   request_info.uri_     = "/000.html";
@@ -100,9 +107,11 @@ forbidden\
 TEST(http_test, create_response_info_delete_normal) {
   std::string expected_response = "HTTP/1.1 204 No Content\r\n"
                                   "Connection: close\r\n\r\n";
-  Config      config            = Config();
-  config.root_                  = "../html";
-  config.index_                 = "index.html";
+  Config      config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "../html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
   request_info.uri_     = "/delete_target.html";
@@ -116,9 +125,11 @@ TEST(http_test, create_response_info_delete_normal) {
 }
 
 TEST(http_test, create_response_info_delete_404) {
-  Config config = Config();
-  config.root_  = "../html";
-  config.index_ = "index.html";
+  Config config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "../html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
   request_info.uri_     = "/delete_target.html";
@@ -146,9 +157,11 @@ default error page\n\
 }
 
 TEST(http_test, create_response_info_delete_403) {
-  Config config = Config();
-  config.root_  = "../html";
-  config.index_ = "index.html";
+  Config config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "../html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_  = DELETE;
   request_info.uri_     = "/000.html";
@@ -181,9 +194,11 @@ default error page\n\
 }
 
 TEST(http_test, create_response_info_delete_400) {
-  Config config = Config();
-  config.root_  = "../html";
-  config.index_ = "index.html";
+  Config config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "../html/";
+  config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_         = DELETE;
   request_info.uri_            = "/hogehoge.html";
