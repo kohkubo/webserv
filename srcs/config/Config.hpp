@@ -60,6 +60,7 @@ private:
   tokenIterator        __parse(tokenIterator pos, tokenIterator end);
   void                 __set_getaddrinfo();
   tokenIterator        __parse_listen(tokenIterator pos, tokenIterator end);
+  tokenIterator        __parse_location(tokenIterator pos, tokenIterator end);
   static tokenIterator __parse_map_directive(std::string                 key,
                                              std::map<int, std::string> &value,
                                              tokenIterator               pos,
