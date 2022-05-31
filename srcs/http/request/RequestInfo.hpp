@@ -10,28 +10,27 @@
 
 class RequestInfo {
 private:
-  std::map<std::string, std::string> __field_map_;
-
 public:
   bool       is_blank_first_line_;
   HttpMethod method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
-  std::string              version_;
-  std::string              host_;
-  std::string              port_;
-  bool                     is_close_;
-  bool                     is_chunked_;
-  std::size_t              content_length_;
-  std::vector<std::string> values_;
+  std::string                        version_;
+  std::string                        host_;
+  std::string                        port_;
+  bool                               is_close_;
+  bool                               is_chunked_;
+  std::size_t                        content_length_;
+  std::map<std::string, std::string> field_map_;
+  std::vector<std::string>           values_;
 
 private:
   static HttpMethod  __request_method_to_enum(const std::string &method);
   static bool        __is_comma_sparated(std::string &field_name);
-  void               __parse_request_host();
-  void               __parse_request_connection();
-  void               __parse_request_content_length();
-  void               __parse_request_values(const std::string &request_body);
-  void               __parse_request_transfer_encoding();
+  static std::string __parse_request_host(const std::string &host_line);
+  static bool        __parse_request_connection(const std::string &connection);
+  size_t __parse_request_content_length(const std::string &content_length);
+  void   __parse_request_values(const std::string &request_body);
+  bool __parse_request_transfer_encoding(const std::string &transfer_encoding);
 
 public:
   RequestInfo()
@@ -46,9 +45,12 @@ public:
     BadRequestException(const std::string &msg = "Illegal request.");
   };
 
-  void store_request_header_field_map(const std::string &header_line);
+  void store_request_header_field_map(
+      const std::string                  &header_line,
+      std::map<std::string, std::string> &header_field_map);
   void parse_request_start_line(const std::string &request_line);
-  void parse_request_header();
+  void parse_request_header(
+      const std::map<std::string, std::string> &header_field_map);
   void parse_request_body(std::string &request_body);
   void check_first_multi_blank_line(const std::string &request_line);
   static void

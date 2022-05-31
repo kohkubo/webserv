@@ -36,7 +36,7 @@ void Transaction::handle_request(std::string &request_buffer) {
       } else if (__transaction_state_ == RECEIVING_HEADER) {
         if (line != "") {
           __request_info_.store_request_header_field_map(
-              line); // throws BadRequestException
+              line, __request_info_.field_map_); // throws BadRequestException
           continue;
         }
         __request_info_.parse_request_header(); // throws BadRequestException
