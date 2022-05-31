@@ -31,6 +31,7 @@ void Connection::create_sequential_transaction() {
 }
 
 // 通信がクライアントから閉じられた時trueを返す。
+// TODO: ↑読み取りきったらじゃない? kohkubo
 bool Connection::append_receive_buffer() {
   const int         buf_size = 2048;
   std::vector<char> buf(buf_size);
