@@ -14,20 +14,22 @@ void RequestInfo::parse_request_header(
   std::map<std::string, std::string>::const_iterator itr;
   itr = header_field_map.find("Host");
   if (itr == header_field_map.end()) {
+    // TODO:
+    // この例外処理、header_field_mapを格納し終わった後にすれば、header_field_mapをメンバ変数として持たなくて良い気がする
     throw BadRequestException("Host field is not found.");
   }
-  host_ = __parse_request_host(itr->second); // noexcept
+  host_ = __parse_request_host(itr->second);
   itr   = header_field_map.find("Connection");
   if (itr != header_field_map.end()) {
-    is_close_ = __parse_request_connection(itr->second); // noexcept
+    is_close_ = __parse_request_connection(itr->second);
   }
   itr = header_field_map.find("Content-Length");
   if (itr != header_field_map.end()) {
-    content_length_ = __parse_request_content_length(itr->second); // noexcept
+    content_length_ = __parse_request_content_length(itr->second);
   }
   itr = header_field_map.find("Transfer-Encoding");
   if (itr != header_field_map.end()) {
-    is_chunked_ = __parse_request_transfer_encoding(itr->second); // noexcept
+    is_chunked_ = __parse_request_transfer_encoding(itr->second);
   }
 }
 

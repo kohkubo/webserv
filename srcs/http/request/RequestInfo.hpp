@@ -28,9 +28,11 @@ private:
   static bool        __is_comma_sparated(std::string &field_name);
   static std::string __parse_request_host(const std::string &host_line);
   static bool        __parse_request_connection(const std::string &connection);
-  size_t __parse_request_content_length(const std::string &content_length);
-  void   __parse_request_values(const std::string &request_body);
-  bool __parse_request_transfer_encoding(const std::string &transfer_encoding);
+  static size_t
+       __parse_request_content_length(const std::string &content_length);
+  void __parse_request_values(const std::string &request_body);
+  static bool
+  __parse_request_transfer_encoding(const std::string &transfer_encoding);
 
 public:
   RequestInfo()
