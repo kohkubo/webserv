@@ -25,21 +25,23 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 struct Transaction {
 private:
-  connFd           __conn_fd_;
-  TransactionState __transaction_state_;
-  ssize_t          __send_count_;
-  std::string      __response_;
-  RequestInfo      __request_info_;
-  NextChunkType    __next_chunk_;
-  std::size_t      __next_chunk_size_;
-  std::string      __unchunked_body_;
+  connFd                             __conn_fd_;
+  TransactionState                   __transaction_state_;
+  ssize_t                            __send_count_;
+  std::string                        __response_;
+  RequestInfo                        __request_info_;
+  NextChunkType                      __next_chunk_;
+  std::size_t                        __next_chunk_size_;
+  std::string                        __unchunked_body_;
+  std::map<std::string, std::string> __field_map_;
 
 private:
   static bool __getline(std::string &request_buffer, std::string &line);
-  bool __get_request_body(std::string &request_buffer, std::string &body) const;
-  static bool      __get_next_chunk_line(NextChunkType chunk_type,
-                                         std::string  &request_buffer,
-                                         std::string &chunk, size_t next_chunk_size);
+  static void __set_request_body(std::string &request_buffer, std::string &body,
+                                 size_t content_length);
+  static bool __get_next_chunk_line(NextChunkType chunk_type,
+                                    std::string  &request_buffer,
+                                    std::string &chunk, size_t next_chunk_size);
   TransactionState __chunk_loop(std::string     &request_buffer,
                                 std::string     &request_body,
                                 TransactionState transaction_state);

@@ -2,22 +2,45 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースが終了 true。エラー→例外
-void RequestInfo::parse_request_header() {
+void RequestInfo::parse_request_header(
+    const std::map<std::string, std::string> &header_field_map) {
   // call each field's parser
-  __parse_request_host();           // throws BadRequestException
-  __parse_request_connection();     // noexcept
-  __parse_request_content_length(); // noexcept
-  __parse_request_transfer_encoding();
+  std::map<std::string, std::string>::const_iterator itr;
+  itr = header_field_map.find("Host");
+  if (itr == header_field_map.end()) {
+    // TODO:
+    // この例外処理、header_field_mapを格納し終わった後にすれば、header_field_mapをメンバ変数として持たなくて良い気がする
+    throw BadRequestException("Host field is not found.");
+  }
+  host_ = __parse_request_host(itr->second);
+  itr   = header_field_map.find("Connection");
+  if (itr != header_field_map.end()) {
+    connection_close_ = __parse_request_connection(itr->second);
+  }
+  itr = header_field_map.find("Content-Length");
+  if (itr != header_field_map.end()) {
+    content_length_ = __parse_request_content_length(itr->second);
+  }
+  itr = header_field_map.find("Transfer-Encoding");
+  if (itr != header_field_map.end()) {
+    is_chunked_ = __parse_request_transfer_encoding(itr->second);
+  }
+  itr = header_field_map.find("Content-Type");
+  if (itr != header_field_map.end()) {
+    content_type_ = __parse_request_content_type(itr->second);
+  }
 }
 
 void RequestInfo::store_request_header_field_map(
-    const std::string &header_line) {
+    const std::string                  &header_line,
+    std::map<std::string, std::string> &header_field_map) {
   std::size_t pos = header_line.find(':');
   if (pos == std::string::npos) {
     throw BadRequestException();
@@ -27,62 +50,56 @@ void RequestInfo::store_request_header_field_map(
   if (last_char == ' ' || last_char == '\t') {
     throw BadRequestException();
   }
-  std::string field_value =
-      __trim_optional_whitespace(header_line.substr(pos + 1));
-  if (__field_map_.count(field_name) != 0u) {
+  const std::string field_value =
+      trim_optional_whitespace(header_line.substr(pos + 1), " \t");
+  if (header_field_map.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
-      __field_map_[field_name] += ", " + field_value;
+      header_field_map[field_name] += ", " + field_value;
     } else {
       throw BadRequestException();
     }
   } else {
-    __field_map_[field_name] = field_value;
+    header_field_map[field_name] = field_value;
   }
 }
 
 // TODO: hostとportで分ける必要あるか確認
-void RequestInfo::__parse_request_host() {
-  if (__field_map_.count("Host") == 0u) {
-    throw BadRequestException();
-  }
-  std::size_t pos = __field_map_["Host"].find(':');
+std::string RequestInfo::__parse_request_host(const std::string &host_lien) {
+  std::size_t pos = host_lien.find(':');
   if (pos == std::string::npos) {
-    host_ = __field_map_["Host"];
-    port_ = std::string("80");
-    return;
+    return host_lien;
   }
-  host_        = __field_map_["Host"].substr(0, pos);
-  port_        = __field_map_["Host"].substr(pos + 1);
-  int port_num = atoi(__field_map_["Host"].substr(pos + 1).c_str());
-  if (port_num < 0 || port_num > 65535) {
-    throw BadRequestException();
-  }
+  return host_lien.substr(0, pos);
 }
 
-void RequestInfo::__parse_request_connection() {
-  if (__field_map_.count("Connection") == 0u) {
-    return;
-  }
-  std::string value = tolower(__field_map_["Connection"]);
-  if (value == "close") {
-    connection_close_ = true;
-  }
+bool RequestInfo::__parse_request_connection(const std::string &connection) {
+  // TODO: tolower ってことは cLoseとかもあり? kohkubo
+  return tolower(connection) == "close";
 }
 
-void RequestInfo::__parse_request_content_length() {
-  if (__field_map_.count("Content-Length") == 0u) {
-    return;
-  }
-  content_length_ = atoi(__field_map_["Content-Length"].c_str());
+size_t
+RequestInfo::__parse_request_content_length(const std::string &content_length) {
+  // TODO: atoiのエラー処理
+  return atoi(content_length.c_str());
 }
 
 // TODO: Transfer-Encodingはカンマ区切りのフィールド
-void RequestInfo::__parse_request_transfer_encoding() {
-  if (__field_map_.count("Transfer-Encoding") == 0u) {
-    return;
+bool RequestInfo::__parse_request_transfer_encoding(
+    const std::string &transfer_encoding) {
+  return transfer_encoding == "chunked";
+}
+
+ContentType
+RequestInfo::__parse_request_content_type(const std::string &content_type) {
+  std::string content_type_lower = tolower(content_type);
+  if (content_type_lower == "application/x-www-form-urlencoded") {
+    return CONTENT_TYPE_APPLICATION_X_WWW_FORM_URLENCODED;
   }
-  std::string value = __field_map_["Transfer-Encoding"];
-  if (value == "chunked") {
-    is_chunked_ = true;
+  if (content_type_lower == "multipart/form-data") {
+    return CONTENT_TYPE_MULTIPART_FORM_DATA;
   }
+  if (content_type_lower == "text/plain") {
+    return CONTENT_TYPE_TEXT_PLAIN;
+  }
+  return CONTENT_TYPE_UNKNOWN;
 }

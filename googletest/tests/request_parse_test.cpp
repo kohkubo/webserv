@@ -21,7 +21,6 @@ TEST(request_parse_test, normal) {
   EXPECT_EQ(r.uri_, "/");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
-  EXPECT_EQ(r.port_, "5001");
   EXPECT_EQ(r.connection_close_, true);
 }
 
@@ -41,7 +40,6 @@ TEST(request_parse_test, normal_delete) {
   EXPECT_EQ(r.uri_, "/delete_target.tmp");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
-  EXPECT_EQ(r.port_, "5001");
   EXPECT_EQ(r.connection_close_, true);
 }
 
@@ -63,7 +61,6 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(r.uri_, "/target");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
-  EXPECT_EQ(r.port_, "5001");
   EXPECT_EQ(r.connection_close_, true);
   EXPECT_EQ(r.content_length_, 18);
 }
@@ -83,12 +80,11 @@ TEST(request_parse_test, query_body) {
 
   t.handle_request(request);
   const RequestInfo &info = t.get_request_info();
-
-  EXPECT_EQ(info.values_[0], "I'm=going");
-  EXPECT_EQ(info.values_[1], "to=become");
-  EXPECT_EQ(info.values_[2], "the=king");
-  EXPECT_EQ(info.values_[3], "of=the");
-  EXPECT_EQ(info.values_[4], "pirates!!");
+  EXPECT_EQ(info.env_values_[0], "I'm=going");
+  EXPECT_EQ(info.env_values_[1], "to=become");
+  EXPECT_EQ(info.env_values_[2], "the=king");
+  EXPECT_EQ(info.env_values_[3], "of=the");
+  EXPECT_EQ(info.env_values_[4], "pirates!!");
   // 今は"hoge=huga"の形でなくてもバリデートしてない
 }
 
@@ -107,8 +103,8 @@ TEST(request_parse_test, query_body_capital) {
   t.handle_request(request);
   const RequestInfo &info = t.get_request_info();
 
-  EXPECT_EQ(info.values_[0], "yabu=kara");
-  EXPECT_EQ(info.values_[1], "stick=");
-  EXPECT_EQ(info.values_[2], "ishi=no");
-  EXPECT_EQ(info.values_[3], "uenimo=3years");
+  EXPECT_EQ(info.env_values_[0], "yabu=kara");
+  EXPECT_EQ(info.env_values_[1], "stick=");
+  EXPECT_EQ(info.env_values_[2], "ishi=no");
+  EXPECT_EQ(info.env_values_[3], "uenimo=3years");
 }
