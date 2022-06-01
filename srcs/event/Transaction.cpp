@@ -116,14 +116,6 @@ const Config *Transaction::get_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
-ssize_t Transaction::send_response(connFd conn_fd, const std::string &response,
-                                   ssize_t send_size) {
-  const char *rest_str   = response.c_str() + send_size;
-  size_t      rest_count = response.size() - send_size;
-  // TODO: sendのエラー処理
-  return send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
-}
-
 // 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく
 TransactionState Transaction::__chunk_loop(std::string     &request_buffer,
                                            std::string     &request_body,

@@ -21,7 +21,7 @@ void Connection::create_sequential_transaction() {
       if (transaction.get_transaction_state() != SENDING) { // noexcept
         return;
       }
-      const Config *config = transaction.get_proper_config(
+      const Config *config = Transaction::get_proper_config(
           __conf_group_, transaction.get_request_info().host_); // noexcept
       Response response(*config, transaction.get_request_info());
       __response_ = response.get_response_string();
@@ -66,9 +66,11 @@ struct pollfd Connection::create_pollfd() const {
 }
 
 void Connection::send_response(connFd conn_fd) {
+  const char  *rest_str    = __response_.c_str() + __response_string_size_;
+  size_t       rest_count  = __response_.size() - __response_string_size_;
+  __response_string_size_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
+
   Transaction &transaction = __transaction_queue_.front();
-  __response_string_size_ +=
-      transaction.send_response(conn_fd, __response_, __response_string_size_);
   if (transaction.get_request_info().is_close_) {
     shutdown(conn_fd, SHUT_WR);
     __transaction_queue_.front().set_transaction_state(CLOSING);

@@ -60,8 +60,6 @@ public:
     __transaction_state_ = transaction_state;
   }
   void           handle_request(std::string &request_buffer);
-  static ssize_t send_response(connFd conn_fd, const std::string &response,
-                               ssize_t send_size);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
