@@ -40,7 +40,6 @@ void Connection::create_sequential_transaction() {
 }
 
 // 通信がクライアントから閉じられた時trueを返す。
-// TODO: ↑読み取りきったらじゃない? kohkubo
 bool Connection::append_receive_buffer() {
   const int         buf_size = 2048;
   std::vector<char> buf(buf_size);
@@ -49,6 +48,7 @@ bool Connection::append_receive_buffer() {
     std::cerr << "recv() failed." << std::endl;
     exit(EXIT_FAILURE);
   }
+  // fin from client
   if (rc == 0) {
     return true;
   }
@@ -71,7 +71,7 @@ void Connection::send_response(connFd conn_fd) {
   __response_string_size_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
 
   Transaction &transaction = __transaction_queue_.front();
-  if (transaction.get_request_info().is_close_) {
+  if (transaction.get_request_info().connection_close_) {
     shutdown(conn_fd, SHUT_WR);
     __transaction_queue_.front().set_transaction_state(CLOSING);
     return;
