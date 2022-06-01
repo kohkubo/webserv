@@ -3,8 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"integration_test/tests"
 	"io"
+	"os"
 	"os/exec"
+	"time"
 )
 
 var current_process *exec.Cmd = nil
@@ -20,14 +23,27 @@ func RestartWebserv(configPath string) {
 	current_process.Dir = "../"
 	stderr, _ = current_process.StderrPipe()
 	current_process.Start()
-	scanner := bufio.NewScanner(stderr)
-	// webservが始まった瞬間終わるとこのEOFが原因でこのScanがfalse返ってしまう
-	// つまりwebserv側の出力が取れない
-	for scanner.Scan() {
-		if scanner.Text() == "start server process" {
-			return
-		}
+	select {
+	case <-time.After(10 * time.Second):
+		fmt.Fprintln(os.Stderr, "timout to wait server lauch")
+		tests.CountTestFatal++
+		return
+	case <-waitServerLaunch():
 	}
+}
+
+func waitServerLaunch() chan struct{} {
+	done := make(chan struct{})
+	scanner := bufio.NewScanner(stderr)
+	go func() {
+		for scanner.Scan() {
+			if scanner.Text() == "start server process" {
+				close(done)
+				return
+			}
+		}
+	}()
+	return done
 }
 
 func KillWebserv(printLog bool) {
