@@ -59,7 +59,7 @@ public:
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
   }
-  void           handle_request(std::string &request_buffer);
+  void handle_request(std::string &request_buffer);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */

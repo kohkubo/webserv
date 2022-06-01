@@ -66,8 +66,8 @@ struct pollfd Connection::create_pollfd() const {
 }
 
 void Connection::send_response(connFd conn_fd) {
-  const char  *rest_str    = __response_.c_str() + __response_string_size_;
-  size_t       rest_count  = __response_.size() - __response_string_size_;
+  const char *rest_str   = __response_.c_str() + __response_string_size_;
+  size_t      rest_count = __response_.size() - __response_string_size_;
   __response_string_size_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
 
   Transaction &transaction = __transaction_queue_.front();
