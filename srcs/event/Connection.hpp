@@ -33,14 +33,14 @@ public:
   Connection(connFd conn_fd, confGroup conf_group)
       : __conn_fd_(conn_fd)
       , __conf_group_(conf_group) {
-    __transaction_queue_.push_back(Transaction(conn_fd));
+    __transaction_queue_.push_back(Transaction());
   }
   ~Connection() {}
 
   void          create_sequential_transaction();
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
-  void          send_response();
+  void          send_response(connFd conn_fd);
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */

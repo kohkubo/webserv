@@ -26,7 +26,7 @@ void Connection::create_sequential_transaction() {
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }
-    __transaction_queue_.push_back(Transaction(__conn_fd_));
+    __transaction_queue_.push_back(Transaction());
   }
 }
 
@@ -56,12 +56,12 @@ struct pollfd Connection::create_pollfd() const {
   return pfd;
 }
 
-void Connection::send_response() {
+void Connection::send_response(connFd conn_fd) {
   Transaction &transaction = __transaction_queue_.front();
   transaction.response_string_size_ += transaction.send_response(
-      __conn_fd_, transaction.response_, transaction.response_string_size_);
+      conn_fd, transaction.response_, transaction.response_string_size_);
   if (transaction.get_request_info().is_close_) {
-    shutdown(__conn_fd_, SHUT_WR);
+    shutdown(conn_fd, SHUT_WR);
     __transaction_queue_.front().set_transaction_state(CLOSING);
     return;
   }
