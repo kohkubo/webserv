@@ -27,8 +27,8 @@ void Server::__connection_receive_handler(connFd conn_fd) {
     // TODO: この分岐には入らないはず いらなかったら消す?
     return;
   }
-  bool is_full_buffer = it->second.append_receive_buffer();
-  if (is_full_buffer) {
+  bool is_socket_closed_from_client = it->second.append_receive_buffer();
+  if (is_socket_closed_from_client) {
     close(conn_fd);
     __connection_map_.erase(conn_fd);
     return;
