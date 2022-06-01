@@ -20,9 +20,9 @@ void Connection::create_sequential_transaction() {
       if (transaction.get_transaction_state() != SENDING) { // noexcept
         return;
       }
-      const Config *config =
-          transaction.get_proper_config(__conf_group_); // noexcept
-      transaction.create_response(config);              // noexcept
+      const Config *config = transaction.get_proper_config(
+          __conf_group_, transaction.get_request_info().host_); // noexcept
+      transaction.create_response(config);                      // noexcept
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }

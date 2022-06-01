@@ -55,12 +55,13 @@ public:
     response_string_size_ = 0;
   }
 
-  void               set_response_for_bad_request();
-  const Config      *get_proper_config(const confGroup &conf_group) const;
-  void               create_response(const Config *config);
-  const RequestInfo &get_request_info() const { return __request_info_; }
-  TransactionState   get_transaction_state() const {
-      return __transaction_state_;
+  void                 set_response_for_bad_request();
+  static const Config *get_proper_config(const confGroup   &conf_group,
+                                         const std::string &host);
+  void                 create_response(const Config *config);
+  const RequestInfo   &get_request_info() const { return __request_info_; }
+  TransactionState     get_transaction_state() const {
+        return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;

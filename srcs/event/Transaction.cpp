@@ -116,11 +116,11 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *
-Transaction::get_proper_config(const confGroup &conf_group) const {
+const Config *Transaction::get_proper_config(const confGroup   &conf_group,
+                                             const std::string &host) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
-    if ((*it)->server_name_ == __request_info_.host_) {
+    if ((*it)->server_name_ == host) {
       return *it;
     }
   }
