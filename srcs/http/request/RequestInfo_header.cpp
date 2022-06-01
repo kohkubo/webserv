@@ -22,7 +22,7 @@ void RequestInfo::parse_request_header(
   host_ = __parse_request_host(itr->second);
   itr   = header_field_map.find("Connection");
   if (itr != header_field_map.end()) {
-    is_close_ = __parse_request_connection(itr->second);
+    connection_close_ = __parse_request_connection(itr->second);
   }
   itr = header_field_map.find("Content-Length");
   if (itr != header_field_map.end()) {
