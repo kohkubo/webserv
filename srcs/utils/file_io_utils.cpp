@@ -14,31 +14,24 @@
 #include "utils/utils.hpp"
 
 bool is_file_exists(const std::string &path) {
-  struct stat file_info;
+  struct stat file_info = {};
 
   if (stat(path.c_str(), &file_info) == -1) {
     ERROR_LOG("error: is_file_exists: " << path);
     return false;
   }
-  if ((file_info.st_mode & S_IFMT) == S_IFREG)
-    return true;
-  else
-    return false;
+  return ((file_info.st_mode & S_IFMT) == S_IFREG);
 }
 
 // 末尾が"/"でなくてもディレクトリとして扱われることに注意
 bool is_dir_exists(const std::string &path) {
-  struct stat file_info;
+  struct stat file_info = {};
 
   if (stat(path.c_str(), &file_info) == -1) {
     ERROR_LOG("error: is_dir_exists: " << path);
     return false;
   }
-  if ((file_info.st_mode & S_IFMT) == S_IFDIR) {
-    return true;
-  } else {
-    return false;
-  }
+  return ((file_info.st_mode & S_IFMT) == S_IFDIR);
 }
 
 std::string read_file_tostring(const std::string &path) {

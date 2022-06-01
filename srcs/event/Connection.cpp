@@ -12,7 +12,7 @@
 #include "http/const/const_delimiter.hpp"
 
 void Connection::create_sequential_transaction() {
-  while (1) {
+  while (true) {
     Transaction &transaction = __transaction_queue_.back();
     try {
       transaction.handle_request(__buffer_);
@@ -39,6 +39,7 @@ bool Connection::append_receive_buffer() {
     std::cerr << "recv() failed." << std::endl;
     exit(EXIT_FAILURE);
   }
+  // fin from client
   if (rc == 0) {
     return true;
   }
@@ -58,7 +59,7 @@ struct pollfd Connection::create_pollfd() const {
 void Connection::send_response() {
   Transaction &transaction = __transaction_queue_.front();
   transaction.send_response();
-  if (transaction.get_request_info().is_close_ == true) {
+  if (transaction.get_request_info().connection_close_) {
     shutdown_write();
     return;
   }

@@ -20,7 +20,6 @@ Config::Config()
     , listen_port_("80")
     , client_max_body_size_(0)
     , server_name_("")
-    , error_pages_()
     , addrinfo_(NULL) {}
 
 Config::Config(const Config &other) { *this = other; }
@@ -220,14 +219,14 @@ tokenIterator Config::__parse_vector_directive(std::string               key,
 }
 
 void Config::__set_getaddrinfo() {
-  struct addrinfo hints;
+  struct addrinfo hints = {};
 
   memset(&hints, 0, sizeof(hints));
   hints.ai_family   = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   int error = getaddrinfo(listen_address_.c_str(), listen_port_.c_str(), &hints,
                           &addrinfo_);
-  if (error) {
+  if (error != 0) {
     ERROR_LOG("getaddrinfo: " << gai_strerror(error));
     exit(EXIT_FAILURE);
   }

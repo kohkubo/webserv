@@ -32,12 +32,8 @@ std::map<int, std::string> init_page_contents_map() {
 }
 
 bool Response::__is_error_status_code() {
-  HttpStatusCode code = __status_code_;
   // TODO: エラーのステータスコードの扱いを決まったら再実装
-  if (code > 299 && code < 600) {
-    return true;
-  }
-  return false;
+  return __status_code_ > 299 && __status_code_ < 600;
 }
 
 Response::Response(const Config &config, const RequestInfo &request_info)

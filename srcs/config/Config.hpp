@@ -23,8 +23,8 @@ public:
   std::string                listen_port_;
   size_t                     client_max_body_size_;
   std::string                server_name_;
-  std::map<int, std::string> error_pages_;
   struct addrinfo           *addrinfo_;
+  std::map<int, std::string> error_pages_;
   std::vector<Location>      locations_;
 
   // error_page;
@@ -36,13 +36,11 @@ public:
 
 public:
   Config();
-  // TODO: この初期化はテスト用に残っているだけ
   Config(tokenIterator start, tokenIterator end)
       : listen_address_("0.0.0.0")
       , listen_port_("80")
       , client_max_body_size_(1024)
       , server_name_("")
-      , error_pages_()
       , addrinfo_(NULL) {
     try {
       __last_it_ = __parse(start, end);

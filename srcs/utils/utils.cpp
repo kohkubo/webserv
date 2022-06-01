@@ -11,11 +11,8 @@ bool has_suffix(const std::string &str, const std::string &suffix) {
   if (str.length() < suffix.length()) {
     return false;
   }
-  if (str.compare(str.length() - suffix.length(), suffix.length(), suffix) ==
-      0) {
-    return true;
-  }
-  return false;
+  return (str.compare(str.length() - suffix.length(), suffix.length(),
+                      suffix) == 0);
 }
 
 bool has_prefix(const std::string &str, const std::string &prefix) {
@@ -37,16 +34,12 @@ std::string tolower(const std::string &str) {
 
 bool is_uint8(const std::string &str) {
   if (str.size() == 1) {
-    if (str[0] >= '0' && str[0] <= '9') {
-      return true;
-    }
-    return false;
-  } else if (str.size() == 2) {
-    if (str[0] >= '1' && str[0] <= '9' && str[1] >= '0' && str[1] <= '9') {
-      return true;
-    }
-    return false;
-  } else if (str.size() == 3) {
+    return (str[0] >= '0' && str[0] <= '9');
+  }
+  if (str.size() == 2) {
+    return (str[0] >= '1' && str[0] <= '9' && str[1] >= '0' && str[1] <= '9');
+  }
+  if (str.size() == 3) {
     if (str[0] == '1') {
       if ((str[1] >= '0' && str[1] <= '9') && (str[2] >= '0' && str[2] <= '9'))
         return true;
@@ -79,7 +72,7 @@ bool is_ip(const std::string &str) {
 
 bool is_digits(const std::string &str) {
   for (size_t i = 0; i < str.size(); i++) {
-    if (!isdigit(str[i]))
+    if (isdigit(str[i]) == 0)
       return false;
   }
   return true;
@@ -94,7 +87,7 @@ std::size_t hexstr_to_size(const std::string &str) {
 }
 
 bool is_dir(const std::string &filepath) {
-  struct stat st;
+  struct stat st = {};
   if (stat(filepath.c_str(), &st) == 0) {
     return S_ISDIR(st.st_mode);
   }

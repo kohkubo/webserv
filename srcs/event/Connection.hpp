@@ -25,11 +25,11 @@ private:
   static const std::size_t buffer_max_length_ = 8192;
 
 private:
+  Connection() {}
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
 
 public:
-  Connection() {}
   Connection(connFd conn_fd, confGroup conf_group)
       : __conn_fd_(conn_fd)
       , __conf_group_(conf_group) {

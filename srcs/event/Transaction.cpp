@@ -13,8 +13,8 @@ void Transaction::set_response_for_bad_request() {
   // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
   // 現状は暫定的に、定型文を送信。
   __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __transaction_state_      = SENDING;
-  __request_info_.is_close_ = true;
+  __transaction_state_              = SENDING;
+  __request_info_.connection_close_ = true;
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
@@ -26,10 +26,10 @@ void Transaction::handle_request(std::string &request_buffer) {
       if (__transaction_state_ == RECEIVING_STARTLINE) {
         __request_info_.check_first_multi_blank_line(
             line); // throws BadRequestException
-        if (__request_info_.is_blank_first_line_ == true) {
+        if (__request_info_.is_blank_first_line_) {
           continue;
         }
-        __request_info_.check_bad_parse_request_start_line(
+        RequestInfo::check_bad_parse_request_start_line(
             line); // throws BadRequestException
         __request_info_.parse_request_start_line(line); // noexcept
         __transaction_state_ = RECEIVING_HEADER;
@@ -42,19 +42,18 @@ void Transaction::handle_request(std::string &request_buffer) {
         __request_info_.parse_request_header(); // throws BadRequestException
         // TODO: validate request_header
         if (__request_info_.content_length_ != 0 ||
-            __request_info_.is_chunked_ == true) {
+            __request_info_.is_chunked_) {
           __transaction_state_ = RECEIVING_BODY;
           break;
-        } else {
-          __transaction_state_ = SENDING;
-          return;
         }
+        __transaction_state_ = SENDING;
+        return;
       }
     }
   }
   if (__transaction_state_ == RECEIVING_BODY) {
     std::string request_body;
-    if (__request_info_.is_chunked_ == true) {
+    if (__request_info_.is_chunked_) {
       while (__get_next_chunk_line(__next_chunk_, request_buffer, request_body,
                                    __next_chunk_size_)) {
         if (__next_chunk_ == CHUNK_SIZE) {
@@ -110,7 +109,7 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   }
   chunk = request_buffer.substr(0, next_chunk_size);
   request_buffer.erase(0, next_chunk_size);
-  if (has_prefix(request_buffer, CRLF) == false) {
+  if (!has_prefix(request_buffer, CRLF)) {
     throw RequestInfo::BadRequestException();
   }
   request_buffer.erase(0, CRLF.size());
