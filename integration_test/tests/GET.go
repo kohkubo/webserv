@@ -58,8 +58,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusNotFound,
 			ExpectHeader:     nil,
-			//ExpectBody:       content_404,
-			ExpectBody: content_404,
+			ExpectBody:       content_404,
 		})
 		if err != nil {
 			return false, err
