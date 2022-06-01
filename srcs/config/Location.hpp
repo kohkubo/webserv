@@ -20,7 +20,11 @@ struct Location {
       , index_("index.html")
       , autoindex_(false)
       , cgi_extension_(false)
-      , sendfile_(false) {}
+      , sendfile_(false) {
+    limit_except_.push_back("GET");
+    limit_except_.push_back("POST");
+    limit_except_.push_back("DELETE");
+  }
 };
 
 #endif /* SRCS_CONFIG_LOCATION_HPP */
