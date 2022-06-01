@@ -4,6 +4,17 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
+void Server::__close_timedout_connection(
+    std::map<connFd, Connection> &connection_map) {
+  std::map<connFd, Connection>::const_iterator it = connection_map.begin();
+  if (it->second.is_timed_out()) {
+    connFd conn_fd = it->first;
+    it++;
+    close(conn_fd);
+    connection_map.erase(conn_fd);
+  }
+}
+
 void Server::__add_listenfd_to_pollfds() {
   std::map<listenFd, confGroup>::const_iterator it = __conf_group_map_.begin();
   for (; it != __conf_group_map_.end(); it++) {
@@ -45,8 +56,10 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 void Server::run_loop() {
   ERROR_LOG("start server process");
   while (true) {
+    __close_timedout_connection(__connection_map_);
     __reset_pollfds();
-    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
+    // timeoutは仮
+    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 5000);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
       if (it->revents == 0) {
@@ -59,6 +72,7 @@ void Server::run_loop() {
         __insert_connection_map(it->fd);
         continue;
       }
+      __connection_map_.find(it->fd)->second.update_last_time_event();
       if ((it->revents & POLLIN) != 0) {
         __connection_receive_handler(it->fd);
       }
