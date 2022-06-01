@@ -11,6 +11,7 @@ std::map<int, std::string> init_response_status_phrase_map() {
   res[400] = STATUS_400_PHRASE;
   res[403] = STATUS_403_PHRASE;
   res[404] = STATUS_404_PHRASE;
+  res[405] = STATUS_405_PHRASE;
   res[500] = STATUS_500_PHRASE;
   res[501] = STATUS_501_PHRASE;
   res[520] = STATUS_520_PHRASE;

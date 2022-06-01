@@ -26,9 +26,9 @@ bool test_request_body(const Config *config, const std::string &uri,
   RequestInfo req_info;
   req_info.uri_    = uri;
   req_info.method_ = GET;
-  Response response(*config, req_info);
+  Response    response(*config, req_info);
   std::string body = get_http_response_body(response.get_response_string());
-  bool res = body == expected_body;
+  bool        res  = body == expected_body;
   if (!res) {
     std::cout << "expected: " << expected_body << std::endl;
     std::cout << "actual: " << body << std::endl;
@@ -42,7 +42,8 @@ bool test_request_status_code(const Config *config, const std::string &uri,
   req_info.uri_    = uri;
   req_info.method_ = GET;
   Response response(*config, req_info);
-  int status_code = get_http_response_status_code(response.get_response_string());
+  int      status_code =
+      get_http_response_status_code(response.get_response_string());
   bool res = status_code == expected_status_code;
   if (!res) {
     std::cout << "expected: " << expected_status_code << std::endl;
@@ -68,7 +69,14 @@ TEST(location_test, multi_location) {
     EXPECT_TRUE(test_request_status_code(config, "/dir2/", 404));
     EXPECT_TRUE(test_request_body(config, "/", "location!\n"));
     EXPECT_TRUE(test_request_body(config, "/dir/", "location! dir\n"));
-    EXPECT_TRUE(test_request_body(config, "/test_dir/", "location! test_dir\n"));
-    EXPECT_TRUE(test_request_body(config, "/dir/index.html", "location! dir\n"));
+    EXPECT_TRUE(
+        test_request_body(config, "/test_dir/", "location! test_dir\n"));
+    EXPECT_TRUE(
+        test_request_body(config, "/dir/index.html", "location! dir\n"));
+    // close all sockets
+    std::map<listenFd, confGroup>::iterator it = conf_group_map.begin();
+    for (; it != conf_group_map.end(); it++) {
+      close(it->first);
+    }
   }
 }

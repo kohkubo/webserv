@@ -10,18 +10,21 @@ import (
 // TODO: 限界近くの多重接続
 
 func main() {
-	RestartWebserv("integration_test/conf/webserv.conf")
-	defer KillWebserv(tests.IsFatal())
 	defer func() {
-		if tests.IsFail() {
+		if tests.IsFail() || tests.IsFatal() {
 			os.Exit(1)
 		}
 	}()
 
-	// このテストの分け方は仮です。
+	RestartWebserv("integration_test/conf/webserv.conf")
 	tests.TestGET()
 	//tests.TestPOST()
 	tests.TestDELETE()
 	tests.TestIOMULT()
 	tests.TestBADREQ()
+	KillWebserv(tests.IsFatal())
+
+	RestartWebserv("integration_test/conf/autoindex.conf")
+	tests.TestAUTOINDEX()
+	KillWebserv(tests.IsFatal())
 }

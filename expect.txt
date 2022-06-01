@@ -1,0 +1,144 @@
+
+======================
+normal 5000
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Basic Web Page</title>
+    </head>
+    <body>
+Hello World!
+    </body>
+</html>
+
+======================
+normal 5000/dir1
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Basic Web Page</title>
+    </head>
+    <body>
+Hello World! in dir1
+    </body>
+</html>
+======================
+normal 5000 404
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>404</title>
+    </head>
+    <body>
+<h2>404 Not Found</h2>
+default error page
+    </body>
+</html>
+======================
+5001 403
+normal 5000
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>403</title>
+    </head>
+    <body>
+<h2>403 Forbidden</h2>
+default error page
+    </body>
+</html>
+======================
+get request path
+normal 5000 in dir1
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Basic Web Page</title>
+    </head>
+    <body>
+index2! in dir1
+    </body>
+</html>
+======================
+cgi
+normal 5000 cgi
+======================
+###########################
+name=
+blood=
+text=
+example=
+###########################
+
+======================
+root directive test
+normal 5001 in dir1
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Basic Web Page</title>
+    </head>
+    <body>
+Hello World! in dir1
+    </body>
+</html>
+======================
+index directive test
+normal 5002 index2! in dir1
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Basic Web Page</title>
+    </head>
+    <body>
+index2! in dir1
+    </body>
+</html>
+======================
+error_page directive test 404
+normal 5003
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Basic Web Page</title>
+    </head>
+    <body>
+!! 404 Not Found test !!
+    </body>
+</html>
+
+======================
+limit_except test
+200 OK 5003
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Basic Web Page</title>
+    </head>
+    <body>
+Hello World!
+    </body>
+</html>
+======================
+limit_except test
+405 error 5003
+======================
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>405</title>
+    </head>
+    <body>
+<h2>405 Method Not Allowed</h2>
+default error page
+    </body>
+</html>
