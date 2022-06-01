@@ -18,7 +18,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       HELLO_WORLD,
+			ExpectBody:       fileToBytes("../html/index.html"),
 		})
 		if err != nil {
 			return false, err
@@ -38,7 +38,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       HELLO_WORLD,
+			ExpectBody:       fileToBytes("../html/index.html"),
 		})
 		if err != nil {
 			return false, err
