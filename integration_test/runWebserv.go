@@ -39,7 +39,7 @@ func waitServerLaunch() chan struct{} {
 	go func() {
 		for scanner.Scan() {
 			txt := scanner.Text()
-			log = log + txt + "\n"
+			log = fmt.Sprintf("%s%s\n", log, txt)
 			if txt == "start server process" {
 				close(done)
 				return
@@ -56,10 +56,10 @@ func KillWebserv() {
 	current_process.Process.Kill()
 	if tests.IsFatal() {
 		str, _ := io.ReadAll(stderr)
+		log = fmt.Sprintf("%s%s\n", log, str)
 		fmt.Println()
 		fmt.Println("===webserv===")
 		fmt.Printf("%s", log)
-		fmt.Printf("%s\n", str)
 		fmt.Println("=============")
 	}
 	current_process.Wait()
