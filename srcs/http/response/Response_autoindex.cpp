@@ -1,28 +1,48 @@
 #include "http/response/Response.hpp"
 
 #include <dirent.h>
+#include <sstream>
 
 #include "utils/syscall_wrapper.hpp"
 
-// directory内のファイル・ディレクトリ名をstringに格納して返す
-// TODO: htmlに変換する
+// TODO: DT_DIR系のマクロが定義されてない場合を考慮すべきかわからない
+// TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外はどうするか
+static std::string dir_list_lines(const std::string &file_path) {
+  std::string    lines;
+  DIR           *dir    = xopendir(file_path.c_str());
+  struct dirent *diread = NULL;
+  while ((diread = xreaddir(dir)) != NULL) {
+    std::string name = diread->d_name;
+    if (name == ".")
+      continue;
+    // ブラウザ上でlist表示された時,
+    // ディレクトリが選択された場合にディレクトリとして再度リクエストが出されるために末尾に"/"
+    // nginxでもディレクトリは末尾に"/"ついて表示されていた
+    if (diread->d_type & DT_DIR)
+      name += "/";
+    else if (!((diread->d_type & DT_REG) || (diread->d_type & DT_LNK)))
+      continue;
+    lines += "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
+  }
+  xclosedir(dir);
+  return lines;
+}
+
 std::string Response::__create_autoindex_body(const std::string &file_path) {
-  DIR                     *dir    = xopendir(file_path.c_str());
-  struct dirent           *diread = NULL;
-  std::vector<std::string> files;
-
-  // xopendir()が成功している時点でdirは有効なものなので
-  // 他のシステムコールはエラーを起こさないことが前提の実装
-  while ((diread = readdir(dir)) != NULL) {
-    files.push_back(diread->d_name);
-  }
-  closedir(dir);
-
-  std::string                        ret;
-  std::vector<std::string>::iterator it = files.begin();
-  for (; it != files.end(); it++) {
-    ret += " " + *it;
-  }
-
-  return ret;
+  std::stringstream buff;
+  // clang-format off
+  buff << "<!DOCTYPE html>\n"
+       << "<html>\n"
+       << "   <head>\n"
+       << "      <title>Index of " << __request_info_.uri_ << "</title>\n"
+       << "   </head>\n"
+       << "   <body>\n"
+       << "      <h1>Index of " << __request_info_.uri_ << "</h1>\n"
+       << "      <ul style=\"list-style:none\">\n"
+       <<          dir_list_lines(file_path)
+       << "    </ul>\n"
+       << "   </body>\n"
+       << "</html>";
+  // clang-format on
+  return buff.str();
 }
