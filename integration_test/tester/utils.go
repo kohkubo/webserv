@@ -24,6 +24,7 @@ func connect(port string) (net.Conn, error) {
 func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 	ch_resp := make(chan *http.Response)
 	ch_error := make(chan error)
+	// resposenを受け取る
 	go func() {
 		r := bufio.NewReader(src)
 		req := &http.Request{
@@ -36,8 +37,8 @@ func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 		ch_resp <- resp
 	}()
 	select {
-	case <-time.After(10 * time.Second): // 他case文が10秒以上止まると当case文が動く
-		return nil, fmt.Errorf("read response: time out!")
+	case <-time.After(10 * time.Second):
+		return nil, fmt.Errorf("timeout to read response")
 	case resp := <-ch_resp:
 		return resp, nil
 	case err := <-ch_error:
