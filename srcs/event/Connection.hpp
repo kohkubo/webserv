@@ -41,10 +41,6 @@ public:
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
   void          send_response();
-  void          shutdown_write() {
-    shutdown(__conn_fd_, SHUT_WR);
-    __transaction_queue_.front().set_transaction_state(CLOSING);
-  }
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */
