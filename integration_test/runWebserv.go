@@ -12,11 +12,12 @@ import (
 
 var current_process *exec.Cmd = nil
 var stderr io.ReadCloser
+var log string
 
 // 指定したpathのconfigファイルでwebservを立ち上げる。
 func RestartWebserv(configPath string) {
 	if current_process != nil {
-		KillWebserv(false)
+		KillWebserv()
 	}
 	current_process = exec.Command("./webserv", configPath)
 	// itestの実行ファイルがintegration_test/integration_testを期待
@@ -37,7 +38,9 @@ func waitServerLaunch() chan struct{} {
 	scanner := bufio.NewScanner(stderr)
 	go func() {
 		for scanner.Scan() {
-			if scanner.Text() == "start server process" {
+			txt := scanner.Text()
+			log = log + txt + "\n"
+			if txt == "start server process" {
 				close(done)
 				return
 			}
@@ -46,14 +49,18 @@ func waitServerLaunch() chan struct{} {
 	return done
 }
 
-func KillWebserv(printLog bool) {
+func KillWebserv() {
 	if current_process == nil {
 		return
 	}
 	current_process.Process.Kill()
-	if printLog {
+	if tests.IsFatal() {
 		str, _ := io.ReadAll(stderr)
+		fmt.Println()
+		fmt.Println("===webserv===")
+		fmt.Printf("%s", log)
 		fmt.Printf("%s\n", str)
+		fmt.Println("=============")
 	}
 	current_process.Wait()
 	current_process = nil

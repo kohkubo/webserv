@@ -32,7 +32,7 @@ func test() chan struct{} {
 		tests.TestDELETE()
 		tests.TestIOMULT()
 		tests.TestBADREQ()
-		KillWebserv(tests.IsFatal())
+		KillWebserv()
 	}()
 	return done
 }
