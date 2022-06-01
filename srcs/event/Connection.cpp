@@ -58,7 +58,8 @@ struct pollfd Connection::create_pollfd() const {
 
 void Connection::send_response() {
   Transaction &transaction = __transaction_queue_.front();
-  transaction.send_response();
+  transaction.response_string_size_ += transaction.send_response(
+      __conn_fd_, transaction.response_, transaction.response_string_size_);
   if (transaction.get_request_info().is_close_) {
     shutdown(__conn_fd_, SHUT_WR);
     __transaction_queue_.front().set_transaction_state(CLOSING);

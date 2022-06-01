@@ -12,7 +12,7 @@ void Transaction::set_response_for_bad_request() {
   // 指定できるとき、nginxはどうやってserverを決定しているか。
   // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
   // 現状は暫定的に、定型文を送信。
-  __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
+  response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
   __transaction_state_      = SENDING;
   __request_info_.is_close_ = true;
 }
@@ -129,14 +129,15 @@ Transaction::get_proper_config(const confGroup &conf_group) const {
 
 void Transaction::create_response(const Config *config) {
   Response response(*config, __request_info_);
-  __response_ = response.get_response_string();
+  response_ = response.get_response_string();
 }
 
-void Transaction::send_response() {
-  const char *rest_str   = __response_.c_str() + __send_count_;
-  size_t      rest_count = __response_.size() - __send_count_;
-  ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
-  __send_count_ += sc;
+ssize_t Transaction::send_response(connFd conn_fd, const std::string &response,
+                                   ssize_t send_size) {
+  const char *rest_str   = response.c_str() + send_size;
+  size_t      rest_count = response.size() - send_size;
+  // TODO: sendのエラー処理
+  return send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
 }
 
 // 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく

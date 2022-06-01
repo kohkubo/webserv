@@ -27,13 +27,15 @@ struct Transaction {
 private:
   connFd                             __conn_fd_;
   TransactionState                   __transaction_state_;
-  ssize_t                            __send_count_;
-  std::string                        __response_;
   RequestInfo                        __request_info_;
   NextChunkType                      __next_chunk_;
   std::size_t                        __next_chunk_size_;
   std::string                        __unchunked_body_;
   std::map<std::string, std::string> __field_map_;
+
+public:
+  ssize_t     response_string_size_;
+  std::string response_;
 
 private:
   static bool __getline(std::string &request_buffer, std::string &line);
@@ -50,24 +52,26 @@ public:
   Transaction(connFd conn_fd)
       : __conn_fd_(conn_fd)
       , __transaction_state_(RECEIVING_STARTLINE)
-      , __send_count_(0)
       , __next_chunk_(CHUNK_SIZE)
-      , __next_chunk_size_(-1) {}
+      , __next_chunk_size_(-1) {
+    response_string_size_ = 0;
+  }
 
   void               set_response_for_bad_request();
   const Config      *get_proper_config(const confGroup &conf_group) const;
   void               create_response(const Config *config);
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
-    return __transaction_state_;
+      return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
   }
-  void handle_request(std::string &request_buffer);
-  void send_response();
-  bool is_send_all() const {
-    return __send_count_ == static_cast<ssize_t>(__response_.size());
+  void           handle_request(std::string &request_buffer);
+  static ssize_t send_response(connFd conn_fd, const std::string &response,
+                               ssize_t send_size);
+  bool           is_send_all() const {
+              return response_string_size_ == static_cast<ssize_t>(response_.size());
   }
 };
 
