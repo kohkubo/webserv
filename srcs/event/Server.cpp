@@ -27,8 +27,8 @@ void Server::__connection_receive_handler(connFd conn_fd) {
     // TODO: この分岐には入らないはず いらなかったら消す?
     return;
   }
-  bool is_full_buffer = it->second.append_receive_buffer();
-  if (is_full_buffer) {
+  bool is_socket_closed_from_client = it->second.append_receive_buffer();
+  if (is_socket_closed_from_client) {
     close(conn_fd);
     __connection_map_.erase(conn_fd);
     return;
@@ -43,7 +43,7 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 }
 
 void Server::run_loop() {
-  LOG("start server process");
+  ERROR_LOG("start server process");
   while (true) {
     __reset_pollfds();
     int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
@@ -54,7 +54,7 @@ void Server::run_loop() {
       }
       nready--;
       int listen_flg = __conf_group_map_.count(it->fd);
-      if (listen_flg == 0) {
+      if (listen_flg == 1) {
         __insert_connection_map(it->fd);
         continue;
       }

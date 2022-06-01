@@ -13,8 +13,8 @@ void Transaction::set_response_for_bad_request() {
   // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
   // 現状は暫定的に、定型文を送信。
   __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __transaction_state_      = SENDING;
-  __request_info_.is_close_ = true;
+  __transaction_state_              = SENDING;
+  __request_info_.connection_close_ = true;
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
