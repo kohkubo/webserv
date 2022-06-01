@@ -7,7 +7,8 @@
 
 class Timeout {
 private:
-  std::time_t __last_event_time_;
+  std::time_t              __last_event_time_;
+  static const std::time_t timeout_limit_ = 60;
 
 public:
   Timeout() { update_last_time_event(); }
@@ -16,7 +17,7 @@ public:
 
   bool is_timeout_over() const {
     std::time_t now = xtime();
-    return (now - __last_event_time_) >= 60;
+    return (now - __last_event_time_) >= timeout_limit_;
   }
 };
 
