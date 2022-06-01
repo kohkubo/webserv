@@ -65,7 +65,7 @@ void RequestInfo::__parse_request_connection() {
   }
   std::string value = tolower(__field_map_["Connection"]);
   if (value == "close") {
-    is_close_ = true;
+    connection_close_ = true;
   }
 }
 
