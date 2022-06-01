@@ -5,9 +5,9 @@
 
 class SocketOpener {
 private:
-  listenFd __set_listen_fd(struct addrinfo *info);
-  void     __set_bind_socket(listenFd listen_fd, struct addrinfo *info);
-  void     __set_listen_passive_socket(listenFd listen_fd);
+  static listenFd __set_listen_fd(struct addrinfo *info);
+  static void     __set_bind_socket(listenFd listen_fd, struct addrinfo *info);
+  static void     __set_listen_passive_socket(listenFd listen_fd);
 
 public:
   SocketOpener() {}

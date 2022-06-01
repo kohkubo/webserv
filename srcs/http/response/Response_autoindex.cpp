@@ -9,8 +9,8 @@
 // TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外はどうするか
 static std::string dir_list_lines(const std::string &file_path) {
   std::string    lines;
-  DIR           *dir = xopendir(file_path.c_str());
-  struct dirent *diread;
+  DIR           *dir    = xopendir(file_path.c_str());
+  struct dirent *diread = NULL;
   while ((diread = xreaddir(dir)) != NULL) {
     std::string name = diread->d_name;
     if (name == ".")

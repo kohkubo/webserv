@@ -35,7 +35,8 @@ void ConfGroupMapGenerator::__read_config(const char *config_file_path) {
 }
 
 static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
-  struct sockaddr_in *x, *y;
+  struct sockaddr_in *x = NULL;
+  struct sockaddr_in *y = NULL;
   x = reinterpret_cast<sockaddr_in *>(serv_x.addrinfo_->ai_addr);
   y = reinterpret_cast<sockaddr_in *>(serv_y.addrinfo_->ai_addr);
   return (x->sin_addr.s_addr == y->sin_addr.s_addr) &&

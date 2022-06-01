@@ -57,22 +57,28 @@ public:
   tokenIterator get_moved_it() { return __last_it_; }
 
 private:
-  tokenIterator __parse(tokenIterator pos, tokenIterator end);
-  void          __set_getaddrinfo();
-  tokenIterator __parse_listen(tokenIterator pos, tokenIterator end);
-  tokenIterator __parse_location(tokenIterator pos, tokenIterator end);
-  tokenIterator __parse_map_directive(std::string                 key,
-                                      std::map<int, std::string> &value,
-                                      tokenIterator pos, tokenIterator end);
-  tokenIterator __parse_string_directive(std::string key, std::string &value,
-                                         tokenIterator pos, tokenIterator end);
-  tokenIterator __parse_sizet_directive(std::string key, size_t &value,
-                                        tokenIterator pos, tokenIterator end);
-  tokenIterator __parse_bool_directive(std::string key, bool &value,
-                                       tokenIterator pos, tokenIterator end);
-  tokenIterator __parse_vector_directive(std::string               key,
-                                         std::vector<std::string> &value,
-                                         tokenIterator pos, tokenIterator end);
+  tokenIterator        __parse(tokenIterator pos, tokenIterator end);
+  void                 __set_getaddrinfo();
+  tokenIterator        __parse_listen(tokenIterator pos, tokenIterator end);
+  tokenIterator        __parse_location(tokenIterator pos, tokenIterator end);
+  static tokenIterator __parse_map_directive(std::string                 key,
+                                             std::map<int, std::string> &value,
+                                             tokenIterator               pos,
+                                             tokenIterator               end);
+  static tokenIterator __parse_string_directive(std::string   key,
+                                                std::string  &value,
+                                                tokenIterator pos,
+                                                tokenIterator end);
+  static tokenIterator __parse_sizet_directive(std::string key, size_t &value,
+                                               tokenIterator pos,
+                                               tokenIterator end);
+  static tokenIterator __parse_bool_directive(std::string key, bool &value,
+                                              tokenIterator pos,
+                                              tokenIterator end);
+  static tokenIterator __parse_vector_directive(std::string               key,
+                                                std::vector<std::string> &value,
+                                                tokenIterator             pos,
+                                                tokenIterator             end);
 };
 
 // TODO: Config ポインタ -> 実体

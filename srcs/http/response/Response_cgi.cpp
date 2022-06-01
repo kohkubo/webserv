@@ -35,7 +35,7 @@ static char *const *vector_to_array(const std::vector<std::string> &v) {
 std::string
 Response::__read_file_tostring_cgi(const std::string              &path,
                                    const std::vector<std::string> &env) {
-  int pipefd[2];
+  int pipefd[2] = {0, 0};
   if (pipe(pipefd) == -1) {
     ERROR_LOG("error: pipe in read_file_tostring_cgi");
     return "";
