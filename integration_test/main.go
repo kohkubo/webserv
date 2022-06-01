@@ -37,6 +37,10 @@ func test() chan struct{} {
 		RestartWebserv("integration_test/conf/autoindex.conf")
 		tests.TestAUTOINDEX()
 		KillWebserv()
+
+		RestartWebserv("integration_test/conf/test.conf")
+		tests.T()
+		KillWebserv()
 	}()
 	return done
 }
