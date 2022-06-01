@@ -6,17 +6,6 @@
 #include "http/request/RequestInfo.hpp"
 #include "http/response/Response.hpp"
 
-void Transaction::set_response_for_bad_request() {
-  // 400エラー処理
-  // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
-  // 指定できるとき、nginxはどうやってserverを決定しているか。
-  // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
-  // 現状は暫定的に、定型文を送信。
-  response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __transaction_state_      = SENDING;
-  __request_info_.is_close_ = true;
-}
-
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 void Transaction::handle_request(std::string &request_buffer) {
   if (__transaction_state_ == RECEIVING_STARTLINE ||
@@ -125,11 +114,6 @@ const Config *Transaction::get_proper_config(const confGroup   &conf_group,
     }
   }
   return conf_group[0];
-}
-
-void Transaction::create_response(const Config *config) {
-  Response response(*config, __request_info_);
-  response_ = response.get_response_string();
 }
 
 ssize_t Transaction::send_response(connFd conn_fd, const std::string &response,

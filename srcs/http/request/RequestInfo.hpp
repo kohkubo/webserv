@@ -65,6 +65,9 @@ public:
       const std::map<std::string, std::string> &header_field_map);
   void parse_request_body(std::string &request_body, ContentType content_type);
   void check_first_multi_blank_line(const std::string &request_line);
+  void set_is_close(bool is_close) {
+    is_close_ = is_close;
+  }
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

@@ -22,12 +22,18 @@ private:
   confGroup                __conf_group_;
   std::deque<Transaction>  __transaction_queue_;
   std::string              __buffer_;
+  std::string              __response_;
+  ssize_t                  __response_string_size_;
   static const std::size_t buffer_max_length_ = 8192;
 
 private:
   Connection() {}
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
+  static bool   __is_send_all(ssize_t            response_string_size,
+                            const std::string &response) {
+      return response_string_size == static_cast<ssize_t>(response.size());
+  }
 
 public:
   Connection(connFd conn_fd, confGroup conf_group)

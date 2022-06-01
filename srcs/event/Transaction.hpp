@@ -32,10 +32,6 @@ private:
   std::string                        __unchunked_body_;
   std::map<std::string, std::string> __field_map_;
 
-public:
-  ssize_t     response_string_size_;
-  std::string response_;
-
 private:
   static bool __getline(std::string &request_buffer, std::string &line);
   static void __set_request_body(std::string &request_buffer, std::string &body,
@@ -51,15 +47,12 @@ public:
   Transaction()
       : __transaction_state_(RECEIVING_STARTLINE)
       , __next_chunk_(CHUNK_SIZE)
-      , __next_chunk_size_(-1) {
-    response_string_size_ = 0;
-  }
+      , __next_chunk_size_(-1) {}
 
-  void                 set_response_for_bad_request();
   static const Config *get_proper_config(const confGroup   &conf_group,
                                          const std::string &host);
-  void                 create_response(const Config *config);
-  const RequestInfo   &get_request_info() const { return __request_info_; }
+  // TODO: getterがconstじゃないの変だがとりあえず暫定的にこうしている。
+  RequestInfo         &get_request_info() { return __request_info_; }
   TransactionState     get_transaction_state() const {
         return __transaction_state_;
   }
@@ -69,9 +62,6 @@ public:
   void           handle_request(std::string &request_buffer);
   static ssize_t send_response(connFd conn_fd, const std::string &response,
                                ssize_t send_size);
-  bool           is_send_all() const {
-              return response_string_size_ == static_cast<ssize_t>(response_.size());
-  }
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */
