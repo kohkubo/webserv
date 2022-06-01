@@ -30,9 +30,9 @@ private:
   Connection() {}
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  static bool   __is_send_all(ssize_t            response_string_size,
+  static bool __is_send_all(ssize_t            response_string_size,
                             const std::string &response) {
-      return response_string_size == static_cast<ssize_t>(response.size());
+    return response_string_size == static_cast<ssize_t>(response.size());
   }
 
 public:

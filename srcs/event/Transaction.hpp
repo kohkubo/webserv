@@ -54,7 +54,7 @@ public:
   // TODO: getterがconstじゃないの変だがとりあえず暫定的にこうしている。
   RequestInfo         &get_request_info() { return __request_info_; }
   TransactionState     get_transaction_state() const {
-        return __transaction_state_;
+    return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
