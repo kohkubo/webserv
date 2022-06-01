@@ -33,6 +33,10 @@ func test() chan struct{} {
 		tests.TestIOMULT()
 		tests.TestBADREQ()
 		KillWebserv()
+
+		RestartWebserv("integration_test/conf/autoindex.conf")
+		tests.TestAUTOINDEX()
+		KillWebserv()
 	}()
 	return done
 }

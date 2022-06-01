@@ -102,20 +102,14 @@ Response::__get_proper_location(const std::string           &request_uri,
 
 void Response::__set_file_path(const std::string &request_uri,
                                const Location    &location) {
-  if (has_suffix(request_uri, "/")) {
-    __file_path_ = location.root_ + location.location_path_ + location.index_;
-  } else {
-    __file_path_ = location.root_ + request_uri;
-  }
-  // 末尾が"/"のものをディレクトリとして扱う, 挙動としてはnginxもそうだと思う
+  __file_path_ = location.root_ + request_uri;
   if (has_suffix(__file_path_, "/") &&
       is_file_exists(__file_path_ + location.index_)) {
-    // indexを追記したパスが存在すれば採用, autoindexは無視される
-    // 存在しなければディレクトリのままで, 後のautoindexの処理に入る
     __file_path_ += location.index_;
   }
 }
 
+// TODO: リンクやその他のファイルシステムの時どうするか
 void Response::__check_filepath_status(const Location &location) {
   if (__status_code_ != NONE) {
     return;
