@@ -6,6 +6,7 @@
 #include <sys/types.h>
 
 #include <cstdlib>
+#include <ctime>
 
 #include "utils/utils.hpp"
 
