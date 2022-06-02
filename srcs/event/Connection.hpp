@@ -5,12 +5,12 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <ctime>
 #include <deque>
 #include <string>
 #include <vector>
 
 #include "event/Transaction.hpp"
-#include "utils/syscall_wrapper.hpp"
 
 // TODO: string -> vector<char>
 
@@ -50,9 +50,9 @@ public:
     __transaction_queue_.front().set_transaction_state(CLOSING);
   }
 
-  void update_time_of_last_event() { __last_event_time_ = xtime(); }
+  void update_time_of_last_event() { __last_event_time_ = std::time(NULL); }
   bool is_timed_out() const {
-    std::time_t now = xtime();
+    std::time_t now = std::time(NULL);
     return (now - __last_event_time_) >= timeout_seconds_;
   }
 };

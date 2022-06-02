@@ -56,12 +56,3 @@ void xclosedir(DIR *dir) {
     exit(EXIT_FAILURE);
   }
 }
-
-std::time_t xtime() {
-  std::time_t now = std::time(NULL);
-  if (now == static_cast<std::time_t>(-1)) {
-    ERROR_LOG_WITH_ERRNO("std::time failed");
-    exit(EXIT_FAILURE);
-  }
-  return now;
-}
