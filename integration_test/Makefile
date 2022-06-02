@@ -1,5 +1,5 @@
 # Go parameters
-GOBUILD=go build
+GOBUILD=go mod tidy && go build
 GOCLEAN=go clean
 GOTEST=go test
 GOGET=go get
