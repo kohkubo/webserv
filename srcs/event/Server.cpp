@@ -53,8 +53,9 @@ void Server::run_loop() {
         continue;
       }
       nready--;
-      int listen_flg = __conf_group_map_.count(it->fd);
-      if (listen_flg == 1) {
+      bool is_listen_socket =
+          static_cast<bool>(__conf_group_map_.count(it->fd));
+      if (is_listen_socket) {
         __insert_connection_map(it->fd);
         continue;
       }
