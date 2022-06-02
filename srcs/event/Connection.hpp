@@ -53,7 +53,7 @@ public:
   void update_time_of_last_event() { __last_event_time_ = std::time(NULL); }
   bool is_timed_out() const {
     std::time_t now = std::time(NULL);
-    return (now - __last_event_time_) >= timeout_seconds_;
+    return std::difftime(now, __last_event_time_) >= timeout_seconds_;
   }
 };
 
