@@ -25,7 +25,6 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 struct Transaction {
 private:
-  connFd                             __conn_fd_;
   TransactionState                   __transaction_state_;
   ssize_t                            __send_count_;
   std::string                        __response_;
@@ -47,9 +46,8 @@ private:
                                 TransactionState transaction_state);
 
 public:
-  Transaction(connFd conn_fd)
-      : __conn_fd_(conn_fd)
-      , __transaction_state_(RECEIVING_STARTLINE)
+  Transaction()
+      : __transaction_state_(RECEIVING_STARTLINE)
       , __send_count_(0)
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
@@ -65,7 +63,7 @@ public:
     __transaction_state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer);
-  void send_response();
+  void send_response(connFd conn_fd);
   bool is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
