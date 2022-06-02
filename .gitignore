@@ -12,7 +12,6 @@
 !*.png
 !*.go
 !*.mod
-!*.sum
 !*.conf
 !*.drawio.svg
 !.clang-format
