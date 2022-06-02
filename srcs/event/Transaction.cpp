@@ -57,14 +57,7 @@ void Transaction::handle_request(std::string &request_buffer) {
       __transaction_state_ =
           __chunk_loop(request_buffer,
                        __transaction_state_); // throws BadRequestException
-    } else {
-      //__set_request_body == trueだったらparse_request_bodyを呼べる
-      // TODO: request_buffer.size() ==
-      // __request_info_.content_length_が同じとき、bodyのパースに入れる??
-      // kohkubo
-      if (request_buffer.size() < __request_info_.content_length_) {
-        return;
-      }
+    } else if (request_buffer.size() >= __request_info_.content_length_) {
       __set_request_body(request_buffer, __request_body_,
                          __request_info_.content_length_);
       __transaction_state_ = SENDING;
