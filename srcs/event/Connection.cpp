@@ -59,7 +59,8 @@ void Connection::send_response() {
   Transaction &transaction = __transaction_queue_.front();
   transaction.send_response();
   if (transaction.get_request_info().connection_close_) {
-    shutdown_write();
+    shutdown(__conn_fd_, SHUT_WR);
+    __transaction_queue_.front().set_transaction_state(CLOSING);
     return;
   }
   if (transaction.is_send_all()) {
