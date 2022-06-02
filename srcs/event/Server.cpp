@@ -72,7 +72,7 @@ void Server::run_loop() {
         __insert_connection_map(it->fd);
         continue;
       }
-      __connection_map_.find(it->fd)->second.update_last_time_event();
+      __connection_map_.find(it->fd)->second.update_time_of_last_event();
       if ((it->revents & POLLIN) != 0) {
         __connection_receive_handler(it->fd);
       }

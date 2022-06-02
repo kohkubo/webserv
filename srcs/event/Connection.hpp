@@ -25,7 +25,7 @@ private:
   std::string              __buffer_;
   std::time_t              __last_event_time_;
   static const std::size_t buffer_max_length_ = 8192;
-  static const std::time_t timeout_limit_     = 60;
+  static const std::time_t timeout_seconds_   = 60;
 
 private:
   Connection() {}
@@ -37,7 +37,7 @@ public:
       : __conn_fd_(conn_fd)
       , __conf_group_(conf_group) {
     __transaction_queue_.push_back(Transaction(conn_fd));
-    update_last_time_event();
+    update_time_of_last_event();
   }
   ~Connection() {}
 
@@ -49,10 +49,11 @@ public:
     shutdown(__conn_fd_, SHUT_WR);
     __transaction_queue_.front().set_transaction_state(CLOSING);
   }
-  void update_last_time_event() { __last_event_time_ = xtime(); }
+
+  void update_time_of_last_event() { __last_event_time_ = xtime(); }
   bool is_timed_out() const {
     std::time_t now = xtime();
-    return (now - __last_event_time_) >= timeout_limit_;
+    return (now - __last_event_time_) >= timeout_seconds_;
   }
 };
 
