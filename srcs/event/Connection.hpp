@@ -31,13 +31,14 @@ private:
   Connection() {}
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
+  void __set_now_to_last_event() { __last_event_time_ = std::time(NULL); }
 
 public:
   Connection(connFd conn_fd, confGroup conf_group)
       : __conn_fd_(conn_fd)
       , __conf_group_(conf_group) {
     __transaction_queue_.push_back(Transaction(conn_fd));
-    update_time_of_last_event();
+    __set_now_to_last_event();
   }
   ~Connection() {}
 
@@ -50,7 +51,6 @@ public:
     __transaction_queue_.front().set_transaction_state(CLOSING);
   }
 
-  void update_time_of_last_event() { __last_event_time_ = std::time(NULL); }
   bool is_timed_out() const {
     std::time_t now = std::time(NULL);
     return std::difftime(now, __last_event_time_) >= timeout_seconds_;
