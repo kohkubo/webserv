@@ -44,7 +44,7 @@ void Transaction::handle_request(std::string     &request_buffer,
         // throws BadRequestException
         __config_ = get_proper_config(conf_group);
         // TODO: validate request_header
-        // ヘッダーのvalidateの一環で行うべき？status確認
+        // ヘッダーのvalidateの一環で行うべき？status 413
         if (__request_info_.content_length_ >
             __config_->client_max_body_size_) {
           throw RequestInfo::BadRequestException();
