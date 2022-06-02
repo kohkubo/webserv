@@ -19,7 +19,7 @@ public:
   bool                     connection_close_;
   bool                     is_chunked_;
   std::size_t              content_length_;
-  std::string        content_type_;
+  std::string              content_type_;
   std::vector<std::string> env_values_;
 
 private:
