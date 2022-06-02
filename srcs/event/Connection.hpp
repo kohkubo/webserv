@@ -31,14 +31,14 @@ private:
   Connection() {}
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  static std::time_t __set_now() { return std::time(NULL); }
+  static std::time_t __time_now() { return std::time(NULL); }
 
 public:
   Connection(connFd conn_fd, confGroup conf_group)
       : __conn_fd_(conn_fd)
       , __conf_group_(conf_group) {
     __transaction_queue_.push_back(Transaction(conn_fd));
-    __last_event_time_ = __set_now();
+    __last_event_time_ = __time_now();
   }
   ~Connection() {}
 
