@@ -7,11 +7,14 @@
 void Server::__close_timedout_connection(
     std::map<connFd, Connection> &connection_map) {
   std::map<connFd, Connection>::const_iterator it = connection_map.begin();
-  for (; it != connection_map.end(); it++) {
+  while (it != connection_map.end()) {
     if (it->second.is_timed_out()) {
       connFd conn_fd = it->first;
+      it++;
       close(conn_fd);
       connection_map.erase(conn_fd);
+    } else {
+      it++;
     }
   }
 }
