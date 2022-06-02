@@ -24,23 +24,23 @@ void Transaction::handle_request(std::string &request_buffer) {
     std::string line;
     while (__getline(request_buffer, line)) { // noexcept
       if (__transaction_state_ == RECEIVING_STARTLINE) {
-        __request_info_.check_first_multi_blank_line(
-            line); // throws BadRequestException
+        __request_info_.check_first_multi_blank_line(line);
+        // throws BadRequestException
         if (__request_info_.is_blank_first_line_) {
           continue;
         }
-        RequestInfo::check_bad_parse_request_start_line(
-            line); // throws BadRequestException
+        RequestInfo::check_bad_parse_request_start_line(line);
+        // throws BadRequestException
         __request_info_.parse_request_start_line(line); // noexcept
         __transaction_state_ = RECEIVING_HEADER;
       } else if (__transaction_state_ == RECEIVING_HEADER) {
         if (line != "") {
-          RequestInfo::store_request_header_field_map(
-              line, __field_map_); // throws BadRequestException
+          RequestInfo::store_request_header_field_map(line, __field_map_);
+          // throws BadRequestException
           continue;
         }
-        __request_info_.parse_request_header(
-            __field_map_); // throws BadRequestException
+        __request_info_.parse_request_header(__field_map_);
+        // throws BadRequestException
         // TODO: validate request_header
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_) {
@@ -54,9 +54,8 @@ void Transaction::handle_request(std::string &request_buffer) {
   }
   if (__transaction_state_ == RECEIVING_BODY) {
     if (__request_info_.is_chunked_) {
-      __transaction_state_ =
-          __chunk_loop(request_buffer,
-                       __transaction_state_); // throws BadRequestException
+      __transaction_state_ = __chunk_loop(request_buffer, __transaction_state_);
+      // throws BadRequestException
     } else if (request_buffer.size() >= __request_info_.content_length_) {
       __set_request_body(request_buffer, __request_body_,
                          __request_info_.content_length_);
