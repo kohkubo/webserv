@@ -26,6 +26,7 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 struct Transaction {
 private:
   connFd                             __conn_fd_;
+  const Config                      *__config_;
   TransactionState                   __transaction_state_;
   ssize_t                            __send_count_;
   std::string                        __response_;
@@ -48,6 +49,7 @@ private:
 public:
   Transaction(connFd conn_fd)
       : __conn_fd_(conn_fd)
+      , __config_(NULL)
       , __transaction_state_(RECEIVING_STARTLINE)
       , __send_count_(0)
       , __next_chunk_(CHUNK_SIZE)
@@ -55,7 +57,7 @@ public:
 
   void               set_response_for_bad_request();
   const Config      *get_proper_config(const confGroup &conf_group) const;
-  void               create_response(const Config *config);
+  void               create_response();
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
     return __transaction_state_;
@@ -63,7 +65,7 @@ public:
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
   }
-  void handle_request(std::string &request_buffer);
+  void handle_request(std::string &request_buffer, const confGroup &conf_group);
   void send_response();
   bool is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());

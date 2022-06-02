@@ -18,7 +18,8 @@ void Transaction::set_response_for_bad_request() {
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-void Transaction::handle_request(std::string &request_buffer) {
+void Transaction::handle_request(std::string     &request_buffer,
+                                 const confGroup &conf_group) {
   if (__transaction_state_ == RECEIVING_STARTLINE ||
       __transaction_state_ == RECEIVING_HEADER) {
     std::string line;
@@ -41,7 +42,10 @@ void Transaction::handle_request(std::string &request_buffer) {
         }
         __request_info_.parse_request_header(__field_map_);
         // throws BadRequestException
+        __config_ = get_proper_config(conf_group);
         // TODO: validate request_header
+        // chunkedじゃないときはここでエラーの一つとしてcontent_length >
+        // client_max_body_sizeが確認できる。
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_) {
           __transaction_state_ = RECEIVING_BODY;
@@ -56,6 +60,7 @@ void Transaction::handle_request(std::string &request_buffer) {
     if (__request_info_.is_chunked_) {
       __transaction_state_ = __chunk_loop(request_buffer, __transaction_state_);
       // throws BadRequestException
+      // check_max_client_body_size_exception(__request_body_.size(), )
     } else if (request_buffer.size() >= __request_info_.content_length_) {
       __set_request_body(request_buffer, __request_body_,
                          __request_info_.content_length_);
@@ -113,8 +118,8 @@ Transaction::get_proper_config(const confGroup &conf_group) const {
   return conf_group[0];
 }
 
-void Transaction::create_response(const Config *config) {
-  Response response(*config, __request_info_);
+void Transaction::create_response() {
+  Response response(*__config_, __request_info_);
   __response_ = response.get_response_string();
 }
 
