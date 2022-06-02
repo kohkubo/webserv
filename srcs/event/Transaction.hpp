@@ -58,7 +58,7 @@ public:
   void                 create_response(const Config *config);
   const RequestInfo   &get_request_info() const { return __request_info_; }
   TransactionState     get_transaction_state() const {
-        return __transaction_state_;
+    return __transaction_state_;
   }
   void set_transaction_state(TransactionState transaction_state) {
     __transaction_state_ = transaction_state;
