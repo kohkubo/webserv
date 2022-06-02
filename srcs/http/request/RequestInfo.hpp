@@ -42,6 +42,7 @@ private:
   static ContentType
   __parse_request_content_type(const std::string &content_type);
   static std::string __trim_optional_whitespace(std::string str);
+
 public:
   RequestInfo()
       : is_blank_first_line_(false)
