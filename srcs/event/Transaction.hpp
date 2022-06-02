@@ -32,7 +32,7 @@ private:
   RequestInfo                        __request_info_;
   NextChunkType                      __next_chunk_;
   std::size_t                        __next_chunk_size_;
-  std::string                        __unchunked_body_;
+  std::string                        __request_body_;
   std::map<std::string, std::string> __field_map_;
 
 private:
@@ -43,7 +43,6 @@ private:
                                     std::string  &request_buffer,
                                     std::string &chunk, size_t next_chunk_size);
   TransactionState __chunk_loop(std::string     &request_buffer,
-                                std::string     &request_body,
                                 TransactionState transaction_state);
 
 public:
