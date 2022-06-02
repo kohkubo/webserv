@@ -45,6 +45,9 @@ private:
                                     std::string &chunk, size_t next_chunk_size);
   TransactionState __chunk_loop(std::string     &request_buffer,
                                 TransactionState transaction_state);
+  static void
+  __check_max_client_body_size_exception(std::size_t actual_body_size,
+                                         std::size_t max_body_size);
 
 public:
   Transaction(connFd conn_fd)

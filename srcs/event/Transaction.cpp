@@ -44,8 +44,11 @@ void Transaction::handle_request(std::string     &request_buffer,
         // throws BadRequestException
         __config_ = get_proper_config(conf_group);
         // TODO: validate request_header
-        // chunkedじゃないときはここでエラーの一つとしてcontent_length >
-        // client_max_body_sizeが確認できる。
+        // ヘッダーのvalidateの一環で行うべき？status確認
+        if (__request_info_.content_length_ >
+            __config_->client_max_body_size_) {
+          throw RequestInfo::BadRequestException();
+        }
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_) {
           __transaction_state_ = RECEIVING_BODY;
@@ -60,13 +63,15 @@ void Transaction::handle_request(std::string     &request_buffer,
     if (__request_info_.is_chunked_) {
       __transaction_state_ = __chunk_loop(request_buffer, __transaction_state_);
       // throws BadRequestException
-      // check_max_client_body_size_exception(__request_body_.size(), )
     } else if (request_buffer.size() >= __request_info_.content_length_) {
       __set_request_body(request_buffer, __request_body_,
                          __request_info_.content_length_);
       __transaction_state_ = SENDING;
     }
     if (__transaction_state_ == SENDING) {
+      __check_max_client_body_size_exception(__request_body_.size(),
+                                             __config_->client_max_body_size_);
+      // throws BadRequestException
       __request_info_.parse_request_body(__request_body_,
                                          __request_info_.content_type_);
     }
@@ -148,4 +153,11 @@ TransactionState Transaction::__chunk_loop(std::string     &request_buffer,
     }
   }
   return transaction_state;
+}
+
+void Transaction::__check_max_client_body_size_exception(
+    std::size_t actual_body_size, std::size_t max_body_size) {
+  if (actual_body_size > max_body_size) {
+    throw RequestInfo::BadRequestException();
+  }
 }
