@@ -89,7 +89,7 @@ bool RequestInfo::__parse_request_transfer_encoding(
   return transfer_encoding == "chunked";
 }
 
-const std::string
+std::string
 RequestInfo::__parse_request_content_type(const std::string &content_type) {
   return tolower(content_type);
 }

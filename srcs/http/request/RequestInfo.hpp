@@ -32,7 +32,7 @@ private:
   void __parse_request_values(const std::string &request_body);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
-  static const std::string
+  static std::string
   __parse_request_content_type(const std::string &content_type);
 
 public:
