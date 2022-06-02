@@ -51,7 +51,7 @@ void RequestInfo::store_request_header_field_map(
     throw BadRequestException();
   }
   const std::string field_value =
-      trim_optional_whitespace(header_line.substr(pos + 1), " \t");
+      __trim_optional_whitespace(header_line.substr(pos + 1));
   if (header_field_map.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
@@ -102,4 +102,13 @@ RequestInfo::__parse_request_content_type(const std::string &content_type) {
     return CONTENT_TYPE_TEXT_PLAIN;
   }
   return CONTENT_TYPE_UNKNOWN;
+}
+
+std::string RequestInfo::__trim_optional_whitespace(std::string str) {
+  str.erase(0, str.find_first_not_of(" \t"));
+  std::size_t pos = str.find_last_not_of(" \t");
+  if (pos != std::string::npos) {
+    str.erase(pos + 1);
+  }
+  return str;
 }
