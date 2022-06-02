@@ -40,7 +40,7 @@ func test() chan struct{} {
 		KillWebserv()
 
 		RestartWebserv("integration_test/conf/test.conf")
-		tests.T()
+		tests.Migration()
 		KillWebserv()
 	}()
 	return done

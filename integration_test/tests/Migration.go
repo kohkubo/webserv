@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func T() {
+func Migration() {
 	testHandler("simple_5000", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
