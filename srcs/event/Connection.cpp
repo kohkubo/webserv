@@ -17,11 +17,11 @@ void Connection::create_sequential_transaction() {
     try {
       transaction.handle_request(__buffer_, __conf_group_);
       __check_buffer_length_exception(__buffer_, buffer_max_length_);
-      if (transaction.get_transaction_state() != SENDING) { // noexcept
-        break;
-      }
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
+    }
+    if (transaction.get_transaction_state() != SENDING) {
+      break;
     }
     __transaction_queue_.push_back(Transaction());
   }
