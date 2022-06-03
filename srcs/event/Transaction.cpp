@@ -47,7 +47,7 @@ void Transaction::handle_request(std::string     &request_buffer,
         // ヘッダーのvalidateの一環で行うべき？status 413
         if (__request_info_.content_length_ >
             __config_->client_max_body_size_) {
-          throw RequestInfo::BadRequestException();
+          throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
         }
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_) {
@@ -159,6 +159,6 @@ TransactionState Transaction::__chunk_loop(std::string     &request_buffer,
 void Transaction::__check_max_client_body_size_exception(
     std::size_t actual_body_size, std::size_t max_body_size) {
   if (actual_body_size > max_body_size) {
-    throw RequestInfo::BadRequestException();
+    throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
   }
 }
