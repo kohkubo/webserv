@@ -9,6 +9,7 @@ import (
 )
 
 func TestGET() {
+
 	testHandler("GET / ", func() (bool, error) {
 		ExpectBody, err := fileToBytes("../html/index.html")
 		if err != nil {
@@ -32,6 +33,7 @@ func TestGET() {
 		}
 		return clientA.Test()
 	})
+
 	testHandler("GET /dir1/index2.html ", func() (bool, error) {
 		ExpectBody, err := fileToBytes("../html/dir1/index2.html")
 		if err != nil {
@@ -55,6 +57,7 @@ func TestGET() {
 		}
 		return clientA.Test()
 	})
+
 	testHandler("GET /no_such_file_404", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
