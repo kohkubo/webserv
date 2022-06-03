@@ -18,9 +18,8 @@ void Connection::create_sequential_transaction() {
       transaction.handle_request(__buffer_, __conf_group_);
       __check_buffer_length_exception(__buffer_, buffer_max_length_);
       if (transaction.get_transaction_state() != SENDING) { // noexcept
-        return;
+        break;
       }
-      transaction.create_response(); // noexcept
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }

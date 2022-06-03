@@ -57,7 +57,7 @@ void Transaction::handle_request(std::string     &request_buffer,
           break;
         }
         __transaction_state_ = SENDING;
-        return;
+        break;
       }
     }
   }
@@ -77,6 +77,11 @@ void Transaction::handle_request(std::string     &request_buffer,
       __request_info_.parse_request_body(__request_body_,
                                          __request_info_.content_type_);
     }
+  }
+  if (__transaction_state_ == SENDING) {
+    create_response();
+  } else {
+    // check_exception
   }
 }
 
