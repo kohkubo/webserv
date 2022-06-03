@@ -3,8 +3,6 @@ package exe
 import (
 	"fmt"
 	"os"
-	"runtime"
-	"strings"
 )
 
 var (
@@ -27,17 +25,8 @@ func SmallHandler(name string, test func() (bool, error)) {
 		return
 	}
 
-	// 呼び出し関数の名前取得
-	pc, _, _, ok := runtime.Caller(1)
-	if !ok {
-		fmt.Fprintf(os.Stderr, "not possible to recover the information")
-		CountTestFatal++
-	}
-	callerFuncInfo := runtime.FuncForPC(pc).Name()
-	callerFunc := callerFuncInfo[strings.LastIndex(callerFuncInfo, ".")+1:]
-
 	// テスト実行
-	fmt.Print("[" + callerFunc + " " + name + "] ")
+	fmt.Print("[" + name + "] ")
 	ok, err := test()
 	switch {
 	case err != nil:

@@ -44,7 +44,7 @@ func test() chan struct{} {
 		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
 		exe.BigHandler("limitexept", tests.TestLimitExpect, "integration_test/conf/test.conf")
 
-		//RestartWebserv("integration_test/conf/limit_expect.conf")
+		//"integration_test/conf/limit_expect.conf"
 	}()
 	return done
 }
