@@ -28,7 +28,6 @@ func test() chan struct{} {
 	go func() {
 		defer close(done) // テスト終了時にチャネルを閉じることでmain()に終了を知らせる
 		RestartWebserv("integration_test/conf/webserv.conf")
-		tests.TestGET()
 		//tests.TestPOST()
 		tests.TestDELETE()
 		tests.TestIOMULT()
@@ -39,11 +38,15 @@ func test() chan struct{} {
 
 		RestartWebserv("integration_test/conf/server_name.conf")
 		tests.TestServer_name()
-		KillWebserv()
 
 		RestartWebserv("integration_test/conf/test.conf")
-		tests.Migration()
+		tests.TestGET()
+		tests.TestCGI()
+		tests.TestLocation()
+		tests.TestLimitExpect()
+
+		RestartWebserv("integration_test/conf/limit_expect.conf")
 		KillWebserv()
-	}()
+		}()
 	return done
 }
