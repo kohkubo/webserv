@@ -89,19 +89,9 @@ bool RequestInfo::__parse_request_transfer_encoding(
   return transfer_encoding == "chunked";
 }
 
-ContentType
+std::string
 RequestInfo::__parse_request_content_type(const std::string &content_type) {
-  std::string content_type_lower = tolower(content_type);
-  if (content_type_lower == "application/x-www-form-urlencoded") {
-    return CONTENT_TYPE_APPLICATION_X_WWW_FORM_URLENCODED;
-  }
-  if (content_type_lower == "multipart/form-data") {
-    return CONTENT_TYPE_MULTIPART_FORM_DATA;
-  }
-  if (content_type_lower == "text/plain") {
-    return CONTENT_TYPE_TEXT_PLAIN;
-  }
-  return CONTENT_TYPE_UNKNOWN;
+  return tolower(content_type);
 }
 
 std::string RequestInfo::__trim_optional_whitespace(std::string str) {
