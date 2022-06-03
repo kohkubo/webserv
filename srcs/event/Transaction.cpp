@@ -143,7 +143,6 @@ void Transaction::send_response(connFd conn_fd) {
   __send_count_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
 }
 
-// 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく
 TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
   while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
