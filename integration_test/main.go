@@ -30,23 +30,23 @@ func test() chan struct{} {
 		RestartWebserv("integration_test/conf/webserv.conf")
 		//tests.TestPOST()
 		tests.TestDELETE()
-		tests.TestIOMULT()
-		tests.TestBADREQ()
+		tests.TestIOMulti()
+		tests.TestBadRequest()
 
 		RestartWebserv("integration_test/conf/autoindex.conf")
-		tests.TestAUTOINDEX()
+		tests.TestAutoindex()
 
 		RestartWebserv("integration_test/conf/server_name.conf")
-		tests.TestServer_name()
+		tests.TestServerName()
 
 		RestartWebserv("integration_test/conf/test.conf")
 		tests.TestGET()
-		tests.TestCGI()
+		tests.TestCgi()
 		tests.TestLocation()
 		tests.TestLimitExpect()
 
 		RestartWebserv("integration_test/conf/limit_expect.conf")
 		KillWebserv()
-		}()
+	}()
 	return done
 }

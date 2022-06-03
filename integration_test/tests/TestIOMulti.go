@@ -6,7 +6,7 @@ import (
 )
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
-func TestIOMULT() {
+func TestIOMulti() {
 	testHandler("3client", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",

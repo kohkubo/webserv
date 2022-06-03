@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func TestBADREQ() {
+func TestBadRequest() {
 	testHandler("too long header", func() (bool, error) {
 		longline := strings.Repeat("a", 8192)
 		clientA, err := tester.NewClient(&tester.Client{
