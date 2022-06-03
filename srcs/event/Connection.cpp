@@ -30,6 +30,7 @@ void Connection::create_sequential_transaction() {
     }
     __transaction_queue_.push_back(Transaction());
   }
+  __last_event_time_ = __time_now();
 }
 
 bool Connection::append_receive_buffer() {
@@ -68,6 +69,7 @@ void Connection::send_response() {
   if (transaction.is_send_all()) {
     __transaction_queue_.pop_front();
   }
+  __last_event_time_ = __time_now();
 }
 
 void Connection::__check_buffer_length_exception(

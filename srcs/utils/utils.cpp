@@ -110,12 +110,3 @@ bool is_minus_depth(const std::string &filepath) {
   }
   return false;
 }
-
-std::string trim_optional_whitespace(std::string str, const std::string &trim) {
-  str.erase(0, str.find_first_not_of(trim));
-  std::size_t pos = str.find_last_not_of(trim);
-  if (pos != std::string::npos) {
-    str.erase(pos + 1);
-  }
-  return str;
-}
