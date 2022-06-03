@@ -3,7 +3,6 @@ package tests
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"runtime"
 	"strings"
@@ -62,15 +61,15 @@ func IsFail() bool {
 }
 
 // FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
-func fileToBytes(fileName string) []byte {
+func fileToBytes(fileName string) ([]byte, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
-		log.Fatalf("FileBytes: %v", err)
+		return nil, fmt.Errorf("FileBytes: %v", err)
 	}
 	defer file.Close()
 	srcBytes, err := ioutil.ReadAll(file)
 	if err != nil {
-		log.Fatalf("FileBytes: %v", err)
+		return nil, fmt.Errorf("FileBytes: %v", err)
 	}
-	return srcBytes
+	return srcBytes, nil
 }

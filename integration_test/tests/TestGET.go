@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"integration_test/tester"
 	"net/http"
 	"os"
@@ -8,6 +9,10 @@ import (
 
 func TestGET() {
 	testHandler("GET / ", func() (bool, error) {
+		ExpectBody, err := fileToBytes("../html/index.html")
+		if err != nil {
+			return false, fmt.Errorf("failt to get bytes from file")
+		}
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{
@@ -19,7 +24,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       fileToBytes("../html/index.html"),
+			ExpectBody:       ExpectBody,
 		})
 		if err != nil {
 			return false, err
@@ -27,6 +32,10 @@ func TestGET() {
 		return clientA.Test()
 	})
 	testHandler("GET /dir1/index2.html ", func() (bool, error) {
+		ExpectBody, err := fileToBytes("../html/dir1/index2.html")
+		if err != nil {
+			return false, fmt.Errorf("failt to get bytes from file")
+		}
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{
@@ -38,7 +47,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       fileToBytes("../html/dir1/index2.html"),
+			ExpectBody:       ExpectBody,
 		})
 		if err != nil {
 			return false, err
@@ -64,7 +73,6 @@ func TestGET() {
 		}
 		return clientA.Test()
 	})
-
 
 	// TODO: ファイル直接指定の場合のアクセス権限test
 

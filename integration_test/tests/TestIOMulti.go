@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"integration_test/tester"
 	"net/http"
 )
@@ -8,6 +9,10 @@ import (
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 func TestIOMulti() {
 	testHandler("3client", func() (bool, error) {
+		ExpectBody, err := fileToBytes("../html/index.html")
+		if err != nil {
+			return false, fmt.Errorf("failt to get bytes from file")
+		}
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{
@@ -17,7 +22,7 @@ func TestIOMulti() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       fileToBytes("../html/index.html"),
+			ExpectBody:       ExpectBody,
 		})
 		if err != nil {
 			return false, err
