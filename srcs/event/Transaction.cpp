@@ -18,30 +18,39 @@ void Transaction::set_response_for_bad_request() {
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-void Transaction::handle_request(std::string &request_buffer) {
+void Transaction::handle_request(std::string     &request_buffer,
+                                 const confGroup &conf_group) {
   if (__transaction_state_ == RECEIVING_STARTLINE ||
       __transaction_state_ == RECEIVING_HEADER) {
     std::string line;
     while (__getline(request_buffer, line)) { // noexcept
       if (__transaction_state_ == RECEIVING_STARTLINE) {
-        __request_info_.check_first_multi_blank_line(
-            line); // throws BadRequestException
+        __request_info_.check_first_multi_blank_line(line);
+        // throws BadRequestException
         if (__request_info_.is_blank_first_line_) {
           continue;
         }
-        RequestInfo::check_bad_parse_request_start_line(
-            line); // throws BadRequestException
+        RequestInfo::check_bad_parse_request_start_line(line);
+        // throws BadRequestException
         __request_info_.parse_request_start_line(line); // noexcept
         __transaction_state_ = RECEIVING_HEADER;
       } else if (__transaction_state_ == RECEIVING_HEADER) {
         if (line != "") {
-          RequestInfo::store_request_header_field_map(
-              line, __field_map_); // throws BadRequestException
+          RequestInfo::store_request_header_field_map(line, __field_map_);
+          // throws BadRequestException
           continue;
         }
-        __request_info_.parse_request_header(
-            __field_map_); // throws BadRequestException
+        __request_info_.parse_request_header(__field_map_);
+        // throws BadRequestException
+        __config_ = get_proper_config(conf_group, __request_info_.host_);
         // TODO: validate request_header
+        // delete with body
+        // has transfer-encoding but last elm is not chunked
+        // content-length and transfer-encoding -> delete content-length
+        if (__request_info_.content_length_ >
+            __config_->client_max_body_size_) {
+          throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
+        }
         if (__request_info_.content_length_ != 0 ||
             __request_info_.is_chunked_) {
           __transaction_state_ = RECEIVING_BODY;
@@ -53,30 +62,19 @@ void Transaction::handle_request(std::string &request_buffer) {
     }
   }
   if (__transaction_state_ == RECEIVING_BODY) {
-    std::string request_body;
     if (__request_info_.is_chunked_) {
-      __transaction_state_ =
-          __chunk_loop(request_buffer, request_body,
-                       __transaction_state_); // throws BadRequestException
-      if (__transaction_state_ == SENDING) {
-        __request_info_.parse_request_body(__unchunked_body_,
-                                           __request_info_.content_type_);
-        return;
-      }
-    } else {
-      //__set_request_body == trueだったらparse_request_bodyを呼べる
-      // TODO: request_buffer.size() ==
-      // __request_info_.content_length_が同じとき、bodyのパースに入れる??
-      // kohkubo
-      if (request_buffer.size() < __request_info_.content_length_) {
-        return;
-      }
-      __set_request_body(request_buffer, request_body,
+      __transaction_state_ = __chunk_loop(request_buffer);
+      // throws BadRequestException
+      __check_max_client_body_size_exception(__request_body_.size(),
+                                             __config_->client_max_body_size_);
+      // throws BadRequestException
+    } else if (request_buffer.size() >= __request_info_.content_length_) {
+      __set_request_body(request_buffer, __request_body_,
                          __request_info_.content_length_);
       __transaction_state_ = SENDING;
     }
     if (__transaction_state_ == SENDING) {
-      __request_info_.parse_request_body(request_body,
+      __request_info_.parse_request_body(__request_body_,
                                          __request_info_.content_type_);
     }
   }
@@ -127,8 +125,8 @@ const Config *Transaction::get_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
-void Transaction::create_response(const Config *config) {
-  Response response(*config, __request_info_);
+void Transaction::create_response() {
+  Response response(*__config_, __request_info_);
   __response_ = response.get_response_string();
 }
 
@@ -141,21 +139,28 @@ void Transaction::send_response(connFd conn_fd) {
 }
 
 // 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく
-TransactionState Transaction::__chunk_loop(std::string     &request_buffer,
-                                           std::string     &request_body,
-                                           TransactionState transaction_state) {
-  while (__get_next_chunk_line(__next_chunk_, request_buffer, request_body,
+TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
+  std::string chunk_line;
+  while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
                                __next_chunk_size_)) {
     if (__next_chunk_ == CHUNK_SIZE) {
-      __next_chunk_size_ = hexstr_to_size(request_body);
+      __next_chunk_size_ = hexstr_to_size(chunk_line);
       __next_chunk_      = CHUNK_DATA;
     } else {
-      if (__next_chunk_size_ == 0 && request_body == "") {
+      bool is_last_chunk = __next_chunk_size_ == 0 && chunk_line == "";
+      if (is_last_chunk) {
         return SENDING;
       }
-      __unchunked_body_.append(request_body);
+      __request_body_.append(chunk_line);
       __next_chunk_ = CHUNK_SIZE;
     }
   }
-  return transaction_state;
+  return RECEIVING_BODY;
+}
+
+void Transaction::__check_max_client_body_size_exception(
+    std::size_t actual_body_size, std::size_t max_body_size) {
+  if (actual_body_size > max_body_size) {
+    throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
+  }
 }

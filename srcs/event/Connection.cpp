@@ -15,16 +15,12 @@ void Connection::create_sequential_transaction() {
   while (true) {
     Transaction &transaction = __transaction_queue_.back();
     try {
-      transaction.handle_request(__buffer_);
+      transaction.handle_request(__buffer_, __conf_group_);
       __check_buffer_length_exception(__buffer_, buffer_max_length_);
       if (transaction.get_transaction_state() != SENDING) { // noexcept
         return;
       }
-      // TODO: この呼出し方を見ていると、
-      // connectionがrequestとresponseを持っても良いような気がする kohkubo
-      const Config *config = Transaction::get_proper_config(
-          __conf_group_, transaction.get_request_info().host_); // noexcept
-      transaction.create_response(config);                      // noexcept
+      transaction.create_response(); // noexcept
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }
