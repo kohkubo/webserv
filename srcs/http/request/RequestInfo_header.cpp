@@ -93,3 +93,12 @@ std::string
 RequestInfo::__parse_request_content_type(const std::string &content_type) {
   return tolower(content_type);
 }
+
+std::string RequestInfo::__trim_optional_whitespace(std::string str) {
+  str.erase(0, str.find_first_not_of(" \t"));
+  std::size_t pos = str.find_last_not_of(" \t");
+  if (pos != std::string::npos) {
+    str.erase(pos + 1);
+  }
+  return str;
+}
