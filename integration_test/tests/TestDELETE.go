@@ -3,6 +3,7 @@ package tests
 import (
 	"errors"
 	"fmt"
+	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
 	"os"
@@ -48,11 +49,11 @@ func TestDELETE() {
 		// check file exists or deleted
 		_, err = os.Stat(deleteFileRelativePath)
 		switch {
-		case errors.Is(err, os.ErrNotExist): // file does not exit
+		case errors.Is(err, os.ErrNotExist):
 			return true, nil
-		case err != nil: // error
+		case err != nil:
 			return false, err
-		default: // file still exists
+		default:
 			fmt.Fprintf(os.Stderr, "file wasn't deleted")
 			return false, nil
 		}
@@ -70,7 +71,7 @@ func TestDELETE() {
 			},
 			ExpectStatusCode: http.StatusNotFound,
 			ExpectHeader:     nil,
-			ExpectBody:       content_404,
+			ExpectBody:       response.Content_404,
 		})
 		if err != nil {
 			return false, err

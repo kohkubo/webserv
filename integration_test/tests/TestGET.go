@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
 	"os"
@@ -66,7 +67,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusNotFound,
 			ExpectHeader:     nil,
-			ExpectBody:       content_404,
+			ExpectBody:       response.Content_404,
 		})
 		if err != nil {
 			return false, err
@@ -88,7 +89,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: 403,
 			ExpectHeader:     nil,
-			ExpectBody:       content_403,
+			ExpectBody:       response.Content_403,
 		})
 		if err != nil {
 			return false, err

@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
 )
@@ -50,7 +51,7 @@ func TestLimitExpect() {
 			},
 			ExpectStatusCode: 405,
 			ExpectHeader:     nil,
-			ExpectBody:       content_405,
+			ExpectBody:       response.Content_405,
 		})
 		if err != nil {
 			return false, err
