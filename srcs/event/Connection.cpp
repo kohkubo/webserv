@@ -20,13 +20,15 @@ void Connection::create_sequential_transaction() {
       if (transaction.get_transaction_state() != SENDING) { // noexcept
         return;
       }
-      const Config *config =
-          transaction.get_proper_config(__conf_group_); // noexcept
-      transaction.create_response(config);              // noexcept
+      // TODO: この呼出し方を見ていると、
+      // connectionがrequestとresponseを持っても良いような気がする kohkubo
+      const Config *config = Transaction::get_proper_config(
+          __conf_group_, transaction.get_request_info().host_); // noexcept
+      transaction.create_response(config);                      // noexcept
     } catch (const RequestInfo::BadRequestException &e) {
       transaction.set_response_for_bad_request();
     }
-    __transaction_queue_.push_back(Transaction(__conn_fd_));
+    __transaction_queue_.push_back(Transaction());
   }
   __last_event_time_ = __time_now();
 }
@@ -58,9 +60,10 @@ struct pollfd Connection::create_pollfd() const {
 
 void Connection::send_response() {
   Transaction &transaction = __transaction_queue_.front();
-  transaction.send_response();
+  transaction.send_response(__conn_fd_);
   if (transaction.get_request_info().connection_close_) {
-    shutdown_write();
+    shutdown(__conn_fd_, SHUT_WR);
+    __transaction_queue_.front().set_transaction_state(CLOSING);
     return;
   }
   if (transaction.is_send_all()) {

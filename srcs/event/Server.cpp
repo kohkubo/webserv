@@ -19,17 +19,19 @@ void Server::__close_timedout_connection(
   }
 }
 
-void Server::__add_listenfd_to_pollfds() {
-  std::map<listenFd, confGroup>::const_iterator it = __conf_group_map_.begin();
-  for (; it != __conf_group_map_.end(); it++) {
+void Server::__add_listenfd_to_pollfds(
+    const std::map<listenFd, confGroup> &conf_group_map) {
+  std::map<listenFd, confGroup>::const_iterator it = conf_group_map.begin();
+  for (; it != conf_group_map.end(); it++) {
     struct pollfd new_pfd = {it->first, POLLIN, 0};
     __pollfds_.push_back(new_pfd);
   }
 }
 
-void Server::__add_connfd_to_pollfds() {
-  std::map<connFd, Connection>::const_iterator it = __connection_map_.begin();
-  for (; it != __connection_map_.end(); it++) {
+void Server::__add_connfd_to_pollfds(
+    const std::map<connFd, Connection> &connection_map) {
+  std::map<connFd, Connection>::const_iterator it = connection_map.begin();
+  for (; it != connection_map.end(); it++) {
     const Connection &connection = it->second;
     struct pollfd     pfd        = connection.create_pollfd();
     __pollfds_.push_back(pfd);

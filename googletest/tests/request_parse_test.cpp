@@ -12,10 +12,10 @@ TEST(request_parse_test, normal) {
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
 
-  Transaction t(-1);
+  Transaction transaction;
 
-  t.handle_request(request);
-  const RequestInfo &r = t.get_request_info();
+  transaction.handle_request(request);
+  const RequestInfo &r = transaction.get_request_info();
 
   EXPECT_EQ(r.method_, GET);
   EXPECT_EQ(r.uri_, "/");
@@ -31,10 +31,10 @@ TEST(request_parse_test, normal_delete) {
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
 
-  Transaction t(-1);
+  Transaction transaction;
 
-  t.handle_request(request);
-  const RequestInfo &r = t.get_request_info();
+  transaction.handle_request(request);
+  const RequestInfo &r = transaction.get_request_info();
 
   EXPECT_EQ(r.method_, DELETE);
   EXPECT_EQ(r.uri_, "/delete_target.tmp");
@@ -52,10 +52,10 @@ TEST(request_parse_test, normal_post) {
                         "Content-Type: application/x-www-form-urlencoded\r\n"
                         "Content-Length: 18\r\n\r\n";
 
-  Transaction t(-1);
+  Transaction transaction;
 
-  t.handle_request(request);
-  const RequestInfo &r = t.get_request_info();
+  transaction.handle_request(request);
+  const RequestInfo &r = transaction.get_request_info();
 
   EXPECT_EQ(r.method_, POST);
   EXPECT_EQ(r.uri_, "/target");
@@ -76,10 +76,10 @@ TEST(request_parse_test, query_body) {
                         "&of=the"
                         "&pirates!!";
 
-  Transaction t(-1);
+  Transaction transaction;
 
-  t.handle_request(request);
-  const RequestInfo &info = t.get_request_info();
+  transaction.handle_request(request);
+  const RequestInfo &info = transaction.get_request_info();
   EXPECT_EQ(info.env_values_[0], "I'm=going");
   EXPECT_EQ(info.env_values_[1], "to=become");
   EXPECT_EQ(info.env_values_[2], "the=king");
@@ -98,10 +98,10 @@ TEST(request_parse_test, query_body_capital) {
                         "&ishi=no"
                         "&uenimo=3years";
 
-  Transaction t(-1);
+  Transaction transaction;
 
-  t.handle_request(request);
-  const RequestInfo &info = t.get_request_info();
+  transaction.handle_request(request);
+  const RequestInfo &info = transaction.get_request_info();
 
   EXPECT_EQ(info.env_values_[0], "yabu=kara");
   EXPECT_EQ(info.env_values_[1], "stick=");
