@@ -34,6 +34,7 @@ private:
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
   __parse_request_content_type(const std::string &content_type);
+  static std::string __trim_optional_whitespace(std::string str);
 
 public:
   RequestInfo()
