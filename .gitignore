@@ -20,8 +20,5 @@
 !Makefile
 test
 !pre-push
-memo.md
-man
-output.txt
 
 googletest/includes/

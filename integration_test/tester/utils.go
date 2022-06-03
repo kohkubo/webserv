@@ -7,8 +7,9 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"reflect"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 // コネクションを確立, connを通して送受信できる
@@ -49,16 +50,16 @@ func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 // レスポンスが期待するヘッダーとボディを持っているか確認
 func compareResponse(resp *http.Response, expectStatusCode int, expectHeader http.Header, expectBody []byte) (int, error) {
 	var diff_flag int
-	if resp.StatusCode != expectStatusCode {
-		fmt.Fprintf(os.Stderr, "status code diff: actual=%v expect=%v\n", resp.StatusCode, expectStatusCode)
+	if diff := cmp.Diff(expectStatusCode, resp.StatusCode); diff != "" {
+		fmt.Fprintf(os.Stderr, "status mismatch (-want +got):\n%s", diff)
 		diff_flag++
 	}
 	for expect_k, expect_v := range expectHeader {
 		if actual_v, exist := resp.Header[expect_k]; !exist {
-			fmt.Fprintf(os.Stderr, "header diff: no such header %v\n", expect_k)
+			fmt.Fprintf(os.Stderr, "header no such header in response\n%v", expect_k)
 			diff_flag++
-		} else if !reflect.DeepEqual(actual_v, expect_v) {
-			fmt.Fprintf(os.Stderr, "header diff: key=%v:  actual=%v expect=%v\n", expect_k, actual_v, expect_v)
+		} else if diff := cmp.Diff(expect_v, actual_v); diff != "" {
+			fmt.Fprintf(os.Stderr, "header mismatch (-want +got):\n%s", diff)
 			diff_flag++
 		}
 	}
@@ -67,8 +68,8 @@ func compareResponse(resp *http.Response, expectStatusCode int, expectHeader htt
 		if err != nil {
 			return 0, fmt.Errorf("failt to read response: %v", err)
 		}
-		if !reflect.DeepEqual(body, expectBody) {
-			fmt.Printf("body diff: actual=%s, expect=%s\n", body, expectBody)
+		if diff := cmp.Diff(expectBody, body); diff != "" {
+			fmt.Fprintf(os.Stderr, "body mismatch (-want +got):\n%s", diff)
 			diff_flag++
 		}
 	}
