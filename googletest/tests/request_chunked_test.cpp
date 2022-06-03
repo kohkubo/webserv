@@ -23,9 +23,12 @@ TEST(request_chunked_test, chunked_body) {
                                 "0\r\n"
                                 "\r\n";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
 
-  transaction.handle_request(chunked_request);
+  transaction.handle_request(chunked_request, conf_group);
   const RequestInfo &info = transaction.get_request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
@@ -44,9 +47,12 @@ TEST(request_chunked_test, chunked_body_length_exception) {
                                 "Mozilla \r\n"
                                 "\r\n";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
 
-  EXPECT_THROW(transaction.handle_request(chunked_request),
+  EXPECT_THROW(transaction.handle_request(chunked_request, conf_group),
                RequestInfo::BadRequestException);
 }
 
@@ -69,14 +75,17 @@ TEST(request_chunked_test, chunked_body_split) {
                                "0\r\n"
                                "\r\n";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
   std::string request_buffer;
   request_buffer.append(split_request1);
-  transaction.handle_request(request_buffer);
+  transaction.handle_request(request_buffer, conf_group);
   request_buffer.append(split_request2);
-  transaction.handle_request(request_buffer);
+  transaction.handle_request(request_buffer, conf_group);
   request_buffer.append(split_request3);
-  transaction.handle_request(request_buffer);
+  transaction.handle_request(request_buffer, conf_group);
 
   const RequestInfo &info = transaction.get_request_info();
 

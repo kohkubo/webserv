@@ -12,9 +12,12 @@ TEST(request_parse_test, normal) {
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
 
-  transaction.handle_request(request);
+  transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.get_request_info();
 
   EXPECT_EQ(r.method_, GET);
@@ -31,9 +34,12 @@ TEST(request_parse_test, normal_delete) {
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
 
-  transaction.handle_request(request);
+  transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.get_request_info();
 
   EXPECT_EQ(r.method_, DELETE);
@@ -52,9 +58,12 @@ TEST(request_parse_test, normal_post) {
                         "Content-Type: application/x-www-form-urlencoded\r\n"
                         "Content-Length: 18\r\n\r\n";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
 
-  transaction.handle_request(request);
+  transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.get_request_info();
 
   EXPECT_EQ(r.method_, POST);
@@ -76,9 +85,12 @@ TEST(request_parse_test, query_body) {
                         "&of=the"
                         "&pirates!!";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
 
-  transaction.handle_request(request);
+  transaction.handle_request(request, conf_group);
   const RequestInfo &info = transaction.get_request_info();
   EXPECT_EQ(info.env_values_[0], "I'm=going");
   EXPECT_EQ(info.env_values_[1], "to=become");
@@ -98,9 +110,12 @@ TEST(request_parse_test, query_body_capital) {
                         "&ishi=no"
                         "&uenimo=3years";
 
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
   Transaction transaction;
 
-  transaction.handle_request(request);
+  transaction.handle_request(request, conf_group);
   const RequestInfo &info = transaction.get_request_info();
 
   EXPECT_EQ(info.env_values_[0], "yabu=kara");

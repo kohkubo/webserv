@@ -18,7 +18,7 @@ Config::UnexpectedTokenException::UnexpectedTokenException(
 Config::Config()
     : listen_address_("0.0.0.0")
     , listen_port_("80")
-    , client_max_body_size_(0)
+    , client_max_body_size_(1024)
     , server_name_("")
     , addrinfo_(NULL) {}
 

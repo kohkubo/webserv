@@ -24,21 +24,21 @@ TEST(transaction_test, detect_properconf) {
                            "\r\n";
   {
     Transaction transaction;
-    transaction.handle_request(apple_req);
+    transaction.handle_request(apple_req, conf_group);
     const Config *config =
         Transaction::get_proper_config(conf_group, "apple.com");
     EXPECT_EQ(config->server_name_, "apple.com");
   }
   {
     Transaction transaction;
-    transaction.handle_request(orange_req);
+    transaction.handle_request(orange_req, conf_group);
     const Config *config =
         Transaction::get_proper_config(conf_group, "orange.net");
     EXPECT_EQ(config->server_name_, "orange.net");
   }
   {
     Transaction transaction;
-    transaction.handle_request(banana_req);
+    transaction.handle_request(banana_req, conf_group);
     const Config *config =
         Transaction::get_proper_config(conf_group, "banana.com");
     EXPECT_EQ(config->server_name_, "banana.com");
@@ -46,7 +46,7 @@ TEST(transaction_test, detect_properconf) {
   {
     // peach.com is not in the config file.
     Transaction transaction;
-    transaction.handle_request(peach_req);
+    transaction.handle_request(peach_req, conf_group);
     const Config *config =
         Transaction::get_proper_config(conf_group, "peach.com");
     EXPECT_EQ(config->server_name_, "apple.com");
