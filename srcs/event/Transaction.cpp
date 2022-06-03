@@ -63,7 +63,7 @@ void Transaction::handle_request(std::string     &request_buffer,
   }
   if (__transaction_state_ == RECEIVING_BODY) {
     if (__request_info_.is_chunked_) {
-      __transaction_state_ = __chunk_loop(request_buffer, __transaction_state_);
+      __transaction_state_ = __chunk_loop(request_buffer);
       // throws BadRequestException
       __check_max_client_body_size_exception(__request_body_.size(),
                                              __config_->client_max_body_size_);
@@ -139,8 +139,7 @@ void Transaction::send_response(connFd conn_fd) {
 }
 
 // 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく
-TransactionState Transaction::__chunk_loop(std::string     &request_buffer,
-                                           TransactionState transaction_state) {
+TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
   while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
                                __next_chunk_size_)) {
@@ -148,14 +147,15 @@ TransactionState Transaction::__chunk_loop(std::string     &request_buffer,
       __next_chunk_size_ = hexstr_to_size(chunk_line);
       __next_chunk_      = CHUNK_DATA;
     } else {
-      if (__next_chunk_size_ == 0 && chunk_line == "") {
+      bool is_last_chunk = __next_chunk_size_ == 0 && chunk_line == "";
+      if (is_last_chunk) {
         return SENDING;
       }
       __request_body_.append(chunk_line);
       __next_chunk_ = CHUNK_SIZE;
     }
   }
-  return transaction_state;
+  return RECEIVING_BODY;
 }
 
 void Transaction::__check_max_client_body_size_exception(
