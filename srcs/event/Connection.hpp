@@ -37,7 +37,7 @@ public:
   Connection(connFd conn_fd, confGroup conf_group)
       : __conn_fd_(conn_fd)
       , __conf_group_(conf_group) {
-    __transaction_queue_.push_back(Transaction(conn_fd));
+    __transaction_queue_.push_back(Transaction());
     __last_event_time_ = __time_now();
   }
   ~Connection() {}
