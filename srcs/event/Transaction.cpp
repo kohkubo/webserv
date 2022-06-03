@@ -132,11 +132,12 @@ void Transaction::create_response(const Config *config) {
   __response_ = response.get_response_string();
 }
 
-void Transaction::send_response() {
+// TODO: 送った分だけ__response_を消すのはダメなの?? kohkubo
+void Transaction::send_response(connFd conn_fd) {
   const char *rest_str   = __response_.c_str() + __send_count_;
   size_t      rest_count = __response_.size() - __send_count_;
-  ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
-  __send_count_ += sc;
+  // TODO:sendのエラー処理
+  __send_count_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
 }
 
 // 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく
