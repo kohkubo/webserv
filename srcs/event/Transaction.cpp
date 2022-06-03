@@ -116,11 +116,11 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *
-Transaction::get_proper_config(const confGroup &conf_group) const {
+const Config *Transaction::get_proper_config(const confGroup   &conf_group,
+                                             const std::string &host_name) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
-    if ((*it)->server_name_ == __request_info_.host_) {
+    if ((*it)->server_name_ == host_name) {
       return *it;
     }
   }
@@ -132,11 +132,12 @@ void Transaction::create_response(const Config *config) {
   __response_ = response.get_response_string();
 }
 
-void Transaction::send_response() {
+// TODO: 送った分だけ__response_を消すのはダメなの?? kohkubo
+void Transaction::send_response(connFd conn_fd) {
   const char *rest_str   = __response_.c_str() + __send_count_;
   size_t      rest_count = __response_.size() - __send_count_;
-  ssize_t     sc         = send(__conn_fd_, rest_str, rest_count, MSG_DONTWAIT);
-  __send_count_ += sc;
+  // TODO:sendのエラー処理
+  __send_count_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
 }
 
 // 最終的にこのループは外部に切り出せるようにtransaction_stateを引数に持っておく

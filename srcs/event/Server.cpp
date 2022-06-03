@@ -4,17 +4,34 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-void Server::__add_listenfd_to_pollfds() {
-  std::map<listenFd, confGroup>::const_iterator it = __conf_group_map_.begin();
-  for (; it != __conf_group_map_.end(); it++) {
+void Server::__close_timedout_connection(
+    std::map<connFd, Connection> &connection_map) {
+  std::map<connFd, Connection>::const_iterator it = connection_map.begin();
+  while (it != connection_map.end()) {
+    if (it->second.is_timed_out()) {
+      connFd conn_fd = it->first;
+      it++;
+      close(conn_fd);
+      connection_map.erase(conn_fd);
+    } else {
+      it++;
+    }
+  }
+}
+
+void Server::__add_listenfd_to_pollfds(
+    const std::map<listenFd, confGroup> &conf_group_map) {
+  std::map<listenFd, confGroup>::const_iterator it = conf_group_map.begin();
+  for (; it != conf_group_map.end(); it++) {
     struct pollfd new_pfd = {it->first, POLLIN, 0};
     __pollfds_.push_back(new_pfd);
   }
 }
 
-void Server::__add_connfd_to_pollfds() {
-  std::map<connFd, Connection>::const_iterator it = __connection_map_.begin();
-  for (; it != __connection_map_.end(); it++) {
+void Server::__add_connfd_to_pollfds(
+    const std::map<connFd, Connection> &connection_map) {
+  std::map<connFd, Connection>::const_iterator it = connection_map.begin();
+  for (; it != connection_map.end(); it++) {
     const Connection &connection = it->second;
     struct pollfd     pfd        = connection.create_pollfd();
     __pollfds_.push_back(pfd);
@@ -45,8 +62,10 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 void Server::run_loop() {
   ERROR_LOG("start server process");
   while (true) {
+    __close_timedout_connection(__connection_map_);
     __reset_pollfds();
-    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 0);
+    // timeoutは仮
+    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 5000);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
       if (it->revents == 0) {

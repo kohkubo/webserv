@@ -7,19 +7,15 @@
 
 // TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも
 // TODO: content-typeの文法を確認する -> headerのパースで確認すべきかもしれない
-void RequestInfo::parse_request_body(std::string &request_body,
-                                     ContentType  content_type) {
-  switch (content_type) {
-  case CONTENT_TYPE_APPLICATION_X_WWW_FORM_URLENCODED:
+void RequestInfo::parse_request_body(std::string       &request_body,
+                                     const std::string &content_type) {
+  if (content_type == "application/x-www-form-urlencoded") {
     __parse_request_values(request_body);
-    break;
-  case CONTENT_TYPE_MULTIPART_FORM_DATA:
+  } else if (content_type == "multipart/form-data") {
     env_values_.push_back(request_body); // tmp
-    break;
-  case CONTENT_TYPE_TEXT_PLAIN:
+  } else if (content_type == "text/plain") {
     env_values_.push_back(request_body); // tmp
-    break;
-  default:
+  } else {
     std::cerr << "parse body: unknown content-type" << std::endl; // tmp
     exit(EXIT_FAILURE);
   }

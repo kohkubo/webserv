@@ -14,26 +14,31 @@ private:
   std::map<connFd, Connection>  __connection_map_;
   std::vector<struct pollfd>    __pollfds_;
 
-public:
-  Server(std::map<listenFd, confGroup> &conf_group_map)
-      : __conf_group_map_(conf_group_map) {}
-  ~Server() {}
-  void run_loop();
-
 private:
+  static void
+  __close_timedout_connection(std::map<connFd, Connection> &connection_map);
+
   Server();
   Server(Server const &other);
   Server &operator=(Server const &other);
   void    __reset_pollfds() {
     __pollfds_.clear();
-    __add_listenfd_to_pollfds();
-    __add_connfd_to_pollfds();
+    __add_listenfd_to_pollfds(__conf_group_map_);
+    __add_connfd_to_pollfds(__connection_map_);
   }
-  void __add_listenfd_to_pollfds();
-  void __add_connfd_to_pollfds();
+  void __add_listenfd_to_pollfds(
+      const std::map<listenFd, confGroup> &conf_group_map);
+  void
+  __add_connfd_to_pollfds(const std::map<connFd, Connection> &connection_map);
   void __connection_receive_handler(connFd conn_fd);
   void __connection_send_handler(connFd conn_fd);
   void __insert_connection_map(connFd conn_fd);
+
+public:
+  Server(std::map<listenFd, confGroup> &conf_group_map)
+      : __conf_group_map_(conf_group_map) {}
+  ~Server() {}
+  void run_loop();
 };
 
 #endif /* SRCS_EVENT_SERVER_HPP */

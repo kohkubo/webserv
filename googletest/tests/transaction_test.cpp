@@ -23,28 +23,33 @@ TEST(transaction_test, detect_properconf) {
                            "Host: peach.com\r\n"
                            "\r\n";
   {
-    Transaction t(-1);
-    t.handle_request(apple_req);
-    const Config *conf = t.get_proper_config(conf_group);
-    EXPECT_EQ(conf->server_name_, "apple.com");
+    Transaction transaction;
+    transaction.handle_request(apple_req);
+    const Config *config =
+        Transaction::get_proper_config(conf_group, "apple.com");
+    EXPECT_EQ(config->server_name_, "apple.com");
   }
   {
-    Transaction t(-1);
-    t.handle_request(orange_req);
-    const Config *conf = t.get_proper_config(conf_group);
-    EXPECT_EQ(conf->server_name_, "orange.net");
+    Transaction transaction;
+    transaction.handle_request(orange_req);
+    const Config *config =
+        Transaction::get_proper_config(conf_group, "orange.net");
+    EXPECT_EQ(config->server_name_, "orange.net");
   }
   {
-    Transaction t(-1);
-    t.handle_request(banana_req);
-    const Config *conf = t.get_proper_config(conf_group);
-    EXPECT_EQ(conf->server_name_, "banana.com");
+    Transaction transaction;
+    transaction.handle_request(banana_req);
+    const Config *config =
+        Transaction::get_proper_config(conf_group, "banana.com");
+    EXPECT_EQ(config->server_name_, "banana.com");
   }
   {
-    Transaction t(-1);
-    t.handle_request(peach_req);
-    const Config *conf = t.get_proper_config(conf_group);
-    EXPECT_EQ(conf->server_name_, "apple.com");
+    // peach.com is not in the config file.
+    Transaction transaction;
+    transaction.handle_request(peach_req);
+    const Config *config =
+        Transaction::get_proper_config(conf_group, "peach.com");
+    EXPECT_EQ(config->server_name_, "apple.com");
   }
   // close all sockets
   std::map<listenFd, confGroup>::iterator it;
