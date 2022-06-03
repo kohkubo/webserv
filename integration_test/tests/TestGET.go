@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"integration_test/exe"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
@@ -10,8 +11,8 @@ import (
 
 func TestGET() {
 
-	testHandler("GET / ", func() (bool, error) {
-		ExpectBody, err := fileToBytes("../html/index.html")
+	exe.TestHandler("GET / ", func() (bool, error) {
+		ExpectBody, err := exe.FileToBytes("../html/index.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
 		}
@@ -34,8 +35,8 @@ func TestGET() {
 		return clientA.Test()
 	})
 
-	testHandler("GET /dir1/index2.html ", func() (bool, error) {
-		ExpectBody, err := fileToBytes("../html/dir1/index2.html")
+	exe.TestHandler("GET /dir1/index2.html ", func() (bool, error) {
+		ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
 		}
@@ -58,7 +59,7 @@ func TestGET() {
 		return clientA.Test()
 	})
 
-	testHandler("GET /no_such_file_404", func() (bool, error) {
+	exe.TestHandler("GET /no_such_file_404", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{
@@ -80,7 +81,7 @@ func TestGET() {
 
 	// TODO: ファイル直接指定の場合のアクセス権限test
 
-	testHandler("index解決後のアクセス権限確認test", func() (bool, error) {
+	exe.TestHandler("index解決後のアクセス権限確認test", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{

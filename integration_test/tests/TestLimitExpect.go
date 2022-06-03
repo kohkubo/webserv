@@ -2,14 +2,15 @@ package tests
 
 import (
 	"fmt"
+	"integration_test/exe"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
 )
 
 func TestLimitExpect() {
-	testHandler("limit_expect ok", func() (bool, error) {
-		ExpectBody, err := fileToBytes("../html/index.html")
+	exe.TestHandler("limit_expect ok", func() (bool, error) {
+		ExpectBody, err := exe.FileToBytes("../html/index.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
 		}
@@ -34,7 +35,7 @@ func TestLimitExpect() {
 		return clientA.Test()
 	})
 
-	testHandler("limit_expect NG 405", func() (bool, error) {
+	exe.TestHandler("limit_expect NG 405", func() (bool, error) {
 		Port := "5003"
 		Path := "/"
 		clientA, err := tester.NewClient(&tester.Client{

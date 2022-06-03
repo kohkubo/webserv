@@ -1,13 +1,14 @@
 package tests
 
 import (
+	"integration_test/exe"
 	"integration_test/tester"
 	"net/http"
 	"strings"
 )
 
 func TestBadRequest() {
-	testHandler("too long header", func() (bool, error) {
+	exe.TestHandler("too long header", func() (bool, error) {
 		longline := strings.Repeat("a", 8192)
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
@@ -25,7 +26,7 @@ func TestBadRequest() {
 		return clientA.Test()
 	})
 
-	testHandler("too long content length", func() (bool, error) {
+	exe.TestHandler("too long content length", func() (bool, error) {
 		longline := strings.Repeat("a", 1025)
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
@@ -46,7 +47,7 @@ func TestBadRequest() {
 		return clientA.Test()
 	})
 
-	testHandler("too long chunked body", func() (bool, error) {
+	exe.TestHandler("too long chunked body", func() (bool, error) {
 		longline := strings.Repeat("a", 1025)
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",

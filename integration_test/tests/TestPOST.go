@@ -1,12 +1,13 @@
 package tests
 
 import (
+	"integration_test/exe"
 	"integration_test/tester"
 	"net/http"
 )
 
 func TestPOST() {
-	testHandler("simple", func() (bool, error) {
+	exe.TestHandler("simple", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{

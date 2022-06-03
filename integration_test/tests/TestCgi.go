@@ -1,12 +1,13 @@
 package tests
 
 import (
+	"integration_test/exe"
 	"integration_test/tester"
 	"net/http"
 )
 
 func TestCgi() {
-	testHandler("5000_cgi_get_normal", func() (bool, error) {
+	exe.TestHandler("5000_cgi_get_normal", func() (bool, error) {
 		Port := "5000"
 		Path := "/cgi.sh"
 		clientA, err := tester.NewClient(&tester.Client{

@@ -2,13 +2,14 @@ package tests
 
 import (
 	"fmt"
+	"integration_test/exe"
 	"integration_test/tester"
 	"net/http"
 )
 
 func TestLocation() {
-	testHandler("locationでdir1を指定できているか", func() (bool, error) {
-		ExpectBody, err := fileToBytes("../html/dir1/index.html")
+	exe.TestHandler("locationでdir1を指定できているか", func() (bool, error) {
+		ExpectBody, err := exe.FileToBytes("../html/dir1/index.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
 		}
@@ -30,8 +31,8 @@ func TestLocation() {
 		}
 		return clientA.Test()
 	})
-	testHandler("rootディレクティブが反映されるか", func() (bool, error) {
-		ExpectBody, err := fileToBytes("../html/dir1/index.html")
+	exe.TestHandler("rootディレクティブが反映されるか", func() (bool, error) {
+		ExpectBody, err := exe.FileToBytes("../html/dir1/index.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
 		}
@@ -55,8 +56,8 @@ func TestLocation() {
 		}
 		return clientA.Test()
 	})
-	testHandler("index指定ができているか", func() (bool, error) {
-		ExpectBody, err := fileToBytes("../html/dir1/index2.html")
+	exe.TestHandler("index指定ができているか", func() (bool, error) {
+		ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
 		}
@@ -81,8 +82,8 @@ func TestLocation() {
 		return clientA.Test()
 	})
 
-	testHandler("index指定ができているか", func() (bool, error) {
-		ExpectBody, err := fileToBytes("../html/dir1/index2.html")
+	exe.TestHandler("index指定ができているか", func() (bool, error) {
+		ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
 		}

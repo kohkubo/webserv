@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"integration_test/exe"
 	"integration_test/tests"
 	"os"
 	"time"
@@ -17,7 +18,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
 		status = 1
 	case <-test():
-		if tests.IsFail() || tests.IsFatal() {
+		if exe.IsFail() || exe.IsFatal() {
 			status = 1
 		}
 	}

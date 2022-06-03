@@ -1,12 +1,13 @@
 package tests
 
 import (
+	"integration_test/exe"
 	"integration_test/tester"
 	"net/http"
 )
 
 func TestServerName() {
-	testHandler("match_hoge", func() (bool, error) {
+	exe.TestHandler("match_hoge", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
@@ -26,7 +27,7 @@ func TestServerName() {
 		return clientA.Test()
 	})
 
-	testHandler("match_fuga", func() (bool, error) {
+	exe.TestHandler("match_fuga", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
@@ -46,7 +47,7 @@ func TestServerName() {
 		return clientA.Test()
 	})
 
-	testHandler("no_match", func() (bool, error) {
+	exe.TestHandler("no_match", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{

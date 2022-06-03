@@ -1,8 +1,7 @@
-package tests
+package exe
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -21,7 +20,7 @@ const (
 )
 
 // 実行するテストの名前と関数を渡してその結果に合わせたメッセージを出力する関数です
-func testHandler(name string, test func() (bool, error)) {
+func TestHandler(name string, test func() (bool, error)) {
 
 	// Fatalなerrorが起きてる場合はテスト無視
 	if IsFatal() {
@@ -58,18 +57,4 @@ func IsFatal() bool {
 
 func IsFail() bool {
 	return CountTestFail != 0
-}
-
-// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
-func fileToBytes(fileName string) ([]byte, error) {
-	file, err := os.Open(fileName)
-	if err != nil {
-		return nil, fmt.Errorf("FileBytes: %v", err)
-	}
-	defer file.Close()
-	srcBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		return nil, fmt.Errorf("FileBytes: %v", err)
-	}
-	return srcBytes, nil
 }
