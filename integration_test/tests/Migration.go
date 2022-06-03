@@ -106,7 +106,7 @@ func Migration() {
 		}
 		os.Chmod("../html/index.html", 000)
 		ok, err := clientA.Test()
-		os.Chmod("../html/index.html", 0766)
+		os.Chmod("../html/index.html", 0755)
 		return ok, err
 	})
 
