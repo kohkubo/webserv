@@ -22,7 +22,7 @@ func main() {
 			status = 1
 		}
 	}
-	KillWebserv()
+	exe.KillWebserv()
 	os.Exit(status)
 }
 
@@ -30,19 +30,19 @@ func test() chan struct{} {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		RestartWebserv("integration_test/conf/webserv.conf")
+		exe.RestartWebserv("integration_test/conf/webserv.conf")
 		//tests.TestPOST()
 		tests.TestDELETE()
 		tests.TestIOMulti()
 		tests.TestBadRequest()
 
-		RestartWebserv("integration_test/conf/autoindex.conf")
+		exe.RestartWebserv("integration_test/conf/autoindex.conf")
 		tests.TestAutoindex()
 
-		RestartWebserv("integration_test/conf/server_name.conf")
+		exe.RestartWebserv("integration_test/conf/server_name.conf")
 		tests.TestServerName()
 
-		RestartWebserv("integration_test/conf/test.conf")
+		exe.RestartWebserv("integration_test/conf/test.conf")
 		tests.TestGET()
 		tests.TestCgi()
 		tests.TestLocation()

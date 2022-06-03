@@ -1,9 +1,8 @@
-package main
+package exe
 
 import (
 	"bufio"
 	"fmt"
-	"integration_test/exe"
 	"io"
 	"os"
 	"os/exec"
@@ -27,7 +26,7 @@ func RestartWebserv(configPath string) {
 	select {
 	case <-time.After(10 * time.Second):
 		fmt.Fprintln(os.Stderr, "timout to wait server lauch")
-		exe.CountTestFatal++
+		CountTestFatal++
 		return
 	case <-waitServerLaunch():
 	}
@@ -54,7 +53,7 @@ func KillWebserv() {
 		return
 	}
 	current_process.Process.Kill()
-	if exe.IsFatal() {
+	if IsFatal() {
 		str, _ := io.ReadAll(stderr)
 		log = fmt.Sprintf("%s%s\n", log, str)
 		fmt.Println()
