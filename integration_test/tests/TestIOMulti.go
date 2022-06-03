@@ -10,7 +10,7 @@ import (
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 func TestIOMulti() {
-	exe.TestHandler("3client", func() (bool, error) {
+	exe.SmallHandler("3client", func() (bool, error) {
 		ExpectBody, err := exe.FileToBytes("../html/index.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")

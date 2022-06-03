@@ -9,7 +9,7 @@ import (
 )
 
 func TestLimitExpect() {
-	exe.TestHandler("limit_expect ok", func() (bool, error) {
+	exe.SmallHandler("limit_expect ok", func() (bool, error) {
 		ExpectBody, err := exe.FileToBytes("../html/index.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
@@ -35,7 +35,7 @@ func TestLimitExpect() {
 		return clientA.Test()
 	})
 
-	exe.TestHandler("limit_expect NG 405", func() (bool, error) {
+	exe.SmallHandler("limit_expect NG 405", func() (bool, error) {
 		Port := "5003"
 		Path := "/"
 		clientA, err := tester.NewClient(&tester.Client{

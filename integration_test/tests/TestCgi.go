@@ -7,7 +7,7 @@ import (
 )
 
 func TestCgi() {
-	exe.TestHandler("5000_cgi_get_normal", func() (bool, error) {
+	exe.SmallHandler("5000_cgi_get_normal", func() (bool, error) {
 		Port := "5000"
 		Path := "/cgi.sh"
 		clientA, err := tester.NewClient(&tester.Client{

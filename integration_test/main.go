@@ -30,23 +30,19 @@ func test() chan struct{} {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		exe.RestartWebserv("integration_test/conf/webserv.conf")
-		//tests.TestPOST()
-		tests.TestDELETE()
-		tests.TestIOMulti()
-		tests.TestBadRequest()
+		exe.BigHandler("POST", tests.TestPOST, "integration_test/conf/webserv.conf")
+		exe.BigHandler("DELETE", tests.TestDELETE, "integration_test/conf/webserv.conf")
+		exe.BigHandler("IO Multiplexing", tests.TestIOMulti, "integration_test/conf/webserv.conf")
+		exe.BigHandler("bad request", tests.TestBadRequest, "integration_test/conf/webserv.conf")
 
-		exe.RestartWebserv("integration_test/conf/autoindex.conf")
-		tests.TestAutoindex()
+		exe.BigHandler("autoindex", tests.TestAutoindex, "integration_test/conf/autoindex.conf")
 
-		exe.RestartWebserv("integration_test/conf/server_name.conf")
-		tests.TestServerName()
+		exe.BigHandler("server_name", tests.TestServerName, "integration_test/conf/server_name.conf")
 
-		exe.RestartWebserv("integration_test/conf/test.conf")
-		tests.TestGET()
-		tests.TestCgi()
-		tests.TestLocation()
-		tests.TestLimitExpect()
+		exe.BigHandler("GET", tests.TestGET, "integration_test/conf/test.conf")
+		exe.BigHandler("cgi", tests.TestCgi, "integration_test/conf/test.conf")
+		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
+		exe.BigHandler("limitexept", tests.TestLimitExpect, "integration_test/conf/test.conf")
 
 		//RestartWebserv("integration_test/conf/limit_expect.conf")
 	}()

@@ -20,7 +20,7 @@ const (
 )
 
 // 実行するテストの名前と関数を渡してその結果に合わせたメッセージを出力する関数です
-func TestHandler(name string, test func() (bool, error)) {
+func SmallHandler(name string, test func() (bool, error)) {
 
 	// Fatalなerrorが起きてる場合はテスト無視
 	if IsFatal() {
@@ -57,4 +57,12 @@ func IsFatal() bool {
 
 func IsFail() bool {
 	return CountTestFail != 0
+}
+
+func BigHandler(name string, bigtest func(), configpath string) {
+	RestartWebserv(configpath)
+	fmt.Println()
+	fmt.Println(name)
+	fmt.Println("config:", configpath)
+	bigtest()
 }

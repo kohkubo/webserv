@@ -12,7 +12,7 @@ import (
 )
 
 func TestDELETE() {
-	exe.TestHandler("simple", func() (bool, error) {
+	exe.SmallHandler("simple", func() (bool, error) {
 		// setup file to delete
 		deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
 		rootRelativePath := "../html"                               // configで指定されているrootへの(integration_testからの)相対パス
@@ -60,7 +60,7 @@ func TestDELETE() {
 		}
 	})
 
-	exe.TestHandler("no_such_file", func() (bool, error) {
+	exe.SmallHandler("no_such_file", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5500",
 			ReqPayload: []string{

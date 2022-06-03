@@ -11,7 +11,7 @@ import (
 
 func TestGET() {
 
-	exe.TestHandler("GET / ", func() (bool, error) {
+	exe.SmallHandler("GET / ", func() (bool, error) {
 		ExpectBody, err := exe.FileToBytes("../html/index.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
@@ -35,7 +35,7 @@ func TestGET() {
 		return clientA.Test()
 	})
 
-	exe.TestHandler("GET /dir1/index2.html ", func() (bool, error) {
+	exe.SmallHandler("GET /dir1/index2.html ", func() (bool, error) {
 		ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
 		if err != nil {
 			return false, fmt.Errorf("failt to get bytes from file")
@@ -59,7 +59,7 @@ func TestGET() {
 		return clientA.Test()
 	})
 
-	exe.TestHandler("GET /no_such_file_404", func() (bool, error) {
+	exe.SmallHandler("GET /no_such_file_404", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{
@@ -81,7 +81,7 @@ func TestGET() {
 
 	// TODO: ファイル直接指定の場合のアクセス権限test
 
-	exe.TestHandler("index解決後のアクセス権限確認test", func() (bool, error) {
+	exe.SmallHandler("index解決後のアクセス権限確認test", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{

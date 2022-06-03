@@ -9,7 +9,7 @@ import (
 func TestAutoindex() {
 
 	// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
-	exe.TestHandler("simple", func() (bool, error) {
+	exe.SmallHandler("simple", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
@@ -29,7 +29,7 @@ func TestAutoindex() {
 		return clientA.Test()
 	})
 
-	exe.TestHandler("forbidden", func() (bool, error) {
+	exe.SmallHandler("forbidden", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
@@ -49,7 +49,7 @@ func TestAutoindex() {
 		return clientA.Test()
 	})
 
-	exe.TestHandler("index_priority", func() (bool, error) {
+	exe.SmallHandler("index_priority", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{

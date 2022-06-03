@@ -7,7 +7,7 @@ import (
 )
 
 func TestServerName() {
-	exe.TestHandler("match_hoge", func() (bool, error) {
+	exe.SmallHandler("match_hoge", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
@@ -27,7 +27,7 @@ func TestServerName() {
 		return clientA.Test()
 	})
 
-	exe.TestHandler("match_fuga", func() (bool, error) {
+	exe.SmallHandler("match_fuga", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
@@ -47,7 +47,7 @@ func TestServerName() {
 		return clientA.Test()
 	})
 
-	exe.TestHandler("no_match", func() (bool, error) {
+	exe.SmallHandler("no_match", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
