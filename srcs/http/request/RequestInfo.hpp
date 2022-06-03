@@ -45,8 +45,13 @@ public:
       , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
+  private:
+    HttpStatusCode __status_;
+
   public:
-    BadRequestException(const std::string &msg = "Illegal request.");
+    BadRequestException(HttpStatusCode     status = BAD_REQUEST_400,
+                        const std::string &msg    = "Illegal request.");
+    HttpStatusCode status() const;
   };
 
   static void store_request_header_field_map(
