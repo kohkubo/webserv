@@ -8,7 +8,7 @@ type testCategories []testCatergory
 
 func (tc testCategories) Test() bool {
 	for _, c := range tc {
-		c.runTestCases()
+		c.runTests()
 	}
 	return !IsFail() && !IsFatal()
 }

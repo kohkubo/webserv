@@ -11,12 +11,12 @@ import (
 )
 
 var testDELETE = testCatergory{
-	Name:   "DELETE",
-	Config: "integration_test/conf/webserv.conf",
-	TestCases: []testCase{
+	name:   "DELETE",
+	config: "integration_test/conf/webserv.conf",
+	testCases: []testCase{
 		{
-			Name: "simple",
-			Test: func() (bool, error) {
+			name: "simple",
+			test: func() (bool, error) {
 				// setup file to delete
 				deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
 				rootRelativePath := "../html"                               // configで指定されているrootへの(integration_testからの)相対パス
@@ -65,8 +65,8 @@ var testDELETE = testCatergory{
 			},
 		},
 		{
-			Name: "no_such_file",
-			Test: func() (bool, error) {
+			name: "no_such_file",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{

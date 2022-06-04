@@ -6,13 +6,13 @@ import (
 )
 
 var testAutoindex = testCatergory{
-	Name:   "autoindex",
-	Config: "integration_test/conf/autoindex.conf",
-	TestCases: []testCase{
+	name:   "autoindex",
+	config: "integration_test/conf/autoindex.conf",
+	testCases: []testCase{
 		{
 			// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
-			Name: "simple",
-			Test: func() (bool, error) {
+			name: "simple",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
@@ -33,8 +33,8 @@ var testAutoindex = testCatergory{
 			},
 		},
 		{
-			Name: "forbidden",
-			Test: func() (bool, error) {
+			name: "forbidden",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
@@ -56,8 +56,8 @@ var testAutoindex = testCatergory{
 		},
 		{
 
-			Name: "index_priority",
-			Test: func() (bool, error) {
+			name: "index_priority",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{

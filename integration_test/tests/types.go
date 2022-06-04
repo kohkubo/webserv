@@ -27,52 +27,48 @@ func IsFail() bool {
 }
 
 type testCatergory struct {
-	Name      string
-	Config    string
-	TestCases []testCase
+	name      string
+	config    string
+	testCases []testCase
 }
 
 // メソッド, webservの起動~テスト実行まで行う
-func (c testCatergory) runTestCases() {
+func (c testCatergory) runTests() {
 	if IsFatal() {
 		return
 	}
-	if c.Config == "" {
+	if c.config == "" {
 		fmt.Fprintln(os.Stderr, "emtpy config")
 		return
 	}
-	if err := utils.RestartWebserv(c.Config); err != nil {
+	if err := utils.RestartWebserv(c.config); err != nil {
 		fmt.Fprintf(os.Stderr, "could not start webserv: %v\n", err)
 		return
 	}
 	fmt.Println()
-	fmt.Println(c.Name)
-	fmt.Println("config:", c.Config)
-	for _, t := range c.TestCases {
-		t.Execute()
+	fmt.Println(c.name)
+	fmt.Println("config:", c.config)
+	for _, t := range c.testCases {
+		if IsFatal() {
+			return
+		}
+
+		fmt.Print("[" + t.name + "] ")
+		ok, err := t.test()
+		switch {
+		case err != nil:
+			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
+			CountTestFatal++
+		case ok:
+			fmt.Println(green, "ok", reset)
+		default:
+			fmt.Println(red, "error", reset)
+			CountTestFail++
+		}
 	}
 }
 
 type testCase struct {
-	Name string
-	Test func() (bool, error)
-}
-
-func (t *testCase) Execute() {
-	if IsFatal() {
-		return
-	}
-
-	fmt.Print("[" + t.Name + "] ")
-	ok, err := t.Test()
-	switch {
-	case err != nil:
-		fmt.Fprintf(os.Stderr, "fatal error : %v", err)
-		CountTestFatal++
-	case ok:
-		fmt.Println(green, "ok", reset)
-	default:
-		fmt.Println(red, "error", reset)
-		CountTestFail++
-	}
+	name string
+	test func() (bool, error)
 }

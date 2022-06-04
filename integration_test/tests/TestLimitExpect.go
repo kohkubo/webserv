@@ -9,12 +9,12 @@ import (
 )
 
 var testLimitExpect = testCatergory{
-	Name:   "limit exept",
-	Config: "integration_test/conf/test.conf",
-	TestCases: []testCase{
+	name:   "limit exept",
+	config: "integration_test/conf/test.conf",
+	testCases: []testCase{
 		{
-			Name: "limit_expect ok",
-			Test: func() (bool, error) {
+			name: "limit_expect ok",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -42,8 +42,8 @@ var testLimitExpect = testCatergory{
 		},
 		{
 
-			Name: "limit_expect NG 405",
-			Test: func() (bool, error) {
+			name: "limit_expect NG 405",
+			test: func() (bool, error) {
 				Port := "5003"
 				Path := "/"
 				clientA, err := tester.NewClient(&tester.Client{

@@ -11,12 +11,12 @@ import (
 
 // テストの用意
 var testGET = testCatergory{
-	Name:   "GET",
-	Config: "integration_test/conf/test.conf", //configをここで用意した方がわかりやすいかと
-	TestCases: []testCase{
+	name:   "GET",
+	config: "integration_test/conf/test.conf", //configをここで用意した方がわかりやすいかと
+	testCases: []testCase{
 		{
-			Name: "GET / ",
-			Test: func() (bool, error) {
+			name: "GET / ",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -41,8 +41,8 @@ var testGET = testCatergory{
 			},
 		},
 		{
-			Name: "GET /dir1/index2.html ",
-			Test: func() (bool, error) {
+			name: "GET /dir1/index2.html ",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/dir1/index2.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -67,8 +67,8 @@ var testGET = testCatergory{
 			},
 		},
 		{
-			Name: "GET /no_such_file_404",
-			Test: func() (bool, error) {
+			name: "GET /no_such_file_404",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -92,8 +92,8 @@ var testGET = testCatergory{
 		// TODO: ファイル直接指定の場合のアクセス権限test
 
 		{
-			Name: "index解決後のアクセス権限確認test",
-			Test: func() (bool, error) {
+			name: "index解決後のアクセス権限確認test",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{

@@ -6,12 +6,12 @@ import (
 )
 
 var testServerName = testCatergory{
-	Name:   "servername",
-	Config: "integration_test/conf/server_name.conf",
-	TestCases: []testCase{
+	name:   "servername",
+	config: "integration_test/conf/server_name.conf",
+	testCases: []testCase{
 		{
-			Name: "match_hoge",
-			Test: func() (bool, error) {
+			name: "match_hoge",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
@@ -32,8 +32,8 @@ var testServerName = testCatergory{
 			},
 		},
 		{
-			Name: "match_fuga",
-			Test: func() (bool, error) {
+			name: "match_fuga",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
@@ -54,8 +54,8 @@ var testServerName = testCatergory{
 			},
 		},
 		{
-			Name: "no_match",
-			Test: func() (bool, error) {
+			name: "no_match",
+			test: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{

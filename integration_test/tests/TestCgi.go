@@ -6,12 +6,12 @@ import (
 )
 
 var testCgi = testCatergory{
-	Name:   "cgi",
-	Config: "integration_test/conf/test.conf",
-	TestCases: []testCase{
+	name:   "cgi",
+	config: "integration_test/conf/test.conf",
+	testCases: []testCase{
 		{
-			Name: "5000_cgi_get_normal",
-			Test: func() (bool, error) {
+			name: "5000_cgi_get_normal",
+			test: func() (bool, error) {
 				Port := "5000"
 				Path := "/cgi.sh"
 				clientA, err := tester.NewClient(&tester.Client{

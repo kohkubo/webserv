@@ -8,12 +8,12 @@ import (
 )
 
 var testLocation = testCatergory{
-	Name:   "location",
-	Config: "integration_test/conf/test.conf",
-	TestCases: []testCase{
+	name:   "location",
+	config: "integration_test/conf/test.conf",
+	testCases: []testCase{
 		{
-			Name: "locationでdir1を指定できているか",
-			Test: func() (bool, error) {
+			name: "locationでdir1を指定できているか",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/dir1/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -39,8 +39,8 @@ var testLocation = testCatergory{
 		},
 		{
 
-			Name: "rootディレクティブが反映されるか",
-			Test: func() (bool, error) {
+			name: "rootディレクティブが反映されるか",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/dir1/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -68,8 +68,8 @@ var testLocation = testCatergory{
 		},
 		{
 
-			Name: "index指定ができているか",
-			Test: func() (bool, error) {
+			name: "index指定ができているか",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/dir1/index2.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -96,8 +96,8 @@ var testLocation = testCatergory{
 			},
 		},
 		{
-			Name: "index指定ができているか",
-			Test: func() (bool, error) {
+			name: "index指定ができているか",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/dir1/index2.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")

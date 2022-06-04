@@ -10,12 +10,12 @@ import (
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 var testIOMulti = testCatergory{
-	Name:   "IOmulti",
-	Config: "integration_test/conf/webserv.conf",
-	TestCases: []testCase{
+	name:   "IOmulti",
+	config: "integration_test/conf/webserv.conf",
+	testCases: []testCase{
 		{
-			Name: "3client",
-			Test: func() (bool, error) {
+			name: "3client",
+			test: func() (bool, error) {
 				ExpectBody, err := utils.FileToBytes("../html/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
