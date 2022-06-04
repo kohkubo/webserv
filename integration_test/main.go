@@ -44,6 +44,7 @@ func test() chan struct{} {
 		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
 		exe.BigHandler("limitexept", tests.TestLimitExpect, "integration_test/conf/test.conf")
 
+		// mainではTestメソッドを呼ぶのみ
 		t := tests.Generate()
 		t.Test()
 

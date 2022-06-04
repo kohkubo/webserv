@@ -12,9 +12,11 @@ func (cs Categories) Test() {
 	}
 }
 
+// ひとまずインターフェース(呼び出し元ではTestメソッドだけ呼び出せば良いので)
 func Generate() T {
 	s := Categories{
 		GET,
+		// ここに他のカテゴリーも追加していく
 	}
 	return s
 }
