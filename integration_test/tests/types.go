@@ -33,7 +33,7 @@ type testCatergory struct {
 }
 
 // メソッド, webservの起動~テスト実行まで行う
-func (c testCatergory) ExecuteTests() {
+func (c testCatergory) runTestCases() {
 	if IsFatal() {
 		return
 	}

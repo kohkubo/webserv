@@ -6,9 +6,9 @@ type T interface {
 
 type testCategories []testCatergory
 
-func (cs testCategories) Test() bool {
-	for _, c := range cs {
-		c.ExecuteTests()
+func (tc testCategories) Test() bool {
+	for _, c := range tc {
+		c.runTestCases()
 	}
 	return !IsFail() && !IsFatal()
 }
