@@ -14,7 +14,7 @@ func (cs Categories) Test() {
 
 func Generate() T {
 	s := Categories{
-		GET,
+		testGET,
 		// ここに他のカテゴリーも追加していく
 	}
 	return s
