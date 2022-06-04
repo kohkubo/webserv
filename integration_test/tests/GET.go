@@ -9,19 +9,19 @@ import (
 	"os"
 )
 
-type Smallcategolly struct {
-	Name string
-	Test func() (bool, error)
+type TestCase struct {
+	Name    string
+	Content func() (bool, error)
 }
 
 // exeの中身を持ってきただけなので後にリファクタ
-func (t *Smallcategolly) TestT() {
+func (t *TestCase) Test() {
 	if exe.IsFatal() {
 		return
 	}
 
 	fmt.Print("[" + t.Name + "] ")
-	ok, err := t.Test()
+	ok, err := t.Content()
 	switch {
 	case err != nil:
 		fmt.Fprintf(os.Stderr, "fatal error : %v", err)
@@ -34,17 +34,29 @@ func (t *Smallcategolly) TestT() {
 	}
 }
 
-type Bigcategolly struct {
-	Config string
-	Tests  []Smallcategolly
+type Catergory struct {
+	Name      string
+	Config    string
+	TestCases []TestCase
 }
 
-var GET = Bigcategolly{
+func (c Catergory) ExecuteTest() {
+	exe.RestartWebserv(c.Config)
+	fmt.Println()
+	fmt.Println(c.Name)
+	fmt.Println("config:", c.Config)
+	for _, t := range c.TestCases {
+		t.Test()
+	}
+}
+
+var GET = Catergory{
+	Name:   "GET",
 	Config: "integration_test/conf/test.conf", //configここで用意した方がわかりやすいかと
-	Tests: []Smallcategolly{
+	TestCases: []TestCase{
 		{
 			Name: "GET / ",
-			Test: func() (bool, error) {
+			Content: func() (bool, error) {
 				ExpectBody, err := exe.FileToBytes("../html/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -70,7 +82,7 @@ var GET = Bigcategolly{
 		},
 		{
 			Name: "GET /dir1/index2.html ",
-			Test: func() (bool, error) {
+			Content: func() (bool, error) {
 				ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
@@ -96,7 +108,7 @@ var GET = Bigcategolly{
 		},
 		{
 			Name: "GET /no_such_file_404",
-			Test: func() (bool, error) {
+			Content: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -121,7 +133,7 @@ var GET = Bigcategolly{
 
 		{
 			Name: "index解決後のアクセス権限確認test",
-			Test: func() (bool, error) {
+			Content: func() (bool, error) {
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{

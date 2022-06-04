@@ -44,13 +44,7 @@ func test() chan struct{} {
 		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
 		exe.BigHandler("limitexept", tests.TestLimitExpect, "integration_test/conf/test.conf")
 
-		exe.RestartWebserv(tests.GET.Config)
-		fmt.Println()
-		fmt.Println("getttttt")
-		fmt.Println("config:", tests.GET.Config)
-		for _, t := range tests.GET.Tests {
-			t.TestT()
-		}
+		tests.GET.ExecuteTest()
 
 		//"integration_test/conf/limit_expect.conf"
 	}()
