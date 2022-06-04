@@ -2,9 +2,9 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/exe"
 	"integration_test/response"
 	"integration_test/tester"
+	"integration_test/testutils"
 	"net/http"
 	"os"
 )
@@ -17,7 +17,7 @@ var testGET = TestCatergory{
 		{
 			Name: "GET / ",
 			Test: func() (bool, error) {
-				ExpectBody, err := exe.FileToBytes("../html/index.html")
+				ExpectBody, err := testutils.FileToBytes("../html/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
 				}
@@ -43,7 +43,7 @@ var testGET = TestCatergory{
 		{
 			Name: "GET /dir1/index2.html ",
 			Test: func() (bool, error) {
-				ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
+				ExpectBody, err := testutils.FileToBytes("../html/dir1/index2.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
 				}

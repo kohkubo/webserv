@@ -2,8 +2,8 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/exe"
 	"integration_test/tester"
+	"integration_test/testutils"
 	"net/http"
 )
 
@@ -14,7 +14,7 @@ var testLocation = TestCatergory{
 		{
 			Name: "locationでdir1を指定できているか",
 			Test: func() (bool, error) {
-				ExpectBody, err := exe.FileToBytes("../html/dir1/index.html")
+				ExpectBody, err := testutils.FileToBytes("../html/dir1/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
 				}
@@ -41,7 +41,7 @@ var testLocation = TestCatergory{
 
 			Name: "rootディレクティブが反映されるか",
 			Test: func() (bool, error) {
-				ExpectBody, err := exe.FileToBytes("../html/dir1/index.html")
+				ExpectBody, err := testutils.FileToBytes("../html/dir1/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
 				}
@@ -70,7 +70,7 @@ var testLocation = TestCatergory{
 
 			Name: "index指定ができているか",
 			Test: func() (bool, error) {
-				ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
+				ExpectBody, err := testutils.FileToBytes("../html/dir1/index2.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
 				}
@@ -98,7 +98,7 @@ var testLocation = TestCatergory{
 		{
 			Name: "index指定ができているか",
 			Test: func() (bool, error) {
-				ExpectBody, err := exe.FileToBytes("../html/dir1/index2.html")
+				ExpectBody, err := testutils.FileToBytes("../html/dir1/index2.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
 				}

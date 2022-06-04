@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/exe"
+	"integration_test/testutils"
 	"os"
 )
 
@@ -38,7 +38,7 @@ func (c TestCatergory) ExecuteTests() {
 		fmt.Fprintln(os.Stderr, "emtpy config")
 		return
 	}
-	if err := exe.RestartWebserv(c.Config); err != nil {
+	if err := testutils.RestartWebserv(c.Config); err != nil {
 		fmt.Fprintf(os.Stderr, "could not start webserv: %v\n", err)
 		return
 	}

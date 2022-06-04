@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"integration_test/exe"
 	"integration_test/tests"
+	"integration_test/testutils"
 	"os"
 	"time"
 )
@@ -24,7 +24,7 @@ func main() {
 			status = 1
 		}
 	}
-	exe.KillWebserv(status != 0)
+	testutils.KillWebserv(status != 0)
 	os.Exit(status)
 }
 
