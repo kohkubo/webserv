@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func TestServer_name() {
+func TestServerName() {
 	testHandler("match_hoge", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",

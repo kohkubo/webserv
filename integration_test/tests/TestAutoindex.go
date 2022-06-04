@@ -5,32 +5,14 @@ import (
 	"net/http"
 )
 
-func TestGET() {
-	testHandler("simple_5500", func() (bool, error) {
-		clientA, err := tester.NewClient(&tester.Client{
-			Port: "5500",
-			ReqPayload: []string{
-				"GET / HTTP/1.1\r\n",
-				"Host: localhost:5500\r\n",
-				"User-Agent: curl/7.79.1\r\n",
-				`Accept: */*` + "\r\n",
-				"\r\n",
-			},
-			ExpectStatusCode: http.StatusOK,
-			ExpectHeader:     nil,
-			ExpectBody:       HELLO_WORLD,
-		})
-		if err != nil {
-			return false, err
-		}
-		return clientA.Test()
-	})
+func TestAutoindex() {
 
-	testHandler("simple_5001", func() (bool, error) {
+	// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
+	testHandler("simple", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
-				"GET / HTTP/1.1\r\n",
+				"GET /autoindex/ HTTP/1.1\r\n",
 				"Host: localhost:5001\r\n",
 				"User-Agent: curl/7.79.1\r\n",
 				`Accept: */*` + "\r\n",
@@ -38,7 +20,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       HELLO_WORLD,
+			ExpectBody:       nil,
 		})
 		if err != nil {
 			return false, err
@@ -46,19 +28,19 @@ func TestGET() {
 		return clientA.Test()
 	})
 
-	testHandler("no_such_file", func() (bool, error) {
+	testHandler("forbidden", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
-				"GET /no_such_file HTTP/1.1\r\n",
+				"GET /autoindex/dir2/ HTTP/1.1\r\n",
 				"Host: localhost:5001\r\n",
 				"User-Agent: curl/7.79.1\r\n",
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
-			ExpectStatusCode: http.StatusNotFound,
+			ExpectStatusCode: http.StatusForbidden,
 			ExpectHeader:     nil,
-			ExpectBody:       content_404,
+			ExpectBody:       nil,
 		})
 		if err != nil {
 			return false, err
@@ -66,4 +48,23 @@ func TestGET() {
 		return clientA.Test()
 	})
 
+	testHandler("index_priority", func() (bool, error) {
+		clientA, err := tester.NewClient(&tester.Client{
+			Port: "5001",
+			ReqPayload: []string{
+				"GET /autoindex/dir1/ HTTP/1.1\r\n",
+				"Host: localhost:5001\r\n",
+				"User-Agent: curl/7.79.1\r\n",
+				`Accept: */*` + "\r\n",
+				"\r\n",
+			},
+			ExpectStatusCode: http.StatusOK,
+			ExpectHeader:     nil,
+			ExpectBody:       []byte("in test_autoindex/dir1"),
+		})
+		if err != nil {
+			return false, err
+		}
+		return clientA.Test()
+	})
 }
