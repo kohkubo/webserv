@@ -19,6 +19,7 @@ func Generate() T {
 		testBadRequest,
 		testCgi,
 		testDELETE,
+		testIOMulti,
 	}
 	return s
 }
