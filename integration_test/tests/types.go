@@ -33,14 +33,14 @@ func (t *TestCase) Execute() {
 }
 
 // 大分類のテストケース
-type Catergory struct {
+type TestCatergory struct {
 	Name      string
 	Config    string
 	TestCases []TestCase
 }
 
 // メソッド, webservの起動~テスト実行まで行う
-func (c Catergory) ExecuteTests() {
+func (c TestCatergory) ExecuteTests() {
 	if c.Config == "" {
 		fmt.Fprintln(os.Stderr, "emtpy config") // とりあえず
 		return

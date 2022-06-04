@@ -4,7 +4,7 @@ type T interface {
 	Test()
 }
 
-type Categories []Catergory
+type Categories []TestCatergory
 
 func (cs Categories) Test() {
 	for _, c := range cs {
@@ -12,7 +12,6 @@ func (cs Categories) Test() {
 	}
 }
 
-// ひとまずインターフェース(呼び出し元ではTestメソッドだけ呼び出せば良いので)
 func Generate() T {
 	s := Categories{
 		GET,
