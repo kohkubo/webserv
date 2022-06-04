@@ -14,12 +14,13 @@ func (cs Categories) Test() {
 
 func Generate() T {
 	s := Categories{
-		testGET,
 		testAutoindex,
 		testBadRequest,
 		testCgi,
 		testDELETE,
+		testGET,
 		testIOMulti,
+		testLimitExpect,
 	}
 	return s
 }
