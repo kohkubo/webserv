@@ -29,7 +29,7 @@ var testAutoindex = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -51,7 +51,7 @@ var testAutoindex = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -74,7 +74,7 @@ var testAutoindex = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 	},

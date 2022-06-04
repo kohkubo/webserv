@@ -27,7 +27,7 @@ var testBadRequest = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 
@@ -51,7 +51,7 @@ var testBadRequest = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 
@@ -77,7 +77,7 @@ var testBadRequest = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 	},

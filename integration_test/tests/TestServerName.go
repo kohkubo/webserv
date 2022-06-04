@@ -28,7 +28,7 @@ var testServerName = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -50,7 +50,7 @@ var testServerName = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -72,7 +72,7 @@ var testServerName = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 	},

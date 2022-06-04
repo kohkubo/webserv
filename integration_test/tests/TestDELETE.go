@@ -45,7 +45,7 @@ var testDELETE = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				if ok, err := clientA.Test(); err != nil {
+				if ok, err := clientA.DoAndCheck(); err != nil {
 					return false, err
 				} else if !ok {
 					return false, nil
@@ -83,7 +83,7 @@ var testDELETE = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 	},

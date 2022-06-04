@@ -34,7 +34,7 @@ var testLocation = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -63,7 +63,7 @@ var testLocation = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -92,7 +92,7 @@ var testLocation = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -120,7 +120,7 @@ var testLocation = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 	},

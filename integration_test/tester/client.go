@@ -101,7 +101,7 @@ func (c *Client) IsExpectedResponse() (bool, error) {
 
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
-func (c *Client) Test() (bool, error) {
+func (c *Client) DoAndCheck() (bool, error) {
 	if err := c.SendRequest(); err != nil {
 		return false, err
 	}

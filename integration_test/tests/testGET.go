@@ -37,7 +37,7 @@ var testGET = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -63,7 +63,7 @@ var testGET = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 		{
@@ -85,7 +85,7 @@ var testGET = TestCatergory{
 				if err != nil {
 					return false, err
 				}
-				return clientA.Test()
+				return clientA.DoAndCheck()
 			},
 		},
 
@@ -111,7 +111,7 @@ var testGET = TestCatergory{
 					return false, err
 				}
 				os.Chmod("../html/index.html", 000)
-				ok, err := clientA.Test()
+				ok, err := clientA.DoAndCheck()
 				os.Chmod("../html/index.html", 0755)
 				return ok, err
 			},
