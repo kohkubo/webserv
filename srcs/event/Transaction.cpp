@@ -69,6 +69,7 @@ void Transaction::handle_request(std::string     &request_buffer,
                                              __config_->client_max_body_size_);
       // throws BadRequestException
     } else if (request_buffer.size() >= __request_info_.content_length_) {
+      // bufferから移す必要あり
       __set_request_body(request_buffer, __request_body_,
                          __request_info_.content_length_);
       __transaction_state_ = SENDING;
