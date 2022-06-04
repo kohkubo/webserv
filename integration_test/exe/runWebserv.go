@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"os/exec"
 	"time"
 )
@@ -14,9 +13,9 @@ var stderr io.ReadCloser
 var log string
 
 // 指定したpathのconfigファイルでwebservを立ち上げる。
-func RestartWebserv(configPath string) {
+func RestartWebserv(configPath string) error {
 	if current_process != nil {
-		KillWebserv()
+		KillWebserv(false)
 	}
 	current_process = exec.Command("./webserv", configPath)
 	// itestの実行ファイルがintegration_test/integration_testを期待
@@ -25,11 +24,10 @@ func RestartWebserv(configPath string) {
 	current_process.Start()
 	select {
 	case <-time.After(10 * time.Second):
-		fmt.Fprintln(os.Stderr, "timout to wait server lauch")
-		CountTestFatal++
-		return
+		return fmt.Errorf("timout to wait server lauch")
 	case <-waitServerLaunch():
 	}
+	return nil
 }
 
 func waitServerLaunch() chan struct{} {
@@ -48,12 +46,12 @@ func waitServerLaunch() chan struct{} {
 	return done
 }
 
-func KillWebserv() {
+func KillWebserv(printLog bool) {
 	if current_process == nil {
 		return
 	}
 	current_process.Process.Kill()
-	if IsFatal() {
+	if printLog {
 		str, _ := io.ReadAll(stderr)
 		log = fmt.Sprintf("%s%s\n", log, str)
 		fmt.Println()

@@ -20,11 +20,11 @@ func main() {
 		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
 		status = 1
 	case <-test():
-		if exe.IsFail() || exe.IsFatal() {
+		if tests.IsFail() || tests.IsFatal() {
 			status = 1
 		}
 	}
-	exe.KillWebserv()
+	exe.KillWebserv(status != 0)
 	os.Exit(status)
 }
 

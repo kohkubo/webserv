@@ -6,33 +6,26 @@ import (
 	"os"
 )
 
-// 一つ一つのテストに関する構造体
-type TestCase struct {
-	Name string
-	Test func() (bool, error)
+var (
+	CountTestFatal uint
+	CountTestFail  uint
+)
+
+// for color print
+const (
+	red   = "\033[31m"
+	green = "\033[32m"
+	reset = "\033[0m"
+)
+
+func IsFatal() bool {
+	return CountTestFatal != 0
 }
 
-// メソッド, テスト結果の合否を出力
-func (t *TestCase) Execute() {
-	if exe.IsFatal() {
-		return
-	}
-
-	fmt.Print("[" + t.Name + "] ")
-	ok, err := t.Test()
-	switch {
-	case err != nil:
-		fmt.Fprintf(os.Stderr, "fatal error : %v", err)
-		exe.CountTestFatal++
-	case ok:
-		fmt.Println("\033[32m", "ok", "\033[0m")
-	default:
-		fmt.Println("\033[31m", "error", "\033[0m")
-		exe.CountTestFail++
-	}
+func IsFail() bool {
+	return CountTestFail != 0
 }
 
-// 大分類のテストケース
 type TestCatergory struct {
 	Name      string
 	Config    string
@@ -42,14 +35,41 @@ type TestCatergory struct {
 // メソッド, webservの起動~テスト実行まで行う
 func (c TestCatergory) ExecuteTests() {
 	if c.Config == "" {
-		fmt.Fprintln(os.Stderr, "emtpy config") // とりあえず
+		fmt.Fprintln(os.Stderr, "emtpy config")
 		return
 	}
-	exe.RestartWebserv(c.Config)
+	if err := exe.RestartWebserv(c.Config); err != nil {
+		fmt.Fprintf(os.Stderr, "could not start webserv: %v\n", err)
+		return
+	}
 	fmt.Println()
 	fmt.Println(c.Name)
 	fmt.Println("config:", c.Config)
 	for _, t := range c.TestCases {
 		t.Execute()
+	}
+}
+
+type TestCase struct {
+	Name string
+	Test func() (bool, error)
+}
+
+func (t *TestCase) Execute() {
+	if IsFatal() {
+		return
+	}
+
+	fmt.Print("[" + t.Name + "] ")
+	ok, err := t.Test()
+	switch {
+	case err != nil:
+		fmt.Fprintf(os.Stderr, "fatal error : %v", err)
+		CountTestFatal++
+	case ok:
+		fmt.Println(green, "ok", reset)
+	default:
+		fmt.Println(red, "error", reset)
+		CountTestFail++
 	}
 }
