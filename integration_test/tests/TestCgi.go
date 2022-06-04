@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func TestCGI() {
+func TestCgi() {
 	testHandler("5000_cgi_get_normal", func() (bool, error) {
 		Port := "5000"
 		Path := "/cgi.sh"

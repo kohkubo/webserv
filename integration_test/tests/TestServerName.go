@@ -5,22 +5,20 @@ import (
 	"net/http"
 )
 
-func TestAUTOINDEX() {
-
-	// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
-	testHandler("simple", func() (bool, error) {
+func TestServerName() {
+	testHandler("match_hoge", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
-				"GET /autoindex/ HTTP/1.1\r\n",
-				"Host: localhost:5001\r\n",
+				"GET / HTTP/1.1\r\n",
+				"Host: hoge.com:5001\r\n",
 				"User-Agent: curl/7.79.1\r\n",
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       nil,
+			ExpectBody:       []byte("index in dir1"),
 		})
 		if err != nil {
 			return false, err
@@ -28,19 +26,19 @@ func TestAUTOINDEX() {
 		return clientA.Test()
 	})
 
-	testHandler("forbidden", func() (bool, error) {
+	testHandler("match_fuga", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
-				"GET /autoindex/dir2/ HTTP/1.1\r\n",
-				"Host: localhost:5001\r\n",
+				"GET / HTTP/1.1\r\n",
+				"Host: fuga.com:5001\r\n",
 				"User-Agent: curl/7.79.1\r\n",
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
-			ExpectStatusCode: http.StatusForbidden,
+			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       nil,
+			ExpectBody:       []byte("index in dir2"),
 		})
 		if err != nil {
 			return false, err
@@ -48,19 +46,19 @@ func TestAUTOINDEX() {
 		return clientA.Test()
 	})
 
-	testHandler("index_priority", func() (bool, error) {
+	testHandler("no_match", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5001",
 			ReqPayload: []string{
-				"GET /autoindex/dir1/ HTTP/1.1\r\n",
-				"Host: localhost:5001\r\n",
+				"GET / HTTP/1.1\r\n",
+				"Host: no_such_host.com:5001\r\n",
 				"User-Agent: curl/7.79.1\r\n",
 				`Accept: */*` + "\r\n",
 				"\r\n",
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       []byte("in test_autoindex/dir1"),
+			ExpectBody:       []byte("index in server_name"),
 		})
 		if err != nil {
 			return false, err

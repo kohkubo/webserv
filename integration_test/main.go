@@ -9,44 +9,45 @@ import (
 
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 // TODO: 限界近くの多重接続
-// TODO: 関数名にTestいらないかも
 
 func main() {
+	var status int
 	select {
 	case <-time.After(30 * time.Second):
 		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
-		os.Exit(1)
+		status = 1
 	case <-test():
 		if tests.IsFail() || tests.IsFatal() {
-			os.Exit(1)
+			status = 1
 		}
 	}
+	KillWebserv()
+	os.Exit(status)
 }
 
 func test() chan struct{} {
 	done := make(chan struct{})
 	go func() {
-		defer close(done) // テスト終了時にチャネルを閉じることでmain()に終了を知らせる
+		defer close(done)
 		RestartWebserv("integration_test/conf/webserv.conf")
 		//tests.TestPOST()
 		tests.TestDELETE()
-		tests.TestIOMULT()
-		tests.TestBADREQ()
+		tests.TestIOMulti()
+		tests.TestBadRequest()
 
 		RestartWebserv("integration_test/conf/autoindex.conf")
-		tests.TestAUTOINDEX()
+		tests.TestAutoindex()
 
 		RestartWebserv("integration_test/conf/server_name.conf")
-		tests.TestServer_name()
+		tests.TestServerName()
 
 		RestartWebserv("integration_test/conf/test.conf")
 		tests.TestGET()
-		tests.TestCGI()
+		tests.TestCgi()
 		tests.TestLocation()
 		tests.TestLimitExpect()
 
-		RestartWebserv("integration_test/conf/limit_expect.conf")
-		KillWebserv()
-		}()
+		//RestartWebserv("integration_test/conf/limit_expect.conf")
+	}()
 	return done
 }

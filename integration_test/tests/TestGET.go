@@ -1,13 +1,20 @@
 package tests
 
 import (
+	"fmt"
+	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
 	"os"
 )
 
 func TestGET() {
+
 	testHandler("GET / ", func() (bool, error) {
+		ExpectBody, err := fileToBytes("../html/index.html")
+		if err != nil {
+			return false, fmt.Errorf("failt to get bytes from file")
+		}
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{
@@ -19,14 +26,19 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       fileToBytes("../html/index.html"),
+			ExpectBody:       ExpectBody,
 		})
 		if err != nil {
 			return false, err
 		}
 		return clientA.Test()
 	})
+
 	testHandler("GET /dir1/index2.html ", func() (bool, error) {
+		ExpectBody, err := fileToBytes("../html/dir1/index2.html")
+		if err != nil {
+			return false, fmt.Errorf("failt to get bytes from file")
+		}
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
 			ReqPayload: []string{
@@ -38,13 +50,14 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusOK,
 			ExpectHeader:     nil,
-			ExpectBody:       fileToBytes("../html/dir1/index2.html"),
+			ExpectBody:       ExpectBody,
 		})
 		if err != nil {
 			return false, err
 		}
 		return clientA.Test()
 	})
+
 	testHandler("GET /no_such_file_404", func() (bool, error) {
 		clientA, err := tester.NewClient(&tester.Client{
 			Port: "5000",
@@ -57,14 +70,13 @@ func TestGET() {
 			},
 			ExpectStatusCode: http.StatusNotFound,
 			ExpectHeader:     nil,
-			ExpectBody:       content_404,
+			ExpectBody:       response.Content_404,
 		})
 		if err != nil {
 			return false, err
 		}
 		return clientA.Test()
 	})
-
 
 	// TODO: ファイル直接指定の場合のアクセス権限test
 
@@ -80,7 +92,7 @@ func TestGET() {
 			},
 			ExpectStatusCode: 403,
 			ExpectHeader:     nil,
-			ExpectBody:       content_403,
+			ExpectBody:       response.Content_403,
 		})
 		if err != nil {
 			return false, err

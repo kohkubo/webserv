@@ -1,7 +1,7 @@
-package tests
+package response
 
 var (
-	content_400 = []byte(`<!DOCTYPE html>
+	Content_400 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>400</title>
@@ -11,7 +11,7 @@ var (
 default error page
     </body>
 </html>`)
-	content_403 = []byte(`<!DOCTYPE html>
+	Content_403 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>403</title>
@@ -21,7 +21,7 @@ default error page
 default error page
     </body>
 </html>`)
-	content_404 = []byte(`<!DOCTYPE html>
+	Content_404 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>404</title>
@@ -31,7 +31,7 @@ default error page
 default error page
     </body>
 </html>`)
-	content_405 = []byte(`<!DOCTYPE html>
+	Content_405 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>405</title>
@@ -41,7 +41,7 @@ default error page
 default error page
     </body>
 </html>`)
-	content_408 = []byte(`<!DOCTYPE html>
+	Content_408 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>408</title>
@@ -51,7 +51,7 @@ default error page
 default error page
     </body>
 </html>`)
-	content_500 = []byte(`<!DOCTYPE html>
+	Content_500 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>500</title>
@@ -61,7 +61,7 @@ default error page
 default error page
     </body>
 </html>`)
-	content_501 = []byte(`<!DOCTYPE html>
+	Content_501 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>501</title>
@@ -71,7 +71,7 @@ default error page
 default error page
     </body>
 </html>`)
-	content_505 = []byte(`<!DOCTYPE html>
+	Content_505 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>505</title>
@@ -81,7 +81,7 @@ default error page
 default error page
     </body>
 </html>`)
-	content_520 = []byte(`<!DOCTYPE html>
+	Content_520 = []byte(`<!DOCTYPE html>
 <html>
     <head>
         <title>520</title>
