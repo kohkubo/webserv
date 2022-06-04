@@ -18,6 +18,7 @@ func Generate() T {
 		testAutoindex,
 		testBadRequest,
 		testCgi,
+		testDELETE,
 	}
 	return s
 }

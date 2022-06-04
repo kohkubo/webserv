@@ -32,7 +32,6 @@ func test() chan struct{} {
 	go func() {
 		defer close(done)
 		exe.BigHandler("POST", tests.TestPOST, "integration_test/conf/webserv.conf")
-		exe.BigHandler("DELETE", tests.TestDELETE, "integration_test/conf/webserv.conf")
 		exe.BigHandler("IO Multiplexing", tests.TestIOMulti, "integration_test/conf/webserv.conf")
 
 		exe.BigHandler("server_name", tests.TestServerName, "integration_test/conf/server_name.conf")
