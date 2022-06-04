@@ -34,6 +34,9 @@ type TestCatergory struct {
 
 // メソッド, webservの起動~テスト実行まで行う
 func (c TestCatergory) ExecuteTests() {
+	if IsFatal() {
+		return
+	}
 	if c.Config == "" {
 		fmt.Fprintln(os.Stderr, "emtpy config")
 		return
