@@ -10,6 +10,7 @@ import (
 
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 // TODO: 限界近くの多重接続
+// TODO: 失敗時の送信メッセージの表示
 
 func main() {
 	var status int
@@ -39,10 +40,13 @@ func test() chan struct{} {
 
 		exe.BigHandler("server_name", tests.TestServerName, "integration_test/conf/server_name.conf")
 
-		exe.BigHandler("GET", tests.TestGET, "integration_test/conf/test.conf")
 		exe.BigHandler("cgi", tests.TestCgi, "integration_test/conf/test.conf")
 		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
 		exe.BigHandler("limitexept", tests.TestLimitExpect, "integration_test/conf/test.conf")
+
+		// mainではTestメソッドを呼ぶのみ
+		t := tests.Generate()
+		t.Test()
 
 		//"integration_test/conf/limit_expect.conf"
 	}()
