@@ -15,7 +15,7 @@ func (cs Categories) Test() {
 func Generate() T {
 	s := Categories{
 		testGET,
-		// ここに他のカテゴリーも追加していく
+		testAutoindex,
 	}
 	return s
 }

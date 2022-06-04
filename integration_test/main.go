@@ -36,8 +36,6 @@ func test() chan struct{} {
 		exe.BigHandler("IO Multiplexing", tests.TestIOMulti, "integration_test/conf/webserv.conf")
 		exe.BigHandler("bad request", tests.TestBadRequest, "integration_test/conf/webserv.conf")
 
-		exe.BigHandler("autoindex", tests.TestAutoindex, "integration_test/conf/autoindex.conf")
-
 		exe.BigHandler("server_name", tests.TestServerName, "integration_test/conf/server_name.conf")
 
 		exe.BigHandler("cgi", tests.TestCgi, "integration_test/conf/test.conf")
