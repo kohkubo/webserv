@@ -10,6 +10,7 @@ import (
 
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 // TODO: 限界近くの多重接続
+// TODO: 失敗時の送信メッセージの表示
 
 func main() {
 	var status int
@@ -39,10 +40,32 @@ func test() chan struct{} {
 
 		exe.BigHandler("server_name", tests.TestServerName, "integration_test/conf/server_name.conf")
 
-		exe.BigHandler("GET", tests.TestGET, "integration_test/conf/test.conf")
 		exe.BigHandler("cgi", tests.TestCgi, "integration_test/conf/test.conf")
 		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
 		exe.BigHandler("limitexept", tests.TestLimitExpect, "integration_test/conf/test.conf")
+
+		exe.RestartWebserv(tests.GET.Config)
+		fmt.Println()
+		fmt.Println("getttttt")
+		fmt.Println("config:", tests.GET.Config)
+		// Fatalなerrorが起きてる場合はテスト無視
+		if exe.IsFatal() {
+			return
+		}
+
+		// テスト実行
+		fmt.Print("[" + tests.GET.Tests[0].Name + "] ")
+		ok, err := tests.GET.Tests[0].Test()
+		switch {
+		case err != nil:
+			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
+			exe.CountTestFatal++
+		case ok:
+			fmt.Println("\033[32m", "ok", "\033[0m")
+		default:
+			fmt.Println("\033[31m", "error", "\033[0m")
+			exe.CountTestFail++
+		}
 
 		//"integration_test/conf/limit_expect.conf"
 	}()
