@@ -9,12 +9,15 @@ import (
 	"os"
 )
 
+// TODO: 構造体はパッケージを分ける
+
+// 一つ一つのテストに関する構造体
 type TestCase struct {
 	Name    string
 	Content func() (bool, error)
 }
 
-// exeの中身を持ってきただけなので後にリファクタ
+// メソッド, テスト結果の合否を出力
 func (t *TestCase) Test() {
 	if exe.IsFatal() {
 		return
@@ -34,12 +37,14 @@ func (t *TestCase) Test() {
 	}
 }
 
+// 大分類のテストケース
 type Catergory struct {
 	Name      string
 	Config    string
 	TestCases []TestCase
 }
 
+// メソッド, webservの起動~テスト実行まで行う
 func (c Catergory) ExecuteTest() {
 	if c.Config == "" {
 		fmt.Fprintln(os.Stderr, "emtpy config") // とりあえず
@@ -54,9 +59,10 @@ func (c Catergory) ExecuteTest() {
 	}
 }
 
+// テストの用意
 var GET = Catergory{
 	Name:   "GET",
-	Config: "integration_test/conf/test.conf", //configここで用意した方がわかりやすいかと
+	Config: "integration_test/conf/test.conf", //configをここで用意した方がわかりやすいかと
 	TestCases: []TestCase{
 		{
 			Name: "GET / ",
