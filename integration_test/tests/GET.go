@@ -41,6 +41,10 @@ type Catergory struct {
 }
 
 func (c Catergory) ExecuteTest() {
+	if c.Config == "" {
+		fmt.Fprintln(os.Stderr, "emtpy config") // とりあえず
+		return
+	}
 	exe.RestartWebserv(c.Config)
 	fmt.Println()
 	fmt.Println(c.Name)
