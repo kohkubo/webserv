@@ -6,7 +6,8 @@
 #include "http/request/RequestInfo.hpp"
 #include "http/response/Response.hpp"
 
-void Transaction::set_response_for_bad_request() {
+// TODO: ステータスコードに合わせたレスポンスを生成
+void Transaction::__set_response_for_bad_request() {
   // 400エラー処理
   // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
   // 指定できるとき、nginxはどうやってserverを決定しているか。
@@ -20,73 +21,77 @@ void Transaction::set_response_for_bad_request() {
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 void Transaction::handle_request(std::string     &request_buffer,
                                  const confGroup &conf_group) {
-  if (__transaction_state_ == RECEIVING_STARTLINE ||
-      __transaction_state_ == RECEIVING_HEADER) {
-    std::string line;
-    while (__getline(request_buffer, line)) { // noexcept
-      if (__transaction_state_ == RECEIVING_STARTLINE) {
-        __request_info_.check_first_multi_blank_line(line);
-        // throws BadRequestException
-        if (__request_info_.is_blank_first_line_) {
-          continue;
-        }
-        RequestInfo::check_bad_parse_request_start_line(line);
-        // throws BadRequestException
-        __request_info_.parse_request_start_line(line); // noexcept
-        __transaction_state_ = RECEIVING_HEADER;
-      } else if (__transaction_state_ == RECEIVING_HEADER) {
-        if (line != "") {
-          RequestInfo::store_request_header_field_map(line, __field_map_);
+  try {
+    if (__transaction_state_ == RECEIVING_STARTLINE ||
+        __transaction_state_ == RECEIVING_HEADER) {
+      std::string line;
+      while (__getline(request_buffer, line)) { // noexcept
+        if (__transaction_state_ == RECEIVING_STARTLINE) {
+          __request_info_.check_first_multi_blank_line(line);
           // throws BadRequestException
-          continue;
-        }
-        __request_info_.parse_request_header(__field_map_);
-        // throws BadRequestException
-        __config_ = __get_proper_config(conf_group, __request_info_.host_);
-        // TODO: validate request_header
-        // delete with body
-        // has transfer-encoding but last elm is not chunked
-        // content-length and transfer-encoding -> delete content-length
-        if (__request_info_.content_length_ >
-            __config_->client_max_body_size_) {
-          throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
-        }
-        if (__request_info_.content_length_ != 0 ||
-            __request_info_.is_chunked_) {
-          __transaction_state_ = RECEIVING_BODY;
+          if (__request_info_.is_blank_first_line_) {
+            continue;
+          }
+          RequestInfo::check_bad_parse_request_start_line(line);
+          // throws BadRequestException
+          __request_info_.parse_request_start_line(line); // noexcept
+          __transaction_state_ = RECEIVING_HEADER;
+        } else if (__transaction_state_ == RECEIVING_HEADER) {
+          if (line != "") {
+            RequestInfo::store_request_header_field_map(line, __field_map_);
+            // throws BadRequestException
+            continue;
+          }
+          __request_info_.parse_request_header(__field_map_);
+          // throws BadRequestException
+          __config_ = __get_proper_config(conf_group, __request_info_.host_);
+          // TODO: validate request_header
+          // delete with body
+          // has transfer-encoding but last elm is not chunked
+          // content-length and transfer-encoding -> delete content-length
+          if (__request_info_.content_length_ >
+              __config_->client_max_body_size_) {
+            throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
+          }
+          if (__request_info_.content_length_ != 0 ||
+              __request_info_.is_chunked_) {
+            __transaction_state_ = RECEIVING_BODY;
+            break;
+          }
+          __transaction_state_ = SENDING;
           break;
         }
-        __transaction_state_ = SENDING;
-        break;
       }
     }
-  }
-  if (__transaction_state_ == RECEIVING_BODY) {
-    if (__request_info_.is_chunked_) {
-      __transaction_state_ = __chunk_loop(request_buffer);
-      // throws BadRequestException
-      __check_max_client_body_size_exception(__request_body_.size(),
-                                             __config_->client_max_body_size_);
-      // throws BadRequestException
-    } else if (__request_body_.size() + request_buffer.size() <
-               __request_info_.content_length_) {
-      __request_body_.append(request_buffer);
-      request_buffer.clear();
-    } else if (__request_body_.size() + request_buffer.size() >=
-               __request_info_.content_length_) {
-      __set_request_body(request_buffer, __request_body_,
-                         __request_info_.content_length_);
-      __transaction_state_ = SENDING;
+    if (__transaction_state_ == RECEIVING_BODY) {
+      if (__request_info_.is_chunked_) {
+        __transaction_state_ = __chunk_loop(request_buffer);
+        // throws BadRequestException
+        __check_max_client_body_size_exception(
+            __request_body_.size(), __config_->client_max_body_size_);
+        // throws BadRequestException
+      } else if (__request_body_.size() + request_buffer.size() <
+                 __request_info_.content_length_) {
+        __request_body_.append(request_buffer);
+        request_buffer.clear();
+      } else if (__request_body_.size() + request_buffer.size() >=
+                 __request_info_.content_length_) {
+        __set_request_body(request_buffer, __request_body_,
+                           __request_info_.content_length_);
+        __transaction_state_ = SENDING;
+      }
+      if (__transaction_state_ == SENDING) {
+        __request_info_.parse_request_body(__request_body_,
+                                           __request_info_.content_type_);
+      }
     }
     if (__transaction_state_ == SENDING) {
-      __request_info_.parse_request_body(__request_body_,
-                                         __request_info_.content_type_);
+      __response_ = __create_response(*__config_, __request_info_);
+    } else {
+      __check_buffer_length_exception(request_buffer, buffer_max_length_);
     }
-  }
-  if (__transaction_state_ == SENDING) {
-    __response_ = __create_response(*__config_, __request_info_);
-  } else {
-    __check_buffer_length_exception(request_buffer, buffer_max_length_);
+  } catch (const RequestInfo::BadRequestException &e) {
+    __set_response_for_bad_request();
   }
 }
 

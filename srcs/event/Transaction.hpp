@@ -54,6 +54,7 @@ private:
                                            const std::string &host_name);
   static std::string   __create_response(const Config      &config,
                                          const RequestInfo &request_info);
+  void                 __set_response_for_bad_request();
 
 public:
   Transaction()
@@ -63,7 +64,6 @@ public:
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
-  void               set_response_for_bad_request();
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
     return __transaction_state_;

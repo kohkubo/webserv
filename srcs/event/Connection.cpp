@@ -14,11 +14,7 @@
 void Connection::create_sequential_transaction() {
   while (true) {
     Transaction &transaction = __transaction_queue_.back();
-    try {
-      transaction.handle_request(__buffer_, __conf_group_);
-    } catch (const RequestInfo::BadRequestException &e) {
-      transaction.set_response_for_bad_request();
-    }
+    transaction.handle_request(__buffer_, __conf_group_);
     if (transaction.get_transaction_state() != SENDING) {
       break;
     }
