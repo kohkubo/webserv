@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-var testBadRequest = TestCatergory{
+var testBadRequest = testCatergory{
 	Name:   "badrequest",
 	Config: "integration_test/conf/webserv.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "too long header",
 			Test: func() (bool, error) {

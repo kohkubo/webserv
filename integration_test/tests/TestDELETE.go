@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 )
 
-var testDELETE = TestCatergory{
+var testDELETE = testCatergory{
 	Name:   "DELETE",
 	Config: "integration_test/conf/webserv.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "simple",
 			Test: func() (bool, error) {

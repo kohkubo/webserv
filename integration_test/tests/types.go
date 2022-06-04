@@ -26,14 +26,14 @@ func IsFail() bool {
 	return CountTestFail != 0
 }
 
-type TestCatergory struct {
+type testCatergory struct {
 	Name      string
 	Config    string
-	TestCases []TestCase
+	TestCases []testCase
 }
 
 // メソッド, webservの起動~テスト実行まで行う
-func (c TestCatergory) ExecuteTests() {
+func (c testCatergory) ExecuteTests() {
 	if IsFatal() {
 		return
 	}
@@ -53,12 +53,12 @@ func (c TestCatergory) ExecuteTests() {
 	}
 }
 
-type TestCase struct {
+type testCase struct {
 	Name string
 	Test func() (bool, error)
 }
 
-func (t *TestCase) Execute() {
+func (t *testCase) Execute() {
 	if IsFatal() {
 		return
 	}

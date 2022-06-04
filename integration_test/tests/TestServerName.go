@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-var testServerName = TestCatergory{
+var testServerName = testCatergory{
 	Name:   "servername",
 	Config: "integration_test/conf/server_name.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "match_hoge",
 			Test: func() (bool, error) {

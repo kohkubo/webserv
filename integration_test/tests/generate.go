@@ -4,9 +4,9 @@ type T interface {
 	Test() bool
 }
 
-type Categories []TestCatergory
+type testCategories []testCatergory
 
-func (cs Categories) Test() bool {
+func (cs testCategories) Test() bool {
 	for _, c := range cs {
 		c.ExecuteTests()
 	}
@@ -14,7 +14,7 @@ func (cs Categories) Test() bool {
 }
 
 func Generate() T {
-	s := Categories{
+	s := testCategories{
 		testGET,
 		testDELETE,
 		testIOMulti,

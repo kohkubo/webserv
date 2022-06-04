@@ -9,10 +9,10 @@ import (
 )
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
-var testIOMulti = TestCatergory{
+var testIOMulti = testCatergory{
 	Name:   "IOmulti",
 	Config: "integration_test/conf/webserv.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "3client",
 			Test: func() (bool, error) {

@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-var testAutoindex = TestCatergory{
+var testAutoindex = testCatergory{
 	Name:   "autoindex",
 	Config: "integration_test/conf/autoindex.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
 			Name: "simple",

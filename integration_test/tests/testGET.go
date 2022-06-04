@@ -10,10 +10,10 @@ import (
 )
 
 // テストの用意
-var testGET = TestCatergory{
+var testGET = testCatergory{
 	Name:   "GET",
 	Config: "integration_test/conf/test.conf", //configをここで用意した方がわかりやすいかと
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "GET / ",
 			Test: func() (bool, error) {

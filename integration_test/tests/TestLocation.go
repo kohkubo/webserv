@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-var testLocation = TestCatergory{
+var testLocation = testCatergory{
 	Name:   "location",
 	Config: "integration_test/conf/test.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "locationでdir1を指定できているか",
 			Test: func() (bool, error) {

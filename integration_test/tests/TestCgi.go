@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-var testCgi = TestCatergory{
+var testCgi = testCatergory{
 	Name:   "cgi",
 	Config: "integration_test/conf/test.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "5000_cgi_get_normal",
 			Test: func() (bool, error) {

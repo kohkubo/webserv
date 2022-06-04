@@ -8,10 +8,10 @@ import (
 	"net/http"
 )
 
-var testLimitExpect = TestCatergory{
+var testLimitExpect = testCatergory{
 	Name:   "limit exept",
 	Config: "integration_test/conf/test.conf",
-	TestCases: []TestCase{
+	TestCases: []testCase{
 		{
 			Name: "limit_expect ok",
 			Test: func() (bool, error) {
