@@ -21,6 +21,7 @@ func Generate() T {
 		testGET,
 		testIOMulti,
 		testLimitExpect,
+		testLocation,
 	}
 	return s
 }

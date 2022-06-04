@@ -35,8 +35,6 @@ func test() chan struct{} {
 
 		exe.BigHandler("server_name", tests.TestServerName, "integration_test/conf/server_name.conf")
 
-		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
-
 		// mainではTestメソッドを呼ぶのみ
 		t := tests.Generate()
 		t.Test()
