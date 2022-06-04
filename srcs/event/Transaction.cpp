@@ -68,8 +68,12 @@ void Transaction::handle_request(std::string     &request_buffer,
       __check_max_client_body_size_exception(__request_body_.size(),
                                              __config_->client_max_body_size_);
       // throws BadRequestException
-    } else if (request_buffer.size() >= __request_info_.content_length_) {
-      // bufferから移す必要あり
+    } else if (__request_body_.size() + request_buffer.size() <
+               __request_info_.content_length_) {
+      __request_body_.append(request_buffer);
+      request_buffer.clear();
+    } else if (__request_body_.size() + request_buffer.size() >=
+               __request_info_.content_length_) {
       __set_request_body(request_buffer, __request_body_,
                          __request_info_.content_length_);
       __transaction_state_ = SENDING;
@@ -96,9 +100,11 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
 }
 
 void Transaction::__set_request_body(std::string &request_buffer,
-                                     std::string &body, size_t content_length) {
-  body = request_buffer.substr(0, content_length);
-  request_buffer.erase(0, content_length);
+                                     std::string &request_body,
+                                     size_t       content_length) {
+  std::size_t rest_size = content_length - request_body.size();
+  request_body.append(request_buffer.substr(0, rest_size));
+  request_buffer.erase(0, rest_size);
 }
 
 bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
