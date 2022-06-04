@@ -68,4 +68,26 @@ func TestBadRequest() {
 		}
 		return clientA.Test()
 	})
+
+	testHandler("invalid chunk size", func() (bool, error) {
+		clientA, err := tester.NewClient(&tester.Client{
+			Port: "5500",
+			ReqPayload: []string{
+				"GET / HTTP/1.1\r\n",
+				"Host: localhost:5500\r\n",
+				"Transfer-Encoding: chunked\r\n",
+				"\r\n",
+				"4\r\n",
+				"Mozilla \r\n",
+				"\r\n",
+			},
+			ExpectStatusCode: http.StatusBadRequest,
+			ExpectHeader:     nil,
+			ExpectBody:       nil,
+		})
+		if err != nil {
+			return false, err
+		}
+		return clientA.Test()
+	})
 }
