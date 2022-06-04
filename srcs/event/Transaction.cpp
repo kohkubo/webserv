@@ -42,7 +42,7 @@ void Transaction::handle_request(std::string     &request_buffer,
         }
         __request_info_.parse_request_header(__field_map_);
         // throws BadRequestException
-        __config_ = get_proper_config(conf_group, __request_info_.host_);
+        __config_ = __get_proper_config(conf_group, __request_info_.host_);
         // TODO: validate request_header
         // delete with body
         // has transfer-encoding but last elm is not chunked
@@ -126,8 +126,8 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *Transaction::get_proper_config(const confGroup   &conf_group,
-                                             const std::string &host_name) {
+const Config *Transaction::__get_proper_config(const confGroup   &conf_group,
+                                               const std::string &host_name) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == host_name) {
