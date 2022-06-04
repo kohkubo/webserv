@@ -16,6 +16,7 @@ func Generate() T {
 	s := Categories{
 		testGET,
 		testAutoindex,
+		testBadRequest,
 	}
 	return s
 }
