@@ -81,7 +81,7 @@ void Transaction::handle_request(std::string     &request_buffer,
   if (__transaction_state_ == SENDING) {
     create_response();
   } else {
-    // check_exception
+    __check_buffer_length_exception(request_buffer, buffer_max_length_);
   }
 }
 
@@ -166,5 +166,13 @@ void Transaction::__check_max_client_body_size_exception(
     std::size_t actual_body_size, std::size_t max_body_size) {
   if (actual_body_size > max_body_size) {
     throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
+  }
+}
+
+void Transaction::__check_buffer_length_exception(
+    std::string &request_buffer, std::size_t buffer_max_length) {
+  if (request_buffer.size() >= buffer_max_length) {
+    request_buffer.clear();
+    throw RequestInfo::BadRequestException();
   }
 }

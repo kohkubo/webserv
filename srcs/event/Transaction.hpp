@@ -34,6 +34,7 @@ private:
   std::size_t                        __next_chunk_size_;
   std::string                        __request_body_;
   std::map<std::string, std::string> __field_map_;
+  static const std::size_t           buffer_max_length_ = 8192;
 
 private:
   static bool __getline(std::string &request_buffer, std::string &line);
@@ -46,6 +47,8 @@ private:
   static void
   __check_max_client_body_size_exception(std::size_t actual_body_size,
                                          std::size_t max_body_size);
+  static void __check_buffer_length_exception(std::string &request_buffer,
+                                              std::size_t  buffer_limit_length);
 
 public:
   Transaction()
