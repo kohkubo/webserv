@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/response"
 	"integration_test/tester"
 	"integration_test/tests/utils"
@@ -15,10 +14,6 @@ var testLimitExpect = testCatergory{
 		{
 			name: "limit_expect ok",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/index.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				Port := "5003"
 				Path := "/"
 				clientA, err := tester.NewClient(&tester.Client{
@@ -32,7 +27,7 @@ var testLimitExpect = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/index.html"),
 				})
 				if err != nil {
 					return false, err

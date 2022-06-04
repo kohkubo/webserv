@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/tester"
 	"integration_test/tests/utils"
 	"net/http"
@@ -14,10 +13,6 @@ var testLocation = testCatergory{
 		{
 			name: "locationでdir1を指定できているか",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/dir1/index.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -29,7 +24,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/dir1/index.html"),
 				})
 				if err != nil {
 					return false, err
@@ -41,10 +36,6 @@ var testLocation = testCatergory{
 
 			name: "rootディレクティブが反映されるか",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/dir1/index.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				Port := "5001"
 				Path := "/"
 				clientA, err := tester.NewClient(&tester.Client{
@@ -58,7 +49,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/dir1/index.html"),
 				})
 				if err != nil {
 					return false, err
@@ -70,10 +61,6 @@ var testLocation = testCatergory{
 
 			name: "index指定ができているか",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/dir1/index2.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				Port := "5002"
 				Path := "/"
 				clientA, err := tester.NewClient(&tester.Client{
@@ -87,7 +74,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
 				})
 				if err != nil {
 					return false, err
@@ -98,10 +85,6 @@ var testLocation = testCatergory{
 		{
 			name: "index指定ができているか",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/dir1/index2.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				Port := "5002"
 				Path := "/"
 				clientA, err := tester.NewClient(&tester.Client{
@@ -115,7 +98,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
 				})
 				if err != nil {
 					return false, err

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"time"
 )
@@ -44,6 +45,12 @@ func waitServerLaunch() chan struct{} {
 		}
 	}()
 	return done
+}
+
+func ExitWithKillServer(err error) {
+	KillWebserv(false)
+	fmt.Fprintf(os.Stderr, "exit by error: %v", err)
+	os.Exit(1)
 }
 
 func KillWebserv(printLog bool) {

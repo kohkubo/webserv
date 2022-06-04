@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/response"
 	"integration_test/tester"
 	"integration_test/tests/utils"
@@ -16,10 +15,6 @@ var testIOMulti = testCatergory{
 		{
 			name: "3client",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/index.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
@@ -29,7 +24,7 @@ var testIOMulti = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/index.html"),
 				})
 				if err != nil {
 					return false, err

@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/response"
 	"integration_test/tester"
 	"integration_test/tests/utils"
@@ -17,10 +16,6 @@ var testGET = testCatergory{
 		{
 			name: "GET / ",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/index.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -32,7 +27,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/index.html"),
 				})
 				if err != nil {
 					return false, err
@@ -43,10 +38,6 @@ var testGET = testCatergory{
 		{
 			name: "GET /dir1/index2.html ",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/dir1/index2.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				clientA, err := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -58,7 +49,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
 				})
 				if err != nil {
 					return false, err
