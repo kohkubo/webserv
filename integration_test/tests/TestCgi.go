@@ -14,7 +14,7 @@ var testCgi = testCatergory{
 			test: func() (bool, error) {
 				Port := "5000"
 				Path := "/cgi.sh"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -34,9 +34,6 @@ example=
 ###########################
 `),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},

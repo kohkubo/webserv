@@ -13,7 +13,7 @@ var testLocation = testCatergory{
 		{
 			name: "locationでdir1を指定できているか",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /dir1/ HTTP/1.1\r\n",
@@ -26,19 +26,15 @@ var testLocation = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       utils.FileToBytes("../html/dir1/index.html"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
 		{
-
 			name: "rootディレクティブが反映されるか",
 			test: func() (bool, error) {
 				Port := "5001"
 				Path := "/"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -51,9 +47,6 @@ var testLocation = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       utils.FileToBytes("../html/dir1/index.html"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
@@ -63,7 +56,7 @@ var testLocation = testCatergory{
 			test: func() (bool, error) {
 				Port := "5002"
 				Path := "/"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -76,9 +69,6 @@ var testLocation = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
@@ -87,7 +77,7 @@ var testLocation = testCatergory{
 			test: func() (bool, error) {
 				Port := "5002"
 				Path := "/"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -100,9 +90,6 @@ var testLocation = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},

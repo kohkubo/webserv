@@ -13,7 +13,7 @@ var testAutoindex = testCatergory{
 			// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
 			name: "simple",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /autoindex/ HTTP/1.1\r\n",
@@ -26,16 +26,13 @@ var testAutoindex = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
 		{
 			name: "forbidden",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /autoindex/dir2/ HTTP/1.1\r\n",
@@ -48,9 +45,6 @@ var testAutoindex = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
@@ -58,7 +52,7 @@ var testAutoindex = testCatergory{
 
 			name: "index_priority",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /autoindex/dir1/ HTTP/1.1\r\n",
@@ -71,9 +65,6 @@ var testAutoindex = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       []byte("in test_autoindex/dir1"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},

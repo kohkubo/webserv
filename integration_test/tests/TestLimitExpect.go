@@ -16,7 +16,7 @@ var testLimitExpect = testCatergory{
 			test: func() (bool, error) {
 				Port := "5003"
 				Path := "/"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -29,9 +29,6 @@ var testLimitExpect = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       utils.FileToBytes("../html/index.html"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
@@ -41,7 +38,7 @@ var testLimitExpect = testCatergory{
 			test: func() (bool, error) {
 				Port := "5003"
 				Path := "/"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						`POST ` + Path + ` HTTP/1.1` + "\r\n",
@@ -57,9 +54,6 @@ var testLimitExpect = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       response.Content_405,
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},

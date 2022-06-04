@@ -15,7 +15,7 @@ var testIOMulti = testCatergory{
 		{
 			name: "3client",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET /",
@@ -26,10 +26,8 @@ var testIOMulti = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       utils.FileToBytes("../html/index.html"),
 				})
-				if err != nil {
-					return false, err
-				}
-				clientB, err := tester.NewClient(&tester.Client{
+
+				clientB := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /nosuch HT",
@@ -40,10 +38,8 @@ var testIOMulti = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       response.Content_404,
 				})
-				if err != nil {
-					return false, err
-				}
-				clientC, err := tester.NewClient(&tester.Client{
+
+				clientC := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"DELETE /nosuch HTTP/1.1\r",
@@ -54,9 +50,6 @@ var testIOMulti = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       response.Content_404,
 				})
-				if err != nil {
-					return false, err
-				}
 
 				if err := clientA.SendPartialRequest(); err != nil {
 					return false, err

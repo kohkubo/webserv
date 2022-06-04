@@ -12,7 +12,7 @@ var testServerName = testCatergory{
 		{
 			name: "match_hoge",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -25,16 +25,13 @@ var testServerName = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       []byte("index in dir1"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
 		{
 			name: "match_fuga",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -47,16 +44,13 @@ var testServerName = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       []byte("index in dir2"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
 		{
 			name: "no_match",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -69,9 +63,6 @@ var testServerName = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       []byte("index in server_name"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
