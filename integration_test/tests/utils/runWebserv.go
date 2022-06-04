@@ -47,8 +47,15 @@ func waitServerLaunch() chan struct{} {
 	return done
 }
 
+// for color print
+const (
+	red   = "\033[31m"
+	green = "\033[32m"
+	reset = "\033[0m"
+)
+
 func ExitWithKillServer(err error) {
-	fmt.Fprintf(os.Stderr, "exit by error: %v", err)
+	fmt.Fprintf(os.Stderr, "%sExit by unexpeted error!%s: %v", red, reset, err)
 	KillWebserv(true)
 	os.Exit(1)
 }
@@ -68,4 +75,5 @@ func KillWebserv(printLog bool) {
 	}
 	current_process.Wait()
 	current_process = nil
+	log = ""
 }

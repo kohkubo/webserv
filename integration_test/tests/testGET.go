@@ -27,7 +27,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/index.htm"),
+					ExpectBody:       utils.FileToBytes("../html/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},
