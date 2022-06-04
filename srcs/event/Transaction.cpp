@@ -84,7 +84,7 @@ void Transaction::handle_request(std::string     &request_buffer,
     }
   }
   if (__transaction_state_ == SENDING) {
-    create_response();
+    __response_ = __create_response(*__config_, __request_info_);
   } else {
     __check_buffer_length_exception(request_buffer, buffer_max_length_);
   }
@@ -137,9 +137,10 @@ const Config *Transaction::__get_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
-void Transaction::create_response() {
-  Response response(*__config_, __request_info_);
-  __response_ = response.get_response_string();
+std::string Transaction::__create_response(const Config      &config,
+                                           const RequestInfo &request_info) {
+  Response response(config, request_info);
+  return response.get_response_string();
 }
 
 // TODO: 送った分だけ__response_を消すのはダメなの?? kohkubo

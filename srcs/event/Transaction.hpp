@@ -52,6 +52,8 @@ private:
                                               std::size_t  buffer_limit_length);
   static const Config *__get_proper_config(const confGroup   &conf_group,
                                            const std::string &host_name);
+  static std::string   __create_response(const Config      &config,
+                                         const RequestInfo &request_info);
 
 public:
   Transaction()
@@ -62,7 +64,6 @@ public:
       , __next_chunk_size_(-1) {}
 
   void               set_response_for_bad_request();
-  void               create_response();
   const RequestInfo &get_request_info() const { return __request_info_; }
   TransactionState   get_transaction_state() const {
     return __transaction_state_;
