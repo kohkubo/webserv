@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"integration_test/tests"
-	"integration_test/testutils"
+	"integration_test/tests/utils"
 	"os"
 	"time"
 )
@@ -19,21 +19,21 @@ func main() {
 	case <-time.After(30 * time.Second):
 		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
 		status = 1
-	case <-test():
-		if tests.IsFail() || tests.IsFatal() {
-			status = 1
-		}
+	case status = <-test():
 	}
-	testutils.KillWebserv(status != 0)
+	utils.KillWebserv(status != 0)
 	os.Exit(status)
 }
 
-func test() chan struct{} {
-	done := make(chan struct{})
+func test() chan int {
+	result := make(chan int)
 	go func() {
-		defer close(done)
 		t := tests.Generate()
-		t.Test()
+		if ok := t.Test(); ok {
+			result <- 0
+		} else {
+			result <- 1
+		}
 	}()
-	return done
+	return result
 }

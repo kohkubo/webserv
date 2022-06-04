@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"integration_test/response"
 	"integration_test/tester"
-	"integration_test/testutils"
+	"integration_test/tests/utils"
 	"net/http"
 )
 
@@ -16,7 +16,7 @@ var testIOMulti = TestCatergory{
 		{
 			Name: "3client",
 			Test: func() (bool, error) {
-				ExpectBody, err := testutils.FileToBytes("../html/index.html")
+				ExpectBody, err := utils.FileToBytes("../html/index.html")
 				if err != nil {
 					return false, fmt.Errorf("failt to get bytes from file")
 				}

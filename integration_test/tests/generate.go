@@ -1,25 +1,26 @@
 package tests
 
 type T interface {
-	Test()
+	Test() bool
 }
 
 type Categories []TestCatergory
 
-func (cs Categories) Test() {
+func (cs Categories) Test() bool {
 	for _, c := range cs {
 		c.ExecuteTests()
 	}
+	return !IsFail() && !IsFatal()
 }
 
 func Generate() T {
 	s := Categories{
+		testGET,
+		testDELETE,
+		testIOMulti,
+		testCgi,
 		testAutoindex,
 		testBadRequest,
-		testCgi,
-		testDELETE,
-		testGET,
-		testIOMulti,
 		testLimitExpect,
 		testLocation,
 		testServerName,
