@@ -53,20 +53,15 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     return;
   }
   __set_file_path(__request_info_.uri_, *location);
-  switch (__request_info_.method_) {
-  case GET:
+  if ("GET" == __request_info_.method_) {
     __get_method_handler(*location);
-    break;
-  case POST:
+  } else if ("POST" == __request_info_.method_) {
     __post_method_handler(*location);
-    break;
-  case DELETE:
+  } else if ("DELETE" == __request_info_.method_) {
     __delete_method_handler(*location);
-    break;
-  default:
-    LOG("unknown method:" << __request_info_.method_);
+  } else {
+    LOG("unknown method: " << __request_info_.method_);
     __status_code_ = NOT_IMPLEMENTED_501;
-    break;
   }
   if (__is_error_status_code()) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo

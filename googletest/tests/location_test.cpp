@@ -25,7 +25,7 @@ bool test_request_body(const Config *config, const std::string &uri,
                        const std::string &expected_body) {
   RequestInfo req_info;
   req_info.uri_    = uri;
-  req_info.method_ = GET;
+  req_info.method_ = "GET";
   Response    response(*config, req_info);
   std::string body = get_http_response_body(response.get_response_string());
   bool        res  = body == expected_body;
@@ -40,7 +40,7 @@ bool test_request_status_code(const Config *config, const std::string &uri,
                               int expected_status_code) {
   RequestInfo req_info;
   req_info.uri_    = uri;
-  req_info.method_ = GET;
+  req_info.method_ = "GET";
   Response response(*config, req_info);
   int      status_code =
       get_http_response_status_code(response.get_response_string());

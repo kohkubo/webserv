@@ -1,8 +1,6 @@
 #ifndef SRCS_HTTP_CONST_CONST_HTTP_ENUMS_HPP
 #define SRCS_HTTP_CONST_CONST_HTTP_ENUMS_HPP
 
-enum HttpMethod { GET, POST, DELETE, UNKNOWN };
-
 enum HttpStatusCode {
   NONE                      = -1,
   OK_200                    = 200,

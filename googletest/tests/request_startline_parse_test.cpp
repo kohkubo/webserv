@@ -9,7 +9,7 @@ TEST(request_startline_parse_test, normal) {
 
   RequestInfo info;
   info.parse_request_start_line(str);
-  EXPECT_EQ(info.method_, GET);
+  EXPECT_EQ(info.method_, "GET");
   EXPECT_EQ(info.uri_, "/");
   EXPECT_EQ(info.version_, "HTTP/1.1");
 }
@@ -19,7 +19,7 @@ TEST(request_startline_parse_test, normal_delete) {
 
   RequestInfo info;
   info.parse_request_start_line(str);
-  EXPECT_EQ(info.method_, DELETE);
+  EXPECT_EQ(info.method_, "DELETE");
   EXPECT_EQ(info.uri_, "/delete_target.tmp");
   EXPECT_EQ(info.version_, "HTTP/1.1");
 }
