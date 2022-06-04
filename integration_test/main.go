@@ -44,7 +44,8 @@ func test() chan struct{} {
 		exe.BigHandler("location", tests.TestLocation, "integration_test/conf/test.conf")
 		exe.BigHandler("limitexept", tests.TestLimitExpect, "integration_test/conf/test.conf")
 
-		tests.GET.ExecuteTest()
+		t := tests.Generate()
+		t.Test()
 
 		//"integration_test/conf/limit_expect.conf"
 	}()
