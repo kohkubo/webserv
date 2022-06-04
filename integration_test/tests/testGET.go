@@ -11,7 +11,7 @@ import (
 // テストの用意
 var testGET = testCatergory{
 	name:   "GET",
-	config: "integration_test/conf/test.conf", //configをここで用意した方がわかりやすいかと
+	config: "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
 			name: "GET / ",
@@ -27,7 +27,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/index.html"),
+					ExpectBody:       utils.FileToBytes("../html/index.htm"),
 				})
 				return clientA.DoAndCheck()
 			},

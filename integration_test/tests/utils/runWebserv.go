@@ -48,8 +48,8 @@ func waitServerLaunch() chan struct{} {
 }
 
 func ExitWithKillServer(err error) {
-	KillWebserv(false)
 	fmt.Fprintf(os.Stderr, "exit by error: %v", err)
+	KillWebserv(true)
 	os.Exit(1)
 }
 
