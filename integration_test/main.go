@@ -11,6 +11,7 @@ import (
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 // TODO: 限界近くの多重接続
 // TODO: 失敗時の送信メッセージの表示
+//"integration_test/conf/limit_expect.conf"はどこで使う？
 
 func main() {
 	var status int
@@ -31,15 +32,8 @@ func test() chan struct{} {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		exe.BigHandler("POST", tests.TestPOST, "integration_test/conf/webserv.conf")
-
-		exe.BigHandler("server_name", tests.TestServerName, "integration_test/conf/server_name.conf")
-
-		// mainではTestメソッドを呼ぶのみ
 		t := tests.Generate()
 		t.Test()
-
-		//"integration_test/conf/limit_expect.conf"
 	}()
 	return done
 }

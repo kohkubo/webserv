@@ -22,6 +22,7 @@ func Generate() T {
 		testIOMulti,
 		testLimitExpect,
 		testLocation,
+		testServerName,
 	}
 	return s
 }
