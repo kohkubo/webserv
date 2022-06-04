@@ -48,23 +48,8 @@ func test() chan struct{} {
 		fmt.Println()
 		fmt.Println("getttttt")
 		fmt.Println("config:", tests.GET.Config)
-		// Fatalなerrorが起きてる場合はテスト無視
-		if exe.IsFatal() {
-			return
-		}
-
-		// テスト実行
-		fmt.Print("[" + tests.GET.Tests[0].Name + "] ")
-		ok, err := tests.GET.Tests[0].Test()
-		switch {
-		case err != nil:
-			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
-			exe.CountTestFatal++
-		case ok:
-			fmt.Println("\033[32m", "ok", "\033[0m")
-		default:
-			fmt.Println("\033[31m", "error", "\033[0m")
-			exe.CountTestFail++
+		for _, t := range tests.GET.Tests {
+			t.TestT()
 		}
 
 		//"integration_test/conf/limit_expect.conf"

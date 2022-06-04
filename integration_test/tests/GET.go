@@ -9,19 +9,39 @@ import (
 	"os"
 )
 
-type testcase struct {
+type Smallcategolly struct {
 	Name string
 	Test func() (bool, error)
 }
 
-type tests struct {
-	Config string
-	Tests  []testcase
+// exeの中身を持ってきただけなので後にリファクタ
+func (t *Smallcategolly) TestT() {
+	if exe.IsFatal() {
+		return
+	}
+
+	fmt.Print("[" + t.Name + "] ")
+	ok, err := t.Test()
+	switch {
+	case err != nil:
+		fmt.Fprintf(os.Stderr, "fatal error : %v", err)
+		exe.CountTestFatal++
+	case ok:
+		fmt.Println("\033[32m", "ok", "\033[0m")
+	default:
+		fmt.Println("\033[31m", "error", "\033[0m")
+		exe.CountTestFail++
+	}
 }
 
-var GET = tests{
-	Config: "integration_test/conf/test.conf",
-	Tests: []testcase{
+type Bigcategolly struct {
+	Config string
+	Tests  []Smallcategolly
+}
+
+var GET = Bigcategolly{
+	Config: "integration_test/conf/test.conf", //configここで用意した方がわかりやすいかと
+	Tests: []Smallcategolly{
 		{
 			Name: "GET / ",
 			Test: func() (bool, error) {
