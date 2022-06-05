@@ -29,7 +29,7 @@ var testDELETE = testCatergory{
 				}
 				defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"DELETE " + deleteFilePath + " HTTP/1.1\r\n",
@@ -42,9 +42,6 @@ var testDELETE = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})
-				if err != nil {
-					return false, err
-				}
 				if ok, err := clientA.DoAndCheck(); err != nil {
 					return false, err
 				} else if !ok {
@@ -52,7 +49,7 @@ var testDELETE = testCatergory{
 				}
 
 				// check file exists or deleted
-				_, err = os.Stat(deleteFileRelativePath)
+				_, err := os.Stat(deleteFileRelativePath)
 				switch {
 				case errors.Is(err, os.ErrNotExist):
 					return true, nil
@@ -67,7 +64,7 @@ var testDELETE = testCatergory{
 		{
 			name: "no_such_file",
 			test: func() (bool, error) {
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"DELETE /no_such_file HTTP/1.1\r\n",
@@ -80,9 +77,6 @@ var testDELETE = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       response.Content_404,
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},

@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/response"
 	"integration_test/tester"
 	"integration_test/tests/utils"
@@ -15,13 +14,9 @@ var testLimitExpect = testCatergory{
 		{
 			name: "limit_expect ok",
 			test: func() (bool, error) {
-				ExpectBody, err := utils.FileToBytes("../html/index.html")
-				if err != nil {
-					return false, fmt.Errorf("failt to get bytes from file")
-				}
 				Port := "5003"
 				Path := "/"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -32,11 +27,8 @@ var testLimitExpect = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       ExpectBody,
+					ExpectBody:       utils.FileToBytes("../html/index.html"),
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
@@ -46,7 +38,7 @@ var testLimitExpect = testCatergory{
 			test: func() (bool, error) {
 				Port := "5003"
 				Path := "/"
-				clientA, err := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						`POST ` + Path + ` HTTP/1.1` + "\r\n",
@@ -62,9 +54,6 @@ var testLimitExpect = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       response.Content_405,
 				})
-				if err != nil {
-					return false, err
-				}
 				return clientA.DoAndCheck()
 			},
 		},
