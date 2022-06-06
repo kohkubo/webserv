@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/colorput"
+	"integration_test/colorprint"
 	"integration_test/webserv"
 	"os"
 )
@@ -46,9 +46,9 @@ func (c testCatergory) runTests() {
 			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
 			CountTestFatal++
 		case ok:
-			fmt.Println(colorput.Green, "ok", colorput.Reset)
+			fmt.Println(colorprint.Green, "ok", colorprint.Reset)
 		default:
-			fmt.Println(colorput.Red, "error", colorput.Reset)
+			fmt.Println(colorprint.Red, "error", colorprint.Reset)
 			CountTestFail++
 		}
 	}

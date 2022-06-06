@@ -1,4 +1,4 @@
-package colorput
+package colorprint
 
 // for color print
 const (
