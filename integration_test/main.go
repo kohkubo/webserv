@@ -12,8 +12,6 @@ import (
 // TODO: 限界近くの多重接続
 // TODO: 失敗時の送信メッセージの表示
 //"integration_test/conf/limit_expect.conf"はどこで使う？
-// TODO: killwebservの使い方を見直す
-// TODO: IsFail, IsFatalの使い方見直す
 
 func main() {
 	var status int
