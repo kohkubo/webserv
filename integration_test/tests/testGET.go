@@ -96,7 +96,7 @@ var testGET = testCatergory{
 		},
 		{
 			name: "minus_depth ",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
