@@ -25,7 +25,7 @@ func main() {
 		if ok {
 			colorprint.Stdout("All ok")
 		} else {
-			colorprint.Stderr("Error")
+			colorprint.Stderr("Fail")
 			status = 1
 		}
 	}

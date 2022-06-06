@@ -20,7 +20,7 @@ type testCatergory struct {
 
 // メソッド, webservの起動~テスト実行まで行う
 func (c testCatergory) runTests() {
-	if IsFatal() {
+	if isFatal() {
 		return
 	}
 	if c.config == "" {
@@ -35,7 +35,7 @@ func (c testCatergory) runTests() {
 	fmt.Println(c.name)
 	fmt.Println("config:", c.config)
 	for _, t := range c.testCases {
-		if IsFatal() {
+		if isFatal() {
 			return
 		}
 

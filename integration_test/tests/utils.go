@@ -12,11 +12,11 @@ var (
 	CountTestFail  uint
 )
 
-func IsFatal() bool {
+func isFatal() bool {
 	return CountTestFatal != 0
 }
 
-func IsFail() bool {
+func isFail() bool {
 	return CountTestFail != 0
 }
 
