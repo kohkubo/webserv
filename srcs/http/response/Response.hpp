@@ -45,12 +45,15 @@ private:
   std::string               __make_message_string();
   std::string               __make_bodiless_message_string();
 
-  void                      __set_file_path(const std::string &request_uri,
+  static std::string        __get_file_path(const std::string &request_uri,
                                             const Location    &location);
-  bool                      __is_error_status_code();
-  void                      __check_filepath_status(const Location &location);
-  void                      __set_error_page_body(const Location &location);
-  void                      __set_body();
+  static bool               __is_error_status_code(HttpStatusCode status_code);
+  static HttpStatusCode     __check_filepath_status(const Location    &location,
+                                                    const std::string &file_path);
+  static std::string        __set_error_page_body(const Location      &location,
+                                                  const Config        &config,
+                                                  const HttpStatusCode status_code);
+  std::string               __set_body(const std::string &file_path);
   std::string __create_autoindex_body(const std::string &file_path);
 
   void        __post_method_handler(const Location &location) {
@@ -59,7 +62,7 @@ private:
                          "POST") == location.limit_except_.end()) {
       __status_code_ = NOT_ALLOWED_405;
       return;
-      __check_filepath_status(location);
+      __status_code_ = __check_filepath_status(location, __file_path_);
     }
   }
   void __get_method_handler(const Location &location) {
@@ -69,7 +72,7 @@ private:
       __status_code_ = NOT_ALLOWED_405;
       return;
     }
-    __check_filepath_status(location);
+    __status_code_ = __check_filepath_status(location, __file_path_);
   }
   void __delete_target_file();
   void __delete_method_handler(const Location &location) {
