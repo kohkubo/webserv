@@ -11,8 +11,8 @@
 class RequestInfo {
 private:
 public:
-  bool       is_blank_first_line_;
-  HttpMethod method_;
+  bool        is_blank_first_line_;
+  std::string method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
   std::string              version_;
   std::string              host_;
@@ -23,7 +23,6 @@ public:
   std::vector<std::string> env_values_;
 
 private:
-  static HttpMethod  __request_method_to_enum(const std::string &method);
   static bool        __is_comma_sparated(std::string &field_name);
   static std::string __parse_request_host(const std::string &host_line);
   static bool        __parse_request_connection(const std::string &connection);
@@ -39,7 +38,7 @@ private:
 public:
   RequestInfo()
       : is_blank_first_line_(false)
-      , method_(UNKNOWN)
+      , method_("")
       , connection_close_(false)
       , is_chunked_(false)
       , content_length_(0) {}
