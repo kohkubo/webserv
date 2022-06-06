@@ -95,9 +95,9 @@ var testGET = testCatergory{
 			},
 		},
 		{
-			name: "minus_depth ",
-			test: func() (bool, error) {
-				clientA := tester.NewClient(&tester.Client{
+			caseName: "minus_depth ",
+			test: func() bool {
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /../ HTTP/1.1\r\n",
