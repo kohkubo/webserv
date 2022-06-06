@@ -46,9 +46,9 @@ func (c testCatergory) runTests() {
 			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
 			CountTestFatal++
 		case ok:
-			colorprint.Good("ok")
+			colorprint.Stdout("ok")
 		default:
-			colorprint.NotGood("ko")
+			colorprint.Stderr("ko")
 			CountTestFail++
 		}
 	}

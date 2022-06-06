@@ -12,10 +12,10 @@ const (
 	reset = "\033[0m"
 )
 
-func NotGood(s string) {
+func Stderr(s string) {
 	fmt.Fprintf(os.Stderr, "%s%s%s\n", red, s, reset)
 }
 
-func Good(s string) {
+func Stdout(s string) {
 	fmt.Printf("%s%s%s\n", green, s, reset)
 }

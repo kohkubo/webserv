@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"integration_test/colorprint"
 	"integration_test/tests"
 	"integration_test/webserv"
@@ -20,13 +19,13 @@ func main() {
 	var status int
 	select {
 	case <-time.After(5 * time.Minute):
-		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
+		colorprint.Stderr("itest: unexptected timeout")
 		status = 1
 	case ok := <-test():
 		if ok {
-			colorprint.Good("All ok")
+			colorprint.Stdout("All ok")
 		} else {
-			colorprint.NotGood("Error")
+			colorprint.Stderr("Error")
 			status = 1
 		}
 	}
