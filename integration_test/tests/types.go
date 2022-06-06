@@ -6,11 +6,6 @@ import (
 	"os"
 )
 
-var (
-	CountTestFatal uint
-	CountTestFail  uint
-)
-
 // for color print
 const (
 	red   = "\033[31m"
@@ -18,12 +13,9 @@ const (
 	reset = "\033[0m"
 )
 
-func IsFatal() bool {
-	return CountTestFatal != 0
-}
-
-func IsFail() bool {
-	return CountTestFail != 0
+type testCase struct {
+	name string
+	test func() (bool, error)
 }
 
 type testCatergory struct {
@@ -66,9 +58,4 @@ func (c testCatergory) runTests() {
 			CountTestFail++
 		}
 	}
-}
-
-type testCase struct {
-	name string
-	test func() (bool, error)
 }

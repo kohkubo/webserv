@@ -2,7 +2,6 @@ package tests
 
 import (
 	"integration_test/tester"
-	"integration_test/tests/utils"
 	"net/http"
 )
 
@@ -24,7 +23,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/dir1/index.html"),
+					ExpectBody:       fileToBytes("../html/dir1/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},
@@ -45,7 +44,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/dir1/index.html"),
+					ExpectBody:       fileToBytes("../html/dir1/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},
@@ -67,7 +66,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
+					ExpectBody:       fileToBytes("../html/dir1/index2.html"),
 				})
 				return clientA.DoAndCheck()
 			},
@@ -88,7 +87,7 @@ var testLocation = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
+					ExpectBody:       fileToBytes("../html/dir1/index2.html"),
 				})
 				return clientA.DoAndCheck()
 			},
