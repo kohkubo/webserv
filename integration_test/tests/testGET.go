@@ -94,5 +94,24 @@ var testGET = testCatergory{
 				return ok, err
 			},
 		},
+		{
+			name: "minus_depth ",
+			test: func() (bool, error) {
+				clientA := tester.NewClient(&tester.Client{
+					Port: "5000",
+					ReqPayload: []string{
+						"GET /../ HTTP/1.1\r\n",
+						"Host: localhost:5000\r\n",
+						"User-Agent: curl/7.79.1\r\n",
+						`Accept: */*` + "\r\n",
+						"\r\n",
+					},
+					ExpectStatusCode: http.StatusForbidden,
+					ExpectHeader:     nil,
+					ExpectBody:       response.Content_403,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
 	},
 }
