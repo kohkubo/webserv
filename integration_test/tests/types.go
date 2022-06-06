@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"integration_test/colorprint"
 	"integration_test/webserv"
-	"os"
 )
 
 type testCase struct {
@@ -18,14 +17,18 @@ type testCatergory struct {
 	testCases []testCase
 }
 
+var (
+	countTestFail uint
+)
+
 // メソッド, webservの起動~テスト実行まで行う
 func (c testCatergory) runTests() {
 	if c.config == "" {
-		fmt.Fprintln(os.Stderr, "emtpy config")
+		webserv.ExitWithKill(fmt.Errorf("emtpy config"))
 		return
 	}
 	if err := webserv.Restart(c.config); err != nil {
-		fmt.Fprintf(os.Stderr, "could not start webserv: %v\n", err)
+		webserv.ExitWithKill(fmt.Errorf("could not start webserv: %v\n", err))
 		return
 	}
 	fmt.Println()
@@ -39,7 +42,7 @@ func (c testCatergory) runTests() {
 			colorprint.Stdout("ok")
 		default:
 			colorprint.Stderr("ko")
-			CountTestFail++
+			countTestFail++
 		}
 	}
 }

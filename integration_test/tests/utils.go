@@ -7,14 +7,6 @@ import (
 	"os"
 )
 
-var (
-	CountTestFail uint
-)
-
-func isFail() bool {
-	return CountTestFail != 0
-}
-
 // FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
 func fileToBytes(fileName string) []byte {
 	file, err := os.Open(fileName)
