@@ -58,23 +58,22 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     return;
   }
   __file_path_ = __get_file_path(__request_info_.uri_, *location);
-  std::cout << __status_code_ << std::endl;
   if ("GET" == __request_info_.method_) {
-    __get_method_handler(*location);
+    __status_code_ = __get_method_handler(*location, __file_path_);
   } else if ("POST" == __request_info_.method_) {
-    __post_method_handler(*location);
+    __status_code_ = __post_method_handler(*location, __file_path_);
   } else if ("DELETE" == __request_info_.method_) {
-    __delete_method_handler(*location);
+    __status_code_ =
+        __delete_method_handler(*location, __request_info_, __file_path_);
   } else {
     LOG("unknown method: " << __request_info_.method_);
     __status_code_ = NOT_IMPLEMENTED_501;
   }
-  std::cout << __status_code_ << std::endl;
   if (__is_error_status_code(__status_code_)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     __body_ = __set_error_page_body(*location, __config_, __status_code_);
   } else {
-    __body_ = __set_body(__file_path_);
+    __body_ = __set_body(__file_path_, __request_info_);
   }
 }
 
@@ -116,9 +115,8 @@ HttpStatusCode Response::__check_filepath_status(const Location    &location,
     if (is_dir_exists(file_path)) {
       if (!location.autoindex_) {
         return FORBIDDEN_403; // nginxに合わせた
-      } else {
-        return OK_200;
       }
+      return OK_200;
     }
     return NOT_FOUND_404;
   }
@@ -145,11 +143,13 @@ std::string Response::__set_error_page_body(const Location      &location,
   return g_error_page_contents_map[status_code];
 }
 
-std::string Response::__set_body(const std::string &file_path) {
+std::string Response::__set_body(const std::string &file_path,
+                                 const RequestInfo  request_info) {
   if (has_suffix(file_path, ".sh")) {
-    return __read_file_tostring_cgi(file_path, __request_info_.env_values_);
-  } else if (has_suffix(file_path, "/")) {
-    return __create_autoindex_body(file_path);
+    return __read_file_tostring_cgi(file_path, request_info.env_values_);
+  }
+  if (has_suffix(file_path, "/")) {
+    return __create_autoindex_body(file_path, request_info);
   }
   return read_file_tostring(file_path);
 }
