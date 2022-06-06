@@ -77,5 +77,39 @@ var testIOMulti = testCatergory{
 				return true
 			},
 		},
+		{
+			name: "multiclient",
+			test: func() bool {
+				baseClient := tester.Client{
+					Port: "5500",
+					ReqPayload: []string{
+						"GET /",
+						" HTTP/1.1\r\nHost: localhost:5500\r\nUse",
+						"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
+					},
+					ExpectStatusCode: http.StatusOK,
+					ExpectHeader:     nil,
+					ExpectBody:       fileToBytes("../html/index.html"),
+				}
+				var clients []*tester.Client
+				num := 100
+				for i := 0; i < num; i++ {
+					a := baseClient
+					clients = append(clients, tester.NewClient(&a))
+				}
+				for cnt := 0; cnt < 3; cnt++ {
+					for i := 0; i < num; i++ {
+						clients[i].SendPartialRequest()
+					}
+				}
+				for i := 0; i < num; i++ {
+					clients[i].RecvResponse()
+					if ok := clients[i].IsExpectedResponse(); !ok {
+						return false
+					}
+				}
+				return true
+			},
+		},
 	},
 }
