@@ -3,12 +3,17 @@ package main
 import (
 	"fmt"
 	"integration_test/tests"
+	"integration_test/tests/utils"
 	"os"
 	"time"
 )
 
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 // TODO: 限界近くの多重接続
+// TODO: 失敗時の送信メッセージの表示
+//"integration_test/conf/limit_expect.conf"はどこで使う？
+// TODO: killwebservの使い方を見直す
+// TODO: IsFail, IsFatalの使い方見直す
 
 func main() {
 	var status int
@@ -16,38 +21,21 @@ func main() {
 	case <-time.After(30 * time.Second):
 		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
 		status = 1
-	case <-test():
-		if tests.IsFail() || tests.IsFatal() {
-			status = 1
-		}
+	case status = <-test():
 	}
-	KillWebserv()
+	utils.KillWebserv(status != 0)
 	os.Exit(status)
 }
 
-func test() chan struct{} {
-	done := make(chan struct{})
+func test() chan int {
+	result := make(chan int)
 	go func() {
-		defer close(done)
-		RestartWebserv("integration_test/conf/webserv.conf")
-		//tests.TestPOST()
-		tests.TestDELETE()
-		tests.TestIOMulti()
-		tests.TestBadRequest()
-
-		RestartWebserv("integration_test/conf/autoindex.conf")
-		tests.TestAutoindex()
-
-		RestartWebserv("integration_test/conf/server_name.conf")
-		tests.TestServerName()
-
-		RestartWebserv("integration_test/conf/test.conf")
-		tests.TestGET()
-		tests.TestCgi()
-		tests.TestLocation()
-		tests.TestLimitExpect()
-
-		//RestartWebserv("integration_test/conf/limit_expect.conf")
+		t := tests.Generate()
+		if ok := t.Test(); ok {
+			result <- 0
+		} else {
+			result <- 1
+		}
 	}()
-	return done
+	return result
 }
