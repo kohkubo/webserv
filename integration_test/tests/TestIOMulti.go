@@ -78,7 +78,7 @@ var testIOMulti = testCatergory{
 			},
 		},
 		{
-			name: "multiclient",
+			caseName: "multiclient",
 			test: func() bool {
 				baseClient := tester.Client{
 					Port: "5500",
@@ -92,10 +92,10 @@ var testIOMulti = testCatergory{
 					ExpectBody:       fileToBytes("../html/index.html"),
 				}
 				var clients []*tester.Client
-				num := 100
+				num := 1000
 				for i := 0; i < num; i++ {
 					a := baseClient
-					clients = append(clients, tester.NewClient(&a))
+					clients = append(clients, tester.InitClient(&a))
 				}
 				for cnt := 0; cnt < 3; cnt++ {
 					for i := 0; i < num; i++ {
