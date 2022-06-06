@@ -14,7 +14,7 @@ var testBadRequest = testCatergory{
 			caseName: "too long header",
 			test: func() bool {
 				longline := strings.Repeat("a", 8192)
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -32,7 +32,7 @@ var testBadRequest = testCatergory{
 			caseName: "too long content length",
 			test: func() bool {
 				longline := strings.Repeat("a", 1025)
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -53,7 +53,7 @@ var testBadRequest = testCatergory{
 			caseName: "too long chunked body",
 			test: func() bool {
 				longline := strings.Repeat("a", 1025)
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",

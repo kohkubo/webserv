@@ -14,7 +14,7 @@ var testIOMulti = testCatergory{
 		{
 			caseName: "3client",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET /",
@@ -26,7 +26,7 @@ var testIOMulti = testCatergory{
 					ExpectBody:       fileToBytes("../html/index.html"),
 				})
 
-				clientB := tester.InitClient(&tester.Client{
+				clientB := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /nosuch HT",
@@ -38,7 +38,7 @@ var testIOMulti = testCatergory{
 					ExpectBody:       response.Content_404,
 				})
 
-				clientC := tester.InitClient(&tester.Client{
+				clientC := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"DELETE /nosuch HTTP/1.1\r",
@@ -91,18 +91,17 @@ var testIOMulti = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       fileToBytes("../html/index.html"),
 				}
+				numOfClient := 5000 // 時間がかかるので一旦10, 5000とかでもいけたけど。。。いけて良いのか?
 				var clients []*tester.Client
-				num := 1000
-				for i := 0; i < num; i++ {
-					a := baseClient
-					clients = append(clients, tester.InitClient(&a))
+				for i := 0; i < numOfClient; i++ {
+					clients = append(clients, tester.NewClient(baseClient))
 				}
 				for cnt := 0; cnt < 3; cnt++ {
-					for i := 0; i < num; i++ {
+					for i := 0; i < numOfClient; i++ {
 						clients[i].SendPartialRequest()
 					}
 				}
-				for i := 0; i < num; i++ {
+				for i := 0; i < numOfClient; i++ {
 					clients[i].RecvResponse()
 					if ok := clients[i].IsExpectedResponse(); !ok {
 						return false

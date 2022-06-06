@@ -15,7 +15,7 @@ var testGET = testCatergory{
 		{
 			caseName: "GET / ",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -34,7 +34,7 @@ var testGET = testCatergory{
 		{
 			caseName: "GET /dir1/index2.html ",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /dir1/index2.html HTTP/1.1\r\n",
@@ -53,7 +53,7 @@ var testGET = testCatergory{
 		{
 			caseName: "GET /no_such_file_404",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /no_such_file_404 HTTP/1.1\r\n",
@@ -75,7 +75,7 @@ var testGET = testCatergory{
 		{
 			caseName: "index解決後のアクセス権限確認test",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -97,7 +97,7 @@ var testGET = testCatergory{
 		{
 			caseName: "minus_depth ",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /../ HTTP/1.1\r\n",

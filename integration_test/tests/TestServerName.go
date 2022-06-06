@@ -12,7 +12,7 @@ var testServerName = testCatergory{
 		{
 			caseName: "match_hoge",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -31,7 +31,7 @@ var testServerName = testCatergory{
 		{
 			caseName: "match_fuga",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -50,7 +50,7 @@ var testServerName = testCatergory{
 		{
 			caseName: "no_match",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
