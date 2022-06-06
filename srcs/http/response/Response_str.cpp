@@ -19,57 +19,56 @@ std::map<int, std::string> init_response_status_phrase_map() {
 }
 
 std::string Response::get_response_string() {
-  __set_status_phrase();
+  __status_phrase_ = __get_status_phrase();
   __set_general_header();
   bool is_bodiless =
       __status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304;
   if (is_bodiless) {
-    __make_bodiless_message_string();
-  } else {
-    __set_entity_header();
-    __make_message_string();
+    return __make_bodiless_message_string();
   }
-  return __response_string_;
+  __set_entity_header();
+  return __make_message_string();
 }
 
-void Response::__set_status_phrase() {
-  __status_phrase_ = g_response_status_phrase_map[__status_code_];
+std::string Response::__get_status_phrase() {
+  return g_response_status_phrase_map[__status_code_];
 }
 
 void Response::__set_general_header() {
-  __connection_ = CONNECTION_CLOSE; // TODO: 別関数に実装
+  // Date
+  // TODO: 別関数に実装
+  __connection_ = CONNECTION_CLOSE;
 }
 
-// bodyをセットするところに移動したほうがよさそう
 void Response::__set_entity_header() {
-  __set_content_len();
-  __set_content_type();
+  __content_len_  = to_string(__body_.size());
+  __content_type_ = __get_content_type();
 }
 
-void Response::__set_content_len() {
-  __content_len_ = to_string(__body_.size());
+const std::string &Response::__get_content_type() { return TEXT_HTML; };
+
+std::string        Response::__make_bodiless_message_string() {
+  std::string response;
+  // start line
+  response = VERSION_HTTP + SP + __status_phrase_ + CRLF;
+  // header
+  response += "Connection: " + __connection_ + CRLF;
+  // empty line
+  response += CRLF;
+  return response;
 };
 
-void Response::__set_content_type() { __content_type_ = TEXT_HTML; };
-
-void Response::__make_bodiless_message_string() {
+std::string Response::__make_message_string() {
+  std::string response;
   // start line
-  __response_string_ = VERSION_HTTP + SP + __status_phrase_ + CRLF;
+  response = VERSION_HTTP + SP + __status_phrase_ + CRLF;
   // header
-  __response_string_ += "Connection: " + __connection_ + CRLF;
+  response += "Content-Length: " + __content_len_ + CRLF;
+  response += "Content-Type: " + __content_type_ + CRLF;
+  response += "Connection: " + __connection_ + CRLF;
   // empty line
-  __response_string_ += CRLF;
-};
-
-void Response::__make_message_string() {
-  // start line
-  __response_string_ = VERSION_HTTP + SP + __status_phrase_ + CRLF;
-  // header
-  __response_string_ += "Content-Length: " + __content_len_ + CRLF;
-  __response_string_ += "Content-Type: " + __content_type_ + CRLF;
-  __response_string_ += "Connection: " + __connection_ + CRLF;
-  // empty line
-  __response_string_ += CRLF;
+  response += CRLF;
   // body
-  __response_string_ += __body_;
+  response += __body_;
+  return response;
 };

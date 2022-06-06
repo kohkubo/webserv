@@ -10,30 +10,24 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 
-void Response::__delete_target_file() {
-  if (__status_code_ != NONE) {
-    return;
-  }
-  if (__request_info_.content_length_ != 0) {
+HttpStatusCode Response::__delete_target_file(const RequestInfo request_info,
+                                              const std::string file_path) {
+  if (request_info.content_length_ != 0) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
-    __status_code_ = BAD_REQUEST_400;
-    return;
+    return BAD_REQUEST_400;
   }
-  if (!is_file_exists(__file_path_)) {
+  if (!is_file_exists(file_path)) {
     std::cerr << "target file is not found" << std::endl;
-    __status_code_ = NOT_FOUND_404;
-    return;
+    return NOT_FOUND_404;
   }
-  if (!is_accessible(__file_path_, W_OK)) {
+  if (!is_accessible(file_path, W_OK)) {
     std::cerr << "process can not delete target file" << std::endl;
-    __status_code_ = FORBIDDEN_403;
-    return;
+    return FORBIDDEN_403;
   }
-  if (!remove_file(__file_path_)) {
+  if (!remove_file(file_path)) {
     std::cerr << "unknown error while deleting file" << std::endl;
-    __status_code_ = INTERNAL_SERVER_ERROR_500;
-    return;
+    return INTERNAL_SERVER_ERROR_500;
   }
   std::cerr << "deleted file successfully" << std::endl;
-  __status_code_ = NO_CONTENT_204;
+  return NO_CONTENT_204;
 }
