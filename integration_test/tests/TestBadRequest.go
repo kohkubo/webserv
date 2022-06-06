@@ -12,7 +12,7 @@ var testBadRequest = testCatergory{
 	testCases: []testCase{
 		{
 			name: "too long header",
-			test: func() (bool, error) {
+			test: func() bool {
 				longline := strings.Repeat("a", 8192)
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",
@@ -30,7 +30,7 @@ var testBadRequest = testCatergory{
 
 		{
 			name: "too long content length",
-			test: func() (bool, error) {
+			test: func() bool {
 				longline := strings.Repeat("a", 1025)
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",
@@ -51,7 +51,7 @@ var testBadRequest = testCatergory{
 
 		{
 			name: "too long chunked body",
-			test: func() (bool, error) {
+			test: func() bool {
 				longline := strings.Repeat("a", 1025)
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",

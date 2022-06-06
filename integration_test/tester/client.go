@@ -51,68 +51,56 @@ func resolveMethod(reqPayload []string) string {
 }
 
 // リクエスト送信
-func (c *Client) SendRequest() error {
+func (c *Client) SendRequest() {
 	for _, r := range c.ReqPayload {
 		_, err := fmt.Fprintf(c.conn, r)
 		if err != nil {
-			return fmt.Errorf("sendRequest: %v", err)
+			webserv.ExitWithKill(fmt.Errorf("sendRequest: %v", err))
 		}
 	}
 	c.ReqPayload = nil
-	return nil
 }
 
 // 先頭のReqPayloadのみ送信
-func (c *Client) SendPartialRequest() error {
+func (c *Client) SendPartialRequest() {
 	if len(c.ReqPayload) != 0 {
 		r := c.ReqPayload[0]
 		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除したものに更新
 		_, err := fmt.Fprintf(c.conn, r)
 		time.Sleep(1 * time.Millisecond) // 連続で使用された場合にリクエストが分かれるように
 		if err != nil {
-			return fmt.Errorf("sendPartialRequest: %v", err)
+			webserv.ExitWithKill(fmt.Errorf("sendPartialRequest: %v", err))
 		}
 	}
-	return nil
 }
 
 // レスポンスを受ける
-func (c *Client) RecvResponse() error {
+func (c *Client) RecvResponse() {
 	if len(c.ReqPayload) != 0 {
-		return fmt.Errorf("recvResponse: ReqPayload is not empty!")
+		webserv.ExitWithKill(fmt.Errorf("recvResponse: ReqPayload is not empty!"))
 	}
 	resp, err := readParseResponse(c.conn, c.method)
 	if err != nil {
-		return fmt.Errorf("recvResponse: %v", err)
+		webserv.ExitWithKill(fmt.Errorf("recvResponse: %v", err))
 	}
 	c.resp = resp
 	c.conn.Close()
-	return nil
 }
 
 // レスポンスが期待するものか確認する
-func (c *Client) IsExpectedResponse() (bool, error) {
+func (c *Client) IsExpectedResponse() bool {
 	result, err := compareResponse(c.resp, c.ExpectStatusCode, c.ExpectHeader, c.ExpectBody)
 	if err != nil {
-		return false, fmt.Errorf("isExpectedResult: %v", err)
+		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
 	}
 	c.resp.Body.Close()
-	return result == 0, nil
+	return result == 0
 }
 
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
-func (c *Client) DoAndCheck() (bool, error) {
-	if err := c.SendRequest(); err != nil {
-		return false, err
-	}
-	if err := c.RecvResponse(); err != nil {
-		return false, err
-	}
-	if ok, err := c.IsExpectedResponse(); err != nil {
-		return false, err
-	} else if !ok {
-		return false, nil
-	}
-	return true, nil
+func (c *Client) DoAndCheck() bool {
+	c.SendRequest()
+	c.RecvResponse()
+	return c.IsExpectedResponse()
 }

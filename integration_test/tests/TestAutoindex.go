@@ -12,7 +12,7 @@ var testAutoindex = testCatergory{
 		{
 			// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
 			name: "simple",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
@@ -31,7 +31,7 @@ var testAutoindex = testCatergory{
 		},
 		{
 			name: "forbidden",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
@@ -51,7 +51,7 @@ var testAutoindex = testCatergory{
 		{
 
 			name: "index_priority",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{

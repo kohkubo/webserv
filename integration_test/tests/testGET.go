@@ -14,7 +14,7 @@ var testGET = testCatergory{
 	testCases: []testCase{
 		{
 			name: "GET / ",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -33,7 +33,7 @@ var testGET = testCatergory{
 		},
 		{
 			name: "GET /dir1/index2.html ",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -52,7 +52,7 @@ var testGET = testCatergory{
 		},
 		{
 			name: "GET /no_such_file_404",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -74,7 +74,7 @@ var testGET = testCatergory{
 
 		{
 			name: "index解決後のアクセス権限確認test",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -89,9 +89,9 @@ var testGET = testCatergory{
 					ExpectBody:       response.Content_403,
 				})
 				os.Chmod("../html/index.html", 000)
-				ok, err := clientA.DoAndCheck()
+				result := clientA.DoAndCheck()
 				os.Chmod("../html/index.html", 0755)
-				return ok, err
+				return result
 			},
 		},
 	},

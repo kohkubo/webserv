@@ -8,13 +8,8 @@ import (
 )
 
 var (
-	CountTestFatal uint
-	CountTestFail  uint
+	CountTestFail uint
 )
-
-func isFatal() bool {
-	return CountTestFatal != 0
-}
 
 func isFail() bool {
 	return CountTestFail != 0

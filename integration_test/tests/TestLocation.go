@@ -11,7 +11,7 @@ var testLocation = testCatergory{
 	testCases: []testCase{
 		{
 			name: "locationでdir1を指定できているか",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
@@ -30,7 +30,7 @@ var testLocation = testCatergory{
 		},
 		{
 			name: "rootディレクティブが反映されるか",
-			test: func() (bool, error) {
+			test: func() bool {
 				Port := "5001"
 				Path := "/"
 				clientA := tester.NewClient(&tester.Client{
@@ -52,7 +52,7 @@ var testLocation = testCatergory{
 		{
 
 			name: "index指定ができているか",
-			test: func() (bool, error) {
+			test: func() bool {
 				Port := "5002"
 				Path := "/"
 				clientA := tester.NewClient(&tester.Client{
@@ -73,7 +73,7 @@ var testLocation = testCatergory{
 		},
 		{
 			name: "index指定ができているか",
-			test: func() (bool, error) {
+			test: func() bool {
 				Port := "5002"
 				Path := "/"
 				clientA := tester.NewClient(&tester.Client{

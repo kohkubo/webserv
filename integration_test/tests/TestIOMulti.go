@@ -13,7 +13,7 @@ var testIOMulti = testCatergory{
 	testCases: []testCase{
 		{
 			name: "3client",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
@@ -50,61 +50,31 @@ var testIOMulti = testCatergory{
 					ExpectBody:       response.Content_404,
 				})
 
-				if err := clientA.SendPartialRequest(); err != nil {
-					return false, err
-				}
-				if err := clientB.SendPartialRequest(); err != nil {
-					return false, err
-				}
-				if err := clientC.SendPartialRequest(); err != nil {
-					return false, err
-				}
-				if err := clientB.SendPartialRequest(); err != nil {
-					return false, err
-				}
-				if err := clientA.SendPartialRequest(); err != nil {
-					return false, err
-				}
-				if err := clientC.SendPartialRequest(); err != nil {
-					return false, err
-				}
-				if err := clientB.SendPartialRequest(); err != nil {
-					return false, err
+				clientA.SendPartialRequest()
+				clientB.SendPartialRequest()
+				clientC.SendPartialRequest()
+				clientB.SendPartialRequest()
+				clientA.SendPartialRequest()
+				clientC.SendPartialRequest()
+				clientB.SendPartialRequest()
+
+				clientB.RecvResponse()
+				if ok := clientB.IsExpectedResponse(); !ok {
+					return false
 				}
 
-				if err := clientB.RecvResponse(); err != nil {
-					return false, err
-				}
-				if ok, err := clientB.IsExpectedResponse(); err != nil {
-					return false, err
-				} else if !ok {
-					return false, nil
+				clientC.SendPartialRequest()
+				clientC.RecvResponse()
+				if ok := clientC.IsExpectedResponse(); !ok {
+					return false
 				}
 
-				if err := clientC.SendPartialRequest(); err != nil {
-					return false, err
+				clientA.SendPartialRequest()
+				clientA.RecvResponse()
+				if ok := clientA.IsExpectedResponse(); !ok {
+					return false
 				}
-				if err := clientC.RecvResponse(); err != nil {
-					return false, err
-				}
-				if ok, err := clientC.IsExpectedResponse(); err != nil {
-					return false, err
-				} else if !ok {
-					return false, nil
-				}
-
-				if err := clientA.SendPartialRequest(); err != nil {
-					return false, err
-				}
-				if err := clientA.RecvResponse(); err != nil {
-					return false, err
-				}
-				if ok, err := clientA.IsExpectedResponse(); err != nil {
-					return false, err
-				} else if !ok {
-					return false, nil
-				}
-				return true, nil
+				return true
 			},
 		},
 	},

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"integration_test/response"
 	"integration_test/tester"
+	"integration_test/webserv"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,16 +17,16 @@ var testDELETE = testCatergory{
 	testCases: []testCase{
 		{
 			name: "simple",
-			test: func() (bool, error) {
+			test: func() bool {
 				// setup file to delete
 				deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
 				rootRelativePath := "../html"                               // configで指定されているrootへの(integration_testからの)相対パス
 				deleteFileRelativePath := rootRelativePath + deleteFilePath // ターゲットURIへの相対パス
 				if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
-					return false, err
+					webserv.ExitWithKill(err)
 				}
 				if _, err := os.Create(deleteFileRelativePath); err != nil {
-					return false, err
+					webserv.ExitWithKill(err)
 				}
 				defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
@@ -42,28 +43,26 @@ var testDELETE = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})
-				if ok, err := clientA.DoAndCheck(); err != nil {
-					return false, err
-				} else if !ok {
-					return false, nil
+				if ok := clientA.DoAndCheck(); !ok {
+					return false
 				}
 
 				// check file exists or deleted
 				_, err := os.Stat(deleteFileRelativePath)
 				switch {
 				case errors.Is(err, os.ErrNotExist):
-					return true, nil
 				case err != nil:
-					return false, err
+					webserv.ExitWithKill(err)
 				default:
 					fmt.Fprintf(os.Stderr, "file wasn't deleted")
-					return false, nil
+					return false
 				}
+				return true
 			},
 		},
 		{
 			name: "no_such_file",
-			test: func() (bool, error) {
+			test: func() bool {
 				clientA := tester.NewClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{

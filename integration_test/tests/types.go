@@ -9,7 +9,7 @@ import (
 
 type testCase struct {
 	name string
-	test func() (bool, error)
+	test func() bool
 }
 
 type testCatergory struct {
@@ -20,9 +20,6 @@ type testCatergory struct {
 
 // メソッド, webservの起動~テスト実行まで行う
 func (c testCatergory) runTests() {
-	if isFatal() {
-		return
-	}
 	if c.config == "" {
 		fmt.Fprintln(os.Stderr, "emtpy config")
 		return
@@ -35,16 +32,9 @@ func (c testCatergory) runTests() {
 	fmt.Println(c.name)
 	fmt.Println("config:", c.config)
 	for _, t := range c.testCases {
-		if isFatal() {
-			return
-		}
-
 		fmt.Print("[" + t.name + "] ")
-		ok, err := t.test()
+		ok := t.test()
 		switch {
-		case err != nil:
-			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
-			CountTestFatal++
 		case ok:
 			colorprint.Stdout("ok")
 		default:
