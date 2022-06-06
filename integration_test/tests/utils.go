@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/tests/utils"
+	"integration_test/webserv"
 	"io/ioutil"
 	"os"
 )
@@ -24,12 +24,12 @@ func IsFail() bool {
 func fileToBytes(fileName string) []byte {
 	file, err := os.Open(fileName)
 	if err != nil {
-		utils.ExitWithKillServer(fmt.Errorf("FileBytes: %v", err))
+		webserv.ExitWithKill(fmt.Errorf("FileBytes: %v", err))
 	}
 	defer file.Close()
 	srcBytes, err := ioutil.ReadAll(file)
 	if err != nil {
-		utils.ExitWithKillServer(fmt.Errorf("FileBytes: %v", err))
+		webserv.ExitWithKill(fmt.Errorf("FileBytes: %v", err))
 	}
 	return srcBytes
 }

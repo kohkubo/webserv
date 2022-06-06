@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"integration_test/tests"
-	"integration_test/tests/utils"
+	"integration_test/webserv"
 	"os"
 	"time"
 )
@@ -23,7 +23,7 @@ func main() {
 		status = 1
 	case status = <-test():
 	}
-	utils.KillWebserv(status != 0)
+	webserv.Kill(status != 0)
 	os.Exit(status)
 }
 

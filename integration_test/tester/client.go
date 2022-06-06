@@ -2,7 +2,7 @@ package tester
 
 import (
 	"fmt"
-	"integration_test/tests/utils"
+	"integration_test/webserv"
 	"net"
 	"net/http"
 	"strings"
@@ -24,7 +24,7 @@ type Client struct {
 func NewClient(c *Client) *Client {
 	conn, err := connect(c.Port)
 	if err != nil {
-		utils.ExitWithKillServer(fmt.Errorf("NewClient: fail to connect: %v", err))
+		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
 	c.conn = conn
 	c.method = resolveMethod(c.ReqPayload)
