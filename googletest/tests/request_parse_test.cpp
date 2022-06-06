@@ -20,7 +20,7 @@ TEST(request_parse_test, normal) {
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.get_request_info();
 
-  EXPECT_EQ(r.method_, GET);
+  EXPECT_EQ(r.method_, "GET");
   EXPECT_EQ(r.uri_, "/");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
@@ -42,7 +42,7 @@ TEST(request_parse_test, normal_delete) {
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.get_request_info();
 
-  EXPECT_EQ(r.method_, DELETE);
+  EXPECT_EQ(r.method_, "DELETE");
   EXPECT_EQ(r.uri_, "/delete_target.tmp");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
@@ -66,7 +66,7 @@ TEST(request_parse_test, normal_post) {
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.get_request_info();
 
-  EXPECT_EQ(r.method_, POST);
+  EXPECT_EQ(r.method_, "POST");
   EXPECT_EQ(r.uri_, "/target");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
