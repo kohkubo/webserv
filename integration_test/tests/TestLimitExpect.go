@@ -7,15 +7,15 @@ import (
 )
 
 var testLimitExpect = testCatergory{
-	name:   "limit exept",
-	config: "integration_test/conf/test.conf",
+	categoryName: "limit exept",
+	config:       "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
-			name: "limit_expect ok",
+			caseName: "limit_expect ok",
 			test: func() bool {
 				Port := "5003"
 				Path := "/"
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -33,11 +33,11 @@ var testLimitExpect = testCatergory{
 		},
 		{
 
-			name: "limit_expect NG 405",
+			caseName: "limit_expect NG 405",
 			test: func() bool {
 				Port := "5003"
 				Path := "/"
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						`POST ` + Path + ` HTTP/1.1` + "\r\n",

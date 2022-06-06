@@ -9,13 +9,13 @@ import (
 
 // テストの用意
 var testGET = testCatergory{
-	name:   "GET",
-	config: "integration_test/conf/test.conf",
+	categoryName: "GET",
+	config:       "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
-			name: "GET / ",
+			caseName: "GET / ",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -32,9 +32,9 @@ var testGET = testCatergory{
 			},
 		},
 		{
-			name: "GET /dir1/index2.html ",
+			caseName: "GET /dir1/index2.html ",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /dir1/index2.html HTTP/1.1\r\n",
@@ -51,9 +51,9 @@ var testGET = testCatergory{
 			},
 		},
 		{
-			name: "GET /no_such_file_404",
+			caseName: "GET /no_such_file_404",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /no_such_file_404 HTTP/1.1\r\n",
@@ -73,9 +73,9 @@ var testGET = testCatergory{
 		// TODO: ファイル直接指定の場合のアクセス権限test
 
 		{
-			name: "index解決後のアクセス権限確認test",
+			caseName: "index解決後のアクセス権限確認test",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",

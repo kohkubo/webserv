@@ -21,7 +21,7 @@ type Client struct {
 }
 
 // constructor
-func NewClient(c *Client) *Client {
+func InitClient(c *Client) *Client {
 	conn, err := connect(c.Port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))

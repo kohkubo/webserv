@@ -7,14 +7,14 @@ import (
 )
 
 var testBadRequest = testCatergory{
-	name:   "badrequest",
-	config: "integration_test/conf/webserv.conf",
+	categoryName: "badrequest",
+	config:       "integration_test/conf/webserv.conf",
 	testCases: []testCase{
 		{
-			name: "too long header",
+			caseName: "too long header",
 			test: func() bool {
 				longline := strings.Repeat("a", 8192)
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -29,10 +29,10 @@ var testBadRequest = testCatergory{
 		},
 
 		{
-			name: "too long content length",
+			caseName: "too long content length",
 			test: func() bool {
 				longline := strings.Repeat("a", 1025)
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -50,10 +50,10 @@ var testBadRequest = testCatergory{
 		},
 
 		{
-			name: "too long chunked body",
+			caseName: "too long chunked body",
 			test: func() bool {
 				longline := strings.Repeat("a", 1025)
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",

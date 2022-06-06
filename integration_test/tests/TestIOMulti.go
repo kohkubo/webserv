@@ -8,13 +8,13 @@ import (
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 var testIOMulti = testCatergory{
-	name:   "IOmulti",
-	config: "integration_test/conf/webserv.conf",
+	categoryName: "IOmulti",
+	config:       "integration_test/conf/webserv.conf",
 	testCases: []testCase{
 		{
-			name: "3client",
+			caseName: "3client",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.InitClient(&tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET /",
@@ -26,7 +26,7 @@ var testIOMulti = testCatergory{
 					ExpectBody:       fileToBytes("../html/index.html"),
 				})
 
-				clientB := tester.NewClient(&tester.Client{
+				clientB := tester.InitClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /nosuch HT",
@@ -38,7 +38,7 @@ var testIOMulti = testCatergory{
 					ExpectBody:       response.Content_404,
 				})
 
-				clientC := tester.NewClient(&tester.Client{
+				clientC := tester.InitClient(&tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"DELETE /nosuch HTTP/1.1\r",
