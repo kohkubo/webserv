@@ -2,6 +2,7 @@ package tester
 
 import (
 	"fmt"
+	"integration_test/tests/utils"
 	"net"
 	"net/http"
 	"strings"
@@ -20,14 +21,14 @@ type Client struct {
 }
 
 // constructor
-func NewClient(c *Client) (*Client, error) {
+func NewClient(c *Client) *Client {
 	conn, err := connect(c.Port)
 	if err != nil {
-		return nil, fmt.Errorf("NewClient: fail to connect: %v", err)
+		utils.ExitWithKillServer(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
 	c.conn = conn
 	c.method = resolveMethod(c.ReqPayload)
-	return c, nil
+	return c
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
@@ -101,7 +102,7 @@ func (c *Client) IsExpectedResponse() (bool, error) {
 
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
-func (c *Client) Test() (bool, error) {
+func (c *Client) DoAndCheck() (bool, error) {
 	if err := c.SendRequest(); err != nil {
 		return false, err
 	}
