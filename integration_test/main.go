@@ -18,24 +18,26 @@ import (
 func main() {
 	var status int
 	select {
-	case <-time.After(30 * time.Second):
+	case <-time.After(5 * time.Minute):
 		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
 		status = 1
-	case status = <-test():
+	case ok := <-test():
+		if ok {
+			fmt.Println("All ok")
+		} else {
+			fmt.Println("Error")
+			status = 1
+		}
 	}
 	webserv.Kill(status != 0)
 	os.Exit(status)
 }
 
-func test() chan int {
-	result := make(chan int)
+func test() chan bool {
+	result := make(chan bool)
 	go func() {
 		t := tests.Generate()
-		if ok := t.Test(); ok {
-			result <- 0
-		} else {
-			result <- 1
-		}
+		result <- t.Test()
 	}()
 	return result
 }

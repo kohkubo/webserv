@@ -2,19 +2,13 @@ package webserv
 
 import (
 	"fmt"
+	"integration_test/colorput"
 	"io"
 	"os"
 )
 
-// for color print
-const (
-	red   = "\033[31m"
-	green = "\033[32m"
-	reset = "\033[0m"
-)
-
 func ExitWithKill(err error) {
-	fmt.Fprintf(os.Stderr, "%sExit by unexpeted error!%s: %v", red, reset, err)
+	fmt.Fprintf(os.Stderr, "%sExit by unexpeted error!%s: %v", colorput.Red, colorput.Reset, err)
 	Kill(true)
 	os.Exit(1)
 }

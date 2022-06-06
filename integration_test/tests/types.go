@@ -2,15 +2,9 @@ package tests
 
 import (
 	"fmt"
+	"integration_test/colorput"
 	"integration_test/webserv"
 	"os"
-)
-
-// for color print
-const (
-	red   = "\033[31m"
-	green = "\033[32m"
-	reset = "\033[0m"
 )
 
 type testCase struct {
@@ -52,9 +46,9 @@ func (c testCatergory) runTests() {
 			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
 			CountTestFatal++
 		case ok:
-			fmt.Println(green, "ok", reset)
+			fmt.Println(colorput.Green, "ok", colorput.Reset)
 		default:
-			fmt.Println(red, "error", reset)
+			fmt.Println(colorput.Red, "error", colorput.Reset)
 			CountTestFail++
 		}
 	}
