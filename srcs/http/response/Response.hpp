@@ -12,17 +12,14 @@
 
 class Response {
 private:
-  const Config      &__config_;
-  const RequestInfo &__request_info_;
-  HttpStatusCode     __status_code_;
-  std::string        __response_string_;
-  std::string        __file_path_;
+  HttpStatusCode __status_code_;
+  std::string    __response_string_;
+  std::string    __body_;
 
-  std::string        __status_phrase_;
-  std::string        __content_len_;
-  std::string        __content_type_;
-  std::string        __connection_;
-  std::string        __body_;
+  std::string    __status_phrase_;
+  std::string    __content_len_;
+  std::string    __content_type_;
+  std::string    __connection_;
 
 public:
   Response(const Config &config, const RequestInfo &request_info);

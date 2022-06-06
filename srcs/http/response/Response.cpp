@@ -37,43 +37,41 @@ bool Response::__is_error_status_code(HttpStatusCode status_code) {
 }
 
 Response::Response(const Config &config, const RequestInfo &request_info)
-    : __config_(config)
-    , __request_info_(request_info)
-    , __status_code_(NONE) {
+    : __status_code_(NONE) {
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   const Location *location =
-      __get_proper_location(__request_info_.uri_, __config_.locations_);
+      __get_proper_location(request_info.uri_, config.locations_);
   if (location == NULL) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     __status_code_ = NOT_FOUND_404;
-    __body_ = __set_error_page_body(Location(), __config_, __status_code_);
+    __body_        = __set_error_page_body(Location(), config, __status_code_);
     return;
   }
   if (is_minus_depth(request_info.uri_)) {
     __status_code_ = FORBIDDEN_403;
-    __body_ = __set_error_page_body(*location, __config_, __status_code_);
+    __body_        = __set_error_page_body(*location, config, __status_code_);
     return;
   }
-  __file_path_ = __get_file_path(__request_info_.uri_, *location);
-  if ("GET" == __request_info_.method_) {
-    __status_code_ = __get_method_handler(*location, __file_path_);
-  } else if ("POST" == __request_info_.method_) {
-    __status_code_ = __post_method_handler(*location, __file_path_);
-  } else if ("DELETE" == __request_info_.method_) {
+  std::string file_path = __get_file_path(request_info.uri_, *location);
+  if ("GET" == request_info.method_) {
+    __status_code_ = __get_method_handler(*location, file_path);
+  } else if ("POST" == request_info.method_) {
+    __status_code_ = __post_method_handler(*location, file_path);
+  } else if ("DELETE" == request_info.method_) {
     __status_code_ =
-        __delete_method_handler(*location, __request_info_, __file_path_);
+        __delete_method_handler(*location, request_info, file_path);
   } else {
-    LOG("unknown method: " << __request_info_.method_);
+    LOG("unknown method: " << request_info.method_);
     __status_code_ = NOT_IMPLEMENTED_501;
   }
   if (__is_error_status_code(__status_code_)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
-    __body_ = __set_error_page_body(*location, __config_, __status_code_);
+    __body_ = __set_error_page_body(*location, config, __status_code_);
   } else {
-    __body_ = __set_body(__file_path_, __request_info_);
+    __body_ = __set_body(file_path, request_info);
   }
 }
 
