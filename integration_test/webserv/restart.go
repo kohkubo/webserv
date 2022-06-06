@@ -15,7 +15,7 @@ var log string
 // 指定したpathのconfigファイルでwebservを立ち上げる。
 func Restart(configPath string) error {
 	if current_process != nil {
-		Kill(false)
+		Kill()
 	}
 	current_process = exec.Command("./webserv", configPath)
 	// itestの実行ファイルがintegration_test/integration_testを期待
@@ -34,6 +34,7 @@ func waitServerLaunch() chan struct{} {
 	done := make(chan struct{})
 	scanner := bufio.NewScanner(stderr)
 	go func() {
+		log = ""
 		for scanner.Scan() {
 			txt := scanner.Text()
 			log = fmt.Sprintf("%s%s\n", log, txt)

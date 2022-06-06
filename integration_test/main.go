@@ -27,7 +27,7 @@ func main() {
 			status = 1
 		}
 	}
-	webserv.Kill(status != 0)
+	webserv.Kill()
 	os.Exit(status)
 }
 

@@ -10,24 +10,21 @@ import (
 func ExitWithKill(err error) {
 	colorprint.Stderr("Exit by unexpeted error!")
 	fmt.Fprintf(os.Stderr, "error content: %v", err)
-	Kill(true)
+	Kill()
+	fmt.Println()
+	fmt.Println("===webserv===")
+	fmt.Printf("%s", log)
+	fmt.Println("=============")
 	os.Exit(1)
 }
 
-func Kill(printLog bool) {
+func Kill() {
 	if current_process == nil {
 		return
 	}
 	current_process.Process.Kill()
-	if printLog {
-		str, _ := io.ReadAll(stderr)
-		log = fmt.Sprintf("%s%s\n", log, str)
-		fmt.Println()
-		fmt.Println("===webserv===")
-		fmt.Printf("%s", log)
-		fmt.Println("=============")
-	}
+	str, _ := io.ReadAll(stderr)
+	log = fmt.Sprintf("%s%s\n", log, str)
 	current_process.Wait()
 	current_process = nil
-	log = ""
 }
