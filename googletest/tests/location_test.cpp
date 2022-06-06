@@ -57,9 +57,9 @@ TEST(location_test, multi_location) {
     ConfGroupMapGenerator         config_map_generator(SAMPLE_CONF);
     std::map<listenFd, confGroup> conf_group_map =
         config_map_generator.generate();
-    EXPECT_EQ(5, conf_group_map.size());
+    EXPECT_EQ(static_cast<std::size_t>(5), conf_group_map.size());
     const Config *config = conf_group_map.begin()->second[0];
-    EXPECT_EQ(5, config->locations_.size());
+    EXPECT_EQ(static_cast<std::size_t>(5), config->locations_.size());
     EXPECT_EQ("/", config->locations_[0].location_path_);
     EXPECT_EQ("/dir/", config->locations_[1].location_path_);
     EXPECT_EQ("/test_dir/dir/", config->locations_[2].location_path_);
