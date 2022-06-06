@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"integration_test/colorprint"
 	"integration_test/tests"
 	"integration_test/webserv"
 	"os"
@@ -23,9 +24,9 @@ func main() {
 		status = 1
 	case ok := <-test():
 		if ok {
-			fmt.Println("All ok")
+			colorprint.Good("All ok")
 		} else {
-			fmt.Println("Error")
+			colorprint.NotGood("Error")
 			status = 1
 		}
 	}
