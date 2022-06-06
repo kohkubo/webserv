@@ -91,7 +91,7 @@ var testIOMulti = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       fileToBytes("../html/index.html"),
 				}
-				numOfClient := 5000 // 時間がかかるので一旦10, 5000とかでもいけたけど。。。いけて良いのか?
+				numOfClient := 10 // 時間がかかるので一旦10, 5000とかでもいけたけど。。。いけて良いのか?
 				var clients []*tester.Client
 				for i := 0; i < numOfClient; i++ {
 					clients = append(clients, tester.NewClient(baseClient))
