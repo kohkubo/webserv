@@ -12,11 +12,11 @@ import (
 )
 
 var testDELETE = testCatergory{
-	name:   "DELETE",
-	config: "integration_test/conf/webserv.conf",
+	categoryName: "DELETE",
+	config:       "integration_test/conf/webserv.conf",
 	testCases: []testCase{
 		{
-			name: "simple",
+			caseName: "simple",
 			test: func() bool {
 				// setup file to delete
 				deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
@@ -30,7 +30,7 @@ var testDELETE = testCatergory{
 				}
 				defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"DELETE " + deleteFilePath + " HTTP/1.1\r\n",
@@ -61,9 +61,9 @@ var testDELETE = testCatergory{
 			},
 		},
 		{
-			name: "no_such_file",
+			caseName: "no_such_file",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"DELETE /no_such_file HTTP/1.1\r\n",
