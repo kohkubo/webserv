@@ -5,7 +5,6 @@
 
 #include "utils/utils.hpp"
 
-// TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも
 // TODO: content-typeの文法を確認する -> headerのパースで確認すべきかもしれない
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const std::string &content_type) {
