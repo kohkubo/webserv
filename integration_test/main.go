@@ -1,53 +1,40 @@
 package main
 
 import (
-	"fmt"
+	"integration_test/colorprint"
 	"integration_test/tests"
+	"integration_test/webserv"
 	"os"
 	"time"
 )
 
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 // TODO: 限界近くの多重接続
+//"integration_test/conf/limit_expect.conf"はどこで使う？
 
 func main() {
 	var status int
 	select {
-	case <-time.After(30 * time.Second):
-		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
+	case <-time.After(5 * time.Minute):
+		colorprint.Stderr("itest: unexptected timeout")
 		status = 1
-	case <-test():
-		if tests.IsFail() || tests.IsFatal() {
+	case ok := <-test():
+		if ok {
+			colorprint.Stdout("All ok")
+		} else {
+			colorprint.Stderr("Fail")
 			status = 1
 		}
 	}
-	KillWebserv()
+	webserv.Kill()
 	os.Exit(status)
 }
 
-func test() chan struct{} {
-	done := make(chan struct{})
+func test() chan bool {
+	result := make(chan bool)
 	go func() {
-		defer close(done)
-		RestartWebserv("integration_test/conf/webserv.conf")
-		//tests.TestPOST()
-		tests.TestDELETE()
-		tests.TestIOMulti()
-		tests.TestBadRequest()
-
-		RestartWebserv("integration_test/conf/autoindex.conf")
-		tests.TestAutoindex()
-
-		RestartWebserv("integration_test/conf/server_name.conf")
-		tests.TestServerName()
-
-		RestartWebserv("integration_test/conf/test.conf")
-		tests.TestGET()
-		tests.TestCgi()
-		tests.TestLocation()
-		tests.TestLimitExpect()
-
-		//RestartWebserv("integration_test/conf/limit_expect.conf")
+		t := tests.Generate()
+		result <- t.Test()
 	}()
-	return done
+	return result
 }

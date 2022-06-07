@@ -31,48 +31,47 @@ std::map<int, std::string> init_page_contents_map() {
   return res;
 }
 
-bool Response::__is_error_status_code() {
+bool Response::__is_error_status_code(HttpStatusCode status_code) {
   // TODO: エラーのステータスコードの扱いを決まったら再実装
-  return __status_code_ > 299 && __status_code_ < 600;
+  return status_code > 299 && status_code < 600;
 }
 
 Response::Response(const Config &config, const RequestInfo &request_info)
-    : __config_(config)
-    , __request_info_(request_info)
-    , __status_code_(NONE) {
+    : __status_code_(NONE) {
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   const Location *location =
-      __get_proper_location(__request_info_.uri_, __config_.locations_);
+      __get_proper_location(request_info.uri_, config.locations_);
   if (location == NULL) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     __status_code_ = NOT_FOUND_404;
-    __set_error_page_body(Location());
+    __body_        = __set_error_page_body(Location(), config, __status_code_);
     return;
   }
-  __set_file_path(__request_info_.uri_, *location);
-  switch (__request_info_.method_) {
-  case GET:
-    __get_method_handler(*location);
-    break;
-  case POST:
-    __post_method_handler(*location);
-    break;
-  case DELETE:
-    __delete_method_handler(*location);
-    break;
-  default:
-    LOG("unknown method:" << __request_info_.method_);
-    __status_code_ = NOT_IMPLEMENTED_501;
-    break;
+  if (is_minus_depth(request_info.uri_)) {
+    __status_code_ = FORBIDDEN_403;
+    __body_        = __set_error_page_body(*location, config, __status_code_);
+    return;
   }
-  if (__is_error_status_code()) {
-    // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
-    __set_error_page_body(*location);
+  std::string file_path = __get_file_path(request_info.uri_, *location);
+  if ("GET" == request_info.method_) {
+    __status_code_ = __get_method_handler(*location, file_path);
+  } else if ("POST" == request_info.method_) {
+    __status_code_ = __post_method_handler(*location, file_path);
+  } else if ("DELETE" == request_info.method_) {
+    __status_code_ =
+        __delete_method_handler(*location, request_info, file_path);
   } else {
-    __set_body();
+    LOG("unknown method: " << request_info.method_);
+    __status_code_ = NOT_IMPLEMENTED_501;
+  }
+  if (__is_error_status_code(__status_code_)) {
+    // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
+    __body_ = __set_error_page_body(*location, config, __status_code_);
+  } else {
+    __body_ = __set_body(file_path, request_info);
   }
 }
 
@@ -96,67 +95,59 @@ Response::__get_proper_location(const std::string           &request_uri,
   return ret_location;
 }
 
-void Response::__set_file_path(const std::string &request_uri,
-                               const Location    &location) {
-  __file_path_ = location.root_ + request_uri;
-  if (has_suffix(__file_path_, "/") &&
-      is_file_exists(__file_path_ + location.index_)) {
-    __file_path_ += location.index_;
+std::string Response::__get_file_path(const std::string &request_uri,
+                                      const Location    &location) {
+  std::string file_path;
+  file_path = location.root_ + request_uri;
+  if (has_suffix(file_path, "/") &&
+      is_file_exists(file_path + location.index_)) {
+    file_path += location.index_;
   }
+  return file_path;
 }
 
 // TODO: リンクやその他のファイルシステムの時どうするか
-void Response::__check_filepath_status(const Location &location) {
-  if (__status_code_ != NONE) {
-    return;
-  }
-  if (is_minus_depth(__file_path_)) {
-    __status_code_ = NOT_FOUND_404;
-  }
-  // TODO: POSTはディレクトリの時どう処理するのか
-  // TODO: 以下は別関数にするか整理する
-  if (has_suffix(__file_path_, "/")) {
-    if (is_dir_exists(__file_path_)) {
+HttpStatusCode Response::__check_filepath_status(const Location    &location,
+                                                 const std::string &file_path) {
+  if (has_suffix(file_path, "/")) {
+    if (is_dir_exists(file_path)) {
       if (!location.autoindex_) {
-        __status_code_ = FORBIDDEN_403; // nginxに合わせた
-      } else {
-        __status_code_ = OK_200;
+        return FORBIDDEN_403; // nginxに合わせた
       }
-    } else {
-      __status_code_ = NOT_FOUND_404;
+      return OK_200;
     }
-    return;
+    return NOT_FOUND_404;
   }
-  if (!is_file_exists(__file_path_)) {
-    __status_code_ = NOT_FOUND_404;
-    return;
+  if (!is_file_exists(file_path)) {
+    return NOT_FOUND_404;
   }
-  if (!is_accessible(__file_path_, R_OK)) {
+  if (!is_accessible(file_path, R_OK)) {
     // TODO: Permission error が 403なのか確かめてない
-    __status_code_ = FORBIDDEN_403;
-    return;
+    return FORBIDDEN_403;
   }
-  __status_code_ = OK_200;
+  return OK_200;
 }
 
-void Response::__set_error_page_body(const Location &location) {
+// TODO: config.error_page validate
+std::string Response::__set_error_page_body(const Location      &location,
+                                            const Config        &config,
+                                            const HttpStatusCode status_code) {
   std::map<int, std::string>::const_iterator it =
-      __config_.error_pages_.find(__status_code_);
-  if (it != __config_.error_pages_.end()) {
-    __file_path_ = location.root_ + it->second;
-    __body_      = read_file_tostring(__file_path_);
-  } else {
-    __body_ = g_error_page_contents_map[__status_code_];
+      config.error_pages_.find(status_code);
+  if (it != config.error_pages_.end()) {
+    std::string file_path = location.root_ + it->second;
+    return read_file_tostring(file_path);
   }
+  return g_error_page_contents_map[status_code];
 }
 
-void Response::__set_body() {
-  if (has_suffix(__file_path_, ".sh")) {
-    __body_ =
-        __read_file_tostring_cgi(__file_path_, __request_info_.env_values_);
-  } else if (has_suffix(__file_path_, "/")) {
-    __body_ = __create_autoindex_body(__file_path_);
-  } else {
-    __body_ = read_file_tostring(__file_path_);
+std::string Response::__set_body(const std::string &file_path,
+                                 const RequestInfo  request_info) {
+  if (has_suffix(file_path, ".sh")) {
+    return __read_file_tostring_cgi(file_path, request_info.env_values_);
   }
+  if (has_suffix(file_path, "/")) {
+    return __create_autoindex_body(file_path, request_info);
+  }
+  return read_file_tostring(file_path);
 }
