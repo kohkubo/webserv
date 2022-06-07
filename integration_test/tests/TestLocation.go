@@ -12,7 +12,7 @@ var testLocation = testCatergory{
 		{
 			caseName: "locationでdir1を指定できているか",
 			test: func() bool {
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /dir1/ HTTP/1.1\r\n",
@@ -33,7 +33,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 				Port := "5001"
 				Path := "/"
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -55,7 +55,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 				Port := "5002"
 				Path := "/"
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -76,7 +76,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 				Port := "5002"
 				Path := "/"
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",

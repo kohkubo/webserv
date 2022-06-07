@@ -15,7 +15,7 @@ var testLimitExpect = testCatergory{
 			test: func() bool {
 				Port := "5003"
 				Path := "/"
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -37,7 +37,7 @@ var testLimitExpect = testCatergory{
 			test: func() bool {
 				Port := "5003"
 				Path := "/"
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						`POST ` + Path + ` HTTP/1.1` + "\r\n",

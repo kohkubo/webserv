@@ -14,7 +14,7 @@ var testCgi = testCatergory{
 			test: func() bool {
 				Port := "5000"
 				Path := "/cgi.sh"
-				clientA := tester.InitClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
