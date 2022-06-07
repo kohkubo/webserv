@@ -157,6 +157,7 @@ TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
   while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
                                __next_chunk_size_)) {
     if (__next_chunk_ == CHUNK_SIZE) {
+      // TODO: validate chunk_line
       __next_chunk_size_ = hexstr_to_size(chunk_line);
       __next_chunk_      = CHUNK_DATA;
     } else {
