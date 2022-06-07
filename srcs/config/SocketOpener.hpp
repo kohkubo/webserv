@@ -5,18 +5,17 @@
 
 class SocketOpener {
 private:
-  static listenFd __set_listen_fd(struct addrinfo *info);
-  static void     __set_bind_socket(listenFd listen_fd, struct addrinfo *info);
-  static void     __set_listen_passive_socket(listenFd listen_fd);
-
-public:
   SocketOpener() {}
   ~SocketOpener() {}
+  static listenFd __create_socket(struct addrinfo *info);
+  static void     __bind_address(listenFd listen_fd, struct addrinfo *info);
+  static void     __start_listen(listenFd listen_fd);
 
-  listenFd operator()(struct addrinfo *info) {
-    listenFd listen_fd = __set_listen_fd(info);
-    __set_bind_socket(listen_fd, info);
-    __set_listen_passive_socket(listen_fd);
+public:
+  static listenFd open_new_socket(struct addrinfo *info) {
+    listenFd listen_fd = __create_socket(info);
+    __bind_address(listen_fd, info);
+    __start_listen(listen_fd);
     return listen_fd;
   }
 };
