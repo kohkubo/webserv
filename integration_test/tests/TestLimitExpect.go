@@ -12,7 +12,7 @@ var testLimitExpect = testCatergory{
 	testCases: []testCase{
 		{
 			name: "limit_expect ok",
-			test: func() (bool, error) {
+			test: func() bool {
 				Port := "5003"
 				Path := "/"
 				clientA := tester.NewClient(&tester.Client{
@@ -34,7 +34,7 @@ var testLimitExpect = testCatergory{
 		{
 
 			name: "limit_expect NG 405",
-			test: func() (bool, error) {
+			test: func() bool {
 				Port := "5003"
 				Path := "/"
 				clientA := tester.NewClient(&tester.Client{

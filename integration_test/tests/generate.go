@@ -10,7 +10,7 @@ func (tc testCategories) Test() bool {
 	for _, c := range tc {
 		c.runTests()
 	}
-	return !isFail() && !isFatal()
+	return countTestFail == 0
 }
 
 func Generate() T {

@@ -10,7 +10,6 @@ import (
 
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
 // TODO: 限界近くの多重接続
-// TODO: 失敗時の送信メッセージの表示
 //"integration_test/conf/limit_expect.conf"はどこで使う？
 
 func main() {
@@ -27,7 +26,7 @@ func main() {
 			status = 1
 		}
 	}
-	webserv.Kill(status != 0)
+	webserv.Kill()
 	os.Exit(status)
 }
 
