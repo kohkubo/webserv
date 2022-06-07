@@ -28,21 +28,16 @@ private:
   static std::string __get_response_string(HttpStatusCode     status_code,
                                            const std::string &body);
   static const std::string &__get_status_phrase(HttpStatusCode status_code);
-  static const std::string &__get_content_type();
-  static std::string        __make_message_string(HttpStatusCode     status_code,
-                                                  const std::string &body);
-  static std::string __make_bodiless_message_string(HttpStatusCode status_code);
-
-  static std::string __get_file_path(const std::string &request_uri,
-                                     const Location    &location);
-  static bool        __is_error_status_code(HttpStatusCode status_code);
-  static HttpStatusCode __check_filepath_status(const Location    &location,
-                                                const std::string &file_path);
-  static std::string    __set_error_page_body(const Location      &location,
-                                              const Config        &config,
-                                              const HttpStatusCode status_code);
-  static std::string    __set_body(const std::string &file_path,
-                                   const RequestInfo  request_info);
+  static std::string        __get_file_path(const std::string &request_uri,
+                                            const Location    &location);
+  static bool               __is_error_status_code(HttpStatusCode status_code);
+  static HttpStatusCode     __check_filepath_status(const Location    &location,
+                                                    const std::string &file_path);
+  static std::string        __set_error_page_body(const Location      &location,
+                                                  const Config        &config,
+                                                  const HttpStatusCode status_code);
+  static std::string        __set_body(const std::string &file_path,
+                                       const RequestInfo  request_info);
   static std::string    __create_autoindex_body(const std::string &file_path,
                                                 const RequestInfo  request_info);
 

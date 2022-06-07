@@ -18,46 +18,34 @@ std::map<int, std::string> init_response_status_phrase_map() {
   return res;
 }
 
-std::string Response::__get_response_string(HttpStatusCode     status_code,
-                                            const std::string &body) {
-  bool is_bodiless =
-      status_code == NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
-  if (is_bodiless) {
-    return __make_bodiless_message_string(status_code);
-  }
-  return __make_message_string(status_code, body);
-}
-
 const std::string &Response::__get_status_phrase(HttpStatusCode status_code) {
   return g_response_status_phrase_map[status_code];
 }
 
-const std::string &Response::__get_content_type() { return TEXT_HTML; };
-
-std::string
-Response::__make_bodiless_message_string(HttpStatusCode status_code) {
-  std::string response;
-  // start line
-  response = VERSION_HTTP + SP + __get_status_phrase(status_code) + CRLF;
-  // header
-  response += "Connection: " + CONNECTION_CLOSE + CRLF;
-  // empty line
-  response += CRLF;
-  return response;
-};
-
-std::string Response::__make_message_string(HttpStatusCode     status_code,
+std::string Response::__get_response_string(HttpStatusCode     status_code,
                                             const std::string &body) {
   std::string response;
+  bool        has_body =
+      status_code != NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
+
   // start line
   response = VERSION_HTTP + SP + __get_status_phrase(status_code) + CRLF;
-  // header
-  response += "Content-Length: " + to_string(body.size()) + CRLF;
-  response += "Content-Type: " + __get_content_type() + CRLF;
+
+  if (has_body) {
+    // entity_header
+    response += "Content-Length: " + to_string(body.size()) + CRLF;
+    response += "Content-Type: " + TEXT_HTML + CRLF;
+  }
+
+  // general_header
   response += "Connection: " + CONNECTION_CLOSE + CRLF;
+
   // empty line
   response += CRLF;
-  // body
-  response += body;
+
+  if (has_body) {
+    // body
+    response += body;
+  }
   return response;
 };
