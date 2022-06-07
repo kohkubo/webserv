@@ -49,10 +49,9 @@ void Transaction::handle_request(std::string     &request_buffer,
           // delete with body
           // has transfer-encoding but last elm is not chunked
           // content-length and transfer-encoding -> delete content-length
-          if (__request_info_.content_length_ >
-              __config_->client_max_body_size_) {
-            throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
-          }
+          __check_max_client_body_size_exception(
+              __request_info_.content_length_,
+              __config_->client_max_body_size_);
           if (__request_info_.content_length_ != 0 ||
               __request_info_.is_chunked_) {
             __transaction_state_ = RECEIVING_BODY;
