@@ -22,7 +22,7 @@ std::map<int, std::string> init_response_status_phrase_map() {
 std::string Response::get_response_string() {
   // TODO: この分岐、モブプロ用のとき説明しながら直します。今はとりあえずの処理 kohkubo
   if (__status_code_ == MOVED_PERMANENTLY_301) {
-    std::string response = "HTTP/1.1 " + std::to_string(__status_code_) + " " +
+    std::string response = "HTTP/1.1 " + to_string(__status_code_) + " " +
                            g_response_status_phrase_map[__status_code_] + CRLF +
                            "Location: " + "https://localhost:5001/" + CRLF +
                            CRLF + __body_;
