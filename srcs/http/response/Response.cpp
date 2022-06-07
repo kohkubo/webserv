@@ -56,7 +56,6 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     // intをHttpStatusCodeに変換する
     __status_code_ =
         static_cast<HttpStatusCode>(location->return_.begin()->first);
-    __set_error_page_body(*location, config, __status_code_);
     return;
   }
   if (is_minus_depth(request_info.uri_)) {
@@ -141,9 +140,6 @@ HttpStatusCode Response::__check_filepath_status(const Location    &location,
 std::string Response::__set_error_page_body(const Location      &location,
                                             const Config        &config,
                                             const HttpStatusCode status_code) {
-  if (status_code == MOVED_PERMANENTLY_301) {
-    return content_301;
-  }
   std::map<int, std::string>::const_iterator it =
       config.error_pages_.find(status_code);
   if (it != config.error_pages_.end()) {

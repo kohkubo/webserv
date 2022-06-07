@@ -26,7 +26,7 @@ std::string Response::get_response_string() {
     std::string response = "HTTP/1.1 " + to_string(__status_code_) + " " +
                            g_response_status_phrase_map[__status_code_] + CRLF +
                            "Location: " + "https://localhost:5001/" + CRLF +
-                           CRLF + __body_;
+                           CRLF;
     return response;
   }
   __status_phrase_ = __get_status_phrase();
