@@ -21,7 +21,6 @@ std::map<int, std::string> g_error_page_contents_map = init_page_contents_map();
 
 std::map<int, std::string> init_page_contents_map() {
   std::map<int, std::string> res;
-  res[301] = content_301;
   res[400] = content_400;
   res[403] = content_403;
   res[404] = content_404;

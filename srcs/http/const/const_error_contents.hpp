@@ -102,16 +102,4 @@ const std::string content_520 = "<!DOCTYPE html>\n"
                                 "    </body>\n"
                                 "</html>";
 
-const std::string content_301 =
-    "<!DOCTYPE html>\n"
-    "<html>\n"
-    "    <head>"
-    "        <title>301 Moved Permanently</title>"
-    "    </head>\n"
-    "<body>\n"
-    "<center><h1>301 Moved Permanently</h1></center>\n"
-    "default page\n"
-    "</body>\n"
-    "</html>";
-
 #endif /* SRCS_HTTP_CONST_CONST_ERROR_CONTENTS_HPP */
