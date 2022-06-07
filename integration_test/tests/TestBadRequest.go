@@ -11,6 +11,23 @@ var testBadRequest = testCatergory{
 	config:       "integration_test/conf/webserv.conf",
 	testCases: []testCase{
 		{
+			caseName: "too long request line",
+			test: func() bool {
+				longline := strings.Repeat("a", 8192)
+				clientA := tester.NewClient(tester.Client{
+					Port: "5500",
+					ReqPayload: []string{
+						longline,
+					},
+					ExpectStatusCode: http.StatusBadRequest,
+					ExpectHeader:     nil,
+					ExpectBody:       nil,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+
+		{
 			caseName: "too long header",
 			test: func() bool {
 				longline := strings.Repeat("a", 8192)
@@ -40,6 +57,28 @@ var testBadRequest = testCatergory{
 						"Content-Length: 1025\r\n",
 						"\r\n",
 						longline,
+					},
+					ExpectStatusCode: http.StatusBadRequest,
+					ExpectHeader:     nil,
+					ExpectBody:       nil,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+
+		{
+			caseName: "too long chunk size line",
+			test: func() bool {
+				longline := strings.Repeat("a", 8192)
+				clientA := tester.NewClient(tester.Client{
+					Port: "5500",
+					ReqPayload: []string{
+						"GET / HTTP/1.1\r\n",
+						"Host: localhost:5500\r\n",
+						"Transfer-Encoding: chunked\r\n",
+						"\r\n",
+						longline,
+						"\r\n",
 					},
 					ExpectStatusCode: http.StatusBadRequest,
 					ExpectHeader:     nil,

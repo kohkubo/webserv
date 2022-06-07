@@ -82,9 +82,9 @@ void Transaction::handle_request(std::string     &request_buffer,
     }
     if (__transaction_state_ == SENDING) {
       __response_ = __create_response(*__config_, __request_info_);
-    } else if (is_unpredictable_length_buffer(__transaction_state_,
-                                              __request_info_.is_chunked_,
-                                              __next_chunk_)) {
+    } else if (__is_unpredictable_length_buffer(__transaction_state_,
+                                                __request_info_.is_chunked_,
+                                                __next_chunk_)) {
       __check_buffer_length_exception(request_buffer, buffer_max_length_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
@@ -178,7 +178,7 @@ void Transaction::__check_max_client_body_size_exception(
   }
 }
 
-bool Transaction::is_unpredictable_length_buffer(
+bool Transaction::__is_unpredictable_length_buffer(
     TransactionState transaction_state, bool is_chunked,
     NextChunkType next_chunk) {
   return transaction_state == RECEIVING_STARTLINE ||
