@@ -126,8 +126,7 @@ const Config *Transaction::get_proper_config(const confGroup   &conf_group,
 }
 
 void Transaction::create_response() {
-  Response response(*__config_, __request_info_);
-  __response_ = response.get_response_string();
+  __response_ = Response::create_response_message(*__config_, __request_info_);
 }
 
 // TODO: 送った分だけ__response_を消すのはダメなの?? kohkubo

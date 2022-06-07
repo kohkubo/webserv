@@ -18,57 +18,46 @@ std::map<int, std::string> init_response_status_phrase_map() {
   return res;
 }
 
-std::string Response::get_response_string() {
-  __status_phrase_ = __get_status_phrase();
-  __set_general_header();
+std::string Response::__get_response_string(HttpStatusCode     status_code,
+                                            const std::string &body) {
   bool is_bodiless =
-      __status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304;
+      status_code == NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
   if (is_bodiless) {
-    return __make_bodiless_message_string();
+    return __make_bodiless_message_string(status_code);
   }
-  __set_entity_header();
-  return __make_message_string();
+  return __make_message_string(status_code, body);
 }
 
-std::string Response::__get_status_phrase() {
-  return g_response_status_phrase_map[__status_code_];
-}
-
-void Response::__set_general_header() {
-  // Date
-  // TODO: 別関数に実装
-  __connection_ = CONNECTION_CLOSE;
-}
-
-void Response::__set_entity_header() {
-  __content_len_  = to_string(__body_.size());
-  __content_type_ = __get_content_type();
+const std::string &Response::__get_status_phrase(HttpStatusCode status_code) {
+  return g_response_status_phrase_map[status_code];
 }
 
 const std::string &Response::__get_content_type() { return TEXT_HTML; };
 
-std::string        Response::__make_bodiless_message_string() {
+std::string
+Response::__make_bodiless_message_string(HttpStatusCode status_code) {
   std::string response;
   // start line
-  response = VERSION_HTTP + SP + __status_phrase_ + CRLF;
+  response = VERSION_HTTP + SP + __get_status_phrase(status_code) + CRLF;
   // header
-  response += "Connection: " + __connection_ + CRLF;
+  response += "Connection: " + CONNECTION_CLOSE + CRLF;
   // empty line
   response += CRLF;
   return response;
 };
 
-std::string Response::__make_message_string() {
+std::string Response::__make_message_string(HttpStatusCode     status_code,
+                                            const std::string &body) {
   std::string response;
   // start line
-  response = VERSION_HTTP + SP + __status_phrase_ + CRLF;
+  response = VERSION_HTTP + SP + __get_status_phrase(status_code) + CRLF;
   // header
-  response += "Content-Length: " + __content_len_ + CRLF;
-  response += "Content-Type: " + __content_type_ + CRLF;
-  response += "Connection: " + __connection_ + CRLF;
+  response += "Content-Length: " + to_string(body.size()) + CRLF;
+  response += "Content-Type: " + __get_content_type() + CRLF;
+  response += "Connection: " + CONNECTION_CLOSE + CRLF;
   // empty line
   response += CRLF;
   // body
-  response += __body_;
+  response += body;
   return response;
 };

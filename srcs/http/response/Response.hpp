@@ -11,47 +11,38 @@
 #include "utils/utils.hpp"
 
 class Response {
-private:
-  HttpStatusCode __status_code_;
-  std::string    __response_string_;
-  std::string    __body_;
-
-  std::string    __status_phrase_;
-  std::string    __content_len_;
-  std::string    __content_type_;
-  std::string    __connection_;
-
 public:
-  Response(const Config &config, const RequestInfo &request_info);
-  virtual ~Response(){};
-  std::string get_response_string();
+  static std::string create_response_message(const Config      &config,
+                                             const RequestInfo &request_info);
 
 private:
   Response();
+  ~Response();
   static std::string
   __read_file_tostring_cgi(const std::string              &path,
                            const std::vector<std::string> &env);
-  static const Location             *
+  static const Location                    *
   __get_proper_location(const std::string           &request_uri,
-                                    const std::vector<Location> &locations);
+                                           const std::vector<Location> &locations);
 
-  std::string __get_status_phrase();
-  void        __set_general_header();
-  void        __set_entity_header();
+  static std::string __get_response_string(HttpStatusCode     status_code,
+                                           const std::string &body);
+  static const std::string &__get_status_phrase(HttpStatusCode status_code);
   static const std::string &__get_content_type();
-  std::string               __make_message_string();
-  std::string               __make_bodiless_message_string();
+  static std::string        __make_message_string(HttpStatusCode     status_code,
+                                                  const std::string &body);
+  static std::string __make_bodiless_message_string(HttpStatusCode status_code);
 
-  static std::string        __get_file_path(const std::string &request_uri,
-                                            const Location    &location);
-  static bool               __is_error_status_code(HttpStatusCode status_code);
-  static HttpStatusCode     __check_filepath_status(const Location    &location,
-                                                    const std::string &file_path);
-  static std::string        __set_error_page_body(const Location      &location,
-                                                  const Config        &config,
-                                                  const HttpStatusCode status_code);
-  static std::string        __set_body(const std::string &file_path,
-                                       const RequestInfo  request_info);
+  static std::string __get_file_path(const std::string &request_uri,
+                                     const Location    &location);
+  static bool        __is_error_status_code(HttpStatusCode status_code);
+  static HttpStatusCode __check_filepath_status(const Location    &location,
+                                                const std::string &file_path);
+  static std::string    __set_error_page_body(const Location      &location,
+                                              const Config        &config,
+                                              const HttpStatusCode status_code);
+  static std::string    __set_body(const std::string &file_path,
+                                   const RequestInfo  request_info);
   static std::string    __create_autoindex_body(const std::string &file_path,
                                                 const RequestInfo  request_info);
 
