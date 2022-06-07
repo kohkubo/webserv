@@ -48,9 +48,6 @@ private:
   static void
   __check_max_client_body_size_exception(std::size_t actual_body_size,
                                          std::size_t max_body_size);
-  static bool
-  __is_unpredictable_length_buffer(TransactionState transaction_state,
-                                   bool is_chunked, NextChunkType next_chunk);
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
   static const Config *__get_proper_config(const confGroup   &conf_group,

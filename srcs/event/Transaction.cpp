@@ -81,9 +81,8 @@ void Transaction::handle_request(std::string     &request_buffer,
     }
     if (__transaction_state_ == SENDING) {
       __response_ = __create_response(*__config_, __request_info_);
-    } else if (__is_unpredictable_length_buffer(__transaction_state_,
-                                                __request_info_.is_chunked_,
-                                                __next_chunk_)) {
+    } else if (__transaction_state_ == RECEIVING_STARTLINE ||
+               __transaction_state_ == RECEIVING_HEADER) {
       __check_buffer_length_exception(request_buffer, buffer_max_length_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
@@ -168,6 +167,8 @@ TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
       __next_chunk_ = CHUNK_SIZE;
     }
   }
+  if (__next_chunk_ == CHUNK_SIZE)
+    __check_buffer_length_exception(request_buffer, buffer_max_length_);
   return RECEIVING_BODY;
 }
 
@@ -176,15 +177,6 @@ void Transaction::__check_max_client_body_size_exception(
   if (actual_body_size > max_body_size) {
     throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
   }
-}
-
-bool Transaction::__is_unpredictable_length_buffer(
-    TransactionState transaction_state, bool is_chunked,
-    NextChunkType next_chunk) {
-  return transaction_state == RECEIVING_STARTLINE ||
-         transaction_state == RECEIVING_HEADER ||
-         (transaction_state == RECEIVING_BODY && is_chunked &&
-          next_chunk == CHUNK_SIZE);
 }
 
 void Transaction::__check_buffer_length_exception(
