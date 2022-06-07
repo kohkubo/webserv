@@ -78,7 +78,6 @@ var testBadRequest = testCatergory{
 						"Transfer-Encoding: chunked\r\n",
 						"\r\n",
 						longline,
-						"\r\n",
 					},
 					ExpectStatusCode: http.StatusBadRequest,
 					ExpectHeader:     nil,
