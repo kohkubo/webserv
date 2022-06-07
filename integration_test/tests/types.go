@@ -2,28 +2,14 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/tests/utils"
+	"integration_test/colorprint"
+	"integration_test/webserv"
 	"os"
 )
 
-var (
-	CountTestFatal uint
-	CountTestFail  uint
-)
-
-// for color print
-const (
-	red   = "\033[31m"
-	green = "\033[32m"
-	reset = "\033[0m"
-)
-
-func IsFatal() bool {
-	return CountTestFatal != 0
-}
-
-func IsFail() bool {
-	return CountTestFail != 0
+type testCase struct {
+	name string
+	test func() (bool, error)
 }
 
 type testCatergory struct {
@@ -34,14 +20,14 @@ type testCatergory struct {
 
 // メソッド, webservの起動~テスト実行まで行う
 func (c testCatergory) runTests() {
-	if IsFatal() {
+	if isFatal() {
 		return
 	}
 	if c.config == "" {
 		fmt.Fprintln(os.Stderr, "emtpy config")
 		return
 	}
-	if err := utils.RestartWebserv(c.config); err != nil {
+	if err := webserv.Restart(c.config); err != nil {
 		fmt.Fprintf(os.Stderr, "could not start webserv: %v\n", err)
 		return
 	}
@@ -49,7 +35,7 @@ func (c testCatergory) runTests() {
 	fmt.Println(c.name)
 	fmt.Println("config:", c.config)
 	for _, t := range c.testCases {
-		if IsFatal() {
+		if isFatal() {
 			return
 		}
 
@@ -60,15 +46,10 @@ func (c testCatergory) runTests() {
 			fmt.Fprintf(os.Stderr, "fatal error : %v", err)
 			CountTestFatal++
 		case ok:
-			fmt.Println(green, "ok", reset)
+			colorprint.Stdout("ok")
 		default:
-			fmt.Println(red, "error", reset)
+			colorprint.Stderr("ko")
 			CountTestFail++
 		}
 	}
-}
-
-type testCase struct {
-	name string
-	test func() (bool, error)
 }

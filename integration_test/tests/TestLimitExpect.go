@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/response"
 	"integration_test/tester"
-	"integration_test/tests/utils"
 	"net/http"
 )
 
@@ -27,7 +26,7 @@ var testLimitExpect = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/index.html"),
+					ExpectBody:       fileToBytes("../html/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"integration_test/colorprint"
 	"integration_test/tests"
-	"integration_test/tests/utils"
+	"integration_test/webserv"
 	"os"
 	"time"
 )
@@ -12,30 +12,30 @@ import (
 // TODO: 限界近くの多重接続
 // TODO: 失敗時の送信メッセージの表示
 //"integration_test/conf/limit_expect.conf"はどこで使う？
-// TODO: killwebservの使い方を見直す
-// TODO: IsFail, IsFatalの使い方見直す
 
 func main() {
 	var status int
 	select {
-	case <-time.After(30 * time.Second):
-		fmt.Fprintln(os.Stderr, "itest: unexptected timeout")
+	case <-time.After(5 * time.Minute):
+		colorprint.Stderr("itest: unexptected timeout")
 		status = 1
-	case status = <-test():
+	case ok := <-test():
+		if ok {
+			colorprint.Stdout("All ok")
+		} else {
+			colorprint.Stderr("Fail")
+			status = 1
+		}
 	}
-	utils.KillWebserv(status != 0)
+	webserv.Kill(status != 0)
 	os.Exit(status)
 }
 
-func test() chan int {
-	result := make(chan int)
+func test() chan bool {
+	result := make(chan bool)
 	go func() {
 		t := tests.Generate()
-		if ok := t.Test(); ok {
-			result <- 0
-		} else {
-			result <- 1
-		}
+		result <- t.Test()
 	}()
 	return result
 }

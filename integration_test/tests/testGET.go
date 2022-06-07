@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/response"
 	"integration_test/tester"
-	"integration_test/tests/utils"
 	"net/http"
 	"os"
 )
@@ -27,7 +26,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/index.html"),
+					ExpectBody:       fileToBytes("../html/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},
@@ -46,7 +45,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       utils.FileToBytes("../html/dir1/index2.html"),
+					ExpectBody:       fileToBytes("../html/dir1/index2.html"),
 				})
 				return clientA.DoAndCheck()
 			},
