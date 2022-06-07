@@ -21,6 +21,7 @@ std::map<int, std::string> g_error_page_contents_map = init_page_contents_map();
 
 std::map<int, std::string> init_page_contents_map() {
   std::map<int, std::string> res;
+  res[301] = content_301;
   res[400] = content_400;
   res[403] = content_403;
   res[404] = content_404;
@@ -48,6 +49,14 @@ Response::Response(const Config &config, const RequestInfo &request_info)
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     __status_code_ = NOT_FOUND_404;
     __body_        = __set_error_page_body(Location(), config, __status_code_);
+    return;
+  }
+  // return がセットされていたら
+  if (location->return_.size() != 0) {
+    // intをHttpStatusCodeに変換する
+    __status_code_ =
+        static_cast<HttpStatusCode>(location->return_.begin()->first);
+    __set_error_page_body(*location, config, __status_code_);
     return;
   }
   if (is_minus_depth(request_info.uri_)) {
@@ -132,6 +141,9 @@ HttpStatusCode Response::__check_filepath_status(const Location    &location,
 std::string Response::__set_error_page_body(const Location      &location,
                                             const Config        &config,
                                             const HttpStatusCode status_code) {
+  if (status_code == MOVED_PERMANENTLY_301) {
+    return content_301;
+  }
   std::map<int, std::string>::const_iterator it =
       config.error_pages_.find(status_code);
   if (it != config.error_pages_.end()) {

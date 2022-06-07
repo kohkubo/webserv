@@ -7,6 +7,7 @@ std::map<int, std::string> init_response_status_phrase_map() {
   std::map<int, std::string> res;
   res[200] = STATUS_200_PHRASE;
   res[204] = STATUS_204_PHRASE;
+  res[301] = STATUS_301_PHRASE;
   res[304] = STATUS_304_PHRASE;
   res[400] = STATUS_400_PHRASE;
   res[403] = STATUS_403_PHRASE;
@@ -19,6 +20,14 @@ std::map<int, std::string> init_response_status_phrase_map() {
 }
 
 std::string Response::get_response_string() {
+  // TODO: この分岐、モブプロ用のとき説明しながら直します。今はとりあえずの処理 kohkubo
+  if (__status_code_ == MOVED_PERMANENTLY_301) {
+    std::string response = "HTTP/1.1 " + std::to_string(__status_code_) + " " +
+                           g_response_status_phrase_map[__status_code_] + CRLF +
+                           "Location: " + "https://localhost:5001/" + CRLF +
+                           CRLF + __body_;
+    return response;
+  }
   __status_phrase_ = __get_status_phrase();
   __set_general_header();
   bool is_bodiless =
