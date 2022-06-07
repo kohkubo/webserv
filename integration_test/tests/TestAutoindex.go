@@ -6,14 +6,14 @@ import (
 )
 
 var testAutoindex = testCatergory{
-	name:   "autoindex",
-	config: "integration_test/conf/autoindex.conf",
+	categoryName: "autoindex",
+	config:       "integration_test/conf/autoindex.conf",
 	testCases: []testCase{
 		{
 			// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
-			name: "simple",
+			caseName: "simple",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /autoindex/ HTTP/1.1\r\n",
@@ -30,9 +30,9 @@ var testAutoindex = testCatergory{
 			},
 		},
 		{
-			name: "forbidden",
+			caseName: "forbidden",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /autoindex/dir2/ HTTP/1.1\r\n",
@@ -50,9 +50,9 @@ var testAutoindex = testCatergory{
 		},
 		{
 
-			name: "index_priority",
+			caseName: "index_priority",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /autoindex/dir1/ HTTP/1.1\r\n",

@@ -6,13 +6,13 @@ import (
 )
 
 var testLocation = testCatergory{
-	name:   "location",
-	config: "integration_test/conf/test.conf",
+	categoryName: "location",
+	config:       "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
-			name: "locationでdir1を指定できているか",
+			caseName: "locationでdir1を指定できているか",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5000",
 					ReqPayload: []string{
 						"GET /dir1/ HTTP/1.1\r\n",
@@ -29,11 +29,11 @@ var testLocation = testCatergory{
 			},
 		},
 		{
-			name: "rootディレクティブが反映されるか",
+			caseName: "rootディレクティブが反映されるか",
 			test: func() bool {
 				Port := "5001"
 				Path := "/"
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -51,11 +51,11 @@ var testLocation = testCatergory{
 		},
 		{
 
-			name: "index指定ができているか",
+			caseName: "index指定ができているか",
 			test: func() bool {
 				Port := "5002"
 				Path := "/"
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",
@@ -72,11 +72,11 @@ var testLocation = testCatergory{
 			},
 		},
 		{
-			name: "index指定ができているか",
+			caseName: "index指定ができているか",
 			test: func() bool {
 				Port := "5002"
 				Path := "/"
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",

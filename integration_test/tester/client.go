@@ -21,14 +21,15 @@ type Client struct {
 }
 
 // constructor
-func NewClient(c *Client) *Client {
-	conn, err := connect(c.Port)
+func NewClient(baseC Client) *Client {
+	newC := baseC
+	conn, err := connect(newC.Port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
-	c.conn = conn
-	c.method = resolveMethod(c.ReqPayload)
-	return c
+	newC.conn = conn
+	newC.method = resolveMethod(newC.ReqPayload)
+	return &newC
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
