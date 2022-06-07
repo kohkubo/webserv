@@ -11,7 +11,7 @@
 #include "config/Config.hpp"
 #include "utils/utils.hpp"
 
-listenFd SocketOpener::__set_listen_fd(struct addrinfo *info) {
+listenFd SocketOpener::__create_socket(struct addrinfo *info) {
   listenFd listen_fd =
       socket(info->ai_family, info->ai_socktype, info->ai_protocol);
   if (listen_fd == -1) {
@@ -32,18 +32,17 @@ listenFd SocketOpener::__set_listen_fd(struct addrinfo *info) {
   return listen_fd;
 }
 
-void SocketOpener::__set_listen_passive_socket(listenFd listen_fd) {
-  if (listen(listen_fd, SOMAXCONN) == -1) {
-    ERROR_LOG_WITH_ERRNO("listen() failed.");
+void SocketOpener::__bind_address(listenFd listen_fd, struct addrinfo *info) {
+  if (bind(listen_fd, info->ai_addr, info->ai_addrlen) == -1) {
+    ERROR_LOG_WITH_ERRNO("bind() failed.");
     close(listen_fd);
     exit(EXIT_FAILURE);
   }
 }
 
-void SocketOpener::__set_bind_socket(listenFd         listen_fd,
-                                     struct addrinfo *info) {
-  if (bind(listen_fd, info->ai_addr, info->ai_addrlen) == -1) {
-    ERROR_LOG_WITH_ERRNO("bind() failed.");
+void SocketOpener::__start_listen(listenFd listen_fd) {
+  if (listen(listen_fd, SOMAXCONN) == -1) {
+    ERROR_LOG_WITH_ERRNO("listen() failed.");
     close(listen_fd);
     exit(EXIT_FAILURE);
   }
