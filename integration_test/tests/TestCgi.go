@@ -6,15 +6,15 @@ import (
 )
 
 var testCgi = testCatergory{
-	name:   "cgi",
-	config: "integration_test/conf/test.conf",
+	categoryName: "cgi",
+	config:       "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
-			name: "5000_cgi_get_normal",
+			caseName: "5000_cgi_get_normal",
 			test: func() bool {
 				Port := "5000"
 				Path := "/cgi.sh"
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
 						"GET " + Path + " HTTP/1.1\r\n",

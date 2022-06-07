@@ -7,21 +7,20 @@ import (
 )
 
 type testCase struct {
-	name string
-	test func() bool
+	caseName string
+	test     func() bool
 }
 
 type testCatergory struct {
-	name      string
-	config    string
-	testCases []testCase
+	categoryName string
+	config       string
+	testCases    []testCase
 }
 
 var (
 	countTestFail uint
 )
 
-// メソッド, webservの起動~テスト実行まで行う
 func (c testCatergory) runTests() {
 	if c.config == "" {
 		webserv.ExitWithKill(fmt.Errorf("emtpy config"))
@@ -32,12 +31,11 @@ func (c testCatergory) runTests() {
 		return
 	}
 	fmt.Println()
-	fmt.Println(c.name)
+	fmt.Println(c.categoryName)
 	fmt.Println("config:", c.config)
 	for _, t := range c.testCases {
-		fmt.Print("[" + t.name + "] ")
-		ok := t.test()
-		switch {
+		fmt.Print("[" + t.caseName + "] ")
+		switch ok := t.test(); {
 		case ok:
 			colorprint.Stdout("ok")
 		default:

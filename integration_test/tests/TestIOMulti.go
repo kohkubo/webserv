@@ -8,13 +8,13 @@ import (
 
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
 var testIOMulti = testCatergory{
-	name:   "IOmulti",
-	config: "integration_test/conf/webserv.conf",
+	categoryName: "IOmulti",
+	config:       "integration_test/conf/webserv.conf",
 	testCases: []testCase{
 		{
-			name: "3client",
+			caseName: "3client",
 			test: func() bool {
-				clientA := tester.NewClient(&tester.Client{
+				clientA := tester.NewClient(tester.Client{
 					Port: "5500",
 					ReqPayload: []string{
 						"GET /",
@@ -26,7 +26,7 @@ var testIOMulti = testCatergory{
 					ExpectBody:       fileToBytes("../html/index.html"),
 				})
 
-				clientB := tester.NewClient(&tester.Client{
+				clientB := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"GET /nosuch HT",
@@ -38,7 +38,7 @@ var testIOMulti = testCatergory{
 					ExpectBody:       response.Content_404,
 				})
 
-				clientC := tester.NewClient(&tester.Client{
+				clientC := tester.NewClient(tester.Client{
 					Port: "5001",
 					ReqPayload: []string{
 						"DELETE /nosuch HTTP/1.1\r",
@@ -73,6 +73,39 @@ var testIOMulti = testCatergory{
 				clientA.RecvResponse()
 				if ok := clientA.IsExpectedResponse(); !ok {
 					return false
+				}
+				return true
+			},
+		},
+		{
+			caseName: "multiclient",
+			test: func() bool {
+				baseClient := tester.Client{
+					Port: "5500",
+					ReqPayload: []string{
+						"GET /",
+						" HTTP/1.1\r\nHost: localhost:5500\r\nUse",
+						"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
+					},
+					ExpectStatusCode: http.StatusOK,
+					ExpectHeader:     nil,
+					ExpectBody:       fileToBytes("../html/index.html"),
+				}
+				numOfClient := 10 // 時間がかかるので一旦10, 5000とかでもいけたけど。。。いけて良いのか?
+				var clients []*tester.Client
+				for i := 0; i < numOfClient; i++ {
+					clients = append(clients, tester.NewClient(baseClient))
+				}
+				for cnt := 0; cnt < 3; cnt++ {
+					for i := 0; i < numOfClient; i++ {
+						clients[i].SendPartialRequest()
+					}
+				}
+				for i := 0; i < numOfClient; i++ {
+					clients[i].RecvResponse()
+					if ok := clients[i].IsExpectedResponse(); !ok {
+						return false
+					}
 				}
 				return true
 			},
