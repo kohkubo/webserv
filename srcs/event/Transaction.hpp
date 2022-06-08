@@ -17,7 +17,7 @@ enum TransactionState {
   RECEIVING_STARTLINE,
   RECEIVING_HEADER, // リクエストはheaderを読み取り中。
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
-  COMPLETE,         // レスポンスの送信中。
+  COMPLETE,         // リクエストのパース完了。
 };
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
