@@ -45,7 +45,7 @@ void RequestInfo::parse_request_header(
         content_type_ = tolower(str);
         // typeの先頭のOWSは許容してしまう
         // 英字以外も小文字になってしまう？
-      } else {
+      } else { // parameter
         std::size_t pos = str.find('=');
         if (pos == std::string::npos) {
           throw BadRequestException();
