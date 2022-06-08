@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "event/ResponseMessage.hpp"
+#include "event/Response.hpp"
 #include "event/Transaction.hpp"
 
 // TODO: string -> vector<char>
@@ -20,13 +20,13 @@ typedef int          connFd;
 
 class Connection {
 private:
-  connFd                      __conn_fd_;
-  confGroup                   __conf_group_;
-  Transaction                 __transaction_;
-  std::deque<ResponseMessage> __response_queue_;
-  std::string                 __buffer_;
-  std::time_t                 __last_event_time_;
-  static const std::time_t    timeout_seconds_ = 60;
+  connFd                   __conn_fd_;
+  confGroup                __conf_group_;
+  Transaction              __transaction_;
+  std::deque<Response>     __response_queue_;
+  std::string              __buffer_;
+  std::time_t              __last_event_time_;
+  static const std::time_t timeout_seconds_ = 60;
 
 private:
   Connection() {}

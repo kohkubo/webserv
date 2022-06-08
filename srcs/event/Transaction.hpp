@@ -6,7 +6,7 @@
 #include <string>
 
 #include "config/Config.hpp"
-#include "event/ResponseMessage.hpp"
+#include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 
@@ -67,8 +67,8 @@ public:
     __state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
-  ResponseMessage create_response() {
-    return ResponseMessage(__response_, __request_info_.connection_close_);
+  Response create_response() {
+    return Response(__response_, __request_info_.connection_close_);
   }
 };
 
