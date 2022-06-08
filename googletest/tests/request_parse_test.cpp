@@ -152,11 +152,26 @@ TEST(request_parse_test, exception_contenttype_noequal) {
   std::string request =
       "POST /target HTTP/1.1\r\n"
       "Host: 127.0.0.1:5001\r\n"
-      "Content-Type: mulTIPARt/form-data;boUNDAry\"boundary\"\r\n"
+      "Content-Type: multipart/form-data;boundary\"boundary\"\r\n"
       "\r\n";
 
   Config    config;
   confGroup conf_group;
+  conf_group.push_back(&config);
+  Transaction transaction;
+
+  EXPECT_THROW(transaction.handle_request(request, conf_group),
+               RequestInfo::BadRequestException);
+}
+
+TEST(request_parse_test, exception_contenttype_onequote) {
+  std::string request = "POST /target HTTP/1.1\r\n"
+                        "Host: 127.0.0.1:5001\r\n"
+                        "Content-Type: multipart/form-data;boundary=\"\r\n"
+                        "\r\n";
+
+  Config      config;
+  confGroup   conf_group;
   conf_group.push_back(&config);
   Transaction transaction;
 
