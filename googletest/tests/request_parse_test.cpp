@@ -70,6 +70,7 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(r.uri_, "/target");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
+  EXPECT_EQ(r.content_type_, "application/x-www-form-urlencoded");
   EXPECT_EQ(r.connection_close_, true);
   EXPECT_EQ(r.content_length_, 18);
 }
@@ -122,4 +123,43 @@ TEST(request_parse_test, query_body_capital) {
   EXPECT_EQ(info.env_values_[1], "stick=");
   EXPECT_EQ(info.env_values_[2], "ishi=no");
   EXPECT_EQ(info.env_values_[3], "uenimo=3years");
+}
+
+TEST(request_parse_test, content_type_parameter) {
+  std::string request =
+      "POST /target HTTP/1.1\r\n"
+      "Host: 127.0.0.1:5001\r\n"
+      "Content-Type: mulTIPARt/form-data;boUNDAry=\"boundary\"\r\n"
+      "\r\n";
+
+  Config    config;
+  confGroup conf_group;
+  conf_group.push_back(&config);
+  Transaction transaction;
+
+  transaction.handle_request(request, conf_group);
+  RequestInfo r = transaction.get_request_info();
+
+  EXPECT_EQ(r.method_, "POST");
+  EXPECT_EQ(r.uri_, "/target");
+  EXPECT_EQ(r.version_, "HTTP/1.1");
+  EXPECT_EQ(r.host_, "127.0.0.1");
+  EXPECT_EQ(r.content_type_, "multipart/form-data");
+  EXPECT_EQ(r.parameter_["boundary"], "boundary");
+}
+
+TEST(request_parse_test, exception_contenttype_noequal) {
+  std::string request =
+      "POST /target HTTP/1.1\r\n"
+      "Host: 127.0.0.1:5001\r\n"
+      "Content-Type: mulTIPARt/form-data;boUNDAry\"boundary\"\r\n"
+      "\r\n";
+
+  Config    config;
+  confGroup conf_group;
+  conf_group.push_back(&config);
+  Transaction transaction;
+
+  EXPECT_THROW(transaction.handle_request(request, conf_group),
+               RequestInfo::BadRequestException);
 }

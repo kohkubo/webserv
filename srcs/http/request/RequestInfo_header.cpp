@@ -5,6 +5,7 @@
 #include <string>
 
 #include "http/const/const_delimiter.hpp"
+#include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
 // 呼び出し元で例外をcatchする
@@ -34,7 +35,33 @@ void RequestInfo::parse_request_header(
   }
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
-    content_type_ = __parse_request_content_type(itr->second);
+    tokenVector   token_vector = tokenize(itr->second, ";", ";");
+    tokenIterator it           = token_vector.begin();
+    for (; it != token_vector.end(); it++) {
+      std::string str = __trim_optional_whitespace(*it);
+      if (content_type_ == "") {
+        content_type_ = tolower(str);
+        // typeの先頭のOWSは許容してしまう
+        // 英字以外も小文字になってしまう？
+      } else {
+        std::size_t pos = str.find('=');
+        if (pos == std::string::npos) {
+          throw BadRequestException();
+        }
+        std::string key   = tolower(str.substr(0, pos));
+        std::string value = str.substr(pos + 1);
+        if (value[0] == '\"') {
+          std::size_t pos = value.find_last_of("\"");
+          if (pos == 0 || !(value.size() - 1 == pos)) {
+            throw BadRequestException();
+          }
+          value = value.substr(1, pos - 1);
+        } else {
+          value = tolower(value);
+        }
+        parameter_[key] = value;
+      }
+    }
   }
 }
 
@@ -87,11 +114,6 @@ RequestInfo::__parse_request_content_length(const std::string &content_length) {
 bool RequestInfo::__parse_request_transfer_encoding(
     const std::string &transfer_encoding) {
   return transfer_encoding == "chunked";
-}
-
-std::string
-RequestInfo::__parse_request_content_type(const std::string &content_type) {
-  return tolower(content_type);
 }
 
 std::string RequestInfo::__trim_optional_whitespace(std::string str) {

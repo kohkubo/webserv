@@ -5,6 +5,37 @@
 
 #include "utils/utils.hpp"
 
+/*
+#define CTYPE_DELIMITER "; \t"
+#define CTYPE_SKIP      " \t"
+
+// TODO: content-typeの文法を確認する -> headerのパースで確認すべきかもしれない
+// tolower
+void RequestInfo::parse_request_body(std::string       &request_body,
+                                     const std::string &content_type) {
+  tokenVector token_vector =
+      tokenize(content_type, CTYPE_DELIMITER, CTYPE_SKIP);
+  tokenIterator it = token_vector.begin();
+  if (it != token_vector.end()) {
+
+    if (content_type == "application/x-www-form-urlencoded") {
+      __parse_request_values(request_body);
+    } else if (content_type == "multipart/form-data") {
+      env_values_.push_back(request_body); // tmp
+    } else if (content_type == "text/plain") {
+      env_values_.push_back(request_body); // tmp
+    } else {
+      std::cerr << "parse body: unknown content-type" << std::endl; // tmp
+      exit(EXIT_FAILURE);
+    }
+    // htmlを介してpostが送られる場合,
+    //
+上記3つのどれかになるはず(デフォルトは"application/x-www-form-urlencoded")
+    // それ以外になることがあるのかまだわからない
+  }
+}
+*/
+
 // TODO: content-typeの文法を確認する -> headerのパースで確認すべきかもしれない
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const std::string &content_type) {
