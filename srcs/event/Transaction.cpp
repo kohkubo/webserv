@@ -14,7 +14,7 @@ void Transaction::__set_response_for_bad_request() {
   // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
   // 現状は暫定的に、定型文を送信。
   __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __transaction_state_              = SENDING;
+  __state_    = SENDING;
   __request_info_.connection_close_ = true;
 }
 
@@ -22,11 +22,10 @@ void Transaction::__set_response_for_bad_request() {
 void Transaction::handle_request(std::string     &request_buffer,
                                  const confGroup &conf_group) {
   try {
-    if (__transaction_state_ == RECEIVING_STARTLINE ||
-        __transaction_state_ == RECEIVING_HEADER) {
+    if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
       while (__getline(request_buffer, line)) { // noexcept
-        if (__transaction_state_ == RECEIVING_STARTLINE) {
+        if (__state_ == RECEIVING_STARTLINE) {
           __request_info_.check_first_multi_blank_line(line);
           // throws BadRequestException
           if (__request_info_.is_blank_first_line_) {
@@ -35,8 +34,8 @@ void Transaction::handle_request(std::string     &request_buffer,
           RequestInfo::check_bad_parse_request_start_line(line);
           // throws BadRequestException
           __request_info_.parse_request_start_line(line); // noexcept
-          __transaction_state_ = RECEIVING_HEADER;
-        } else if (__transaction_state_ == RECEIVING_HEADER) {
+          __state_ = RECEIVING_HEADER;
+        } else if (__state_ == RECEIVING_HEADER) {
           if (line != "") {
             RequestInfo::store_request_header_field_map(line, __field_map_);
             // throws BadRequestException
@@ -44,7 +43,7 @@ void Transaction::handle_request(std::string     &request_buffer,
           }
           __request_info_.parse_request_header(__field_map_);
           // throws BadRequestException
-          __config_ = __get_proper_config(conf_group, __request_info_.host_);
+          __config_ = __select_proper_config(conf_group, __request_info_.host_);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
@@ -54,35 +53,35 @@ void Transaction::handle_request(std::string     &request_buffer,
               __config_->client_max_body_size_);
           if (__request_info_.content_length_ != 0 ||
               __request_info_.is_chunked_) {
-            __transaction_state_ = RECEIVING_BODY;
+            __state_ = RECEIVING_BODY;
             break;
           }
-          __transaction_state_ = SENDING;
+          __state_ = SENDING;
           break;
         }
       }
     }
-    if (__transaction_state_ == RECEIVING_BODY) {
+    if (__state_ == RECEIVING_BODY) {
       if (__request_info_.is_chunked_) {
-        __transaction_state_ = __chunk_loop(request_buffer);
+        __state_ = __chunk_loop(request_buffer);
         // throws BadRequestException
         __check_max_client_body_size_exception(
             __request_body_.size(), __config_->client_max_body_size_);
         // throws BadRequestException
       } else if (request_buffer.size() >= __request_info_.content_length_) {
-        __set_request_body(request_buffer, __request_body_,
-                           __request_info_.content_length_);
-        __transaction_state_ = SENDING;
+        __request_body_ = __cutout_request_body(
+            request_buffer, __request_info_.content_length_);
+        __state_ = SENDING;
       }
-      if (__transaction_state_ == SENDING) {
+      if (__state_ == SENDING) {
         __request_info_.parse_request_body(__request_body_,
                                            __request_info_.content_type_);
       }
     }
-    if (__transaction_state_ == SENDING) {
-      __response_ = __create_response(*__config_, __request_info_);
-    } else if (__transaction_state_ == RECEIVING_STARTLINE ||
-               __transaction_state_ == RECEIVING_HEADER) {
+    if (__state_ == SENDING) {
+      __response_ = Response::generate_response(*__config_, __request_info_);
+    } else if (__state_ == RECEIVING_STARTLINE ||
+               __state_ == RECEIVING_HEADER) {
       __check_buffer_length_exception(request_buffer, buffer_max_length_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
@@ -99,11 +98,11 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
   return true;
 }
 
-void Transaction::__set_request_body(std::string &request_buffer,
-                                     std::string &request_body,
-                                     size_t       content_length) {
-  request_body = request_buffer.substr(0, content_length);
+std::string Transaction::__cutout_request_body(std::string &request_buffer,
+                                               size_t       content_length) {
+  std::string request_body = request_buffer.substr(0, content_length);
   request_buffer.erase(0, content_length);
+  return request_body;
 }
 
 bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
@@ -125,8 +124,9 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *Transaction::__get_proper_config(const confGroup   &conf_group,
-                                               const std::string &host_name) {
+const Config *
+Transaction::__select_proper_config(const confGroup   &conf_group,
+                                    const std::string &host_name) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == host_name) {
@@ -134,12 +134,6 @@ const Config *Transaction::__get_proper_config(const confGroup   &conf_group,
     }
   }
   return conf_group[0];
-}
-
-std::string Transaction::__create_response(const Config      &config,
-                                           const RequestInfo &request_info) {
-  Response response(config, request_info);
-  return response.get_response_string();
 }
 
 // TODO: 送った分だけ__response_を消すのはダメなの?? kohkubo

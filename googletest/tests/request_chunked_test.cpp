@@ -29,7 +29,7 @@ TEST(request_chunked_test, chunked_body) {
   Transaction transaction;
 
   transaction.handle_request(chunked_request, conf_group);
-  const RequestInfo &info = transaction.get_request_info();
+  const RequestInfo &info = transaction.request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
   EXPECT_EQ(info.env_values_[0],
@@ -68,7 +68,7 @@ TEST(request_chunked_test, chunked_body_split) {
   request_buffer.append(split_request3);
   transaction.handle_request(request_buffer, conf_group);
 
-  const RequestInfo &info = transaction.get_request_info();
+  const RequestInfo &info = transaction.request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
   EXPECT_EQ(info.env_values_[0],
