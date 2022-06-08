@@ -55,7 +55,7 @@ void RequestInfo::parse_request_header(
           if (pos == 0 || !(value.size() - 1 == pos)) {
             throw BadRequestException();
           }
-          value = value.substr(1, pos - 1);
+          value = value.substr(1, pos - 1); // ""に囲まれたものはlowerにしない
         } else {
           value = tolower(value);
         }
