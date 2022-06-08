@@ -12,8 +12,8 @@
 
 class Response {
 public:
-  static std::string create_response_message(const Config      &config,
-                                             const RequestInfo &request_info);
+  static std::string generate_response(const Config      &config,
+                                       const RequestInfo &request_info);
 
 private:
   Response();
@@ -22,8 +22,8 @@ private:
   __read_file_tostring_cgi(const std::string              &path,
                            const std::vector<std::string> &env);
   static const Location                       *
-  __proper_location(const std::string           &request_uri,
-                                          const std::vector<Location> &locations);
+  __select_proper_location(const std::string           &request_uri,
+                                                 const std::vector<Location> &locations);
 
   static std::string    __response_message(HttpStatusCode     status_code,
                                            const std::string &body);

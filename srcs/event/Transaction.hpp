@@ -26,7 +26,7 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 struct Transaction {
 private:
   const Config                      *__config_;
-  TransactionState                   __transaction_state_;
+  TransactionState                   __state_;
   ssize_t                            __send_count_;
   std::string                        __response_;
   RequestInfo                        __request_info_;
@@ -37,37 +37,35 @@ private:
   static const std::size_t           buffer_max_length_ = 8192;
 
 private:
-  static bool      __getline(std::string &request_buffer, std::string &line);
-  static void      __set_request_body(std::string &request_buffer,
-                                      std::string &request_body,
-                                      size_t       content_length);
-  static bool      __get_next_chunk_line(NextChunkType chunk_type,
-                                         std::string  &request_buffer,
-                                         std::string &chunk, size_t next_chunk_size);
-  TransactionState __chunk_loop(std::string &request_buffer);
+  static bool        __getline(std::string &request_buffer, std::string &line);
+  static std::string __cutout_request_body(std::string &request_buffer,
+                                           size_t       content_length);
+  static bool        __get_next_chunk_line(NextChunkType chunk_type,
+                                           std::string  &request_buffer,
+                                           std::string &chunk, size_t next_chunk_size);
+  TransactionState   __chunk_loop(std::string &request_buffer);
   static void
   __check_max_client_body_size_exception(std::size_t actual_body_size,
                                          std::size_t max_body_size);
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  static const Config *__get_proper_config(const confGroup   &conf_group,
-                                           const std::string &host_name);
+  static const Config *__select_proper_config(const confGroup   &conf_group,
+                                              const std::string &host_name);
+  // TODO: 命名変える
   void                 __set_response_for_bad_request();
 
 public:
   Transaction()
       : __config_(NULL)
-      , __transaction_state_(RECEIVING_STARTLINE)
+      , __state_(RECEIVING_STARTLINE)
       , __send_count_(0)
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
-  const RequestInfo &get_request_info() const { return __request_info_; }
-  TransactionState   get_transaction_state() const {
-    return __transaction_state_;
-  }
-  void set_transaction_state(TransactionState transaction_state) {
-    __transaction_state_ = transaction_state;
+  const RequestInfo &request_info() const { return __request_info_; }
+  TransactionState   state() const { return __state_; }
+  void               set_state(TransactionState transaction_state) {
+                  __state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
   void send_response(connFd conn_fd);

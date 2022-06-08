@@ -36,8 +36,8 @@ bool Response::__is_error_status_code(HttpStatusCode status_code) {
   return status_code > 299 && status_code < 600;
 }
 
-std::string Response::create_response_message(const Config      &config,
-                                              const RequestInfo &request_info) {
+std::string Response::generate_response(const Config      &config,
+                                        const RequestInfo &request_info) {
   HttpStatusCode  status_code = NONE;
   std::string     body;
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
@@ -45,7 +45,7 @@ std::string Response::create_response_message(const Config      &config,
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   const Location *location =
-      __proper_location(request_info.uri_, config.locations_);
+      __select_proper_location(request_info.uri_, config.locations_);
   if (location == NULL) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     status_code = NOT_FOUND_404;
@@ -79,8 +79,8 @@ std::string Response::create_response_message(const Config      &config,
 
 // 最長マッチ
 const Location *
-Response::__proper_location(const std::string           &request_uri,
-                            const std::vector<Location> &locations) {
+Response::__select_proper_location(const std::string           &request_uri,
+                                   const std::vector<Location> &locations) {
   // clang-format off
   std::string     path;
   const Location *ret_location = NULL;

@@ -15,7 +15,7 @@ void Connection::create_sequential_transaction() {
   while (true) {
     Transaction &transaction = __transaction_queue_.back();
     transaction.handle_request(__buffer_, __conf_group_);
-    if (transaction.get_transaction_state() != SENDING) {
+    if (transaction.state() != SENDING) {
       break;
     }
     __transaction_queue_.push_back(Transaction());
@@ -42,7 +42,7 @@ bool Connection::append_receive_buffer() {
 
 struct pollfd Connection::create_pollfd() const {
   struct pollfd pfd = {__conn_fd_, POLLIN, 0};
-  if (__transaction_queue_.front().get_transaction_state() == SENDING) {
+  if (__transaction_queue_.front().state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
@@ -51,9 +51,9 @@ struct pollfd Connection::create_pollfd() const {
 void Connection::send_response() {
   Transaction &transaction = __transaction_queue_.front();
   transaction.send_response(__conn_fd_);
-  if (transaction.get_request_info().connection_close_) {
+  if (transaction.request_info().connection_close_) {
     shutdown(__conn_fd_, SHUT_WR);
-    __transaction_queue_.front().set_transaction_state(CLOSING);
+    __transaction_queue_.front().set_state(CLOSING);
     return;
   }
   if (transaction.is_send_all()) {
