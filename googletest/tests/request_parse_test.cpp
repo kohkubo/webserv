@@ -100,19 +100,3 @@ TEST(request_parse_test, query_body) {
   EXPECT_EQ(info.env_values_[4], "pirates!!");
   // 今は"hoge=huga"の形でなくてもバリデートしてない
 }
-
-TEST(request_parse_test, exception_unknown_contenttype) {
-  std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
-                        "Content-Type: no_such\r\n"
-                        "Content-Length: 14\r\n\r\n"
-                        "yabukara=stick";
-
-  Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Transaction transaction;
-
-  EXPECT_THROW(transaction.handle_request(request, conf_group),
-               RequestInfo::BadRequestException);
-}
