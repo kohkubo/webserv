@@ -6,7 +6,9 @@
 #include <string>
 
 #include "config/Config.hpp"
+#include "event/ResponseMessage.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "http/response/Response.hpp"
 
 typedef int connFd;
 
@@ -15,8 +17,7 @@ enum TransactionState {
   RECEIVING_STARTLINE,
   RECEIVING_HEADER, // リクエストはheaderを読み取り中。
   RECEIVING_BODY,   // リクエストはbodyを読み取り中。
-  SENDING,          // レスポンスの送信中。
-  CLOSING,
+  COMPLETE,         // レスポンスの送信中。
 };
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
@@ -27,9 +28,8 @@ struct Transaction {
 private:
   const Config                      *__config_;
   TransactionState                   __state_;
-  ssize_t                            __send_count_;
-  std::string                        __response_;
   RequestInfo                        __request_info_;
+  std::string                        __response_;
   NextChunkType                      __next_chunk_;
   std::size_t                        __next_chunk_size_;
   std::string                        __request_body_;
@@ -58,7 +58,6 @@ public:
   Transaction()
       : __config_(NULL)
       , __state_(RECEIVING_STARTLINE)
-      , __send_count_(0)
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
@@ -68,9 +67,8 @@ public:
     __state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
-  void send_response(connFd conn_fd);
-  bool is_send_all() const {
-    return __send_count_ == static_cast<ssize_t>(__response_.size());
+  ResponseMessage create_response() {
+    return ResponseMessage(__response_, __request_info_.connection_close_);
   }
 };
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "event/ResponseMessage.hpp"
 #include "event/Transaction.hpp"
 
 // TODO: string -> vector<char>
@@ -19,12 +20,13 @@ typedef int          connFd;
 
 class Connection {
 private:
-  connFd                   __conn_fd_;
-  confGroup                __conf_group_;
-  std::deque<Transaction>  __transaction_queue_;
-  std::string              __buffer_;
-  std::time_t              __last_event_time_;
-  static const std::time_t timeout_seconds_ = 60;
+  connFd                      __conn_fd_;
+  confGroup                   __conf_group_;
+  Transaction                 __transaction_;
+  std::deque<ResponseMessage> __response_queue_;
+  std::string                 __buffer_;
+  std::time_t                 __last_event_time_;
+  static const std::time_t    timeout_seconds_ = 60;
 
 private:
   Connection() {}
@@ -34,7 +36,6 @@ public:
   Connection(connFd conn_fd, confGroup conf_group)
       : __conn_fd_(conn_fd)
       , __conf_group_(conf_group) {
-    __transaction_queue_.push_back(Transaction());
     __last_event_time_ = __time_now();
   }
   ~Connection() {}
@@ -43,12 +44,7 @@ public:
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
   void          send_response();
-  void          shutdown_write() {
-    shutdown(__conn_fd_, SHUT_WR);
-    __transaction_queue_.front().set_state(CLOSING);
-  }
-
-  bool is_timed_out() const {
+  bool          is_timed_out() const {
     std::time_t now = std::time(NULL);
     return std::difftime(now, __last_event_time_) >= timeout_seconds_;
   }

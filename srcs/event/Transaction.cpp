@@ -14,7 +14,7 @@ void Transaction::__set_response_for_bad_request() {
   // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
   // 現状は暫定的に、定型文を送信。
   __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __state_    = SENDING;
+  __state_    = COMPLETE;
   __request_info_.connection_close_ = true;
 }
 
@@ -56,7 +56,7 @@ void Transaction::handle_request(std::string     &request_buffer,
             __state_ = RECEIVING_BODY;
             break;
           }
-          __state_ = SENDING;
+          __state_ = COMPLETE;
           break;
         }
       }
@@ -71,14 +71,14 @@ void Transaction::handle_request(std::string     &request_buffer,
       } else if (request_buffer.size() >= __request_info_.content_length_) {
         __request_body_ = __cutout_request_body(
             request_buffer, __request_info_.content_length_);
-        __state_ = SENDING;
+        __state_ = COMPLETE;
       }
-      if (__state_ == SENDING) {
+      if (__state_ == COMPLETE) {
         __request_info_.parse_request_body(__request_body_,
                                            __request_info_.content_type_);
       }
     }
-    if (__state_ == SENDING) {
+    if (__state_ == COMPLETE) {
       __response_ = Response::generate_response(*__config_, __request_info_);
     } else if (__state_ == RECEIVING_STARTLINE ||
                __state_ == RECEIVING_HEADER) {
@@ -136,14 +136,6 @@ Transaction::__select_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
-// TODO: 送った分だけ__response_を消すのはダメなの?? kohkubo
-void Transaction::send_response(connFd conn_fd) {
-  const char *rest_str   = __response_.c_str() + __send_count_;
-  size_t      rest_count = __response_.size() - __send_count_;
-  // TODO:sendのエラー処理
-  __send_count_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
-}
-
 TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
   while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
@@ -155,7 +147,7 @@ TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
     } else {
       bool is_last_chunk = __next_chunk_size_ == 0 && chunk_line == "";
       if (is_last_chunk) {
-        return SENDING;
+        return COMPLETE;
       }
       __request_body_.append(chunk_line);
       __next_chunk_ = CHUNK_SIZE;

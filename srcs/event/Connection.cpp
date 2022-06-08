@@ -13,12 +13,12 @@
 
 void Connection::create_sequential_transaction() {
   while (true) {
-    Transaction &transaction = __transaction_queue_.back();
-    transaction.handle_request(__buffer_, __conf_group_);
-    if (transaction.state() != SENDING) {
+    __transaction_.handle_request(__buffer_, __conf_group_);
+    if (__transaction_.state() != COMPLETE) {
       break;
     }
-    __transaction_queue_.push_back(Transaction());
+    __response_queue_.push_back(__transaction_.create_response());
+    __transaction_ = Transaction();
   }
   __last_event_time_ = __time_now();
 }
@@ -42,22 +42,23 @@ bool Connection::append_receive_buffer() {
 
 struct pollfd Connection::create_pollfd() const {
   struct pollfd pfd = {__conn_fd_, POLLIN, 0};
-  if (__transaction_queue_.front().state() == SENDING) {
+  if (!__response_queue_.empty() &&
+      __response_queue_.front().state() == SENDING) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
 }
 
 void Connection::send_response() {
-  Transaction &transaction = __transaction_queue_.front();
-  transaction.send_response(__conn_fd_);
-  if (transaction.request_info().connection_close_) {
+  ResponseMessage &response = __response_queue_.front();
+  response.send_response(__conn_fd_);
+  if (response.is_send_all() && response.is_last_response()) {
     shutdown(__conn_fd_, SHUT_WR);
-    __transaction_queue_.front().set_state(CLOSING);
+    response.set_state(CLOSING);
     return;
   }
-  if (transaction.is_send_all()) {
-    __transaction_queue_.pop_front();
+  if (response.is_send_all()) {
+    __response_queue_.pop_front();
   }
   __last_event_time_ = __time_now();
 }
