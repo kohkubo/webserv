@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_RESPONSE_HPP
-#define SRCS_HTTP_RESPONSE_RESPONSE_HPP
+#ifndef SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP
+#define SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP
 
 #include <algorithm>
 
@@ -78,4 +78,4 @@ private:
 std::map<int, std::string> init_response_status_phrase_map();
 std::map<int, std::string> init_page_contents_map();
 
-#endif /* SRCS_HTTP_RESPONSE_RESPONSE_HPP */
+#endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

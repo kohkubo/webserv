@@ -9,7 +9,7 @@
 #include "http/const/const_header_field_values.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 

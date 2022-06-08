@@ -1,4 +1,4 @@
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 #include <sys/wait.h>
 #include <unistd.h>

@@ -1,4 +1,4 @@
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();

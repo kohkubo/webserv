@@ -4,7 +4,7 @@
 
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 // TODO: ステータスコードに合わせたレスポンスを生成
 void Transaction::__set_response_for_bad_request() {

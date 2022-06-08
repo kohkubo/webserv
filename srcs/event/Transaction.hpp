@@ -8,7 +8,7 @@
 #include "config/Config.hpp"
 #include "event/ResponseMessage.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 typedef int connFd;
 
