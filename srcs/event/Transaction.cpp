@@ -79,7 +79,8 @@ void Transaction::handle_request(std::string     &request_buffer,
       }
     }
     if (__state_ == COMPLETE) {
-      __response_ = Response::generate_response(*__config_, __request_info_);
+      __response_ =
+          ResponseGenerator::generate_response(*__config_, __request_info_);
     } else if (__state_ == RECEIVING_STARTLINE ||
                __state_ == RECEIVING_HEADER) {
       __check_buffer_length_exception(request_buffer, buffer_max_length_);

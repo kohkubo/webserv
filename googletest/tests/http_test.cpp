@@ -39,7 +39,7 @@ TEST(http_test, create_response_info_get_normal) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  EXPECT_EQ(Response::generate_response(config, request_info), expect);
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info), expect);
 }
 
 TEST(http_test, create_response_info_get_403) {
@@ -74,7 +74,7 @@ default error page\n\
 
   system("chmod 000 ../html/000.html");
 
-  EXPECT_EQ(Response::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 
   system("chmod 644 ../html/000.html");
@@ -105,7 +105,7 @@ forbidden\
 
   system("chmod 000 ../html/000.html");
 
-  EXPECT_EQ(Response::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 
   system("chmod 644 ../html/000.html");
@@ -127,7 +127,7 @@ TEST(http_test, create_response_info_delete_normal) {
 
   system("touch ../html/delete_target.html");
 
-  EXPECT_EQ(Response::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 }
 
@@ -161,7 +161,8 @@ default error page\n\
 </html>\
 ";
 
-  EXPECT_EQ(Response::generate_response(config, request_info), expected_string);
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
+            expected_string);
 }
 
 TEST(http_test, create_response_info_delete_403) {
@@ -196,7 +197,7 @@ default error page\n\
 
   system("chmod 000 ../html/000.html");
 
-  EXPECT_EQ(Response::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 
   system("chmod 644 ../html/000.html");
@@ -233,6 +234,6 @@ default error page\n\
 </html>\
 ";
 
-  EXPECT_EQ(Response::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 }

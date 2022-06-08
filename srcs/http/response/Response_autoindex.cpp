@@ -29,8 +29,9 @@ static std::string dir_list_lines(const std::string &file_path) {
   return lines;
 }
 
-std::string Response::__create_autoindex_body(const std::string &file_path,
-                                              const RequestInfo  request_info) {
+std::string
+ResponseGenerator::__create_autoindex_body(const std::string &file_path,
+                                           const RequestInfo  request_info) {
   std::stringstream buff;
   // clang-format off
   buff << "<!DOCTYPE html>\n"

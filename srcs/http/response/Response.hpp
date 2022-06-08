@@ -10,14 +10,14 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/utils.hpp"
 
-class Response {
+class ResponseGenerator {
 public:
   static std::string generate_response(const Config      &config,
                                        const RequestInfo &request_info);
 
 private:
-  Response();
-  ~Response();
+  ResponseGenerator();
+  ~ResponseGenerator();
   static std::string
   __read_file_tostring_cgi(const std::string              &path,
                            const std::vector<std::string> &env);
