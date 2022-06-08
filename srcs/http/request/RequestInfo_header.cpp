@@ -33,7 +33,8 @@ void RequestInfo::parse_request_header(
   if (itr != header_field_map.end()) {
     is_chunked_ = __parse_request_transfer_encoding(itr->second);
   }
-  // Content-Type: text/html; charset=ISO-8859-4
+  // Content-Type: multipart/form-data;boundary="boundary"
+  // media-type = type "/" subtype *( OWS ";" OWS parameter )
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
     tokenVector   token_vector = tokenize(itr->second, ";", ";");
