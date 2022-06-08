@@ -33,37 +33,9 @@ void RequestInfo::parse_request_header(
   if (itr != header_field_map.end()) {
     is_chunked_ = __parse_request_transfer_encoding(itr->second);
   }
-  // Content-Type: multipart/form-data;boundary="boundary"
-  // media-type = type "/" subtype *( OWS ";" OWS parameter )
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
-    tokenVector   token_vector = tokenize(itr->second, ";", ";");
-    tokenIterator it           = token_vector.begin();
-    for (; it != token_vector.end(); it++) {
-      std::string str = __trim_optional_whitespace(*it);
-      if (content_type_ == "") {
-        content_type_ = tolower(str);
-        // typeの先頭のOWSは許容してしまう
-        // 英字以外も小文字になってしまう？
-      } else { // parameter
-        std::size_t pos = str.find('=');
-        if (pos == std::string::npos) {
-          throw BadRequestException();
-        }
-        std::string key   = tolower(str.substr(0, pos));
-        std::string value = str.substr(pos + 1);
-        if (value[0] == '\"') {
-          std::size_t pos = value.find_last_of("\"");
-          if (pos == 0 || !(value.size() - 1 == pos)) {
-            throw BadRequestException();
-          }
-          value = value.substr(1, pos - 1); // ""に囲まれたものはlowerにしない
-        } else {
-          value = tolower(value);
-        }
-        parameter_[key] = value;
-      }
-    }
+    __parse_content_type(itr->second);
   }
 }
 
@@ -125,4 +97,41 @@ std::string RequestInfo::__trim_optional_whitespace(std::string str) {
     str.erase(pos + 1);
   }
   return str;
+}
+
+// 例 Content-Type: multipart/form-data;boundary="boundary"
+// Content-Type = media-type = type "/" subtype *( OWS ";" OWS parameter )
+// parameter    = token "=" ( token / quoted-string )
+// TODO: typeの先頭のOWSは許容してしまう
+// TODO: token以外の文字があったときのバリデーとはするか
+void RequestInfo::__parse_content_type(const std::string &content) {
+  tokenVector   token_vector = tokenize(content, ";", ";");
+  tokenIterator it           = token_vector.begin();
+  for (; it != token_vector.end(); it++) {
+    std::string str = __trim_optional_whitespace(*it);
+    if (content_type_ == "") {
+      // type+subtype
+      content_type_ = tolower(str);
+    } else {
+      // parameter
+      std::size_t pos = str.find('=');
+      if (pos == std::string::npos) {
+        throw BadRequestException();
+      }
+      std::string key   = tolower(str.substr(0, pos));
+      std::string value = str.substr(pos + 1);
+      if (value[0] == '\"') {
+        // quoted-string, lowerにしない
+        std::size_t pos = value.find_last_of("\"");
+        if (pos == 0 || !(value.size() - 1 == pos)) {
+          throw BadRequestException();
+        }
+        value = value.substr(1, pos - 1);
+      } else {
+        // token
+        value = tolower(value);
+      }
+      ctype_parameter_[key] = value;
+    }
+  }
 }

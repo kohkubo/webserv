@@ -20,7 +20,7 @@ public:
   bool                               is_chunked_;
   std::size_t                        content_length_;
   std::string                        content_type_;
-  std::map<std::string, std::string> parameter_;
+  std::map<std::string, std::string> ctype_parameter_;
   std::vector<std::string>           env_values_;
 
 private:
@@ -30,6 +30,7 @@ private:
   static size_t
        __parse_request_content_length(const std::string &content_length);
   void __parse_request_values(const std::string &request_body);
+  void __parse_content_type(const std::string &content);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
