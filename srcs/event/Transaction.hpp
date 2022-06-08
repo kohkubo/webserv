@@ -65,7 +65,7 @@ public:
   const RequestInfo &request_info() const { return __request_info_; }
   TransactionState   state() const { return __state_; }
   void               set_state(TransactionState transaction_state) {
-                  __state_ = transaction_state;
+    __state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
   void send_response(connFd conn_fd);
