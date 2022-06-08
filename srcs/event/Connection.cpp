@@ -18,7 +18,7 @@ void Connection::create_sequential_transaction() {
       break;
     }
     __response_queue_.push_back(__transaction_.create_response());
-    __transaction_ = Transaction();
+    __transaction_ = Request();
   }
   __last_event_time_ = __time_now();
 }

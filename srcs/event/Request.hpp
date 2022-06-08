@@ -12,22 +12,21 @@
 
 typedef int connFd;
 
-enum TransactionState {
-  NO_REQUEST, // Connectionはリクエストを持たない。
-  RECEIVING_STARTLINE,
-  RECEIVING_HEADER, // リクエストはheaderを読み取り中。
-  RECEIVING_BODY,   // リクエストはbodyを読み取り中。
-  COMPLETE,         // リクエストのパース完了。
+enum RequestState {
+  RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
+  RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
+  RECEIVING_BODY,      // リクエストはbodyを読み取り中。
+  COMPLETE,            // リクエストのパース完了。
 };
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 // TODO: string -> vector<char>
 
-struct Transaction {
+struct Request {
 private:
   const Config                      *__config_;
-  TransactionState                   __state_;
+  RequestState                       __state_;
   RequestInfo                        __request_info_;
   std::string                        __response_;
   NextChunkType                      __next_chunk_;
@@ -43,7 +42,7 @@ private:
   static bool        __get_next_chunk_line(NextChunkType chunk_type,
                                            std::string  &request_buffer,
                                            std::string &chunk, size_t next_chunk_size);
-  TransactionState   __chunk_loop(std::string &request_buffer);
+  RequestState       __chunk_loop(std::string &request_buffer);
   static void
   __check_max_client_body_size_exception(std::size_t actual_body_size,
                                          std::size_t max_body_size);
@@ -55,15 +54,15 @@ private:
   void                 __set_response_for_bad_request();
 
 public:
-  Transaction()
+  Request()
       : __config_(NULL)
       , __state_(RECEIVING_STARTLINE)
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
   const RequestInfo &request_info() const { return __request_info_; }
-  TransactionState   state() const { return __state_; }
-  void               set_state(TransactionState transaction_state) {
+  RequestState       state() const { return __state_; }
+  void               set_state(RequestState transaction_state) {
     __state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
