@@ -78,7 +78,7 @@ TEST(request_parse_test, normal_post) {
 TEST(request_parse_test, query_body) {
   std::string request = "POST /target HTTP/1.1\r\n"
                         "Host: 127.0.0.1:5001\r\n"
-                        "Content-Type: application/x-www-form-urlencoded\r\n"
+                        "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
                         "Content-Length: 45\r\n\r\n"
                         "I'm=going"
                         "&to=become"
@@ -101,74 +101,12 @@ TEST(request_parse_test, query_body) {
   // 今は"hoge=huga"の形でなくてもバリデートしてない
 }
 
-TEST(request_parse_test, query_body_capital) {
+TEST(request_parse_test, exception_unknown_contenttype) {
   std::string request = "POST /target HTTP/1.1\r\n"
                         "Host: 127.0.0.1:5001\r\n"
-                        "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
-                        "Content-Length: 38\r\n\r\n"
-                        "yabu=kara"
-                        "&stick="
-                        "&ishi=no"
-                        "&uenimo=3years";
-
-  Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Transaction transaction;
-
-  transaction.handle_request(request, conf_group);
-  const RequestInfo &info = transaction.request_info();
-
-  EXPECT_EQ(info.env_values_[0], "yabu=kara");
-  EXPECT_EQ(info.env_values_[1], "stick=");
-  EXPECT_EQ(info.env_values_[2], "ishi=no");
-  EXPECT_EQ(info.env_values_[3], "uenimo=3years");
-}
-
-TEST(request_parse_test, content_type_parameter) {
-  std::string request =
-      "POST /target HTTP/1.1\r\n"
-      "Host: 127.0.0.1:5001\r\n"
-      "Content-Type: mulTIPARt/form-data;boUNDAry=\"boundary\"\r\n"
-      "\r\n";
-
-  Config    config;
-  confGroup conf_group;
-  conf_group.push_back(&config);
-  Transaction transaction;
-
-  transaction.handle_request(request, conf_group);
-  RequestInfo r = transaction.get_request_info();
-
-  EXPECT_EQ(r.method_, "POST");
-  EXPECT_EQ(r.uri_, "/target");
-  EXPECT_EQ(r.version_, "HTTP/1.1");
-  EXPECT_EQ(r.host_, "127.0.0.1");
-  EXPECT_EQ(r.content_type_, "multipart/form-data");
-  EXPECT_EQ(r.parameter_["boundary"], "boundary");
-}
-
-TEST(request_parse_test, exception_contenttype_noequal) {
-  std::string request =
-      "POST /target HTTP/1.1\r\n"
-      "Host: 127.0.0.1:5001\r\n"
-      "Content-Type: multipart/form-data;boundary\"boundary\"\r\n"
-      "\r\n";
-
-  Config    config;
-  confGroup conf_group;
-  conf_group.push_back(&config);
-  Transaction transaction;
-
-  EXPECT_THROW(transaction.handle_request(request, conf_group),
-               RequestInfo::BadRequestException);
-}
-
-TEST(request_parse_test, exception_contenttype_onequote) {
-  std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
-                        "Content-Type: multipart/form-data;boundary=\"\r\n"
-                        "\r\n";
+                        "Content-Type: no_such\r\n"
+                        "Content-Length: 14\r\n\r\n"
+                        "yabukara=stick";
 
   Config      config;
   confGroup   conf_group;
