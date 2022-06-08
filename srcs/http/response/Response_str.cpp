@@ -18,18 +18,15 @@ std::map<int, std::string> init_response_status_phrase_map() {
   return res;
 }
 
-const std::string &Response::__get_status_phrase(HttpStatusCode status_code) {
-  return g_response_status_phrase_map[status_code];
-}
-
-std::string Response::__get_response_string(HttpStatusCode     status_code,
-                                            const std::string &body) {
+std::string Response::__response_message(HttpStatusCode     status_code,
+                                         const std::string &body) {
   std::string response;
   bool        has_body =
       status_code != NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
 
   // start line
-  response = VERSION_HTTP + SP + __get_status_phrase(status_code) + CRLF;
+  response =
+      VERSION_HTTP + SP + g_response_status_phrase_map[status_code] + CRLF;
 
   if (has_body) {
     // entity_header
