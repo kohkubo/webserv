@@ -27,9 +27,8 @@ std::string Response::__response_message(HttpStatusCode     status_code,
     std::string response =
         "HTTP/1.1 " + g_response_status_phrase_map[status_code] + CRLF +
         "Content-Length: " + to_string(body.size()) + CRLF +
-        "Connection: close" + CRLF +
-        "Location: " + "http://localhost:5001/" + CRLF +
-        CRLF;
+        "Accept-Charset: iso-8859-1" + CRLF + "Connection: close" + CRLF +
+        "Location: " + "http://localhost:5001/" + CRLF + CRLF;
     LOG(response);
     return response;
   }
