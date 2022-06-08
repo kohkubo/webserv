@@ -24,13 +24,10 @@ private:
   std::deque<Transaction>  __transaction_queue_;
   std::string              __buffer_;
   std::time_t              __last_event_time_;
-  static const std::size_t buffer_max_length_ = 8192;
-  static const std::time_t timeout_seconds_   = 60;
+  static const std::time_t timeout_seconds_ = 60;
 
 private:
   Connection() {}
-  static void __check_buffer_length_exception(std::string &request_buffer,
-                                              std::size_t  buffer_limit_length);
   static std::time_t __time_now() { return std::time(NULL); }
 
 public:

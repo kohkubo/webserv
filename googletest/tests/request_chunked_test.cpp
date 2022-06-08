@@ -37,25 +37,6 @@ TEST(request_chunked_test, chunked_body) {
             "world\ntest");
 }
 
-TEST(request_chunked_test, chunked_body_length_exception) {
-  std::string chunked_request = "POST / HTTP/1.1\r\n"
-                                "Host: hogehoge.com\r\n"
-                                "Content-Type: text/plain\r\n"
-                                "Transfer-Encoding: chunked\r\n"
-                                "\r\n"
-                                "4\r\n"
-                                "Mozilla \r\n"
-                                "\r\n";
-
-  Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Transaction transaction;
-
-  EXPECT_THROW(transaction.handle_request(chunked_request, conf_group),
-               RequestInfo::BadRequestException);
-}
-
 TEST(request_chunked_test, chunked_body_split) {
   std::string split_request1 = "POST / HTTP/1.1\r\n"
                                "Host: hogehoge.com\r\n"

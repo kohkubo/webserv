@@ -64,12 +64,12 @@ void RequestInfo::store_request_header_field_map(
 }
 
 // TODO: hostとportで分ける必要あるか確認
-std::string RequestInfo::__parse_request_host(const std::string &host_lien) {
-  std::size_t pos = host_lien.find(':');
+std::string RequestInfo::__parse_request_host(const std::string &host_line) {
+  std::size_t pos = host_line.find(':');
   if (pos == std::string::npos) {
-    return host_lien;
+    return host_line;
   }
-  return host_lien.substr(0, pos);
+  return host_line.substr(0, pos);
 }
 
 bool RequestInfo::__parse_request_connection(const std::string &connection) {
