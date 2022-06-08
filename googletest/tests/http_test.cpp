@@ -39,8 +39,7 @@ TEST(http_test, create_response_info_get_normal) {
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
 
-  Response response(config, request_info);
-  EXPECT_EQ(response.get_response_string(), expect);
+  EXPECT_EQ(Response::generate_response(config, request_info), expect);
 }
 
 TEST(http_test, create_response_info_get_403) {
@@ -50,15 +49,12 @@ TEST(http_test, create_response_info_get_403) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_  = "GET";
-  request_info.uri_     = "/000.html";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_          = "GET";
+  request_info.uri_             = "/000.html";
+  request_info.version_         = "HTTP/1.1";
+  request_info.host_            = "localhost";
 
-  system("chmod 000 ../html/000.html");
-  Response response(config, request_info);
-  system("chmod 644 ../html/000.html");
-  EXPECT_EQ(response.get_response_string(), "\
+  std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
@@ -74,7 +70,14 @@ Connection: close\r\n\
 default error page\n\
     </body>\n\
 </html>\
-");
+";
+
+  system("chmod 000 ../html/000.html");
+
+  EXPECT_EQ(Response::generate_response(config, request_info),
+            expected_response);
+
+  system("chmod 644 ../html/000.html");
 }
 
 TEST(http_test, create_response_info_get_403_config_error_pages) {
@@ -86,22 +89,26 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
 
   config.error_pages_[403]            = "forbidden.html";
   RequestInfo request_info;
-  request_info.method_  = "GET";
-  request_info.uri_     = "/000.html";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_          = "GET";
+  request_info.uri_             = "/000.html";
+  request_info.version_         = "HTTP/1.1";
+  request_info.host_            = "localhost";
 
-  system("chmod 000 ../html/000.html");
-  Response response(config, request_info);
-  system("chmod 644 ../html/000.html");
-  EXPECT_EQ(response.get_response_string(), "\
+  std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
 Content-Length: 9\r\n\
 Content-Type: text/html\r\n\
 Connection: close\r\n\
 \r\n\
 forbidden\
-");
+";
+
+  system("chmod 000 ../html/000.html");
+
+  EXPECT_EQ(Response::generate_response(config, request_info),
+            expected_response);
+
+  system("chmod 644 ../html/000.html");
 }
 
 TEST(http_test, create_response_info_delete_normal) {
@@ -120,8 +127,8 @@ TEST(http_test, create_response_info_delete_normal) {
 
   system("touch ../html/delete_target.html");
 
-  Response response(config, request_info);
-  EXPECT_EQ(response.get_response_string(), expected_response);
+  EXPECT_EQ(Response::generate_response(config, request_info),
+            expected_response);
 }
 
 TEST(http_test, create_response_info_delete_404) {
@@ -131,13 +138,12 @@ TEST(http_test, create_response_info_delete_404) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_  = "DELETE";
-  request_info.uri_     = "/delete_target.html";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_        = "DELETE";
+  request_info.uri_           = "/delete_target.html";
+  request_info.version_       = "HTTP/1.1";
+  request_info.host_          = "localhost";
 
-  Response response(config, request_info);
-  EXPECT_EQ(response.get_response_string(), "\
+  std::string expected_string = "\
 HTTP/1.1 404 Not Found\r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
@@ -153,7 +159,9 @@ Connection: close\r\n\
 default error page\n\
     </body>\n\
 </html>\
-");
+";
+
+  EXPECT_EQ(Response::generate_response(config, request_info), expected_string);
 }
 
 TEST(http_test, create_response_info_delete_403) {
@@ -163,18 +171,12 @@ TEST(http_test, create_response_info_delete_403) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_  = "DELETE";
-  request_info.uri_     = "/000.html";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_          = "DELETE";
+  request_info.uri_             = "/000.html";
+  request_info.version_         = "HTTP/1.1";
+  request_info.host_            = "localhost";
 
-  system("chmod 000 ../html/000.html");
-
-  Response response(config, request_info);
-
-  system("chmod 644 ../html/000.html");
-
-  EXPECT_EQ(response.get_response_string(), "\
+  std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
@@ -190,7 +192,14 @@ Connection: close\r\n\
 default error page\n\
     </body>\n\
 </html>\
-");
+";
+
+  system("chmod 000 ../html/000.html");
+
+  EXPECT_EQ(Response::generate_response(config, request_info),
+            expected_response);
+
+  system("chmod 644 ../html/000.html");
 }
 
 TEST(http_test, create_response_info_delete_400) {
@@ -200,15 +209,13 @@ TEST(http_test, create_response_info_delete_400) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_         = "DELETE";
-  request_info.uri_            = "/hogehoge.html";
-  request_info.version_        = "HTTP/1.1";
-  request_info.host_           = "localhost";
-  request_info.content_length_ = 8;
+  request_info.method_          = "DELETE";
+  request_info.uri_             = "/hogehoge.html";
+  request_info.version_         = "HTTP/1.1";
+  request_info.host_            = "localhost";
+  request_info.content_length_  = 8;
 
-  Response response(config, request_info);
-
-  EXPECT_EQ(response.get_response_string(), "\
+  std::string expected_response = "\
 HTTP/1.1 400 Bad Request\r\n\
 Content-Length: 147\r\n\
 Content-Type: text/html\r\n\
@@ -224,5 +231,8 @@ Connection: close\r\n\
 default error page\n\
     </body>\n\
 </html>\
-");
+";
+
+  EXPECT_EQ(Response::generate_response(config, request_info),
+            expected_response);
 }

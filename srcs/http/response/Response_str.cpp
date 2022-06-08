@@ -19,66 +19,40 @@ std::map<int, std::string> init_response_status_phrase_map() {
   return res;
 }
 
-std::string Response::get_response_string() {
+std::string Response::__response_message(HttpStatusCode     status_code,
+                                         const std::string &body) {
   // TODO: この分岐、モブプロ用のとき説明しながら直します。今はとりあえずの処理
   // kohkubo
-  if (__status_code_ == MOVED_PERMANENTLY_301) {
-    std::string response = "HTTP/1.1 " + to_string(__status_code_) + " " +
-                           g_response_status_phrase_map[__status_code_] + CRLF +
+  if (status_code == MOVED_PERMANENTLY_301) {
+    std::string response = "HTTP/1.1 " + to_string(status_code) + " " +
+                           g_response_status_phrase_map[status_code] + CRLF +
                            "Location: " + "https://localhost:5001/" + CRLF +
                            CRLF;
     return response;
   }
-  __status_phrase_ = __get_status_phrase();
-  __set_general_header();
-  bool is_bodiless =
-      __status_code_ == NO_CONTENT_204 || __status_code_ == NOT_MODIFIED_304;
-  if (is_bodiless) {
-    return __make_bodiless_message_string();
+  std::string response;
+  bool        has_body =
+      status_code != NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
+
+  // start line
+  response =
+      VERSION_HTTP + SP + g_response_status_phrase_map[status_code] + CRLF;
+
+  if (has_body) {
+    // entity_header
+    response += "Content-Length: " + to_string(body.size()) + CRLF;
+    response += "Content-Type: " + TEXT_HTML + CRLF;
   }
-  __set_entity_header();
-  return __make_message_string();
-}
 
-std::string Response::__get_status_phrase() {
-  return g_response_status_phrase_map[__status_code_];
-}
+  // general_header
+  response += "Connection: " + CONNECTION_CLOSE + CRLF;
 
-void Response::__set_general_header() {
-  // Date
-  // TODO: 別関数に実装
-  __connection_ = CONNECTION_CLOSE;
-}
-
-void Response::__set_entity_header() {
-  __content_len_  = to_string(__body_.size());
-  __content_type_ = __get_content_type();
-}
-
-const std::string &Response::__get_content_type() { return TEXT_HTML; };
-
-std::string        Response::__make_bodiless_message_string() {
-  std::string response;
-  // start line
-  response = VERSION_HTTP + SP + __status_phrase_ + CRLF;
-  // header
-  response += "Connection: " + __connection_ + CRLF;
   // empty line
   response += CRLF;
-  return response;
-};
 
-std::string Response::__make_message_string() {
-  std::string response;
-  // start line
-  response = VERSION_HTTP + SP + __status_phrase_ + CRLF;
-  // header
-  response += "Content-Length: " + __content_len_ + CRLF;
-  response += "Content-Type: " + __content_type_ + CRLF;
-  response += "Connection: " + __connection_ + CRLF;
-  // empty line
-  response += CRLF;
-  // body
-  response += __body_;
+  if (has_body) {
+    // body
+    response += body;
+  }
   return response;
 };
