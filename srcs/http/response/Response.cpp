@@ -55,9 +55,9 @@ std::string Response::generate_response(const Config      &config,
   // return がセットされていたら
   if (location->return_.size() != 0) {
     // intをHttpStatusCodeに変換する
-    __status_code_ =
+    status_code =
         static_cast<HttpStatusCode>(location->return_.begin()->first);
-    return;
+    return __response_message(status_code, body);
   }
   if (is_minus_depth(request_info.uri_)) {
     status_code = FORBIDDEN_403;

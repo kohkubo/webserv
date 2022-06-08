@@ -24,10 +24,13 @@ std::string Response::__response_message(HttpStatusCode     status_code,
   // TODO: この分岐、モブプロ用のとき説明しながら直します。今はとりあえずの処理
   // kohkubo
   if (status_code == MOVED_PERMANENTLY_301) {
-    std::string response = "HTTP/1.1 " + to_string(status_code) + " " +
-                           g_response_status_phrase_map[status_code] + CRLF +
-                           "Location: " + "https://localhost:5001/" + CRLF +
-                           CRLF;
+    std::string response =
+        "HTTP/1.1 " + g_response_status_phrase_map[status_code] + CRLF +
+        "Content-Length: " + to_string(body.size()) + CRLF +
+        "Connection: close" + CRLF +
+        "Location: " + "http://localhost:5001/" + CRLF +
+        CRLF;
+    LOG(response);
     return response;
   }
   std::string response;

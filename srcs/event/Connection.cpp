@@ -15,6 +15,7 @@ void Connection::create_sequential_transaction() {
   while (true) {
     Transaction &transaction = __transaction_queue_.back();
     transaction.handle_request(__buffer_, __conf_group_);
+    std::cout << __buffer_ << std::endl;
     if (transaction.state() != SENDING) {
       break;
     }
@@ -24,9 +25,10 @@ void Connection::create_sequential_transaction() {
 }
 
 bool Connection::append_receive_buffer() {
-  const int         buf_size = 2048;
-  std::vector<char> buf(buf_size);
-  ssize_t           rc = recv(__conn_fd_, &buf[0], buf_size, MSG_DONTWAIT);
+  const int buf_size = 2048;
+  char      buf[buf_size] = {0};
+  // std::vector<char> buf(buf_size);
+  ssize_t   rc = recv(__conn_fd_, buf, buf_size, MSG_DONTWAIT);
   if (rc == -1) {
     std::cerr << "recv() failed." << std::endl;
     exit(EXIT_FAILURE);
@@ -35,8 +37,12 @@ bool Connection::append_receive_buffer() {
   if (rc == 0) {
     return true;
   }
-  std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
-  __buffer_.append(recv_data);
+  std::cout << "append_receive_buffer()" << std::endl;
+  std::cout << "rc: " << rc << std::endl;
+  write(0, buf, rc);
+  std::cout << std::endl;
+  // std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
+  __buffer_.append(buf, rc);
   return false;
 }
 
