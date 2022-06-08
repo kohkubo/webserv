@@ -67,6 +67,7 @@ public:
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
   Response create_response() {
+    // TODO: is_close判定
     return Response(__response_, __request_info_.connection_close_);
   }
 };
