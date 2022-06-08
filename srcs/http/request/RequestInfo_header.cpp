@@ -114,19 +114,19 @@ void RequestInfo::__parse_content_type(const std::string &content) {
       content_type_ = tolower(str);
     } else {
       // parameter
-      std::size_t pos = str.find('=');
-      if (pos == std::string::npos) {
+      std::size_t equal_pos = str.find('=');
+      if (equal_pos == std::string::npos) {
         throw BadRequestException();
       }
-      std::string key   = tolower(str.substr(0, pos));
-      std::string value = str.substr(pos + 1);
+      std::string key   = tolower(str.substr(0, equal_pos));
+      std::string value = str.substr(equal_pos + 1);
       if (value[0] == '\"') {
         // quoted-string, lowerにしない
-        std::size_t pos = value.find_last_of("\"");
-        if (pos == 0 || !(value.size() - 1 == pos)) {
+        std::size_t quote_pos = value.find_last_of("\"");
+        if (quote_pos == 0 || !(value.size() - 1 == quote_pos)) {
           throw BadRequestException();
         }
-        value = value.substr(1, pos - 1);
+        value = value.substr(1, quote_pos - 1);
       } else {
         // token
         value = tolower(value);
