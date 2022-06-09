@@ -63,3 +63,21 @@ void RequestInfo::__parse_request_files(const std::string &request_body) {
     }
   }
 }
+// ヘッダー読み込み -> map
+// 空行があれば読み込み終了
+// mapからmultipart構造体に格納
+// body読み込み
+// bodyの格納
+
+// これは構成が変わるのでRequestInfoとは共有しない, または継承？
+// struct multipart {
+//   withPrameter content_desposition;
+//   withPrameter content_type;
+//   std::string  body;n
+// }
+
+// こいつを別クラスで用意する, RequestInfoと共有
+// struct withPrameter {
+//   std::string                        main;
+//   std::map<std::string, std::string> prameter;
+// };
