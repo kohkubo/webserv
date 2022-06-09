@@ -30,6 +30,7 @@ private:
   static size_t
        __parse_request_content_length(const std::string &content_length);
   void __parse_request_values(const std::string &request_body);
+  void __parse_request_files(const std::string &request_body);
   void __parse_content_type(const std::string &content);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
