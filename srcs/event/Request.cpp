@@ -19,8 +19,8 @@ void Request::__set_response_for_bad_request() {
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-void Request::handle_request(std::string     &request_buffer,
-                             const confGroup &conf_group) {
+RequestState Request::handle_request(std::string     &request_buffer,
+                                     const confGroup &conf_group) {
   try {
     if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
@@ -88,6 +88,7 @@ void Request::handle_request(std::string     &request_buffer,
   } catch (const RequestInfo::BadRequestException &e) {
     __set_response_for_bad_request();
   }
+  return __state_;
 }
 
 bool Request::__getline(std::string &request_buffer, std::string &line) {

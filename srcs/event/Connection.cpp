@@ -13,8 +13,9 @@
 
 void Connection::create_sequential_transaction() {
   while (true) {
-    __request_.handle_request(__buffer_, __conf_group_);
-    if (__request_.state() != SUCCESS) {
+    RequestState request_state =
+        __request_.handle_request(__buffer_, __conf_group_);
+    if (request_state != SUCCESS) {
       break;
     }
     __response_queue_.push_back(__request_.create_response());
