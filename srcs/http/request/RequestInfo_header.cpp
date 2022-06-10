@@ -126,7 +126,7 @@ RequestInfo::__parse_content_info(const std::string &content) {
         throw BadRequestException();
       }
       std::string key     = tolower(str.substr(0, equal_pos));
-      std::string value   = cutout_prameter_value(str.substr(equal_pos + 1));
+      std::string value   = __cutout_prameter_value(str.substr(equal_pos + 1));
       res.parameter_[key] = value;
     }
   }
@@ -135,7 +135,7 @@ RequestInfo::__parse_content_info(const std::string &content) {
 
 // content-typeのparameter(key=value)のvalueについて切り出す関数
 // ""で囲まれていれば, それらを削除
-std::string RequestInfo::cutout_prameter_value(std::string str) {
+std::string RequestInfo::__cutout_prameter_value(std::string str) {
   if (str.size() == 0) {
     return str;
   }

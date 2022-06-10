@@ -40,7 +40,7 @@ private:
   static std::string
   __parse_request_content_type(const std::string &content_type);
   static std::string __erase_side_chars(std::string str, std::string erase);
-  static std::string cutout_prameter_value(std::string str);
+  static std::string __cutout_prameter_value(std::string str);
   static ContentInfo __parse_content_info(const std::string &content);
 
 public:
