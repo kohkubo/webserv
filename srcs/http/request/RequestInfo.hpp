@@ -16,9 +16,15 @@ public:
     std::string                        first_;
     std::map<std::string, std::string> parameter_;
   };
+  // ファイル情報
+  struct FormFile {
+    std::string filename_;
+    std::string content_;
+  };
+  typedef std::map<std::string, FormFile> FormData;
 
-  bool        is_blank_first_line_;
-  std::string method_;
+  bool                                    is_blank_first_line_;
+  std::string                             method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
   std::string              version_;
   std::string              host_;
@@ -26,6 +32,7 @@ public:
   bool                     is_chunked_;
   std::size_t              content_length_;
   MultiField               content_type_;
+  FormData                 form_data_;
   std::vector<std::string> env_values_;
 
 private:
@@ -34,8 +41,9 @@ private:
   static bool        __parse_request_connection(const std::string &connection);
   static size_t
        __parse_request_content_length(const std::string &content_length);
-  void __parse_request_values(const std::string &request_body);
+  void __parse_request_envvalues(const std::string &request_body);
   void __parse_request_files(const std::string &request_body);
+  void __parse_formdata(std::string part_body);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
@@ -43,7 +51,6 @@ private:
   static std::string __trim_optional_whitespace(std::string str);
   static std::string __trim_double_quote(std::string str);
   static MultiField  __parse_multi_field(const std::string &content);
-  static void        __parse_multipar_body(std::string part_body);
 
 public:
   RequestInfo()
