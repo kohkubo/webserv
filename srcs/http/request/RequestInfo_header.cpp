@@ -108,8 +108,8 @@ RequestInfo::__parse_content_info(const std::string &content) {
   tokenIterator it     = tokens.begin();
   for (; it != tokens.end(); it++) {
     std::string str = trim(*it, ows_);
-    if (res.first_ == "") {
-      res.first_ = tolower(str);
+    if (res.type_ == "") {
+      res.type_ = tolower(str);
     } else {
       std::size_t equal_pos = str.find('=');
       if (equal_pos == std::string::npos) {

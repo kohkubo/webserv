@@ -15,7 +15,7 @@ private:
 public:
   // 複数の値を持つフィールドのデータ型
   struct ContentInfo {
-    std::string                        first_;
+    std::string                        type_;
     std::map<std::string, std::string> parameter_;
   };
 
