@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+#include "http/const/const_abnf.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
@@ -52,7 +53,7 @@ void RequestInfo::store_request_header_field_map(
     throw BadRequestException();
   }
   const std::string field_value =
-      __trim_optional_whitespace(header_line.substr(pos + 1));
+      __erase_side_str(header_line.substr(pos + 1), OWS);
   if (header_field_map.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
@@ -90,9 +91,9 @@ bool RequestInfo::__parse_request_transfer_encoding(
   return transfer_encoding == "chunked";
 }
 
-std::string RequestInfo::__trim_optional_whitespace(std::string str) {
-  str.erase(0, str.find_first_not_of(" \t"));
-  std::size_t pos = str.find_last_not_of(" \t");
+std::string RequestInfo::__erase_side_str(std::string str, std::string erase) {
+  str.erase(0, str.find_first_not_of(erase));
+  std::size_t pos = str.find_last_not_of(erase);
   if (pos != std::string::npos) {
     str.erase(pos + 1);
   }
@@ -130,7 +131,7 @@ RequestInfo::__parse_content_info(const std::string &content) {
   tokenVector   tokens = tokenize(content, ";", ";");
   tokenIterator it     = tokens.begin();
   for (; it != tokens.end(); it++) {
-    std::string str = __trim_optional_whitespace(*it);
+    std::string str = __erase_side_str(*it, OWS);
     if (res.first_ == "") {
       res.first_ = tolower(str);
     } else {
