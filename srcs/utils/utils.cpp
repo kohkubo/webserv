@@ -22,9 +22,9 @@ bool has_prefix(const std::string &str, const std::string &prefix) {
   return std::equal(prefix.begin(), prefix.end(), str.begin());
 }
 
-std::string trim(std::string str, std::string erase) {
-  str.erase(0, str.find_first_not_of(erase));
-  std::size_t pos = str.find_last_not_of(erase);
+std::string trim(std::string str, std::string cutset) {
+  str.erase(0, str.find_first_not_of(cutset));
+  std::size_t pos = str.find_last_not_of(cutset);
   if (pos != std::string::npos) {
     str.erase(pos + 1);
   }
