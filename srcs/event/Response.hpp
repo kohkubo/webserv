@@ -34,7 +34,7 @@ public:
       , __send_count_(0) {}
   ~Response() {}
 
-  bool is_sending() const { return __state_ == SENDING; }
+  bool          is_sending() const { return __state_ == SENDING; }
   ResponseState send(connFd conn_fd) {
     const char *rest_str   = __response_.c_str() + __send_count_;
     size_t      rest_count = __response_.size() - __send_count_;
