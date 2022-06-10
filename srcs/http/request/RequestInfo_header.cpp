@@ -99,7 +99,6 @@ std::string RequestInfo::__trim_optional_whitespace(std::string str) {
   return str;
 }
 
-// TODO: テスト 空文字列, 一文字, ""なし, "aaa, bbb", keyが空
 std::string RequestInfo::__trim_double_quote(std::string str) {
   if (str.size() == 0) {
     return str;
