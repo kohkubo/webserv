@@ -5,8 +5,8 @@
 
 #include "utils/utils.hpp"
 
-void RequestInfo::parse_request_body(std::string      &request_body,
-                                     const MultiField &content_type) {
+void RequestInfo::parse_request_body(std::string       &request_body,
+                                     const ContentInfo &content_type) {
   if (content_type.first_ == "application/x-www-form-urlencoded") {
     __parse_request_values(request_body);
   } else if (content_type.first_ == "multipart/form-data") {

@@ -12,7 +12,7 @@ class RequestInfo {
 private:
 public:
   // 複数の値を持つフィールドのデータ型
-  struct MultiField {
+  struct ContentInfo {
     std::string                        first_;
     std::map<std::string, std::string> parameter_;
   };
@@ -25,7 +25,7 @@ public:
   bool                     connection_close_;
   bool                     is_chunked_;
   std::size_t              content_length_;
-  MultiField               content_type_;
+  ContentInfo              content_type_;
   std::vector<std::string> env_values_;
 
 private:
@@ -41,7 +41,7 @@ private:
   __parse_request_content_type(const std::string &content_type);
   static std::string __trim_optional_whitespace(std::string str);
   static std::string __trim_double_quote(std::string str);
-  static MultiField  __parse_multi_field(const std::string &content);
+  static ContentInfo __parse_multi_field(const std::string &content);
 
 public:
   RequestInfo()
@@ -69,8 +69,8 @@ public:
   void parse_request_start_line(const std::string &request_line);
   void parse_request_header(
       const std::map<std::string, std::string> &header_field_map);
-  void parse_request_body(std::string      &request_body,
-                          const MultiField &content_type);
+  void parse_request_body(std::string       &request_body,
+                          const ContentInfo &content_type);
   void check_first_multi_blank_line(const std::string &request_line);
 };
 

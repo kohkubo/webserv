@@ -124,9 +124,9 @@ std::string RequestInfo::__trim_double_quote(std::string str) {
 // 現状はmultipart/form-dataに合わせて大小文字は区別する(引用符があれば削除するだけ)
 // もし大小文字について考慮するなら,
 // 各valueの中身を参照する時にそれぞれの処理でやるべきかも
-RequestInfo::MultiField
+RequestInfo::ContentInfo
 RequestInfo::__parse_multi_field(const std::string &content) {
-  MultiField    res;
+  ContentInfo   res;
   tokenVector   tokens = tokenize(content, ";", ";");
   tokenIterator it     = tokens.begin();
   for (; it != tokens.end(); it++) {
