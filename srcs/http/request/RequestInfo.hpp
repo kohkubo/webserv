@@ -15,7 +15,7 @@ private:
 public:
   // 複数の値を持つフィールドのデータ型
   struct ContentInfo {
-    std::string                        first_;
+    std::string                        type_;
     std::map<std::string, std::string> parameter_;
   };
   // ファイル情報
@@ -51,8 +51,8 @@ private:
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
   __parse_request_content_type(const std::string &content_type);
-  static std::string __cutout_prameter_value(std::string str);
   static ContentInfo __parse_content_info(const std::string &content);
+  static std::string __cutout_prameter_value(std::string str);
 
 public:
   RequestInfo()

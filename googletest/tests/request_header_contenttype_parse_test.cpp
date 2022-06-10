@@ -12,7 +12,7 @@ TEST(request_header_contenttype_parse_test, parameter) {
 
   RequestInfo info;
   info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.first_, "text/html");
+  EXPECT_EQ(info.content_type_.type_, "text/html");
   EXPECT_EQ(info.content_type_.parameter_["charset"], "utf-8");
 }
 
@@ -24,7 +24,7 @@ TEST(request_header_contenttype_parse_test, quoted_parameter) {
 
   RequestInfo info;
   info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.first_, "multipart/form-data");
+  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
   EXPECT_EQ(info.content_type_.parameter_["boundary"], "boundary");
 }
 
@@ -35,7 +35,7 @@ TEST(request_header_contenttype_parse_test, quoted_parameter_onechar) {
 
   RequestInfo info;
   info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.first_, "multipart/form-data");
+  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
   EXPECT_EQ(info.content_type_.parameter_["boundary"], "_");
 }
 
@@ -46,7 +46,7 @@ TEST(request_header_contenttype_parse_test, parameter_empty_value) {
 
   RequestInfo info;
   info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.first_, "multipart/form-data");
+  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
   EXPECT_EQ(info.content_type_.parameter_["boundary"], "");
 }
 
@@ -57,7 +57,7 @@ TEST(request_header_contenttype_parse_test, parameter_empty_key) {
 
   RequestInfo info;
   info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.first_, "multipart/form-data");
+  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
 }
 
 TEST(request_header_contenttype_parse_test, quoted_parameter_empty_value) {
@@ -67,7 +67,7 @@ TEST(request_header_contenttype_parse_test, quoted_parameter_empty_value) {
 
   RequestInfo info;
   info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.first_, "multipart/form-data");
+  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
   EXPECT_EQ(info.content_type_.parameter_["boundary"], "");
 }
 
