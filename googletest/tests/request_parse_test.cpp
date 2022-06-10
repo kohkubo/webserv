@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "event/Transaction.hpp"
+#include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_parse_test, normal) {
@@ -15,7 +15,7 @@ TEST(request_parse_test, normal) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -37,7 +37,7 @@ TEST(request_parse_test, normal_delete) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -61,7 +61,7 @@ TEST(request_parse_test, normal_post) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -72,7 +72,7 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(r.host_, "127.0.0.1");
   EXPECT_EQ(r.content_type_.first_, "application/x-www-form-urlencoded");
   EXPECT_EQ(r.connection_close_, true);
-  EXPECT_EQ(r.content_length_, 18);
+  EXPECT_EQ(r.content_length_, static_cast<std::size_t>(18));
 }
 
 TEST(request_parse_test, query_body) {
@@ -89,7 +89,7 @@ TEST(request_parse_test, query_body) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &info = transaction.request_info();

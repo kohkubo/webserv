@@ -12,8 +12,8 @@ static void mess(const std::string theme, const std::string mess) {
             << "\n\n\n";
 }
 
-void RequestInfo::parse_request_body(std::string      &request_body,
-                                     const MultiField &content_type) {
+void RequestInfo::parse_request_body(std::string       &request_body,
+                                     const ContentInfo &content_type) {
   if (content_type.first_ == "application/x-www-form-urlencoded") {
     __parse_request_envvalues(request_body);
   } else if (content_type.first_ == "multipart/form-data") {
