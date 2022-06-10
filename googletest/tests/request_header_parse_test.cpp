@@ -6,7 +6,7 @@
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_header_parse_test, exception_field_name_space) {
-  std::string                        str = "Host : 127.0.0.1:5001";
+  std::string                        str = "Host : 127.0.0.1:50001";
   std::map<std::string, std::string> header_field_map;
 
   RequestInfo                        info;
@@ -15,7 +15,7 @@ TEST(request_header_parse_test, exception_field_name_space) {
 }
 
 TEST(request_header_parse_test, exception_field_name_tab) {
-  std::string                        str = "Host\t: 127.0.0.1:5001";
+  std::string                        str = "Host\t: 127.0.0.1:50001";
   std::map<std::string, std::string> header_field_map;
 
   RequestInfo                        info;
@@ -24,10 +24,10 @@ TEST(request_header_parse_test, exception_field_name_tab) {
 }
 
 TEST(request_header_parse_test, exception_no_host) {
-  std::string str = "";
+  std::string                        str = "";
   std::map<std::string, std::string> header_field_map;
 
-  RequestInfo info;
+  RequestInfo                        info;
   EXPECT_THROW(info.store_request_header_field_map(str, header_field_map),
                RequestInfo::BadRequestException);
 }

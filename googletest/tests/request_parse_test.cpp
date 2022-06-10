@@ -7,7 +7,7 @@
 
 TEST(request_parse_test, normal) {
   std::string request = "GET / HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "User-Agent: curl/7.68.0\r\n"
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
@@ -29,7 +29,7 @@ TEST(request_parse_test, normal) {
 
 TEST(request_parse_test, normal_delete) {
   std::string request = "DELETE /delete_target.tmp HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "User-Agent: curl/7.68.0\r\n"
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
@@ -51,7 +51,7 @@ TEST(request_parse_test, normal_delete) {
 
 TEST(request_parse_test, normal_post) {
   std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "User-Agent: curl/7.68.0\r\n"
                         "Connection: close\r\n"
                         "Accept: */*\r\n"
@@ -76,7 +76,7 @@ TEST(request_parse_test, normal_post) {
 
 TEST(request_parse_test, query_body) {
   std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "Content-Type: application/x-www-form-urlencoded\r\n"
                         "Content-Length: 45\r\n\r\n"
                         "I'm=going"
@@ -102,7 +102,7 @@ TEST(request_parse_test, query_body) {
 
 TEST(request_parse_test, query_body_capital) {
   std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
                         "Content-Length: 38\r\n\r\n"
                         "yabu=kara"

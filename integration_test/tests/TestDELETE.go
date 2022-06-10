@@ -31,10 +31,10 @@ var testDELETE = testCatergory{
 				defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"DELETE " + deleteFilePath + " HTTP/1.1\r\n",
-						"Host: localhost:5500\r\n",
+						"Host: localhost:55000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -64,10 +64,10 @@ var testDELETE = testCatergory{
 			caseName: "no_such_file",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"DELETE /no_such_file HTTP/1.1\r\n",
-						"Host: localhost:5500\r\n",
+						"Host: localhost:55000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",

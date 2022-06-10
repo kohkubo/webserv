@@ -12,7 +12,7 @@ var testCgi = testCatergory{
 		{
 			caseName: "5000_cgi_get_normal",
 			test: func() bool {
-				Port := "5000"
+				Port := "50000"
 				Path := "/cgi.sh"
 				clientA := tester.NewClient(tester.Client{
 					Port: Port,
