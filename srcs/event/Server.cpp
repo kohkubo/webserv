@@ -83,7 +83,7 @@ void Server::run_loop() {
       }
       if ((it->revents & POLLOUT) != 0) {
         // TODO: []からの書き換え、findできないケースある??
-        __connection_map_.find(it->fd)->second.send_response();
+        __connection_map_.find(it->fd)->second.send_response_queue_front();
       }
     }
   }

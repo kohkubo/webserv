@@ -20,6 +20,11 @@ private:
   bool          __is_last_response_;
   ssize_t       __send_count_;
 
+private:
+  bool __is_send_all() const {
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
+  }
+
 public:
   Response(std::string response_message, bool is_close)
       : __state_(SENDING)
@@ -29,18 +34,15 @@ public:
   ~Response() {}
 
   ResponseState state() const { return __state_; }
-  void          set_state(ResponseState state) { __state_ = state; }
-  bool          is_last_response() const { return __is_last_response_; }
-
-  void          send(connFd conn_fd) {
+  ResponseState send(connFd conn_fd) {
     const char *rest_str   = __response_.c_str() + __send_count_;
     size_t      rest_count = __response_.size() - __send_count_;
-    // TODO:sendのエラー処理
     __send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
-  }
-
-  bool is_send_all() const {
-    return __send_count_ == static_cast<ssize_t>(__response_.size());
+    if (__is_send_all() && __is_last_response_) {
+      shutdown(conn_fd, SHUT_WR);
+      return CLOSING;
+    }
+    return SENDING;
   }
 };
 

@@ -49,15 +49,9 @@ struct pollfd Connection::create_pollfd() const {
   return pfd;
 }
 
-void Connection::send_response() {
-  Response &response = __response_queue_.front();
-  response.send(__conn_fd_);
-  if (response.is_send_all() && response.is_last_response()) {
-    shutdown(__conn_fd_, SHUT_WR);
-    response.set_state(CLOSING);
-    return;
-  }
-  if (response.is_send_all()) {
+void Connection::send_response_queue_front() {
+  ResponseState state = __response_queue_.front().send(__conn_fd_);
+  if (state == CLOSING) {
     __response_queue_.pop_front();
   }
   __last_event_time_ = __time_now();
