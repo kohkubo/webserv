@@ -35,7 +35,7 @@ void RequestInfo::parse_request_header(
   }
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
-    __parse_content_type(itr->second);
+    content_type_ = __parse_multi_field(itr->second);
   }
 }
 
@@ -99,38 +99,49 @@ std::string RequestInfo::__trim_optional_whitespace(std::string str) {
   return str;
 }
 
+std::string RequestInfo::__trim_double_quote(std::string str) {
+  if (str.size() == 0) {
+    return str;
+  }
+  std::size_t last = str.size() - 1;
+  if (str[0] == '\"' || str[last] == '\"') {
+    bool is_lacking_quote = (0 == last || str[0] != str[last]);
+    if (is_lacking_quote) {
+      throw BadRequestException();
+    }
+    str = str.substr(1, last - 1);
+  }
+  return str;
+}
+
 // 例 Content-Type: multipart/form-data;boundary="boundary"
 // Content-Type = media-type = type "/" subtype *( OWS ";" OWS parameter )
 // parameter    = token "=" ( token / quoted-string )
 // TODO: typeの先頭のOWSは許容してしまう
 // TODO: token以外の文字があったときのバリデーとはするか
-void RequestInfo::__parse_content_type(const std::string &content) {
-  tokenVector   token_vector = tokenize(content, ";", ";");
-  tokenIterator it           = token_vector.begin();
-  for (; it != token_vector.end(); it++) {
+// parameter(key=value)の大文字小文字を区別するかについて:
+// RFC7231: valueは大文字と小文字を区別する場合としない場合があります。
+// 現状はmultipart/form-dataに合わせて大小文字は区別する(引用符があれば削除するだけ)
+// もし大小文字について考慮するなら,
+// 各valueの中身を参照する時にそれぞれの処理でやるべきかも
+RequestInfo::MultiField
+RequestInfo::__parse_multi_field(const std::string &content) {
+  MultiField    res;
+  tokenVector   tokens = tokenize(content, ";", ";");
+  tokenIterator it     = tokens.begin();
+  for (; it != tokens.end(); it++) {
     std::string str = __trim_optional_whitespace(*it);
-    if (content_type_ == "") {
-      // type+subtype
-      content_type_ = tolower(str);
+    if (res.first_ == "") {
+      res.first_ = tolower(str);
     } else {
-      // parameter
-      // とりあえず大文字小文字を区別する方向で
-      std::cout << "===>" << str << std::endl;
       std::size_t equal_pos = str.find('=');
       if (equal_pos == std::string::npos) {
         throw BadRequestException();
       }
-      std::string key   = tolower(str.substr(0, equal_pos));
-      std::string value = str.substr(equal_pos + 1);
-      if (value[0] == '\"') {
-        // quoted-stringの時, ""除去
-        std::size_t quote_pos = value.find_last_of("\"");
-        if (quote_pos == 0 || !(value.size() - 1 == quote_pos)) {
-          throw BadRequestException();
-        }
-        value = value.substr(1, quote_pos - 1);
-      }
-      ctype_parameter_[key] = value;
+      std::string key     = tolower(str.substr(0, equal_pos));
+      std::string value   = __trim_double_quote(str.substr(equal_pos + 1));
+      res.parameter_[key] = value;
     }
   }
+  return res;
 }
