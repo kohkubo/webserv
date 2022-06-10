@@ -63,7 +63,7 @@ public:
   const RequestInfo &request_info() const { return __request_info_; }
   RequestState       state() const { return __state_; }
   void               set_state(RequestState transaction_state) {
-                  __state_ = transaction_state;
+    __state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
   Response create_response() {

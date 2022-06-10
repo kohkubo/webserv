@@ -22,7 +22,7 @@ private:
   ssize_t       __send_count_;
 
 private:
-  bool __is_send_all() const {
+  inline bool __is_send_all() const {
     return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
 
@@ -39,14 +39,13 @@ public:
     const char *rest_str   = __response_.c_str() + __send_count_;
     size_t      rest_count = __response_.size() - __send_count_;
     __send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
-    if (__is_send_all() && __is_last_response_) {
+    if (__is_last_response_ && __is_send_all()) {
       shutdown(conn_fd, SHUT_WR);
-      return CLOSING;
+      __state_ = CLOSING;
+    } else if (__is_send_all()) {
+      __state_ = COMPLETE;
     }
-    if (__is_send_all()) {
-      return COMPLETE;
-    }
-    return SENDING;
+    return __state_;
   }
 };
 
