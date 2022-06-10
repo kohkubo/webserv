@@ -16,7 +16,7 @@ enum RequestState {
   RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
   RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
   RECEIVING_BODY,      // リクエストはbodyを読み取り中。
-  COMPLETE,            // リクエストのパース完了。
+  SUCCESS,             // リクエストのパース完了。
 };
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
@@ -60,13 +60,11 @@ public:
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
+  // TODO: テストでの使用のみなのでテストを変更し、消去する 2022/06/10 22:15 3人
   const RequestInfo &request_info() const { return __request_info_; }
-  RequestState       state() const { return __state_; }
-  void               set_state(RequestState transaction_state) {
-    __state_ = transaction_state;
-  }
-  void handle_request(std::string &request_buffer, const confGroup &conf_group);
-  Response create_response() {
+  RequestState       handle_request(std::string     &request_buffer,
+                                    const confGroup &conf_group);
+  Response           create_response() {
     // TODO: is_close判定
     // エラー || Connection: close -> true
     return Response(__response_, __request_info_.connection_close_);

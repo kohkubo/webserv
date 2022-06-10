@@ -35,18 +35,16 @@ private:
 public:
   Connection(connFd conn_fd, confGroup conf_group)
       : __conn_fd_(conn_fd)
-      , __conf_group_(conf_group) {
-    __last_event_time_ = __time_now();
-  }
+      , __conf_group_(conf_group)
+      , __last_event_time_(__time_now()) {}
   ~Connection() {}
 
   void          create_sequential_transaction();
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
-  void          send_response();
+  void          send_front_response();
   bool          is_timed_out() const {
-    std::time_t now = std::time(NULL);
-    return std::difftime(now, __last_event_time_) >= timeout_seconds_;
+    return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
   }
 };
 
