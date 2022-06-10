@@ -56,8 +56,7 @@ ResponseGenerator::generate_response(const Config      &config,
   // return がセットされていたら
   if (location->return_.size() != 0) {
     // intをHttpStatusCodeに変換する
-    status_code =
-        static_cast<HttpStatusCode>(location->return_.begin()->first);
+    status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
     return __response_message(status_code, body);
   }
   if (is_minus_depth(request_info.uri_)) {

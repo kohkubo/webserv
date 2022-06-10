@@ -25,10 +25,10 @@ void Connection::create_sequential_transaction() {
 }
 
 bool Connection::append_receive_buffer() {
-  const int buf_size = 2048;
+  const int buf_size      = 2048;
   char      buf[buf_size] = {0};
   // std::vector<char> buf(buf_size);
-  ssize_t   rc = recv(__conn_fd_, buf, buf_size, MSG_DONTWAIT);
+  ssize_t   rc            = recv(__conn_fd_, buf, buf_size, MSG_DONTWAIT);
   if (rc == -1) {
     std::cerr << "recv() failed." << std::endl;
     exit(EXIT_FAILURE);
