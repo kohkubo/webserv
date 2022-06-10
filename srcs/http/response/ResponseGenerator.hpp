@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_RESPONSE_HPP
-#define SRCS_HTTP_RESPONSE_RESPONSE_HPP
+#ifndef SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP
+#define SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP
 
 #include <algorithm>
 
@@ -10,14 +10,14 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/utils.hpp"
 
-class Response {
+class ResponseGenerator {
 public:
   static std::string generate_response(const Config      &config,
                                        const RequestInfo &request_info);
 
 private:
-  Response();
-  ~Response();
+  ResponseGenerator();
+  ~ResponseGenerator();
   static std::string
   __read_file_tostring_cgi(const std::string              &path,
                            const std::vector<std::string> &env);
@@ -78,4 +78,4 @@ private:
 std::map<int, std::string> init_response_status_phrase_map();
 std::map<int, std::string> init_page_contents_map();
 
-#endif /* SRCS_HTTP_RESPONSE_RESPONSE_HPP */
+#endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
