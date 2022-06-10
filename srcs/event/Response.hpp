@@ -32,11 +32,11 @@ public:
   void          set_state(ResponseState state) { __state_ = state; }
   bool          is_last_response() const { return __is_last_response_; }
 
-  void          send_response(connFd conn_fd) {
+  void          send(connFd conn_fd) {
     const char *rest_str   = __response_.c_str() + __send_count_;
     size_t      rest_count = __response_.size() - __send_count_;
     // TODO:sendのエラー処理
-    __send_count_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
+    __send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
   }
 
   bool is_send_all() const {

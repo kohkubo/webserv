@@ -51,7 +51,7 @@ struct pollfd Connection::create_pollfd() const {
 
 void Connection::send_response() {
   Response &response = __response_queue_.front();
-  response.send_response(__conn_fd_);
+  response.send(__conn_fd_);
   if (response.is_send_all() && response.is_last_response()) {
     shutdown(__conn_fd_, SHUT_WR);
     response.set_state(CLOSING);
