@@ -19,8 +19,8 @@ std::map<int, std::string> init_response_status_phrase_map() {
   return res;
 }
 
-std::string Response::__response_message(HttpStatusCode     status_code,
-                                         const std::string &body) {
+std::string ResponseGenerator::__response_message(HttpStatusCode status_code,
+                                                  const std::string &body) {
   std::string response;
   bool        has_body =
       status_code != NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
