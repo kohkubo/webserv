@@ -85,7 +85,7 @@ static bool getline(std::string &request_buffer, std::string &line) {
 // TODO: keyが被ったらどうするか
 void RequestInfo::__parse_formdata(std::string part_body) {
   std::map<std::string, std::string> field_map;
-  RequestInfo::MultiField            content_disposition;
+  RequestInfo::ContentInfo           content_disposition;
   std::string                        line;
   if (part_body == "") {
     return;
@@ -97,7 +97,7 @@ void RequestInfo::__parse_formdata(std::string part_body) {
     RequestInfo::store_request_header_field_map(line, field_map);
   }
   content_disposition =
-      RequestInfo::__parse_multi_field(field_map["Content-Disposition"]);
+      RequestInfo::__parse_content_info(field_map["Content-Disposition"]);
   if (content_disposition.first_ != "form-data") {
     ERROR_LOG("not support except form-data-->" + content_disposition.first_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
