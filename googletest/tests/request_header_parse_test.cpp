@@ -36,12 +36,23 @@ TEST(request_header_parse_test, contenttype_parameter) {
   std::map<std::string, std::string> header_field_map;
   header_field_map["Host"] = "127.0.0.1:5001";
   header_field_map["Content-Type"] =
-      "mulTIPARt/form-data;boUNDAry_=\"boundary\"";
+      "mulTIPARt/form-data;boUNDAry=\"boundary\"";
 
   RequestInfo info;
   info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_, "multipart/form-data");
-  EXPECT_EQ(info.ctype_parameter_["boundary_"], "boundary");
+  EXPECT_EQ(info.content_type_.first_, "multipart/form-data");
+  EXPECT_EQ(info.content_type_.parameter_["boundary"], "boundary");
+}
+
+TEST(request_header_parse_test, contenttype_empty_parameter) {
+  std::map<std::string, std::string> header_field_map;
+  header_field_map["Host"]         = "127.0.0.1:5001";
+  header_field_map["Content-Type"] = "mulTIPARt/form-data;boUNDAry=\"\"";
+
+  RequestInfo info;
+  info.parse_request_header(header_field_map);
+  EXPECT_EQ(info.content_type_.first_, "multipart/form-data");
+  EXPECT_EQ(info.content_type_.parameter_["boundary"], "");
 }
 
 TEST(request_parse_test, exception_contenttype_missingequal) {
@@ -55,7 +66,7 @@ TEST(request_parse_test, exception_contenttype_missingequal) {
                RequestInfo::BadRequestException);
 }
 
-TEST(request_parse_test, exception_contenttype_missingquote) {
+TEST(request_parse_test, exception_contenttype_lackingquote) {
   std::map<std::string, std::string> header_field_map;
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary=\"";
