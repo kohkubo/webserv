@@ -41,7 +41,7 @@ private:
   __parse_request_content_type(const std::string &content_type);
   static std::string __trim_optional_whitespace(std::string str);
   static std::string __trim_double_quote(std::string str);
-  static ContentInfo __parse_multi_field(const std::string &content);
+  static ContentInfo __parse_content_info(const std::string &content);
 
 public:
   RequestInfo()
