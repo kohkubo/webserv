@@ -10,6 +10,8 @@
 
 class RequestInfo {
 private:
+  static const std::string ows_;
+
 public:
   // 複数の値を持つフィールドのデータ型
   struct ContentInfo {
@@ -39,7 +41,6 @@ private:
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
   __parse_request_content_type(const std::string &content_type);
-  static std::string __erase_side_chars(std::string str, std::string erase);
   static std::string __cutout_prameter_value(std::string str);
   static ContentInfo __parse_content_info(const std::string &content);
 

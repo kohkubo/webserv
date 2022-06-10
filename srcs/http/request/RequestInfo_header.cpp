@@ -4,15 +4,16 @@
 #include <iostream>
 #include <string>
 
-#include "http/const/const_abnf.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
+const std::string RequestInfo::ows_ = " \t";
+
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースが終了 true。エラー→例外
-void RequestInfo::parse_request_header(
-    const std::map<std::string, std::string> &header_field_map) {
+void              RequestInfo::parse_request_header(
+                 const std::map<std::string, std::string> &header_field_map) {
   // call each field's parser
   std::map<std::string, std::string>::const_iterator itr;
   itr = header_field_map.find("Host");
@@ -52,8 +53,7 @@ void RequestInfo::store_request_header_field_map(
   if (last_char == ' ' || last_char == '\t') {
     throw BadRequestException();
   }
-  const std::string field_value =
-      __erase_side_chars(header_line.substr(pos + 1), OWS);
+  const std::string field_value = trim(header_line.substr(pos + 1), ows_);
   if (header_field_map.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
@@ -91,20 +91,9 @@ bool RequestInfo::__parse_request_transfer_encoding(
   return transfer_encoding == "chunked";
 }
 
-std::string RequestInfo::__erase_side_chars(std::string str,
-                                            std::string erase) {
-  str.erase(0, str.find_first_not_of(erase));
-  std::size_t pos = str.find_last_not_of(erase);
-  if (pos != std::string::npos) {
-    str.erase(pos + 1);
-  }
-  return str;
-}
-
 // 例 Content-Type: multipart/form-data;boundary="boundary"
 // Content-Type = media-type = type "/" subtype *( OWS ";" OWS parameter )
 // parameter    = token "=" ( token / quoted-string )
-// TODO: typeの先頭のOWSは許容してしまう
 // TODO: token以外の文字があったときのバリデーとはするか
 // TODO: keyの被り考慮するか
 // parameter(key=value)の大文字小文字を区別するかについて:
@@ -118,7 +107,7 @@ RequestInfo::__parse_content_info(const std::string &content) {
   tokenVector   tokens = tokenize(content, ";", ";");
   tokenIterator it     = tokens.begin();
   for (; it != tokens.end(); it++) {
-    std::string str = __erase_side_chars(*it, OWS);
+    std::string str = trim(*it, ows_);
     if (res.first_ == "") {
       res.first_ = tolower(str);
     } else {

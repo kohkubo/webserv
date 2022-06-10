@@ -22,6 +22,15 @@ bool has_prefix(const std::string &str, const std::string &prefix) {
   return std::equal(prefix.begin(), prefix.end(), str.begin());
 }
 
+std::string trim(std::string str, std::string erase) {
+  str.erase(0, str.find_first_not_of(erase));
+  std::size_t pos = str.find_last_not_of(erase);
+  if (pos != std::string::npos) {
+    str.erase(pos + 1);
+  }
+  return str;
+}
+
 static char my_tolower(char ch) {
   return static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
 }
