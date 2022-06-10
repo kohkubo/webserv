@@ -106,6 +106,7 @@ std::string RequestInfo::__erase_side_chars(std::string str,
 // parameter    = token "=" ( token / quoted-string )
 // TODO: typeの先頭のOWSは許容してしまう
 // TODO: token以外の文字があったときのバリデーとはするか
+// TODO: keyの被り考慮するか
 // parameter(key=value)の大文字小文字を区別するかについて:
 // RFC7231: valueは大文字と小文字を区別する場合としない場合があります。
 // 現状はmultipart/form-dataに合わせて大小文字は区別する(引用符があれば削除するだけ)
