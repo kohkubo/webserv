@@ -38,6 +38,7 @@ public:
   ResponseState send(connFd conn_fd) {
     const char *rest_str   = __response_.c_str() + __send_count_;
     size_t      rest_count = __response_.size() - __send_count_;
+    std::cout << __response_ << std::endl;
     __send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
     if (__is_last_response_ && __is_send_all()) {
       shutdown(conn_fd, SHUT_WR);

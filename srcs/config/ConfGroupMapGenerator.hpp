@@ -1,5 +1,5 @@
-#ifndef SRCS_CONFIG_CONFIGMAPGENERATOR_HPP
-#define SRCS_CONFIG_CONFIGMAPGENERATOR_HPP
+#ifndef SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP
+#define SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP
 
 #include "config/Config.hpp"
 
@@ -19,4 +19,4 @@ private:
   void                   __read_config(const char *config_file_path);
 };
 
-#endif /* SRCS_CONFIG_CONFIGMAPGENERATOR_HPP */
+#endif /* SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP */
