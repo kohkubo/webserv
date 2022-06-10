@@ -53,7 +53,7 @@ void RequestInfo::store_request_header_field_map(
     throw BadRequestException();
   }
   const std::string field_value =
-      __erase_side_str(header_line.substr(pos + 1), OWS);
+      __erase_side_chars(header_line.substr(pos + 1), OWS);
   if (header_field_map.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
@@ -91,7 +91,8 @@ bool RequestInfo::__parse_request_transfer_encoding(
   return transfer_encoding == "chunked";
 }
 
-std::string RequestInfo::__erase_side_str(std::string str, std::string erase) {
+std::string RequestInfo::__erase_side_chars(std::string str,
+                                            std::string erase) {
   str.erase(0, str.find_first_not_of(erase));
   std::size_t pos = str.find_last_not_of(erase);
   if (pos != std::string::npos) {
@@ -131,7 +132,7 @@ RequestInfo::__parse_content_info(const std::string &content) {
   tokenVector   tokens = tokenize(content, ";", ";");
   tokenIterator it     = tokens.begin();
   for (; it != tokens.end(); it++) {
-    std::string str = __erase_side_str(*it, OWS);
+    std::string str = __erase_side_chars(*it, OWS);
     if (res.first_ == "") {
       res.first_ = tolower(str);
     } else {
