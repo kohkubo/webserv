@@ -43,8 +43,7 @@ bool Connection::append_receive_buffer() {
 
 struct pollfd Connection::create_pollfd() const {
   struct pollfd pfd = {__conn_fd_, POLLIN, 0};
-  if (!__response_queue_.empty() &&
-      __response_queue_.front().state() == SENDING) {
+  if (!__response_queue_.empty() && __response_queue_.front().is_sending()) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
