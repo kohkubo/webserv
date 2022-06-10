@@ -16,7 +16,7 @@ enum RequestState {
   RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
   RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
   RECEIVING_BODY,      // リクエストはbodyを読み取り中。
-  COMPLETE,            // リクエストのパース完了。
+  SUCCESS,             // リクエストのパース完了。
 };
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
@@ -63,7 +63,7 @@ public:
   const RequestInfo &request_info() const { return __request_info_; }
   RequestState       state() const { return __state_; }
   void               set_state(RequestState transaction_state) {
-    __state_ = transaction_state;
+                  __state_ = transaction_state;
   }
   void handle_request(std::string &request_buffer, const confGroup &conf_group);
   Response create_response() {

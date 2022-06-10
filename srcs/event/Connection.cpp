@@ -14,7 +14,7 @@
 void Connection::create_sequential_transaction() {
   while (true) {
     __request_.handle_request(__buffer_, __conf_group_);
-    if (__request_.state() != COMPLETE) {
+    if (__request_.state() != SUCCESS) {
       break;
     }
     __response_queue_.push_back(__request_.create_response());
@@ -49,9 +49,9 @@ struct pollfd Connection::create_pollfd() const {
   return pfd;
 }
 
-void Connection::send_response_queue_front() {
+void Connection::send_front_response() {
   ResponseState state = __response_queue_.front().send(__conn_fd_);
-  if (state == CLOSING) {
+  if (state == COMPLETE) {
     __response_queue_.pop_front();
   }
   __last_event_time_ = __time_now();

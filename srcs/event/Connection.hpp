@@ -42,9 +42,9 @@ public:
   void          create_sequential_transaction();
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
-  void          send_response_queue_front();
+  void          send_front_response();
   bool          is_timed_out() const {
-    return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
+             return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
   }
 };
 

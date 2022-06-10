@@ -14,7 +14,7 @@ void Request::__set_response_for_bad_request() {
   // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
   // 現状は暫定的に、定型文を送信。
   __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __state_    = COMPLETE;
+  __state_    = SUCCESS;
   __request_info_.connection_close_ = true;
 }
 
@@ -56,7 +56,7 @@ void Request::handle_request(std::string     &request_buffer,
             __state_ = RECEIVING_BODY;
             break;
           }
-          __state_ = COMPLETE;
+          __state_ = SUCCESS;
           break;
         }
       }
@@ -71,14 +71,14 @@ void Request::handle_request(std::string     &request_buffer,
       } else if (request_buffer.size() >= __request_info_.content_length_) {
         __request_body_ = __cutout_request_body(
             request_buffer, __request_info_.content_length_);
-        __state_ = COMPLETE;
+        __state_ = SUCCESS;
       }
-      if (__state_ == COMPLETE) {
+      if (__state_ == SUCCESS) {
         __request_info_.parse_request_body(__request_body_,
                                            __request_info_.content_type_);
       }
     }
-    if (__state_ == COMPLETE) {
+    if (__state_ == SUCCESS) {
       __response_ =
           ResponseGenerator::generate_response(*__config_, __request_info_);
     } else if (__state_ == RECEIVING_STARTLINE ||
@@ -147,7 +147,7 @@ RequestState Request::__chunk_loop(std::string &request_buffer) {
     } else {
       bool is_last_chunk = __next_chunk_size_ == 0 && chunk_line == "";
       if (is_last_chunk) {
-        return COMPLETE;
+        return SUCCESS;
       }
       __request_body_.append(chunk_line);
       __next_chunk_ = CHUNK_SIZE;
