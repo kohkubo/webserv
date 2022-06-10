@@ -114,6 +114,8 @@ void RequestInfo::__parse_content_type(const std::string &content) {
       content_type_ = tolower(str);
     } else {
       // parameter
+      // とりあえず大文字小文字を区別する方向で
+      std::cout << "===>" << str << std::endl;
       std::size_t equal_pos = str.find('=');
       if (equal_pos == std::string::npos) {
         throw BadRequestException();
@@ -121,15 +123,12 @@ void RequestInfo::__parse_content_type(const std::string &content) {
       std::string key   = tolower(str.substr(0, equal_pos));
       std::string value = str.substr(equal_pos + 1);
       if (value[0] == '\"') {
-        // quoted-string, lowerにしない
+        // quoted-stringの時, ""除去
         std::size_t quote_pos = value.find_last_of("\"");
         if (quote_pos == 0 || !(value.size() - 1 == quote_pos)) {
           throw BadRequestException();
         }
         value = value.substr(1, quote_pos - 1);
-      } else {
-        // token
-        value = tolower(value);
       }
       ctype_parameter_[key] = value;
     }
