@@ -43,6 +43,7 @@ private:
   static std::string __trim_optional_whitespace(std::string str);
   static std::string __trim_double_quote(std::string str);
   static MultiField  __parse_multi_field(const std::string &content);
+  static void        __parse_multipar_body(std::string part_body);
 
 public:
   RequestInfo()
