@@ -50,8 +50,8 @@ struct pollfd Connection::create_pollfd() const {
 }
 
 void Connection::send_front_response() {
-  ResponseState state = __response_queue_.front().send(__conn_fd_);
-  if (state == COMPLETE) {
+  ResponseState response_state = __response_queue_.front().send(__conn_fd_);
+  if (response_state == COMPLETE) {
     __response_queue_.pop_front();
   }
   __last_event_time_ = __time_now();
