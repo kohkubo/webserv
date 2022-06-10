@@ -1,4 +1,4 @@
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 #include <unistd.h>
 
@@ -10,8 +10,9 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 
-HttpStatusCode Response::__delete_target_file(const RequestInfo request_info,
-                                              const std::string file_path) {
+HttpStatusCode
+ResponseGenerator::__delete_target_file(const RequestInfo request_info,
+                                        const std::string file_path) {
   if (request_info.content_length_ != 0) {
     std::cerr << "DELETE with body is unsupported" << std::endl;
     return BAD_REQUEST_400;
