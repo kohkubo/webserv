@@ -2,12 +2,12 @@
 
 #include <string>
 
-#include "event/Transaction.hpp"
+#include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_parse_test, normal) {
   std::string request = "GET / HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "User-Agent: curl/7.68.0\r\n"
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
@@ -15,7 +15,7 @@ TEST(request_parse_test, normal) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -29,7 +29,7 @@ TEST(request_parse_test, normal) {
 
 TEST(request_parse_test, normal_delete) {
   std::string request = "DELETE /delete_target.tmp HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "User-Agent: curl/7.68.0\r\n"
                         "Connection: close\r\n"
                         "Accept: */*\r\n\r\n";
@@ -37,7 +37,7 @@ TEST(request_parse_test, normal_delete) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -51,7 +51,7 @@ TEST(request_parse_test, normal_delete) {
 
 TEST(request_parse_test, normal_post) {
   std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "User-Agent: curl/7.68.0\r\n"
                         "Connection: close\r\n"
                         "Accept: */*\r\n"
@@ -61,7 +61,7 @@ TEST(request_parse_test, normal_post) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -71,12 +71,12 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
   EXPECT_EQ(r.connection_close_, true);
-  EXPECT_EQ(r.content_length_, 18);
+  EXPECT_EQ(r.content_length_, static_cast<std::size_t>(18));
 }
 
 TEST(request_parse_test, query_body) {
   std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "Content-Type: application/x-www-form-urlencoded\r\n"
                         "Content-Length: 45\r\n\r\n"
                         "I'm=going"
@@ -88,7 +88,7 @@ TEST(request_parse_test, query_body) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &info = transaction.request_info();
@@ -102,7 +102,7 @@ TEST(request_parse_test, query_body) {
 
 TEST(request_parse_test, query_body_capital) {
   std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:5001\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
                         "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
                         "Content-Length: 38\r\n\r\n"
                         "yabu=kara"
@@ -113,7 +113,7 @@ TEST(request_parse_test, query_body_capital) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &info = transaction.request_info();

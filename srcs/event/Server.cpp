@@ -66,7 +66,7 @@ void Server::run_loop() {
     __close_timedout_connection(__connection_map_);
     __reset_pollfds();
     // timeoutは仮
-    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 5000);
+    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 50000);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
       if (it->revents == 0) {
@@ -89,7 +89,7 @@ void Server::run_loop() {
         LOG("POLLOUT");
         LOG(it->fd);
         // TODO: []からの書き換え、findできないケースある??
-        __connection_map_.find(it->fd)->second.send_response();
+        __connection_map_.find(it->fd)->second.send_front_response();
       }
     }
   }

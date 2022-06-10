@@ -1,4 +1,4 @@
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
@@ -21,17 +21,6 @@ std::map<int, std::string> init_response_status_phrase_map() {
 
 std::string Response::__response_message(HttpStatusCode     status_code,
                                          const std::string &body) {
-  // TODO: この分岐、モブプロ用のとき説明しながら直します。今はとりあえずの処理
-  // kohkubo
-  if (status_code == MOVED_PERMANENTLY_301) {
-    std::string response =
-        "HTTP/1.1 " + g_response_status_phrase_map[status_code] + CRLF +
-        "Content-Length: " + to_string(body.size()) + CRLF +
-        "Accept-Charset: iso-8859-1" + CRLF + "Connection: close" + CRLF +
-        "Location: " + "http://localhost:5001/" + CRLF + CRLF;
-    LOG(response);
-    return response;
-  }
   std::string response;
   bool        has_body =
       status_code != NO_CONTENT_204 || status_code == NOT_MODIFIED_304;

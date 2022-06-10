@@ -13,13 +13,13 @@
 
 void Connection::create_sequential_transaction() {
   while (true) {
-    Transaction &transaction = __transaction_queue_.back();
-    transaction.handle_request(__buffer_, __conf_group_);
-    std::cout << __buffer_ << std::endl;
-    if (transaction.state() != SENDING) {
+    RequestState request_state =
+        __request_.handle_request(__buffer_, __conf_group_);
+    if (request_state != SUCCESS) {
       break;
     }
-    __transaction_queue_.push_back(Transaction());
+    __response_queue_.push_back(__request_.create_response());
+    __request_ = Request();
   }
   __last_event_time_ = __time_now();
 }
@@ -48,22 +48,16 @@ bool Connection::append_receive_buffer() {
 
 struct pollfd Connection::create_pollfd() const {
   struct pollfd pfd = {__conn_fd_, POLLIN, 0};
-  if (__transaction_queue_.front().state() == SENDING) {
+  if (!__response_queue_.empty() && __response_queue_.front().is_sending()) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
 }
 
-void Connection::send_response() {
-  Transaction &transaction = __transaction_queue_.front();
-  transaction.send_response(__conn_fd_);
-  if (transaction.request_info().connection_close_) {
-    shutdown(__conn_fd_, SHUT_WR);
-    __transaction_queue_.front().set_state(CLOSING);
-    return;
-  }
-  if (transaction.is_send_all()) {
-    __transaction_queue_.pop_front();
+void Connection::send_front_response() {
+  ResponseState response_state = __response_queue_.front().send(__conn_fd_);
+  if (response_state == COMPLETE) {
+    __response_queue_.pop_front();
   }
   __last_event_time_ = __time_now();
 }

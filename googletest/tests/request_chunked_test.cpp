@@ -3,7 +3,7 @@
 #include <string>
 
 #include "config/Config.hpp"
-#include "event/Transaction.hpp"
+#include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_chunked_test, chunked_body) {
@@ -26,7 +26,7 @@ TEST(request_chunked_test, chunked_body) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request transaction;
 
   transaction.handle_request(chunked_request, conf_group);
   const RequestInfo &info = transaction.request_info();
@@ -59,7 +59,7 @@ TEST(request_chunked_test, chunked_body_split) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  Transaction transaction;
+  Request     transaction;
   std::string request_buffer;
   request_buffer.append(split_request1);
   transaction.handle_request(request_buffer, conf_group);

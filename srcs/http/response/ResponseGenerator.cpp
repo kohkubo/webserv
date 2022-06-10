@@ -1,4 +1,4 @@
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 #include <cstdlib>
 #include <unistd.h>
@@ -31,13 +31,14 @@ std::map<int, std::string> init_page_contents_map() {
   return res;
 }
 
-bool Response::__is_error_status_code(HttpStatusCode status_code) {
+bool ResponseGenerator::__is_error_status_code(HttpStatusCode status_code) {
   // TODO: エラーのステータスコードの扱いを決まったら再実装
   return status_code > 299 && status_code < 600;
 }
 
-std::string Response::generate_response(const Config      &config,
-                                        const RequestInfo &request_info) {
+std::string
+ResponseGenerator::generate_response(const Config      &config,
+                                     const RequestInfo &request_info) {
   HttpStatusCode  status_code = NONE;
   std::string     body;
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
@@ -85,9 +86,8 @@ std::string Response::generate_response(const Config      &config,
 }
 
 // 最長マッチ
-const Location *
-Response::__select_proper_location(const std::string           &request_uri,
-                                   const std::vector<Location> &locations) {
+const Location *ResponseGenerator::__select_proper_location(
+    const std::string &request_uri, const std::vector<Location> &locations) {
   // clang-format off
   std::string     path;
   const Location *ret_location = NULL;
@@ -104,8 +104,8 @@ Response::__select_proper_location(const std::string           &request_uri,
   return ret_location;
 }
 
-std::string Response::__file_path(const std::string &request_uri,
-                                  const Location    &location) {
+std::string ResponseGenerator::__file_path(const std::string &request_uri,
+                                           const Location    &location) {
   std::string file_path;
   file_path = location.root_ + request_uri;
   if (has_suffix(file_path, "/") &&
@@ -116,8 +116,9 @@ std::string Response::__file_path(const std::string &request_uri,
 }
 
 // TODO: リンクやその他のファイルシステムの時どうするか
-HttpStatusCode Response::__check_filepath_status(const Location    &location,
-                                                 const std::string &file_path) {
+HttpStatusCode
+ResponseGenerator::__check_filepath_status(const Location    &location,
+                                           const std::string &file_path) {
   if (has_suffix(file_path, "/")) {
     if (is_dir_exists(file_path)) {
       if (!location.autoindex_) {
@@ -138,9 +139,10 @@ HttpStatusCode Response::__check_filepath_status(const Location    &location,
 }
 
 // TODO: config.error_page validate
-std::string Response::__error_page_body(const Location      &location,
-                                        const Config        &config,
-                                        const HttpStatusCode status_code) {
+std::string
+ResponseGenerator::__error_page_body(const Location      &location,
+                                     const Config        &config,
+                                     const HttpStatusCode status_code) {
   std::map<int, std::string>::const_iterator it =
       config.error_pages_.find(status_code);
   if (it != config.error_pages_.end()) {
@@ -150,8 +152,8 @@ std::string Response::__error_page_body(const Location      &location,
   return g_error_page_contents_map[status_code];
 }
 
-std::string Response::__body(const std::string &file_path,
-                             const RequestInfo  request_info) {
+std::string ResponseGenerator::__body(const std::string &file_path,
+                                      const RequestInfo  request_info) {
   if (has_suffix(file_path, ".sh")) {
     return __read_file_tostring_cgi(file_path, request_info.env_values_);
   }

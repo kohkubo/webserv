@@ -1,26 +1,26 @@
-#include "event/Transaction.hpp"
+#include "event/Request.hpp"
 
 #include <sys/socket.h>
 
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/Response.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 // TODO: ステータスコードに合わせたレスポンスを生成
-void Transaction::__set_response_for_bad_request() {
+void Request::__set_response_for_bad_request() {
   // 400エラー処理
   // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
   // 指定できるとき、nginxはどうやってserverを決定しているか。
   // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
   // 現状は暫定的に、定型文を送信。
   __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __state_    = SENDING;
+  __state_    = SUCCESS;
   __request_info_.connection_close_ = true;
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-void Transaction::handle_request(std::string     &request_buffer,
-                                 const confGroup &conf_group) {
+RequestState Request::handle_request(std::string     &request_buffer,
+                                     const confGroup &conf_group) {
   try {
     if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
@@ -56,7 +56,7 @@ void Transaction::handle_request(std::string     &request_buffer,
             __state_ = RECEIVING_BODY;
             break;
           }
-          __state_ = SENDING;
+          __state_ = SUCCESS;
           break;
         }
       }
@@ -71,15 +71,16 @@ void Transaction::handle_request(std::string     &request_buffer,
       } else if (request_buffer.size() >= __request_info_.content_length_) {
         __request_body_ = __cutout_request_body(
             request_buffer, __request_info_.content_length_);
-        __state_ = SENDING;
+        __state_ = SUCCESS;
       }
-      if (__state_ == SENDING) {
+      if (__state_ == SUCCESS) {
         __request_info_.parse_request_body(__request_body_,
                                            __request_info_.content_type_);
       }
     }
-    if (__state_ == SENDING) {
-      __response_ = Response::generate_response(*__config_, __request_info_);
+    if (__state_ == SUCCESS) {
+      __response_ =
+          ResponseGenerator::generate_response(*__config_, __request_info_);
     } else if (__state_ == RECEIVING_STARTLINE ||
                __state_ == RECEIVING_HEADER) {
       __check_buffer_length_exception(request_buffer, buffer_max_length_);
@@ -87,9 +88,10 @@ void Transaction::handle_request(std::string     &request_buffer,
   } catch (const RequestInfo::BadRequestException &e) {
     __set_response_for_bad_request();
   }
+  return __state_;
 }
 
-bool Transaction::__getline(std::string &request_buffer, std::string &line) {
+bool Request::__getline(std::string &request_buffer, std::string &line) {
   std::size_t pos = request_buffer.find(CRLF);
   if (pos == std::string::npos)
     return false;
@@ -98,17 +100,17 @@ bool Transaction::__getline(std::string &request_buffer, std::string &line) {
   return true;
 }
 
-std::string Transaction::__cutout_request_body(std::string &request_buffer,
-                                               size_t       content_length) {
+std::string Request::__cutout_request_body(std::string &request_buffer,
+                                           size_t       content_length) {
   std::string request_body = request_buffer.substr(0, content_length);
   request_buffer.erase(0, content_length);
   return request_body;
 }
 
-bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
-                                        std::string  &request_buffer,
-                                        std::string  &chunk,
-                                        size_t        next_chunk_size) {
+bool Request::__get_next_chunk_line(NextChunkType chunk_type,
+                                    std::string  &request_buffer,
+                                    std::string  &chunk,
+                                    size_t        next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
     return __getline(request_buffer, chunk);
   }
@@ -124,9 +126,8 @@ bool Transaction::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *
-Transaction::__select_proper_config(const confGroup   &conf_group,
-                                    const std::string &host_name) {
+const Config *Request::__select_proper_config(const confGroup   &conf_group,
+                                              const std::string &host_name) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == host_name) {
@@ -136,15 +137,7 @@ Transaction::__select_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
-// TODO: 送った分だけ__response_を消すのはダメなの?? kohkubo
-void Transaction::send_response(connFd conn_fd) {
-  const char *rest_str   = __response_.c_str() + __send_count_;
-  size_t      rest_count = __response_.size() - __send_count_;
-  // TODO:sendのエラー処理
-  __send_count_ += send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
-}
-
-TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
+RequestState Request::__chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
   while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
                                __next_chunk_size_)) {
@@ -155,7 +148,7 @@ TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
     } else {
       bool is_last_chunk = __next_chunk_size_ == 0 && chunk_line == "";
       if (is_last_chunk) {
-        return SENDING;
+        return SUCCESS;
       }
       __request_body_.append(chunk_line);
       __next_chunk_ = CHUNK_SIZE;
@@ -166,15 +159,15 @@ TransactionState Transaction::__chunk_loop(std::string &request_buffer) {
   return RECEIVING_BODY;
 }
 
-void Transaction::__check_max_client_body_size_exception(
+void Request::__check_max_client_body_size_exception(
     std::size_t actual_body_size, std::size_t max_body_size) {
   if (actual_body_size > max_body_size) {
     throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
   }
 }
 
-void Transaction::__check_buffer_length_exception(
-    std::string &request_buffer, std::size_t buffer_max_length) {
+void Request::__check_buffer_length_exception(std::string &request_buffer,
+                                              std::size_t  buffer_max_length) {
   if (request_buffer.size() >= buffer_max_length) {
     request_buffer.clear();
     throw RequestInfo::BadRequestException();
