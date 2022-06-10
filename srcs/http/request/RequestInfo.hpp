@@ -19,23 +19,24 @@ public:
     std::map<std::string, std::string> parameter_;
   };
   // ファイル情報
-  struct FormFile {
+  struct FormData {
     std::string filename_;
+    std::string content_type_;
     std::string content_;
   };
-  typedef std::map<std::string, FormFile> FormData;
+  typedef std::map<std::string, FormData> MultiPart;
 
   bool                                    is_blank_first_line_;
   std::string                             method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
-  std::string              version_;
-  std::string              host_;
-  bool                     connection_close_;
-  bool                     is_chunked_;
-  std::size_t              content_length_;
-  FormData                 form_data_;
-  ContentInfo              content_type_;
-  std::vector<std::string> env_values_;
+  std::string version_;
+  std::string host_;
+  bool        connection_close_;
+  bool        is_chunked_;
+  std::size_t content_length_;
+  ContentInfo content_type_;
+  MultiPart   multi_part_; // multipart/formdataの時のパース先
+  std::vector<std::string> env_values_; // application/~urlencodedの時のパース先
 
 private:
   static bool        __is_comma_sparated(std::string &field_name);

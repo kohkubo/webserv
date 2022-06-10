@@ -24,11 +24,12 @@ void RequestInfo::parse_request_body(std::string       &request_body,
     ERROR_LOG("unknown content-type:" + content_type.first_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  FormData::iterator it = form_data_.begin();
-  for (; it != form_data_.end(); it++) {
+  MultiPart::iterator it = multi_part_.begin();
+  for (; it != multi_part_.end(); it++) {
     std::string a;
     a += "name: " + it->first + "\n";
     a += "filename: " + it->second.filename_ + "\n";
+    a += "contenttype: " + it->second.content_type_ + "\n";
     a += "filecontent :" + it->second.content_ + "\n";
     mess("part", a);
   }
@@ -86,6 +87,7 @@ static bool getline(std::string &request_buffer, std::string &line) {
 void RequestInfo::__parse_formdata(std::string part_body) {
   std::map<std::string, std::string> field_map;
   RequestInfo::ContentInfo           content_disposition;
+  RequestInfo::ContentInfo           content_type;
   std::string                        line;
   if (part_body == "") {
     return;
@@ -96,15 +98,18 @@ void RequestInfo::__parse_formdata(std::string part_body) {
     }
     RequestInfo::store_request_header_field_map(line, field_map);
   }
-  content_disposition =
-      RequestInfo::__parse_content_info(field_map["Content-Disposition"]);
+  content_disposition = RequestInfo::__parse_content_info(
+      field_map["Content-Disposition"]); // 無い時
   if (content_disposition.first_ != "form-data") {
-    ERROR_LOG("not support except form-data-->" + content_disposition.first_);
+    ERROR_LOG("not support except form-data");
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  FormFile    f;
+  content_type =
+      RequestInfo::__parse_content_info(field_map["Content-Type"]); // 無い時
+  FormData    f;
   std::string formkey = content_disposition.parameter_["name"]; // TODO: 無い時
   f.filename_         = content_disposition.parameter_["filename"];
+  f.content_type_     = content_type.first_;
   f.content_          = part_body;
-  form_data_[formkey] = f;
+  multi_part_[formkey] = f;
 }
