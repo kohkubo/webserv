@@ -22,7 +22,7 @@ class Connection {
 private:
   connFd                   __conn_fd_;
   confGroup                __conf_group_;
-  Request                  __transaction_;
+  Request                  __request_;
   std::deque<Response>     __response_queue_;
   std::string              __buffer_;
   std::time_t              __last_event_time_;

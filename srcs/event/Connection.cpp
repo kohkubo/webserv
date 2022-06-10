@@ -13,12 +13,12 @@
 
 void Connection::create_sequential_transaction() {
   while (true) {
-    __transaction_.handle_request(__buffer_, __conf_group_);
-    if (__transaction_.state() != COMPLETE) {
+    __request_.handle_request(__buffer_, __conf_group_);
+    if (__request_.state() != COMPLETE) {
       break;
     }
-    __response_queue_.push_back(__transaction_.create_response());
-    __transaction_ = Request();
+    __response_queue_.push_back(__request_.create_response());
+    __request_ = Request();
   }
   __last_event_time_ = __time_now();
 }
