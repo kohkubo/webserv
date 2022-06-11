@@ -36,7 +36,7 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   if (content_type.type_ == "application/x-www-form-urlencoded") {
     env_values_ = __parse_request_envvalues(request_body);
   } else if (content_type.type_ == "multipart/form-data") {
-    __parse_request_files(request_body);
+    form_datas_ = __parse_request_formdates(request_body, content_type);
   } else if (content_type.type_ == "text/plain") {
     ERROR_LOG("not support content-type:" + content_type.type_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
@@ -61,10 +61,12 @@ RequestInfo::__parse_request_envvalues(const std::string &request_body) {
 
 // static, 引数
 // 引数&つけるか
-void RequestInfo::__parse_request_files(std::string request_body) {
+RequestInfo::FormDatas
+RequestInfo::__parse_request_formdates(std::string        request_body,
+                                       const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
-  it = content_type_.parameter_.find("boundary");
-  if (it == content_type_.parameter_.end() || it->second == "") {
+  it = content_type.parameter_.find("boundary");
+  if (it == content_type.parameter_.end() || it->second == "") {
     ERROR_LOG("missing boundary");
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
@@ -72,27 +74,30 @@ void RequestInfo::__parse_request_files(std::string request_body) {
   std::string end      = "--" + it->second + "--" + CRLF;
   mess("request_body", request_body);
   mess("boundary", boundary);
+  FormDatas   formdatas;
+  FormData    f;
   std::size_t pos = 0;
   while (true) {
     if ((pos = request_body.find(boundary)) != std::string::npos) {
       if (pos != 0) {
-        __parse_formdata(request_body.substr(0, pos));
+        formdatas.push_back(__parse_formdata(request_body.substr(0, pos)));
       }
       request_body.erase(0, pos + boundary.size());
     } else if ((pos = request_body.find(end)) != std::string::npos) {
-      __parse_formdata(request_body.substr(0, pos));
+      formdatas.push_back(__parse_formdata(request_body.substr(0, pos)));
       break;
     } else {
       ERROR_LOG("missing end boundary");
       throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
     }
   }
+  return formdatas;
 }
 
 // TODO: mutipartをもう一度読む, エラー処理を挟む
 // TODO: keyが被ったらどうするか
 // TODO: contentの最後の改行はプラスで付けられているかも
-void RequestInfo::__parse_formdata(std::string part_body) {
+RequestInfo::FormData RequestInfo::__parse_formdata(std::string part_body) {
   std::string                        line;
   std::map<std::string, std::string> field_map;
   while (Request::getline(part_body, line) && line != "") {
@@ -108,5 +113,5 @@ void RequestInfo::__parse_formdata(std::string part_body) {
   f.content_type_ =
       RequestInfo::__parse_content_info(field_map["Content-Type"]); // 無い時
   f.content_ = part_body;
-  form_datas_.push_back(f);
+  return f;
 }

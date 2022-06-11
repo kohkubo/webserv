@@ -46,8 +46,9 @@ private:
   static size_t
   __parse_request_content_length(const std::string &content_length);
   static EnvValues __parse_request_envvalues(const std::string &request_body);
-  void             __parse_formdata(std::string part_body);
-  void             __parse_request_files(std::string request_body);
+  static FormDatas __parse_request_formdates(std::string        request_body,
+                                             const ContentInfo &content_type);
+  static FormData  __parse_formdata(std::string part_body);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
