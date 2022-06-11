@@ -13,6 +13,24 @@ static void mess(const std::string theme, const std::string mess) {
             << "\n\n\n";
 }
 
+static void put_formdatas(RequestInfo::FormDatas f) {
+  // clang-format off
+  RequestInfo::FormDatas::iterator it = f.begin();
+  for (; it != f.end(); it++) {
+    std::string a;
+    a += "content_dispostion:\n";
+    a += it->content_disposition_.type_ + "\n";
+    a += it->content_disposition_.parameter_["name"] + "\n";
+    a += it->content_disposition_.parameter_["filename"] + "\n";
+    a += "content_type:\n";
+    a += it->content_type_.type_ + "\n";
+    a += "content:\n";
+    a += it->content_;
+    mess("part", a);
+  }
+  // clang-format on
+}
+
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const ContentInfo &content_type) {
   if (content_type.type_ == "application/x-www-form-urlencoded") {
@@ -20,20 +38,13 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   } else if (content_type.type_ == "multipart/form-data") {
     __parse_request_files(request_body);
   } else if (content_type.type_ == "text/plain") {
-    env_values_.push_back(request_body); // tmp
+    ERROR_LOG("not support content-type:" + content_type.type_);
+    throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   } else {
     ERROR_LOG("unknown content-type:" + content_type.type_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  MultiPartForm::iterator it = multi_part_form_.begin();
-  for (; it != multi_part_form_.end(); it++) {
-    std::string a;
-    a += "name: " + it->first + "\n";
-    a += "filename: " + it->second.filename_ + "\n";
-    a += "contenttype: " + it->second.content_type_ + "\n";
-    a += "filecontent :" + it->second.content_ + "\n";
-    mess("part", a);
-  }
+  put_formdatas(form_datas_);
 }
 
 RequestInfo::EnvValues
@@ -80,26 +91,22 @@ void RequestInfo::__parse_request_files(std::string request_body) {
 
 // TODO: mutipartをもう一度読む, エラー処理を挟む
 // TODO: keyが被ったらどうするか
+// TODO: contentの最後の改行はプラスで付けられているかも
 void RequestInfo::__parse_formdata(std::string part_body) {
-  std::map<std::string, std::string> field_map;
-  RequestInfo::ContentInfo           content_disposition;
-  RequestInfo::ContentInfo           content_type;
   std::string                        line;
+  std::map<std::string, std::string> field_map;
   while (Request::getline(part_body, line) && line != "") {
     RequestInfo::store_request_header_field_map(line, field_map);
   }
-  content_disposition = RequestInfo::__parse_content_info(
+  FormData f;
+  f.content_disposition_ = RequestInfo::__parse_content_info(
       field_map["Content-Disposition"]); // 無い時
-  if (content_disposition.type_ != "form-data") {
+  if (f.content_disposition_.type_ != "form-data") {
     ERROR_LOG("not support except form-data");
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  content_type =
+  f.content_type_ =
       RequestInfo::__parse_content_info(field_map["Content-Type"]); // 無い時
-  FormData    f;
-  std::string formkey = content_disposition.parameter_["name"]; // TODO: 無い時
-  f.filename_         = content_disposition.parameter_["filename"];
-  f.content_type_     = content_type.type_;
-  f.content_          = part_body;
-  multi_part_form_[formkey] = f;
+  f.content_ = part_body;
+  form_datas_.push_back(f);
 }
