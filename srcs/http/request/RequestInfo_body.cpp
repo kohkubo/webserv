@@ -47,22 +47,20 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   put_formdatas(form_datas_);
 }
 
+// TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
+// TODO: =があるかなどのバリデート必要か
 RequestInfo::EnvValues
 RequestInfo::__parse_request_envvalues(const std::string &request_body) {
   RequestInfo::EnvValues res;
   tokenVector            tokens = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
-    // TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
-    // TODO: "hoge=huga"の形になっているかのバリデート必要かも
     res.push_back(*it);
   }
   return res;
 }
 
-// static, 引数
-// 引数&つけるか
 RequestInfo::FormDatas
-RequestInfo::__parse_request_formdates(std::string        request_body,
+RequestInfo::__parse_request_formdates(std::string       &request_body,
                                        const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
   it = content_type.parameter_.find("boundary");
@@ -96,22 +94,21 @@ RequestInfo::__parse_request_formdates(std::string        request_body,
 
 // TODO: mutipartをもう一度読む, エラー処理を挟む
 // TODO: keyが被ったらどうするか
-// TODO: contentの最後の改行はプラスで付けられているかも
+// TODO: contentの最後は改行が付け足されている
 RequestInfo::FormData RequestInfo::__parse_formdata(std::string part_body) {
   std::string                        line;
   std::map<std::string, std::string> field_map;
   while (Request::getline(part_body, line) && line != "") {
-    RequestInfo::store_request_header_field_map(line, field_map);
+    store_request_header_field_map(line, field_map);
   }
   FormData f;
-  f.content_disposition_ = RequestInfo::__parse_content_info(
-      field_map["Content-Disposition"]); // 無い時
+  f.content_disposition_ =
+      __parse_content_info(field_map["Content-Disposition"]); // 無い時
   if (f.content_disposition_.type_ != "form-data") {
     ERROR_LOG("not support except form-data");
-    throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
+    throw BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  f.content_type_ =
-      RequestInfo::__parse_content_info(field_map["Content-Type"]); // 無い時
-  f.content_ = part_body;
+  f.content_type_ = __parse_content_info(field_map["Content-Type"]); // 無い時
+  f.content_      = part_body;
   return f;
 }
