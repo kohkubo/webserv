@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
 #include "event/Request.hpp"
 #include "http/const/const_delimiter.hpp"
@@ -58,8 +59,35 @@ RequestInfo::__parse_request_envvalues(const std::string &request_body) {
   return res;
 }
 
+static std::vector<std::string>
+tokenize_multiform(std::string request_body, const std::string &boundary) {
+  std::vector<std::string> res;
+  std::string              first_boundary  = "--" + boundary + CRLF;
+  std::string              middle_boundary = CRLF + "--" + boundary + CRLF;
+  std::string              end_boundary = CRLF + "--" + boundary + "--" + CRLF;
+  std::size_t              pos          = request_body.find(first_boundary);
+  if (pos != 0) {
+    ERROR_LOG("body didn't start at the boundary");
+    throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
+  }
+  request_body.erase(0, pos + first_boundary.size());
+  while (true) {
+    if ((pos = request_body.find(middle_boundary)) != std::string::npos) {
+      res.push_back(request_body.substr(0, pos));
+      request_body.erase(0, pos + middle_boundary.size());
+    } else if ((pos = request_body.find(end_boundary)) != std::string::npos) {
+      res.push_back(request_body.substr(0, pos));
+      break;
+    } else {
+      ERROR_LOG("missing end boundary");
+      throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
+    }
+  }
+  return res;
+}
+
 RequestInfo::MultiForm
-RequestInfo::__parse_request_multiform(std::string       &request_body,
+RequestInfo::__parse_request_multiform(const std::string &request_body,
                                        const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
   it = content_type.parameter_.find("boundary");
@@ -67,33 +95,20 @@ RequestInfo::__parse_request_multiform(std::string       &request_body,
     ERROR_LOG("missing boundary");
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  std::string boundary = "--" + it->second + CRLF;
-  std::string end      = "--" + it->second + "--" + CRLF;
   mess("request_body", request_body);
-  mess("boundary", boundary);
-  MultiForm   mf;
-  Form        f;
-  std::size_t pos = 0;
-  while (true) {
-    if ((pos = request_body.find(boundary)) != std::string::npos) {
-      if (pos != 0) {
-        mf.push_back(__parse_form(request_body.substr(0, pos)));
-      }
-      request_body.erase(0, pos + boundary.size());
-    } else if ((pos = request_body.find(end)) != std::string::npos) {
-      mf.push_back(__parse_form(request_body.substr(0, pos)));
-      break;
-    } else {
-      ERROR_LOG("missing end boundary");
-      throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
-    }
+  mess("boundary", it->second);
+  std::vector<std::string> tokens =
+      tokenize_multiform(request_body, it->second);
+  MultiForm                          mf;
+  std::vector<std::string>::iterator itm = tokens.begin();
+  for (; itm != tokens.end(); itm++) {
+    mf.push_back(__parse_form(*itm));
   }
   return mf;
 }
 
 // TODO: RFCのmutipartをもう一度読む, エラー処理を挟む
 // TODO: 各partのnameが被ったらどうするか
-// TODO: contentの最後は改行が付け足されているかも
 // TODO: exceptionがどこで投げられるかわかりづらい
 RequestInfo::Form RequestInfo::__parse_form(std::string part_body) {
   std::string                        line;

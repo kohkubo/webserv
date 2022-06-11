@@ -46,7 +46,7 @@ private:
   static size_t
   __parse_request_content_length(const std::string &content_length);
   static EnvValues __parse_request_envvalues(const std::string &request_body);
-  static MultiForm __parse_request_multiform(std::string       &request_body,
+  static MultiForm __parse_request_multiform(const std::string &request_body,
                                              const ContentInfo &content_type);
   static Form      __parse_form(std::string part_body);
   static bool
