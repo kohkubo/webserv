@@ -18,13 +18,13 @@ public:
     std::string                        type_;
     std::map<std::string, std::string> parameter_;
   };
-  // mutlipart/form-dataの各partの情報
-  struct FormData {
+  // mutlipart/form-dataの各partのform情報
+  struct Form {
     ContentInfo content_disposition_;
     ContentInfo content_type_;
     std::string content_;
   };
-  typedef std::vector<FormData>    FormDatas;
+  typedef std::vector<Form>        MultiForm;
   typedef std::vector<std::string> EnvValues;
 
   bool                             is_blank_first_line_;
@@ -36,8 +36,8 @@ public:
   bool        is_chunked_;
   std::size_t content_length_;
   ContentInfo content_type_;
-  FormDatas   form_datas_; // multipart/formdataの時のパース先
-  EnvValues   env_values_; // application/~urlencodedの時のパース先
+  MultiForm   multi_part_form_; // multipart/formdataの時のパース先
+  EnvValues   env_values_;      // application/~urlencodedの時のパース先
 
 private:
   static bool        __is_comma_sparated(std::string &field_name);
@@ -46,9 +46,9 @@ private:
   static size_t
   __parse_request_content_length(const std::string &content_length);
   static EnvValues __parse_request_envvalues(const std::string &request_body);
-  static FormDatas __parse_request_formdates(std::string       &request_body,
+  static MultiForm __parse_request_multiform(std::string       &request_body,
                                              const ContentInfo &content_type);
-  static FormData  __parse_formdata(std::string part_body);
+  static Form      __parse_form(std::string part_body);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
