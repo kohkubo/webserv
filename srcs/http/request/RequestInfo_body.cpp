@@ -49,7 +49,8 @@ RequestInfo::__parse_request_envvalues(const std::string &request_body) {
 }
 
 // static, 引数
-void RequestInfo::__parse_request_files(const std::string &request_body) {
+// 引数&つけるか
+void RequestInfo::__parse_request_files(std::string request_body) {
   std::map<std::string, std::string>::const_iterator it;
   it = content_type_.parameter_.find("boundary");
   if (it == content_type_.parameter_.end() || it->second == "") {
@@ -58,16 +59,17 @@ void RequestInfo::__parse_request_files(const std::string &request_body) {
   }
   std::string boundary = "--" + it->second + CRLF;
   std::string end      = "--" + it->second + "--" + CRLF;
-  std::string body     = request_body;
-  mess("body", request_body);
+  mess("request_body", request_body);
   mess("boundary", boundary);
   std::size_t pos = 0;
   while (true) {
-    if ((pos = body.find(boundary)) != std::string::npos) {
-      __parse_formdata(body.substr(0, pos));
-      body.erase(0, pos + boundary.size());
-    } else if ((pos = body.find(end)) != std::string::npos) {
-      __parse_formdata(body.substr(0, pos));
+    if ((pos = request_body.find(boundary)) != std::string::npos) {
+      if (pos != 0) {
+        __parse_formdata(request_body.substr(0, pos));
+      }
+      request_body.erase(0, pos + boundary.size());
+    } else if ((pos = request_body.find(end)) != std::string::npos) {
+      __parse_formdata(request_body.substr(0, pos));
       break;
     } else {
       ERROR_LOG("missing end boundary");
@@ -82,13 +84,7 @@ void RequestInfo::__parse_formdata(std::string part_body) {
   RequestInfo::ContentInfo           content_disposition;
   RequestInfo::ContentInfo           content_type;
   std::string                        line;
-  if (part_body == "") {
-    return;
-  }
-  while (Request::getline(part_body, line)) {
-    if (line == "") {
-      break;
-    }
+  while (Request::getline(part_body, line) && line != "") {
     RequestInfo::store_request_header_field_map(line, field_map);
   }
   content_disposition = RequestInfo::__parse_content_info(
