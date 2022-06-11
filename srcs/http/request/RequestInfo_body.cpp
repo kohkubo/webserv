@@ -38,8 +38,7 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   } else if (content_type.type_ == "multipart/form-data") {
     multi_part_form_ = __parse_request_multiform(request_body, content_type);
   } else if (content_type.type_ == "text/plain") {
-    ERROR_LOG("not support content-type:" + content_type.type_);
-    throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
+    env_values_.push_back(request_body); // tmp
   } else {
     ERROR_LOG("unknown content-type:" + content_type.type_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
