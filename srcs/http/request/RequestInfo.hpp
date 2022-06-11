@@ -24,29 +24,30 @@ public:
     std::string content_type_;
     std::string content_;
   };
-  typedef std::map<std::string, FormData> MultiPart;
+  typedef std::map<std::string, FormData> MultiPartForm;
+  typedef std::vector<std::string>        EnvValues;
 
   bool                                    is_blank_first_line_;
   std::string                             method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
-  std::string version_;
-  std::string host_;
-  bool        connection_close_;
-  bool        is_chunked_;
-  std::size_t content_length_;
-  ContentInfo content_type_;
-  MultiPart   multi_part_; // multipart/formdataの時のパース先
-  std::vector<std::string> env_values_; // application/~urlencodedの時のパース先
+  std::string   version_;
+  std::string   host_;
+  bool          connection_close_;
+  bool          is_chunked_;
+  std::size_t   content_length_;
+  ContentInfo   content_type_;
+  MultiPartForm multi_part_form_; // multipart/formdataの時のパース先
+  EnvValues     env_values_; // application/~urlencodedの時のパース先
 
 private:
   static bool        __is_comma_sparated(std::string &field_name);
   static std::string __parse_request_host(const std::string &host_line);
   static bool        __parse_request_connection(const std::string &connection);
   static size_t
-       __parse_request_content_length(const std::string &content_length);
-  void __parse_request_envvalues(const std::string &request_body);
-  void __parse_request_files(const std::string &request_body);
-  void __parse_formdata(std::string part_body);
+  __parse_request_content_length(const std::string &content_length);
+  static EnvValues __parse_request_envvalues(const std::string &request_body);
+  void             __parse_formdata(std::string part_body);
+  void             __parse_request_files(const std::string &request_body);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string

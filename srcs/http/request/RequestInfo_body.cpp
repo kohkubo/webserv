@@ -16,7 +16,7 @@ static void mess(const std::string theme, const std::string mess) {
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const ContentInfo &content_type) {
   if (content_type.type_ == "application/x-www-form-urlencoded") {
-    __parse_request_envvalues(request_body);
+    env_values_ = __parse_request_envvalues(request_body);
   } else if (content_type.type_ == "multipart/form-data") {
     __parse_request_files(request_body);
   } else if (content_type.type_ == "text/plain") {
@@ -25,8 +25,8 @@ void RequestInfo::parse_request_body(std::string       &request_body,
     ERROR_LOG("unknown content-type:" + content_type.type_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  MultiPart::iterator it = multi_part_.begin();
-  for (; it != multi_part_.end(); it++) {
+  MultiPartForm::iterator it = multi_part_form_.begin();
+  for (; it != multi_part_form_.end(); it++) {
     std::string a;
     a += "name: " + it->first + "\n";
     a += "filename: " + it->second.filename_ + "\n";
@@ -36,14 +36,16 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   }
 }
 
-// static, 引数
-void RequestInfo::__parse_request_envvalues(const std::string &request_body) {
-  tokenVector tokens = tokenize(request_body, "&", "&");
+RequestInfo::EnvValues
+RequestInfo::__parse_request_envvalues(const std::string &request_body) {
+  RequestInfo::EnvValues res;
+  tokenVector            tokens = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
     // TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
     // TODO: "hoge=huga"の形になっているかのバリデート必要かも
-    env_values_.push_back(*it);
+    res.push_back(*it);
   }
+  return res;
 }
 
 // static, 引数
@@ -102,5 +104,5 @@ void RequestInfo::__parse_formdata(std::string part_body) {
   f.filename_         = content_disposition.parameter_["filename"];
   f.content_type_     = content_type.type_;
   f.content_          = part_body;
-  multi_part_[formkey] = f;
+  multi_part_form_[formkey] = f;
 }
