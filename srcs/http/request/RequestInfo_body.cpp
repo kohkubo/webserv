@@ -38,7 +38,7 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   } else if (content_type.type_ == "multipart/form-data") {
     multi_part_form_ = __parse_request_multiform(request_body, content_type);
   } else if (content_type.type_ == "text/plain") {
-    env_values_.push_back(request_body); // tmp
+    env_values_.push_back(request_body); // tmp, gtestに関わるので変更後テスト
   } else {
     ERROR_LOG("unknown content-type:" + content_type.type_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
@@ -71,43 +71,49 @@ RequestInfo::__parse_request_multiform(std::string       &request_body,
   std::string end      = "--" + it->second + "--" + CRLF;
   mess("request_body", request_body);
   mess("boundary", boundary);
-  MultiForm   mpf;
+  MultiForm   mf;
   Form        f;
   std::size_t pos = 0;
   while (true) {
     if ((pos = request_body.find(boundary)) != std::string::npos) {
       if (pos != 0) {
-        mpf.push_back(__parse_form(request_body.substr(0, pos)));
+        mf.push_back(__parse_form(request_body.substr(0, pos)));
       }
       request_body.erase(0, pos + boundary.size());
     } else if ((pos = request_body.find(end)) != std::string::npos) {
-      mpf.push_back(__parse_form(request_body.substr(0, pos)));
+      mf.push_back(__parse_form(request_body.substr(0, pos)));
       break;
     } else {
       ERROR_LOG("missing end boundary");
       throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
     }
   }
-  return mpf;
+  return mf;
 }
 
 // TODO: RFCのmutipartをもう一度読む, エラー処理を挟む
 // TODO: 各partのnameが被ったらどうするか
 // TODO: contentの最後は改行が付け足されているかも
+// TODO: exceptionがどこで投げられるかわかりづらい
 RequestInfo::Form RequestInfo::__parse_form(std::string part_body) {
   std::string                        line;
   std::map<std::string, std::string> field_map;
   while (Request::getline(part_body, line) && line != "") {
     store_request_header_field_map(line, field_map);
   }
-  Form f;
-  f.content_disposition_ =
-      __parse_content_info(field_map["Content-Disposition"]); // 無い時
+  Form                                         f;
+  std::map<std::string, std::string>::iterator it;
+  it = field_map.find("Content-Disposition");
+  if (it == field_map.end()) {
+    ERROR_LOG("missing Content-Disposition");
+    throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
+  }
+  f.content_disposition_ = __parse_content_info(it->second);
   if (f.content_disposition_.type_ != "form-data") {
     ERROR_LOG("not support except form-data");
     throw BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  f.content_type_ = __parse_content_info(field_map["Content-Type"]); // 無い時
+  f.content_type_ = __parse_content_info(field_map["Content-Type"]);
   f.content_      = part_body;
   return f;
 }
