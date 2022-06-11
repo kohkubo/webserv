@@ -78,6 +78,7 @@ void RequestInfo::__parse_request_files(std::string request_body) {
   }
 }
 
+// TODO: mutipartをもう一度読む, エラー処理を挟む
 // TODO: keyが被ったらどうするか
 void RequestInfo::__parse_formdata(std::string part_body) {
   std::map<std::string, std::string> field_map;
