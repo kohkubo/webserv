@@ -99,12 +99,12 @@ RequestInfo::__parse_request_multiform(const std::string &request_body,
   mess("boundary", it->second);
   std::vector<std::string> tokens =
       tokenize_multiform(request_body, it->second);
-  MultiForm                          mf;
+  MultiForm                          multi_form;
   std::vector<std::string>::iterator itm = tokens.begin();
   for (; itm != tokens.end(); itm++) {
-    mf.push_back(__parse_form(*itm));
+    multi_form.push_back(__parse_form(*itm));
   }
-  return mf;
+  return multi_form;
 }
 
 // TODO: RFCのmutipartをもう一度読む, エラー処理を挟む
@@ -116,19 +116,19 @@ RequestInfo::Form RequestInfo::__parse_form(std::string part_body) {
   while (Request::getline(part_body, line) && line != "") {
     store_request_header_field_map(line, field_map);
   }
-  Form                                         f;
   std::map<std::string, std::string>::iterator it;
   it = field_map.find("Content-Disposition");
   if (it == field_map.end()) {
     ERROR_LOG("missing Content-Disposition");
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  f.content_disposition_ = __parse_content_info(it->second);
-  if (f.content_disposition_.type_ != "form-data") {
+  Form form;
+  form.content_disposition_ = __parse_content_info(it->second);
+  if (form.content_disposition_.type_ != "form-data") {
     ERROR_LOG("not support except form-data");
     throw BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  f.content_type_ = __parse_content_info(field_map["Content-Type"]);
-  f.content_      = part_body;
-  return f;
+  form.content_type_ = __parse_content_info(field_map["Content-Type"]);
+  form.content_      = part_body;
+  return form;
 }
