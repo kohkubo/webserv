@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include <iostream>
 #include <string>
 
 typedef int connFd;
