@@ -36,7 +36,6 @@ private:
   static const std::size_t           buffer_max_length_ = 8192;
 
 private:
-  static bool        __getline(std::string &request_buffer, std::string &line);
   static std::string __cutout_request_body(std::string &request_buffer,
                                            size_t       content_length);
   static bool        __get_next_chunk_line(NextChunkType chunk_type,
@@ -69,6 +68,7 @@ public:
     // エラー || Connection: close -> true
     return Response(__response_, __request_info_.connection_close_);
   }
+  static bool getline(std::string &request_buffer, std::string &line);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */

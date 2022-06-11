@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "event/Request.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
@@ -73,16 +74,6 @@ void RequestInfo::__parse_request_files(const std::string &request_body) {
   }
 }
 
-// transactionの機能と共有
-static bool getline(std::string &request_buffer, std::string &line) {
-  std::size_t pos = request_buffer.find(CRLF);
-  if (pos == std::string::npos)
-    return false;
-  line = request_buffer.substr(0, pos);
-  request_buffer.erase(0, pos + 2);
-  return true;
-}
-
 // TODO: keyが被ったらどうするか
 void RequestInfo::__parse_formdata(std::string part_body) {
   std::map<std::string, std::string> field_map;
@@ -92,7 +83,7 @@ void RequestInfo::__parse_formdata(std::string part_body) {
   if (part_body == "") {
     return;
   }
-  while (getline(part_body, line)) {
+  while (Request::getline(part_body, line)) {
     if (line == "") {
       break;
     }
