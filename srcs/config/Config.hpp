@@ -45,7 +45,7 @@ public:
     try {
       __last_it_ = __parse(start, end);
     } catch (const std::exception &e) {
-     ERROR_LOG(e.what());
+      ERROR_LOG(e.what());
       exit(EXIT_FAILURE);
     }
   }
