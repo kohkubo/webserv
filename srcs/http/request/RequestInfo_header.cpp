@@ -5,12 +5,15 @@
 #include <string>
 
 #include "http/const/const_delimiter.hpp"
+#include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
+
+const std::string RequestInfo::ows_ = " \t";
 
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースが終了 true。エラー→例外
-void RequestInfo::parse_request_header(
-    const std::map<std::string, std::string> &header_field_map) {
+void              RequestInfo::parse_request_header(
+                 const std::map<std::string, std::string> &header_field_map) {
   // call each field's parser
   std::map<std::string, std::string>::const_iterator itr;
   itr = header_field_map.find("Host");
@@ -34,7 +37,7 @@ void RequestInfo::parse_request_header(
   }
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
-    content_type_ = __parse_request_content_type(itr->second);
+    content_type_ = __parse_content_info(itr->second);
   }
 }
 
@@ -50,8 +53,7 @@ void RequestInfo::store_request_header_field_map(
   if (last_char == ' ' || last_char == '\t') {
     throw BadRequestException();
   }
-  const std::string field_value =
-      __trim_optional_whitespace(header_line.substr(pos + 1));
+  const std::string field_value = trim(header_line.substr(pos + 1), ows_);
   if (header_field_map.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
@@ -89,16 +91,51 @@ bool RequestInfo::__parse_request_transfer_encoding(
   return transfer_encoding == "chunked";
 }
 
-std::string
-RequestInfo::__parse_request_content_type(const std::string &content_type) {
-  return tolower(content_type);
+// 例 Content-Type: multipart/form-data;boundary="boundary"
+// Content-Type = media-type = type "/" subtype *( OWS ";" OWS parameter )
+// parameter    = token "=" ( token / quoted-string )
+// TODO: token以外の文字があったときのバリデーとはするか
+// TODO: keyの被り考慮するか
+// parameter(key=value)の大文字小文字を区別するかについて:
+// RFC7231: valueは大文字と小文字を区別する場合としない場合があります。
+// 現状はmultipart/form-dataに合わせて大小文字は区別する(引用符があれば削除するだけ)
+// もし大小文字について考慮するなら,
+// 各valueの中身を参照する時にそれぞれの処理でやるべきかも
+RequestInfo::ContentInfo
+RequestInfo::__parse_content_info(const std::string &content) {
+  ContentInfo   res;
+  tokenVector   tokens = tokenize(content, ";", ";");
+  tokenIterator it     = tokens.begin();
+  for (; it != tokens.end(); it++) {
+    std::string str = trim(*it, ows_);
+    if (res.type_ == "") {
+      res.type_ = tolower(str);
+    } else {
+      std::size_t equal_pos = str.find('=');
+      if (equal_pos == std::string::npos) {
+        throw BadRequestException();
+      }
+      std::string key     = tolower(str.substr(0, equal_pos));
+      std::string value   = __cutout_prameter_value(str.substr(equal_pos + 1));
+      res.parameter_[key] = value;
+    }
+  }
+  return res;
 }
 
-std::string RequestInfo::__trim_optional_whitespace(std::string str) {
-  str.erase(0, str.find_first_not_of(" \t"));
-  std::size_t pos = str.find_last_not_of(" \t");
-  if (pos != std::string::npos) {
-    str.erase(pos + 1);
+// content-typeのparameter(key=value)のvalueについて切り出す関数
+// ""で囲まれていれば, それらを削除
+std::string RequestInfo::__cutout_prameter_value(std::string str) {
+  if (str.size() == 0) {
+    return str;
+  }
+  std::size_t last = str.size() - 1;
+  if (str[0] == '\"' || str[last] == '\"') {
+    bool is_lacking_quote = (0 == last || str[0] != str[last]);
+    if (is_lacking_quote) {
+      throw BadRequestException();
+    }
+    str = str.substr(1, last - 1);
   }
   return str;
 }

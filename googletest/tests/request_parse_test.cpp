@@ -70,6 +70,7 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(r.uri_, "/target");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
+  EXPECT_EQ(r.content_type_.type_, "application/x-www-form-urlencoded");
   EXPECT_EQ(r.connection_close_, true);
   EXPECT_EQ(r.content_length_, static_cast<std::size_t>(18));
 }
@@ -77,7 +78,7 @@ TEST(request_parse_test, normal_post) {
 TEST(request_parse_test, query_body) {
   std::string request = "POST /target HTTP/1.1\r\n"
                         "Host: 127.0.0.1:50001\r\n"
-                        "Content-Type: application/x-www-form-urlencoded\r\n"
+                        "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
                         "Content-Length: 45\r\n\r\n"
                         "I'm=going"
                         "&to=become"
@@ -98,28 +99,4 @@ TEST(request_parse_test, query_body) {
   EXPECT_EQ(info.env_values_[3], "of=the");
   EXPECT_EQ(info.env_values_[4], "pirates!!");
   // 今は"hoge=huga"の形でなくてもバリデートしてない
-}
-
-TEST(request_parse_test, query_body_capital) {
-  std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:50001\r\n"
-                        "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
-                        "Content-Length: 38\r\n\r\n"
-                        "yabu=kara"
-                        "&stick="
-                        "&ishi=no"
-                        "&uenimo=3years";
-
-  Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Request transaction;
-
-  transaction.handle_request(request, conf_group);
-  const RequestInfo &info = transaction.request_info();
-
-  EXPECT_EQ(info.env_values_[0], "yabu=kara");
-  EXPECT_EQ(info.env_values_[1], "stick=");
-  EXPECT_EQ(info.env_values_[2], "ishi=no");
-  EXPECT_EQ(info.env_values_[3], "uenimo=3years");
 }

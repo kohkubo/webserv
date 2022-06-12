@@ -10,7 +10,15 @@
 
 class RequestInfo {
 private:
+  static const std::string ows_;
+
 public:
+  // 複数の値を持つフィールドのデータ型
+  struct ContentInfo {
+    std::string                        type_;
+    std::map<std::string, std::string> parameter_;
+  };
+
   bool        is_blank_first_line_;
   std::string method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
@@ -19,7 +27,7 @@ public:
   bool                     connection_close_;
   bool                     is_chunked_;
   std::size_t              content_length_;
-  std::string              content_type_;
+  ContentInfo              content_type_;
   std::vector<std::string> env_values_;
 
 private:
@@ -33,7 +41,8 @@ private:
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static std::string
   __parse_request_content_type(const std::string &content_type);
-  static std::string __trim_optional_whitespace(std::string str);
+  static ContentInfo __parse_content_info(const std::string &content);
+  static std::string __cutout_prameter_value(std::string str);
 
 public:
   RequestInfo()
@@ -62,7 +71,7 @@ public:
   void parse_request_header(
       const std::map<std::string, std::string> &header_field_map);
   void parse_request_body(std::string       &request_body,
-                          const std::string &content_type);
+                          const ContentInfo &content_type);
   void check_first_multi_blank_line(const std::string &request_line);
 };
 
