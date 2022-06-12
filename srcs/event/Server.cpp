@@ -7,10 +7,14 @@
 void Server::__close_timedout_connection(
     std::map<connFd, Connection> &connection_map) {
   std::map<connFd, Connection>::const_iterator it = connection_map.begin();
-  for (; it != connection_map.end(); it++) {
+  while (it != connection_map.end()) {
     if (it->second.is_timed_out()) {
+      connFd erase_conn_fd = it->first;
       it->second.close();
-      connection_map.erase(it->second.conn_fd());
+      it++;
+      connection_map.erase(erase_conn_fd);
+    } else {
+      it++;
     }
   }
 }
@@ -19,7 +23,7 @@ void Server::__add_listenfd_to_pollfds(
     const std::map<listenFd, confGroup> &conf_group_map) {
   std::map<listenFd, confGroup>::const_iterator it = conf_group_map.begin();
   for (; it != conf_group_map.end(); it++) {
-    struct pollfd new_pfd = {it->first, POLLIN, 0};
+    struct pollfd new_pfd = {it->first, POLLIN, 5000};
     __pollfds_.push_back(new_pfd);
   }
 }
