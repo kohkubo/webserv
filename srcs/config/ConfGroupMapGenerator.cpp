@@ -25,7 +25,7 @@ void ConfGroupMapGenerator::__read_config(const char *config_file_path) {
   while (it != token_vector.end()) {
     if (*it == "server") {
       Config config(it, token_vector.end());
-      it = config.get_moved_it();
+      it = config.last_iterator_pos();
       __server_list_.push_back(config);
     } else {
       ERROR_LOG("unexpected token: " << *it);
