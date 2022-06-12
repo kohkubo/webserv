@@ -13,7 +13,7 @@
 static std::string read_fd_tostring(int fd) {
   char        buf[1024];
   std::string s;
-  while (true) {
+  for (;;) {
     int n = read(fd, buf, sizeof(buf));
     if (n == 0)
       break;
