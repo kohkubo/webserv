@@ -15,7 +15,7 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 				longline := strings.Repeat("a", 8192)
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						longline,
 					},
@@ -32,7 +32,7 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 				longline := strings.Repeat("a", 8192)
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
 						longline,
@@ -50,10 +50,10 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 				longline := strings.Repeat("a", 1025)
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: localhost:5500\r\n",
+						"Host: localhost:55000\r\n",
 						"Content-Length: 1025\r\n",
 						"\r\n",
 						longline,
@@ -71,10 +71,10 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 				longline := strings.Repeat("a", 8192)
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: localhost:5500\r\n",
+						"Host: localhost:55000\r\n",
 						"Transfer-Encoding: chunked\r\n",
 						"\r\n",
 						longline,
@@ -92,10 +92,10 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 				longline := strings.Repeat("a", 1025)
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: localhost:5500\r\n",
+						"Host: localhost:55000\r\n",
 						"Transfer-Encoding: chunked\r\n",
 						"\r\n",
 						"401\r\n",
@@ -114,10 +114,10 @@ var testBadRequest = testCatergory{
 			caseName: "invalid chunk size",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: localhost:5500\r\n",
+						"Host: localhost:55000\r\n",
 						"Transfer-Encoding: chunked\r\n",
 						"\r\n",
 						"4\r\n",

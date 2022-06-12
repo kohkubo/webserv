@@ -16,10 +16,10 @@ var testGET = testCatergory{
 			caseName: "GET / ",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5000",
+					Port: "50000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: localhost:5000\r\n",
+						"Host: localhost:50000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -35,10 +35,10 @@ var testGET = testCatergory{
 			caseName: "GET /dir1/index2.html ",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5000",
+					Port: "50000",
 					ReqPayload: []string{
 						"GET /dir1/index2.html HTTP/1.1\r\n",
-						"Host: localhost:5000\r\n",
+						"Host: localhost:50000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -54,10 +54,10 @@ var testGET = testCatergory{
 			caseName: "GET /no_such_file_404",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5000",
+					Port: "50000",
 					ReqPayload: []string{
 						"GET /no_such_file_404 HTTP/1.1\r\n",
-						"Host: localhost:5000\r\n",
+						"Host: localhost:50000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -76,10 +76,10 @@ var testGET = testCatergory{
 			caseName: "index解決後のアクセス権限確認test",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5000",
+					Port: "50000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: localhost:5000\r\n",
+						"Host: localhost:50000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -98,10 +98,10 @@ var testGET = testCatergory{
 			caseName: "minus_depth ",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5000",
+					Port: "50000",
 					ReqPayload: []string{
 						"GET /../ HTTP/1.1\r\n",
-						"Host: localhost:5000\r\n",
+						"Host: localhost:50000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",

@@ -13,10 +13,10 @@ var testLocation = testCatergory{
 			caseName: "locationでdir1を指定できているか",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5000",
+					Port: "50000",
 					ReqPayload: []string{
 						"GET /dir1/ HTTP/1.1\r\n",
-						"Host: localhost:5000\r\n",
+						"Host: localhost:50000\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -31,7 +31,7 @@ var testLocation = testCatergory{
 		{
 			caseName: "rootディレクティブが反映されるか",
 			test: func() bool {
-				Port := "5001"
+				Port := "50001"
 				Path := "/"
 				clientA := tester.NewClient(tester.Client{
 					Port: Port,
@@ -53,7 +53,7 @@ var testLocation = testCatergory{
 
 			caseName: "index指定ができているか",
 			test: func() bool {
-				Port := "5002"
+				Port := "50002"
 				Path := "/"
 				clientA := tester.NewClient(tester.Client{
 					Port: Port,
@@ -74,7 +74,7 @@ var testLocation = testCatergory{
 		{
 			caseName: "index指定ができているか",
 			test: func() bool {
-				Port := "5002"
+				Port := "50002"
 				Path := "/"
 				clientA := tester.NewClient(tester.Client{
 					Port: Port,

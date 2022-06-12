@@ -65,7 +65,7 @@ void Server::run_loop() {
     __close_timedout_connection(__connection_map_);
     __reset_pollfds();
     // timeoutは仮
-    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 5000);
+    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 50000);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
       if (it->revents == 0) {

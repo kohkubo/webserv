@@ -13,10 +13,10 @@ var testServerName = testCatergory{
 			caseName: "match_hoge",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: hoge.com:5001\r\n",
+						"Host: hoge.com:50001\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -32,10 +32,10 @@ var testServerName = testCatergory{
 			caseName: "match_fuga",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: fuga.com:5001\r\n",
+						"Host: fuga.com:50001\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -51,10 +51,10 @@ var testServerName = testCatergory{
 			caseName: "no_match",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
-						"Host: no_such_host.com:5001\r\n",
+						"Host: no_such_host.com:50001\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
