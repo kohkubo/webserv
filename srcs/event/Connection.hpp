@@ -28,7 +28,6 @@ private:
   std::time_t              __last_event_time_;
   static const std::time_t timeout_seconds_ = 60;
 
-public:
 private:
   Connection() {}
   static std::time_t __time_now() { return std::time(NULL); }
