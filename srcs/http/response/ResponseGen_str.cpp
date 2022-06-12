@@ -38,7 +38,7 @@ std::string ResponseGenerator::__response_message(HttpStatusCode status_code,
   }
 
   // general_header
-  response += "Connection: " + CONNECTION_CLOSE + CRLF;
+  response += "Connection: close" + CRLF;
   if (MOVED_PERMANENTLY_301 == status_code) {
     std::map<int, std::string>::const_iterator it =
         location.return_.find(status_code);
