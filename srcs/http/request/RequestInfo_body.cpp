@@ -5,23 +5,18 @@
 
 #include "utils/utils.hpp"
 
-// TODO: chunkedならば先にchenkedパースしてからcontent-typeに合わせたパースかも
-// TODO: content-typeの文法を確認する -> headerのパースで確認すべきかもしれない
 void RequestInfo::parse_request_body(std::string       &request_body,
-                                     const std::string &content_type) {
-  if (content_type == "application/x-www-form-urlencoded") {
+                                     const ContentInfo &content_type) {
+  if (content_type.type_ == "application/x-www-form-urlencoded") {
     __parse_request_values(request_body);
-  } else if (content_type == "multipart/form-data") {
+  } else if (content_type.type_ == "multipart/form-data") {
     env_values_.push_back(request_body); // tmp
-  } else if (content_type == "text/plain") {
+  } else if (content_type.type_ == "text/plain") {
     env_values_.push_back(request_body); // tmp
   } else {
-    std::cerr << "parse body: unknown content-type" << std::endl; // tmp
-    exit(EXIT_FAILURE);
+    ERROR_LOG("unknown content-type:" + content_type.type_);
+    throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-  // htmlを介してpostが送られる場合,
-  // 上記3つのどれかになるはず(デフォルトは"application/x-www-form-urlencoded")
-  // それ以外になることがあるのかまだわからない
 }
 
 void RequestInfo::__parse_request_values(const std::string &request_body) {
