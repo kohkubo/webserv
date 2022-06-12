@@ -75,7 +75,6 @@ void Server::run_loop() {
       bool is_listen_socket =
           static_cast<bool>(__conf_group_map_.count(it->fd));
       if (is_listen_socket) {
-        LOG("insert_connection: " << it->fd);
         __insert_connection_map(it->fd);
         continue;
       }
