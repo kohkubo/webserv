@@ -63,7 +63,7 @@ public:
   RequestState       handle_request(std::string     &request_buffer,
                                     const confGroup &conf_group);
   SendResponse       create_response() {
-          // TODO: is_close判定
+    // TODO: is_close判定
     // エラー || Connection: close -> true
     return SendResponse(__response_, __request_info_.connection_close_);
   }

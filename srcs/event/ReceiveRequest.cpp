@@ -74,9 +74,9 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
       __check_buffer_length_exception(request_buffer, buffer_max_length_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    __response_ = ResponseGenerator::generate_bad_response(__request_info_);
+    __response_ = ResponseGenerator::generate_bad_response();
     __request_info_.connection_close_ = true;
-    __state_    = SUCCESS;
+    __state_                          = SUCCESS;
   }
   return __state_;
 }
