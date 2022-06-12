@@ -60,8 +60,9 @@ RequestInfo::__parse_request_envvalues(const std::string &request_body) {
   return res;
 }
 
-// RFC7578にはboundary・CRLF・"--"で区切られる程度しか書いてないので
-// 実際にpostしてみた時の受信ボディに合わせてパースした
+// 関数説明: mutlipart/form-dataのrequest_bodyから各partを切り出してvectorに格納
+// RFC7578にはboundary・CRLF・"--"で区切られる程度しか書いてないので,
+// 実際にpostしてみた時の受信ボディに合わせてパースした.
 static std::vector<std::string>
 tokenize_multiform(std::string request_body, const std::string &boundary) {
   std::string first_boundary  = "--" + boundary + CRLF;
@@ -89,10 +90,12 @@ tokenize_multiform(std::string request_body, const std::string &boundary) {
   return res;
 }
 
-// 現状, MultiFormは簡素化のためFormのvector
-// 本来は各パートのフィールド名(nameで指定される)をkey
-// 各パートのForm情報をvalueとするmapが良いかも
-// keyは被ったら無視(RFC7578-3)
+// 関数説明: mutlipart/form-dataのrequest_bodyをMultiFormにパース
+// TODO:
+//  現状, MultiFormは簡素化のためFormのvector.
+//  本来は各パートのフィールド名(nameで指定される)をkey
+//  各パートのForm情報をvalueとするmapが良いかも.
+//  keyは被ったら無視(RFC7578-3).
 RequestInfo::MultiForm
 RequestInfo::__parse_request_multiform(const std::string &request_body,
                                        const ContentInfo &content_type) {
@@ -114,12 +117,14 @@ RequestInfo::__parse_request_multiform(const std::string &request_body,
   return multi_form;
 }
 
-// ファイル名の%エンコード(RFC7578-2)は考慮してない
-// フィールド名のascii制限(RFC7578-5)もとりあえず無視
-// multipartで送られるファイルが全てstringに収まること前提で良いのか
-// 現状, content-typeはデフォルトのtext/plain; charset=US-ASCIIであること前提
-// コンテンツがfileの場合でも, filenameが指定されていない場合がある(RFC7578-4.2)
-// filenameはそのまま使わずに, 場合(破壊的なパスなど)によっては変更する
+// 関数説明: mutlipart/form-dataのボディから切り出されたpart_bodyをFormにパース
+// TODO: ファイル名の%エンコード(RFC7578-2)は考慮してない
+// TODO: フィールド名のascii制限(RFC7578-5)もとりあえず無視
+// TODO: 現状, content-typeはデフォルトのtext/plain;
+// charset=US-ASCIIであること前提
+// TODO: コンテンツがfileの場合でも,
+// filenameが指定されていない場合がある(RFC7578-4.2)
+// TODO: filenameはそのまま使わずに, 場合(破壊的なパスなど)によっては変更する
 RequestInfo::Form RequestInfo::__parse_request_form(std::string part_body) {
   std::string                        line;
   std::map<std::string, std::string> field_map;

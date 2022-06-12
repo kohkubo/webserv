@@ -13,12 +13,11 @@ private:
   static const std::string ows_;
 
 public:
-  // 複数の値を持つフィールドのデータ型
   struct ContentInfo {
     std::string                        type_;
     std::map<std::string, std::string> parameter_;
   };
-  // mutlipart/form-dataの各partのform情報
+  // mutlipart/form-dataの各partの情報
   struct Form {
     ContentInfo content_disposition_;
     ContentInfo content_type_;
