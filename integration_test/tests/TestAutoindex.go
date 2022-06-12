@@ -14,10 +14,10 @@ var testAutoindex = testCatergory{
 			caseName: "simple",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"GET /autoindex/ HTTP/1.1\r\n",
-						"Host: localhost:5001\r\n",
+						"Host: localhost:50001\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -33,10 +33,10 @@ var testAutoindex = testCatergory{
 			caseName: "forbidden",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"GET /autoindex/dir2/ HTTP/1.1\r\n",
-						"Host: localhost:5001\r\n",
+						"Host: localhost:50001\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
@@ -53,10 +53,10 @@ var testAutoindex = testCatergory{
 			caseName: "index_priority",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"GET /autoindex/dir1/ HTTP/1.1\r\n",
-						"Host: localhost:5001\r\n",
+						"Host: localhost:50001\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
 						"\r\n",
