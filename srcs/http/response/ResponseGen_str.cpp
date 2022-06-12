@@ -43,7 +43,6 @@ std::string ResponseGenerator::__response_message(HttpStatusCode status_code,
         location.return_.find(status_code);
     response += "Location: " + it->second + CRLF;
   }
-  response += "Connection: close" + CRLF;
 
   // empty line
   response += CRLF;
