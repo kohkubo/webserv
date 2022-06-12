@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "config/Config.hpp"
 #include "http/const/const_http_enums.hpp"
 #include "utils/tokenize.hpp"
 
@@ -27,6 +28,7 @@ public:
   bool                     connection_close_;
   bool                     is_chunked_;
   std::size_t              content_length_;
+  const Config            *config_;
   ContentInfo              content_type_;
   std::vector<std::string> env_values_;
 
@@ -50,7 +52,8 @@ public:
       , method_("")
       , connection_close_(false)
       , is_chunked_(false)
-      , content_length_(0) {}
+      , content_length_(0)
+      , config_(NULL) {}
 
   class BadRequestException : public std::logic_error {
   private:
@@ -73,6 +76,8 @@ public:
   void parse_request_body(std::string       &request_body,
                           const ContentInfo &content_type);
   void check_first_multi_blank_line(const std::string &request_line);
+  void select_proper_config(const confGroup   &conf_group,
+                            const std::string &host_name);
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

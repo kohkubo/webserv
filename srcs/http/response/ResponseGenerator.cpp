@@ -36,25 +36,24 @@ bool ResponseGenerator::__is_error_status_code(HttpStatusCode status_code) {
 }
 
 std::string
-ResponseGenerator::generate_response(const Config      &config,
-                                     const RequestInfo &request_info) {
+ResponseGenerator::generate_response(const RequestInfo &request_info) {
   HttpStatusCode  status_code = NONE;
   std::string     body;
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
-  const Location *location =
-      __select_proper_location(request_info.uri_, config.locations_);
+  const Location *location = __select_proper_location(
+      request_info.uri_, request_info.config_->locations_);
   if (location == NULL) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     status_code = NOT_FOUND_404;
-    body        = __error_page_body(Location(), config, status_code);
+    body = __error_page_body(Location(), *request_info.config_, status_code);
     return __response_message(status_code, body);
   }
   if (is_minus_depth(request_info.uri_)) {
     status_code = FORBIDDEN_403;
-    body        = __error_page_body(*location, config, status_code);
+    body = __error_page_body(*location, *request_info.config_, status_code);
     return __response_message(status_code, body);
   }
   std::string file_path = __file_path(request_info.uri_, *location);
@@ -70,7 +69,7 @@ ResponseGenerator::generate_response(const Config      &config,
   }
   if (__is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
-    body = __error_page_body(*location, config, status_code);
+    body = __error_page_body(*location, *request_info.config_, status_code);
   } else {
     body = __body(file_path, request_info);
   }

@@ -13,10 +13,17 @@
 
 void Connection::create_sequential_transaction() {
   while (true) {
-    RequestState request_state =
-        __receive_request_.handle_request(__buffer_, __conf_group_);
-    if (request_state != SUCCESS) {
-      break;
+    std::string response;
+    try {
+      RequestState request_state =
+          __receive_request_.handle_request(__buffer_, __conf_group_);
+      if (request_state != SUCCESS) {
+        break;
+      }
+      response = ResponseGenerator::generate_response(
+          __receive_request_.request_info());
+    } catch (const RequestInfo::BadRequestException &e) {
+      response = ResponseGenerator::generate_bad_response();
     }
     __response_queue_.push_back(__receive_request_.create_response());
     __receive_request_ = ReceiveRequest();

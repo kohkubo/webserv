@@ -31,14 +31,15 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
           }
           __request_info_.parse_request_header(__field_map_);
           // throws BadRequestException
-          __config_ = __select_proper_config(conf_group, __request_info_.host_);
+          __request_info_.select_proper_config(conf_group,
+                                               __request_info_.host_);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
           // content-length and transfer-encoding -> delete content-length
           __check_max_client_body_size_exception(
               __request_info_.content_length_,
-              __config_->client_max_body_size_);
+              __request_info_.config_->client_max_body_size_);
           if (__request_info_.content_length_ != 0 ||
               __request_info_.is_chunked_) {
             __state_ = RECEIVING_BODY;
@@ -53,8 +54,11 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
       if (__request_info_.is_chunked_) {
         __state_ = __chunk_loop(request_buffer);
         // throws BadRequestException
+        // TODO: ここらへんの例外のクラスがどこに属しているのかバラバラな印象
+        // kohkubo
         __check_max_client_body_size_exception(
-            __request_body_.size(), __config_->client_max_body_size_);
+            __request_body_.size(),
+            __request_info_.config_->client_max_body_size_);
         // throws BadRequestException
       } else if (request_buffer.size() >= __request_info_.content_length_) {
         __request_body_ = __cutout_request_body(
@@ -66,15 +70,11 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
                                            __request_info_.content_type_);
       }
     }
-    if (__state_ == SUCCESS) {
-      __response_ =
-          ResponseGenerator::generate_response(*__config_, __request_info_);
-    } else if (__state_ == RECEIVING_STARTLINE ||
-               __state_ == RECEIVING_HEADER) {
+
+    if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       __check_buffer_length_exception(request_buffer, buffer_max_length_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    __response_ = ResponseGenerator::generate_bad_response();
     __request_info_.connection_close_ = true;
     __state_                          = SUCCESS;
   }
@@ -114,18 +114,6 @@ bool ReceiveRequest::__get_next_chunk_line(NextChunkType chunk_type,
   }
   request_buffer.erase(0, CRLF.size());
   return true;
-}
-
-const Config *
-ReceiveRequest::__select_proper_config(const confGroup   &conf_group,
-                                       const std::string &host_name) {
-  confGroup::const_iterator it = conf_group.begin();
-  for (; it != conf_group.end(); it++) {
-    if ((*it)->server_name_ == host_name) {
-      return *it;
-    }
-  }
-  return conf_group[0];
 }
 
 RequestState ReceiveRequest::__chunk_loop(std::string &request_buffer) {

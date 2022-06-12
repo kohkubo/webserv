@@ -18,3 +18,14 @@ bool RequestInfo::__is_comma_sparated(std::string &field_name) {
   // tmp
   return false;
 }
+
+void RequestInfo::select_proper_config(const confGroup   &conf_group,
+                                       const std::string &host_name) {
+  confGroup::const_iterator it = conf_group.begin();
+  for (; it != conf_group.end(); it++) {
+    if ((*it)->server_name_ == host_name) {
+      config_ = *it;
+    }
+  }
+  config_ = conf_group[0];
+}

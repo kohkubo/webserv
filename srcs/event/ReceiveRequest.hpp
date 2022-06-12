@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_REQUEST_HPP
-#define SRCS_EVENT_REQUEST_HPP
+#ifndef SRCS_EVENT_RECEIVEREQUEST_HPP
+#define SRCS_EVENT_RECEIVEREQUEST_HPP
 
 #include <sys/types.h>
 
@@ -25,7 +25,6 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 struct ReceiveRequest {
 private:
-  const Config                      *__config_;
   RequestState                       __state_;
   RequestInfo                        __request_info_;
   std::string                        __response_;
@@ -48,13 +47,10 @@ private:
                                          std::size_t max_body_size);
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  static const Config *__select_proper_config(const confGroup   &conf_group,
-                                              const std::string &host_name);
 
 public:
   ReceiveRequest()
-      : __config_(NULL)
-      , __state_(RECEIVING_STARTLINE)
+      : __state_(RECEIVING_STARTLINE)
       , __next_chunk_(CHUNK_SIZE)
       , __next_chunk_size_(-1) {}
 
@@ -69,4 +65,4 @@ public:
   }
 };
 
-#endif /* SRCS_EVENT_REQUEST_HPP */
+#endif /* SRCS_EVENT_RECEIVEREQUEST_HPP */

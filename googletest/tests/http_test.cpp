@@ -37,8 +37,9 @@ TEST(http_test, create_response_info_get_normal) {
   request_info.uri_     = "/";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
+  request_info.config_  = &config;
 
-  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info), expect);
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info), expect);
 }
 
 TEST(http_test, create_response_info_get_403) {
@@ -52,6 +53,7 @@ TEST(http_test, create_response_info_get_403) {
   request_info.uri_             = "/000.html";
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
+  request_info.config_          = &config;
 
   std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
@@ -73,7 +75,7 @@ default error page\n\
 
   system("chmod 000 ../html/000.html");
 
-  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info),
             expected_response);
 
   system("chmod 644 ../html/000.html");
@@ -92,6 +94,7 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
   request_info.uri_             = "/000.html";
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
+  request_info.config_          = &config;
 
   std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
@@ -104,7 +107,7 @@ forbidden\
 
   system("chmod 000 ../html/000.html");
 
-  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info),
             expected_response);
 
   system("chmod 644 ../html/000.html");
@@ -123,10 +126,11 @@ TEST(http_test, create_response_info_delete_normal) {
   request_info.uri_     = "/delete_target.html";
   request_info.version_ = "HTTP/1.1";
   request_info.host_    = "localhost";
+  request_info.config_  = &config;
 
   system("touch ../html/delete_target.html");
 
-  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info),
             expected_response);
 }
 
@@ -141,6 +145,7 @@ TEST(http_test, create_response_info_delete_404) {
   request_info.uri_           = "/delete_target.html";
   request_info.version_       = "HTTP/1.1";
   request_info.host_          = "localhost";
+  request_info.config_        = &config;
 
   std::string expected_string = "\
 HTTP/1.1 404 Not Found\r\n\
@@ -160,7 +165,7 @@ default error page\n\
 </html>\
 ";
 
-  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info),
             expected_string);
 }
 
@@ -175,6 +180,7 @@ TEST(http_test, create_response_info_delete_403) {
   request_info.uri_             = "/000.html";
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
+  request_info.config_          = &config;
 
   std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
@@ -196,7 +202,7 @@ default error page\n\
 
   system("chmod 000 ../html/000.html");
 
-  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info),
             expected_response);
 
   system("chmod 644 ../html/000.html");
@@ -214,6 +220,7 @@ TEST(http_test, create_response_info_delete_400) {
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
   request_info.content_length_  = 8;
+  request_info.config_          = &config;
 
   std::string expected_response = "\
 HTTP/1.1 400 Bad Request\r\n\
@@ -233,6 +240,6 @@ default error page\n\
 </html>\
 ";
 
-  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info),
             expected_response);
 }
