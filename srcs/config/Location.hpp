@@ -11,7 +11,7 @@ struct Location {
   std::string                index_;
   bool                       autoindex_;
   bool                       cgi_extension_;
-  bool                       sendfile_;
+  bool                       upload_file_;
   std::map<int, std::string> return_;
   std::vector<std::string>   limit_except_;
 
@@ -20,7 +20,7 @@ struct Location {
       , index_("index.html")
       , autoindex_(false)
       , cgi_extension_(false)
-      , sendfile_(false) {
+      , upload_file_(false) {
     limit_except_.push_back("GET");
     limit_except_.push_back("POST");
     limit_except_.push_back("DELETE");
