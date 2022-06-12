@@ -28,8 +28,7 @@ void ConfGroupMapGenerator::__read_config(const char *config_file_path) {
       it = config.get_moved_it();
       __server_list_.push_back(config);
     } else {
-      ERROR_LOG("unexpected token: " << *it);
-      exit(EXIT_FAILURE);
+      ERROR_EXIT("unexpected token: " << *it);
     }
   }
 }

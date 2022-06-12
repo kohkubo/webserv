@@ -225,7 +225,6 @@ void Config::__set_getaddrinfo(const std::string &host, const std::string &port,
   hints.ai_socktype     = SOCK_STREAM;
   int error = getaddrinfo(host.c_str(), port.c_str(), &hints, addrinfo);
   if (error != 0) {
-    ERROR_LOG("getaddrinfo: " << gai_strerror(error));
-    exit(EXIT_FAILURE);
+    ERROR_EXIT("getaddrinfo: " << gai_strerror(error));
   }
 }

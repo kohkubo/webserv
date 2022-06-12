@@ -12,13 +12,27 @@
   do {                                                                         \
     std::cerr << msg << std::endl;                                             \
   } while (0)
+
 #define ERROR_LOG_WITH_ERRNO(msg)                                              \
   do {                                                                         \
     std::cerr << msg << ": " << strerror(errno) << std::endl;                  \
   } while (0)
+
 #define LOG(msg)                                                               \
   do {                                                                         \
     std::cout << msg << std::endl;                                             \
+  } while (0)
+
+#define ERROR_EXIT(msg)                                                        \
+  do {                                                                         \
+    ERROR_LOG(msg);                                                            \
+    exit(EXIT_FAILURE);                                                        \
+  } while (0)
+
+#define ERROR_EXIT_WITH_ERRNO(msg)                                             \
+  do {                                                                         \
+    ERROR_LOG_WITH_ERRNO(msg);                                                 \
+    exit(EXIT_FAILURE);                                                        \
   } while (0)
 
 bool        has_suffix(const std::string &str, const std::string &suffix);
