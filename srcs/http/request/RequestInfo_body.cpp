@@ -118,7 +118,7 @@ RequestInfo::Form RequestInfo::__parse_request_form(std::string part_body) {
   }
   std::map<std::string, std::string>::iterator itn;
   itn = form.content_disposition_.parameter_.find("name");
-  if (itn == field_map.end()) {
+  if (itn == form.content_disposition_.parameter_.end()) {
     ERROR_LOG("part header: missing name");
     throw RequestInfo::BadRequestException();
   }

@@ -22,7 +22,7 @@ TEST(request_body_parse_test, urlencoded) {
   // 今は"hoge=huga"の形でなくてもバリデートしてない
 }
 
-TEST(request_body_parse_test, multi_part_form_data) {
+TEST(request_body_parse_test, multiform) {
   // clang-format off
   std::string request_body = "------WebKitFormBoundaryhBP36BYMHJOCgZsX\r\n"
                              "Content-Disposition: form-data; name=\"name\"\r\n"
@@ -49,5 +49,55 @@ TEST(request_body_parse_test, multi_part_form_data) {
   EXPECT_EQ(second_form.content_disposition_.parameter_["filename"], "test.txt");
   EXPECT_EQ(second_form.content_type_.type_, "text/plain");
   EXPECT_EQ(second_form.content_, "akiyama content");
+  // clang-format on
+}
+
+TEST(request_body_parse_test, exception_multiform_missing_contentdisposition) {
+  // clang-format off
+  std::string request_body = "------WebKitFormBoundaryhBP36BYMHJOCgZsX\r\n"
+                             "Content-Type: text/plain\r\n"
+                             "\r\n"
+                             "akiyama content\r\n"
+                             "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
+  RequestInfo::ContentInfo content_type;
+  content_type.type_ = "multipart/form-data";
+  content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+  RequestInfo info;
+  EXPECT_THROW(info.parse_request_body(request_body, content_type),
+               RequestInfo::BadRequestException);
+  // clang-format on
+}
+
+TEST(request_body_parse_test, exception_multiform_nosuchtype) {
+  // clang-format off
+  std::string request_body = "------WebKitFormBoundaryhBP36BYMHJOCgZsX\r\n"
+                             "Content-Disposition: nosuch; name=\"upfile\"; filename=\"test.txt\"\r\n"
+                             "Content-Type: text/plain\r\n"
+                             "\r\n"
+                             "akiyama content\r\n"
+                             "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
+  RequestInfo::ContentInfo content_type;
+  content_type.type_ = "multipart/form-data";
+  content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+  RequestInfo info;
+  EXPECT_THROW(info.parse_request_body(request_body, content_type),
+               RequestInfo::BadRequestException);
+  // clang-format on
+}
+
+TEST(request_body_parse_test, exception_multiform_missing_name) {
+  // clang-format off
+   std::string request_body = "------WebKitFormBoundaryhBP36BYMHJOCgZsX\r\n"
+                              "Content-Disposition: form-data; filename=\"test.txt\"\r\n"
+                              "Content-Type: text/plain\r\n"
+                              "\r\n"
+                              "akiyama content\r\n"
+                              "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
+   RequestInfo::ContentInfo content_type;
+   content_type.type_ = "multipart/form-data";
+   content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+   RequestInfo info;
+   EXPECT_THROW(info.parse_request_body(request_body, content_type),
+                RequestInfo::BadRequestException);
   // clang-format on
 }
