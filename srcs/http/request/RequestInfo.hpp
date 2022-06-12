@@ -17,7 +17,7 @@ public:
     std::string                        type_;
     std::map<std::string, std::string> parameter_;
   };
-  // mutlipart/form-dataの各partの情報
+  // mutlipart/form-data形式のボディの各partの情報を入れる構造体
   struct Form {
     ContentInfo content_disposition_;
     ContentInfo content_type_;
