@@ -15,7 +15,7 @@ static const char *resolve_config_file(int argc, char **argv) {
   case 2:
     return (argv[1]);
   default:
-    std::cerr << "Usage: ./webserv [config file]" << std::endl;
+    ERROR_LOG("Usage: ./webserv [config file]");
     exit(EXIT_FAILURE);
   }
 }

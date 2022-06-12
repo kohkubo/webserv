@@ -14,21 +14,21 @@ HttpStatusCode
 ResponseGenerator::__delete_target_file(const RequestInfo request_info,
                                         const std::string file_path) {
   if (request_info.content_length_ != 0) {
-    std::cerr << "DELETE with body is unsupported" << std::endl;
+    ERROR_LOG("DELETE with body is unsupported");
     return BAD_REQUEST_400;
   }
   if (!is_file_exists(file_path)) {
-    std::cerr << "target file is not found" << std::endl;
+    ERROR_LOG("target file is not found");
     return NOT_FOUND_404;
   }
   if (!is_accessible(file_path, W_OK)) {
-    std::cerr << "process can not delete target file" << std::endl;
+    ERROR_LOG("process can not delete target file");
     return FORBIDDEN_403;
   }
   if (!remove_file(file_path)) {
-    std::cerr << "unknown error while deleting file" << std::endl;
+    ERROR_LOG("unknown error while deleting file");
     return INTERNAL_SERVER_ERROR_500;
   }
-  std::cerr << "deleted file successfully" << std::endl;
+  ERROR_LOG("deleted file successfully");
   return NO_CONTENT_204;
 }
