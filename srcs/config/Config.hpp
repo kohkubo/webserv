@@ -17,7 +17,7 @@ const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
 
 class Config {
 private:
-  tokenIterator __last_it_;
+  tokenIterator __last_iterator_pos_;
 
 public:
   std::string                listen_address_;
@@ -44,7 +44,7 @@ public:
       , server_name_("")
       , addrinfo_(NULL) {
     try {
-      __last_it_ = __parse(start, end);
+      __last_iterator_pos_ = __parse(start, end);
     } catch (const std::exception &e) {
       ERROR_EXIT(e.what());
     }
@@ -52,7 +52,7 @@ public:
   ~Config();
   Config(const Config &other);
   Config       &operator=(const Config &other);
-  tokenIterator get_moved_it() { return __last_it_; }
+  tokenIterator last_iterator_pos() { return __last_iterator_pos_; }
 
 private:
   tokenIterator        __parse(tokenIterator pos, tokenIterator end);
