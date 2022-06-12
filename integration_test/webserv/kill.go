@@ -3,7 +3,6 @@ package webserv
 import (
 	"fmt"
 	"integration_test/colorprint"
-	"io"
 	"os"
 )
 
@@ -19,12 +18,12 @@ func Kill() {
 		return
 	}
 	currentProcess.Process.Kill()
-	str, _ := io.ReadAll(stdErr)
-	log = fmt.Sprintf("%s%s\n", log, str)
+	//str, _ := io.ReadAll(stdErr)
+	//log = fmt.Sprintf("%s%s\n", log, str)
 	currentProcess.Wait()
-	fmt.Println()
-	fmt.Println("===webserv===")
-	fmt.Printf("%s", log)
-	fmt.Println("=============")
+	//fmt.Println()
+	//fmt.Println("===webserv===")
+	//fmt.Printf("%s", log)
+	//fmt.Println("=============")
 	currentProcess = nil
 }
