@@ -47,7 +47,6 @@ void Server::__connection_receive_handler(connFd conn_fd) {
   bool is_socket_closed_from_client = it->second.append_receive_buffer();
   if (is_socket_closed_from_client) {
     close(conn_fd);
-    LOG("[INFO] connection closed from client");
     __connection_map_.erase(conn_fd);
     return;
   }
@@ -81,13 +80,9 @@ void Server::run_loop() {
         continue;
       }
       if ((it->revents & POLLIN) != 0) {
-        LOG("POLLIN");
-        LOG(it->fd);
         __connection_receive_handler(it->fd);
       }
       if ((it->revents & POLLOUT) != 0) {
-        LOG("POLLOUT");
-        LOG(it->fd);
         // TODO: []からの書き換え、findできないケースある??
         __connection_map_.find(it->fd)->second.send_front_response();
       }

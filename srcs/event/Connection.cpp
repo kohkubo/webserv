@@ -27,7 +27,6 @@ void Connection::create_sequential_transaction() {
 bool Connection::append_receive_buffer() {
   const int buf_size      = 2048;
   char      buf[buf_size] = {0};
-  // std::vector<char> buf(buf_size);
   ssize_t   rc            = recv(__conn_fd_, buf, buf_size, MSG_DONTWAIT);
   if (rc == -1) {
     std::cerr << "recv() failed." << std::endl;
@@ -37,11 +36,6 @@ bool Connection::append_receive_buffer() {
   if (rc == 0) {
     return true;
   }
-  std::cout << "append_receive_buffer()" << std::endl;
-  std::cout << "rc: " << rc << std::endl;
-  write(0, buf, rc);
-  std::cout << std::endl;
-  // std::string recv_data = std::string(buf.begin(), buf.begin() + rc);
   __buffer_.append(buf, rc);
   return false;
 }
