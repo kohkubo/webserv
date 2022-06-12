@@ -10,7 +10,7 @@ void Server::__close_timedout_connection(
   for (; it != connection_map.end(); it++) {
     if (it->second.is_timed_out()) {
       it->second.close();
-      connection_map.erase(it->second.conn_fd_);
+      connection_map.erase(it->second.conn_fd());
     }
   }
 }
@@ -38,7 +38,7 @@ void Server::__connection_receive_handler(Connection &connection) {
   bool is_socket_closed_from_client = connection.append_receive_buffer();
   if (is_socket_closed_from_client) {
     connection.close();
-    __connection_map_.erase(connection.conn_fd_);
+    __connection_map_.erase(connection.conn_fd());
     return;
   }
   connection.create_sequential_transaction();

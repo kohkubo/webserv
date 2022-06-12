@@ -27,7 +27,7 @@ void Connection::create_sequential_transaction() {
 bool Connection::append_receive_buffer() {
   const int         buf_size = 2048;
   std::vector<char> buf(buf_size);
-  ssize_t           rc = recv(conn_fd_, &buf[0], buf_size, MSG_DONTWAIT);
+  ssize_t           rc = recv(__conn_fd_, &buf[0], buf_size, MSG_DONTWAIT);
   if (rc == -1) {
     std::cerr << "recv() failed." << std::endl;
     exit(EXIT_FAILURE);
@@ -42,7 +42,7 @@ bool Connection::append_receive_buffer() {
 }
 
 struct pollfd Connection::create_pollfd() const {
-  struct pollfd pfd = {conn_fd_, POLLIN, 0};
+  struct pollfd pfd = {__conn_fd_, POLLIN, 0};
   if (!__response_queue_.empty() && __response_queue_.front().is_sending()) {
     pfd.events = POLLIN | POLLOUT;
   }
@@ -50,7 +50,7 @@ struct pollfd Connection::create_pollfd() const {
 }
 
 void Connection::send_front_response() {
-  ResponseState response_state = __response_queue_.front().send(conn_fd_);
+  ResponseState response_state = __response_queue_.front().send(__conn_fd_);
   if (response_state == COMPLETE) {
     __response_queue_.pop_front();
   }
