@@ -15,10 +15,10 @@ var testIOMulti = testCatergory{
 			caseName: "3client",
 			test: func() bool {
 				clientA := tester.NewClient(tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"GET /",
-						" HTTP/1.1\r\nHost: localhost:5500\r\nUse",
+						" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
 						"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 					},
 					ExpectStatusCode: http.StatusOK,
@@ -27,7 +27,7 @@ var testIOMulti = testCatergory{
 				})
 
 				clientB := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"GET /nosuch HT",
 						"TP/1.1\r\nHost: localhost:55",
@@ -39,10 +39,10 @@ var testIOMulti = testCatergory{
 				})
 
 				clientC := tester.NewClient(tester.Client{
-					Port: "5001",
+					Port: "50001",
 					ReqPayload: []string{
 						"DELETE /nosuch HTTP/1.1\r",
-						"\nHost: localhost:5500\r\nUser-Agent: Go-http-c",
+						"\nHost: localhost:55000\r\nUser-Agent: Go-http-c",
 						"lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 					},
 					ExpectStatusCode: http.StatusNotFound,
@@ -81,10 +81,10 @@ var testIOMulti = testCatergory{
 			caseName: "multiclient",
 			test: func() bool {
 				baseClient := tester.Client{
-					Port: "5500",
+					Port: "55000",
 					ReqPayload: []string{
 						"GET /",
-						" HTTP/1.1\r\nHost: localhost:5500\r\nUse",
+						" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
 						"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
 					},
 					ExpectStatusCode: http.StatusOK,
