@@ -56,7 +56,7 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 
 void Server::run_loop() {
   ERROR_LOG("start server process");
-  while (true) {
+  for (;;) {
     __close_timedout_connection(__connection_map_);
     __reset_pollfds();
     // TODO: timeoutは仮 nakamoto
