@@ -35,8 +35,8 @@ public:
   bool        is_chunked_;
   std::size_t content_length_;
   ContentInfo content_type_;
-  MultiForm   multi_part_form_; // multipart/formdataの時のパース先
-  EnvValues   env_values_;      // application/~urlencodedの時のパース先
+  MultiForm   multi_form_; // multipart/formdataの時のパース先
+  EnvValues   env_values_; // application/~urlencodedの時のパース先
 
 private:
   static bool        __is_comma_sparated(std::string &field_name);
