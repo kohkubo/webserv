@@ -39,6 +39,7 @@ public:
       , __last_event_time_(__time_now()) {}
   ~Connection() {}
 
+  connFd        conn_fd() const { return __conn_fd_; }
   void          create_sequential_transaction();
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
@@ -46,6 +47,7 @@ public:
   bool          is_timed_out() const {
     return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
   }
+  void close() const { ::close(__conn_fd_); }
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */
