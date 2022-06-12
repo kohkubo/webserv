@@ -1,12 +1,12 @@
-#ifndef SRCS_EVENT_TRANSACTION_HPP
-#define SRCS_EVENT_TRANSACTION_HPP
+#ifndef SRCS_EVENT_REQUEST_HPP
+#define SRCS_EVENT_REQUEST_HPP
 
 #include <sys/types.h>
 
 #include <string>
 
 #include "config/Config.hpp"
-#include "event/Response.hpp"
+#include "event/SendResponse.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 
@@ -23,7 +23,7 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 // TODO: string -> vector<char>
 
-struct Request {
+struct ReceiveRequest {
 private:
   const Config                      *__config_;
   RequestState                       __state_;
@@ -50,11 +50,9 @@ private:
                                               std::size_t  buffer_limit_length);
   static const Config *__select_proper_config(const confGroup   &conf_group,
                                               const std::string &host_name);
-  // TODO: 命名変える
-  void                 __set_response_for_bad_request();
 
 public:
-  Request()
+  ReceiveRequest()
       : __config_(NULL)
       , __state_(RECEIVING_STARTLINE)
       , __next_chunk_(CHUNK_SIZE)
@@ -64,11 +62,11 @@ public:
   const RequestInfo &request_info() const { return __request_info_; }
   RequestState       handle_request(std::string     &request_buffer,
                                     const confGroup &conf_group);
-  Response           create_response() {
-    // TODO: is_close判定
+  SendResponse       create_response() {
+          // TODO: is_close判定
     // エラー || Connection: close -> true
-    return Response(__response_, __request_info_.connection_close_);
+    return SendResponse(__response_, __request_info_.connection_close_);
   }
 };
 
-#endif /* SRCS_EVENT_TRANSACTION_HPP */
+#endif /* SRCS_EVENT_REQUEST_HPP */

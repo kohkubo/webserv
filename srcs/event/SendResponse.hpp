@@ -14,7 +14,7 @@ enum ResponseState {
   COMPLETE,
 };
 
-class Response {
+class SendResponse {
 private:
   ResponseState __state_;
   std::string   __response_;
@@ -27,12 +27,12 @@ private:
   }
 
 public:
-  Response(std::string response_message, bool is_close)
+  SendResponse(std::string response_message, bool is_close)
       : __state_(SENDING)
       , __response_(response_message)
       , __is_last_response_(is_close)
       , __send_count_(0) {}
-  ~Response() {}
+  ~SendResponse() {}
 
   bool          is_sending() const { return __state_ == SENDING; }
   ResponseState send(connFd conn_fd) {

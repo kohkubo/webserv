@@ -13,6 +13,9 @@ class ResponseGenerator {
 public:
   static std::string generate_response(const Config      &config,
                                        const RequestInfo &request_info);
+  static std::string generate_bad_response(const RequestInfo &request_info) {
+    return "HTTP/1.1 400 Bad ReceiveRequest\r\nconnection: close\r\n\r\n";
+  }
 
 private:
   ResponseGenerator();

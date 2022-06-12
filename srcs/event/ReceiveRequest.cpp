@@ -1,4 +1,4 @@
-#include "event/Request.hpp"
+#include "event/ReceiveRequest.hpp"
 
 #include <sys/socket.h>
 
@@ -6,21 +6,9 @@
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 
-// TODO: ステータスコードに合わせたレスポンスを生成
-void Request::__set_response_for_bad_request() {
-  // 400エラー処理
-  // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
-  // 指定できるとき、nginxはどうやってserverを決定しているか。
-  // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
-  // 現状は暫定的に、定型文を送信。
-  __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __state_    = SUCCESS;
-  __request_info_.connection_close_ = true;
-}
-
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-RequestState Request::handle_request(std::string     &request_buffer,
-                                     const confGroup &conf_group) {
+RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
+                                            const confGroup &conf_group) {
   try {
     if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
@@ -86,12 +74,14 @@ RequestState Request::handle_request(std::string     &request_buffer,
       __check_buffer_length_exception(request_buffer, buffer_max_length_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
+    __response_ = ResponseGenerator::generate_bad_response(__request_info_);
+    __request_info_.connection_close_ = true;
+    __state_    = SUCCESS;
   }
   return __state_;
 }
 
-bool Request::__getline(std::string &request_buffer, std::string &line) {
+bool ReceiveRequest::__getline(std::string &request_buffer, std::string &line) {
   std::size_t pos = request_buffer.find(CRLF);
   if (pos == std::string::npos)
     return false;
@@ -100,17 +90,17 @@ bool Request::__getline(std::string &request_buffer, std::string &line) {
   return true;
 }
 
-std::string Request::__cutout_request_body(std::string &request_buffer,
-                                           size_t       content_length) {
+std::string ReceiveRequest::__cutout_request_body(std::string &request_buffer,
+                                                  size_t       content_length) {
   std::string request_body = request_buffer.substr(0, content_length);
   request_buffer.erase(0, content_length);
   return request_body;
 }
 
-bool Request::__get_next_chunk_line(NextChunkType chunk_type,
-                                    std::string  &request_buffer,
-                                    std::string  &chunk,
-                                    size_t        next_chunk_size) {
+bool ReceiveRequest::__get_next_chunk_line(NextChunkType chunk_type,
+                                           std::string  &request_buffer,
+                                           std::string  &chunk,
+                                           size_t        next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
     return __getline(request_buffer, chunk);
   }
@@ -126,8 +116,9 @@ bool Request::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *Request::__select_proper_config(const confGroup   &conf_group,
-                                              const std::string &host_name) {
+const Config *
+ReceiveRequest::__select_proper_config(const confGroup   &conf_group,
+                                       const std::string &host_name) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == host_name) {
@@ -137,7 +128,7 @@ const Config *Request::__select_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
-RequestState Request::__chunk_loop(std::string &request_buffer) {
+RequestState ReceiveRequest::__chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
   while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
                                __next_chunk_size_)) {
@@ -159,15 +150,15 @@ RequestState Request::__chunk_loop(std::string &request_buffer) {
   return RECEIVING_BODY;
 }
 
-void Request::__check_max_client_body_size_exception(
+void ReceiveRequest::__check_max_client_body_size_exception(
     std::size_t actual_body_size, std::size_t max_body_size) {
   if (actual_body_size > max_body_size) {
     throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
   }
 }
 
-void Request::__check_buffer_length_exception(std::string &request_buffer,
-                                              std::size_t  buffer_max_length) {
+void ReceiveRequest::__check_buffer_length_exception(
+    std::string &request_buffer, std::size_t buffer_max_length) {
   if (request_buffer.size() >= buffer_max_length) {
     request_buffer.clear();
     throw RequestInfo::BadRequestException();

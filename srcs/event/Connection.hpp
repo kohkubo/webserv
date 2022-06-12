@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "event/Request.hpp"
-#include "event/Response.hpp"
+#include "event/ReceiveRequest.hpp"
+#include "event/SendResponse.hpp"
 
 // TODO: string -> vector<char>
 
@@ -22,8 +22,8 @@ class Connection {
 private:
   connFd                   __conn_fd_;
   confGroup                __conf_group_;
-  Request                  __request_;
-  std::deque<Response>     __response_queue_;
+  ReceiveRequest           __receive_request_;
+  std::deque<SendResponse> __response_queue_;
   std::string              __buffer_;
   std::time_t              __last_event_time_;
   static const std::time_t timeout_seconds_ = 60;
@@ -44,7 +44,7 @@ public:
   bool          append_receive_buffer();
   void          send_front_response();
   bool          is_timed_out() const {
-    return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
+             return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
   }
 };
 
