@@ -39,11 +39,8 @@ void Server::__add_connfd_to_pollfds(
 }
 
 void Server::__connection_receive_handler(connFd conn_fd) {
+  // findされないケースはない
   std::map<connFd, Connection>::iterator it = __connection_map_.find(conn_fd);
-  if (it == __connection_map_.end()) {
-    // TODO: この分岐には入らないはず いらなかったら消す?
-    return;
-  }
   bool is_socket_closed_from_client = it->second.append_receive_buffer();
   if (is_socket_closed_from_client) {
     close(conn_fd);
