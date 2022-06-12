@@ -29,7 +29,7 @@ bool Connection::append_receive_buffer() {
   char      buf[buf_size] = {0};
   ssize_t   rc            = recv(__conn_fd_, buf, buf_size, MSG_DONTWAIT);
   if (rc == -1) {
-    std::cerr << "recv() failed." << std::endl;
+    ERROR_LOG("recv() failed.");
     exit(EXIT_FAILURE);
   }
   // fin from client
