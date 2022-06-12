@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"time"
@@ -18,19 +19,17 @@ func Restart(configPath string) error {
 	}
 	currentProcess = exec.Command("./webserv", configPath)
 	currentProcess.Dir = "../"
-	pr, pw, err := os.Pipe()
+	pipeRead, pipeWrite, err := os.Pipe()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
-	w := io.MultiWriter(os.Stderr, pw)
 	currentProcess.Stdout = os.Stdout
-	currentProcess.Stderr = w
+	currentProcess.Stderr = io.MultiWriter(os.Stderr, pipeWrite)
 	currentProcess.Start()
 	select {
 	case <-time.After(10 * time.Second):
 		return fmt.Errorf("timout to wait server lauch")
-	case <-waitServerLaunch(pr):
+	case <-waitServerLaunch(pipeRead):
 	}
 	return nil
 }
