@@ -28,7 +28,7 @@ void ConfGroupMapGenerator::__read_config(const char *config_file_path) {
       it = config.last_iterator_pos();
       __server_list_.push_back(config);
     } else {
-      std::cerr << "unexpected token: " << *it << std::endl;
+      ERROR_LOG("unexpected token: " << *it);
       exit(EXIT_FAILURE);
     }
   }

@@ -25,17 +25,16 @@ std::string ResponseGenerator::__response_message(HttpStatusCode status_code,
       status_code != NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
 
   // start line
-  response =
-      VERSION_HTTP + SP + g_response_status_phrase_map[status_code] + CRLF;
+  response = "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 
   if (has_body) {
     // entity_header
     response += "Content-Length: " + to_string(body.size()) + CRLF;
-    response += "Content-Type: " + TEXT_HTML + CRLF;
+    response += "Content-Type: text/html" + CRLF;
   }
 
   // general_header
-  response += "Connection: " + CONNECTION_CLOSE + CRLF;
+  response += "Connection: close" + CRLF;
 
   // empty line
   response += CRLF;
