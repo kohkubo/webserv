@@ -20,7 +20,6 @@ typedef int          connFd;
 
 class Connection {
 private:
-  connFd                   __conn_fd_;
   confGroup                __conf_group_;
   Request                  __request_;
   std::deque<Response>     __response_queue_;
@@ -28,13 +27,16 @@ private:
   std::time_t              __last_event_time_;
   static const std::time_t timeout_seconds_ = 60;
 
+public:
+  connFd conn_fd_;
+
 private:
   Connection() {}
   static std::time_t __time_now() { return std::time(NULL); }
 
 public:
   Connection(connFd conn_fd, confGroup conf_group)
-      : __conn_fd_(conn_fd)
+      : conn_fd_(conn_fd)
       , __conf_group_(conf_group)
       , __last_event_time_(__time_now()) {}
   ~Connection() {}
@@ -46,6 +48,7 @@ public:
   bool          is_timed_out() const {
     return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
   }
+  void close() const { ::close(conn_fd_); }
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */

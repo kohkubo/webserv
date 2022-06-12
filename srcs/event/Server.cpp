@@ -38,16 +38,14 @@ void Server::__add_connfd_to_pollfds(
   }
 }
 
-void Server::__connection_receive_handler(connFd conn_fd) {
-  // findされないケースはない
-  std::map<connFd, Connection>::iterator it = __connection_map_.find(conn_fd);
-  bool is_socket_closed_from_client = it->second.append_receive_buffer();
+void Server::__connection_receive_handler(Connection &connection) {
+  bool is_socket_closed_from_client = connection.append_receive_buffer();
   if (is_socket_closed_from_client) {
-    close(conn_fd);
-    __connection_map_.erase(conn_fd);
+    connection.close();
+    __connection_map_.erase(connection.conn_fd_);
     return;
   }
-  it->second.create_sequential_transaction();
+  connection.create_sequential_transaction();
 }
 
 void Server::__insert_connection_map(listenFd listen_fd) {
@@ -76,10 +74,9 @@ void Server::run_loop() {
         continue;
       }
       if ((it->revents & POLLIN) != 0) {
-        __connection_receive_handler(it->fd);
+        __connection_receive_handler(__connection_map_.find(it->fd)->second);
       }
       if ((it->revents & POLLOUT) != 0) {
-        // TODO: []からの書き換え、findできないケースある??
         __connection_map_.find(it->fd)->second.send_front_response();
       }
     }
