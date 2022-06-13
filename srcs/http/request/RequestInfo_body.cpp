@@ -49,44 +49,46 @@ RequestInfo::__parse_request_multi_form(std::string        request_body,
     ERROR_LOG("content-type: missing boundary");
     throw RequestInfo::BadRequestException();
   }
-  enum State {
-    FIRST,
-    RECV_HEADER,
-    RECV_BODY,
+  enum MultiFormState {
+    BEGINNING,
+    RECEIVING_HEADER,
+    RECEIVING_BODY,
   };
-  std::string boundary = "--" + it->second;
-  std::string end      = "--" + it->second + "--";
-  std::string line;
-  State       s = FIRST;
-  Form        f;
-  MultiForm   mf;
+  std::string    boundary = "--" + it->second;
+  std::string    end      = "--" + it->second + "--";
+  std::string    line;
+  MultiFormState s = BEGINNING;
+  MultiForm      multi_form;
+  Form           form;
   while (must_get_line(request_body, line)) {
     if (line == boundary) {
-      if (s != FIRST) {
-        __add_form(mf, f);
+      if (s != BEGINNING) {
+        __add_form_to_multi_form(multi_form, form);
       }
-      s = RECV_HEADER;
-      f = Form();
+      form = Form();
+      s    = RECEIVING_HEADER;
       continue;
     }
     if (line == end) {
-      __add_form(mf, f);
+      __add_form_to_multi_form(multi_form, form);
       break;
     }
     if (line == "") {
-      s = RECV_BODY;
+      s = RECEIVING_BODY;
       continue;
     }
-    if (s == RECV_HEADER) {
-      __parse_form(line, f);
-    } else if (s == RECV_BODY) {
-      if (f.content_ != "") {
-        f.content_ += CRLF;
+    if (s == RECEIVING_HEADER) {
+      __parse_form_header(line, form);
+    } else if (s == RECEIVING_BODY) {
+      if (form.content_ != "") {
+        // これ以前のcontentが空でないなら,
+        // bodyの途中で改行がある=CRLF付け足す
+        form.content_ += CRLF;
       }
-      f.content_ += line;
+      form.content_ += line;
     }
   }
-  return mf;
+  return multi_form;
 }
 
 // TODO: ファイル名の%エンコード(RFC7578-2)は考慮してない
@@ -97,8 +99,8 @@ RequestInfo::__parse_request_multi_form(std::string        request_body,
 // TODO: コンテンツがfileの場合でも,
 // filenameが指定されていない場合がある(RFC7578-4.2)
 // TODO: filenameはそのまま使わずに, 場合(破壊的なパスなど)によっては変更する
-void RequestInfo::__parse_form(const std::string  line,
-                               RequestInfo::Form &form) {
+void RequestInfo::__parse_form_header(const std::string  line,
+                                      RequestInfo::Form &form) {
   std::size_t pos = line.find(':');
   if (pos == std::string::npos) {
     throw BadRequestException();
@@ -118,7 +120,8 @@ void RequestInfo::__parse_form(const std::string  line,
   }
 }
 
-void RequestInfo::__add_form(MultiForm &multi_form, const Form &form) {
+void RequestInfo::__add_form_to_multi_form(MultiForm  &multi_form,
+                                           const Form &form) {
   if (form.content_disposition_.type_ != "form-data") {
     ERROR_LOG("part header: type must be form-data");
     throw BadRequestException();

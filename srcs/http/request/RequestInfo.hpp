@@ -47,8 +47,9 @@ private:
   static EnvValues __parse_request_env_values(const std::string &request_body);
   static MultiForm __parse_request_multi_form(std::string        request_body,
                                               const ContentInfo &content_type);
-  static void __parse_form(const std::string line, RequestInfo::Form &form);
-  static void __add_form(MultiForm &multi_form, const Form &form);
+  static void      __parse_form_header(const std::string  line,
+                                       RequestInfo::Form &form);
+  static void __add_form_to_multi_form(MultiForm &multi_form, const Form &form);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static ContentInfo __parse_content_info(const std::string &content);
