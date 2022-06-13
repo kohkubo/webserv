@@ -120,22 +120,26 @@ void RequestInfo::__parse_form_header(const std::string  line,
   const std::string field_value = trim(line.substr(pos + 1), ows_);
   if (field_name == "Content-Disposition" &&
       form.content_disposition_.type_ == "") {
+    // form.content_dispositionが既にセットされていないならセットする
+    // その確かめ方が今はform.content_disposition_.type_ == ""しかわからない
+    // rakiyama
     form.content_disposition_ = __parse_content_info(field_value);
   }
   if (field_name == "Content-Type" && form.content_type_.type_ == "") {
+    // 上に同じく rakiyama
     form.content_type_ = __parse_content_info(field_value);
   }
 }
 
 void RequestInfo::__add_form_to_form_map(FormMap &form_map, const Form &form) {
   if (form.content_disposition_.type_ != "form-data") {
-    ERROR_LOG("part header: type must be form-data");
+    ERROR_LOG("multi part header: type must be form-data");
     throw BadRequestException();
   }
   std::map<std::string, std::string>::const_iterator it =
       form.content_disposition_.parameter_.find("name");
   if (it == form.content_disposition_.parameter_.end()) {
-    ERROR_LOG("part header: missing name");
+    ERROR_LOG("multi part header: missing name");
     throw RequestInfo::BadRequestException();
   }
   if (form_map.count(it->second) == 0) {
