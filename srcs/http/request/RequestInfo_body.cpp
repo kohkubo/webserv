@@ -68,7 +68,7 @@ RequestInfo::__parse_multi_part_loop(std::string        body,
     HEADER,
     BODY,
   };
-  MultiPartState s        = BEGINNING;
+  MultiPartState state    = BEGINNING;
   std::string    boundary = "--" + boudary_specified;
   std::string    end      = "--" + boudary_specified + "--";
   formMap        form_map;
@@ -76,11 +76,11 @@ RequestInfo::__parse_multi_part_loop(std::string        body,
   std::string    line;
   while (getline(body, line)) {
     if (line == boundary) {
-      if (s != BEGINNING) {
+      if (state != BEGINNING) {
         __add_form_to_form_map(form_map, form);
       }
-      form = Form();
-      s    = HEADER;
+      form  = Form();
+      state = HEADER;
       continue;
     }
     if (line == end) {
@@ -88,13 +88,13 @@ RequestInfo::__parse_multi_part_loop(std::string        body,
       break;
     }
     if (line == "") {
-      s = BODY;
+      state = BODY;
       continue;
     }
-    if (s == HEADER) {
+    if (state == HEADER) {
       __parse_form_header(line, form);
     }
-    if (s == BODY) {
+    if (state == BODY) {
       if (form.content_ != "") {
         // これ以前のcontentが空でないなら,
         // bodyの途中で改行があるということなのでCRLF付け足す
