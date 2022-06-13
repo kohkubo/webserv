@@ -12,7 +12,7 @@
 #include "http/const/const_delimiter.hpp"
 
 void Connection::create_sequential_transaction() {
-  while (true) {
+  for (;;) {
     RequestState request_state =
         __request_.handle_request(__buffer_, __conf_group_);
     if (request_state != SUCCESS) {

@@ -83,7 +83,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
           ResponseGenerator::generate_response(*__config_, __request_info_);
     } else if (__state_ == RECEIVING_STARTLINE ||
                __state_ == RECEIVING_HEADER) {
-      __check_buffer_length_exception(request_buffer, buffer_max_length_);
+      __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
     __set_response_for_bad_request();
@@ -155,7 +155,7 @@ RequestState Request::__chunk_loop(std::string &request_buffer) {
     }
   }
   if (__next_chunk_ == CHUNK_SIZE)
-    __check_buffer_length_exception(request_buffer, buffer_max_length_);
+    __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   return RECEIVING_BODY;
 }
 
