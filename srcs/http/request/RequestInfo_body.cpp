@@ -11,9 +11,9 @@
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const ContentInfo &content_type) {
   if (content_type.type_ == "application/x-www-form-urlencoded") {
-    env_values_ = __parse_request_envvalues(request_body);
+    env_values_ = __parse_request_env_values(request_body);
   } else if (content_type.type_ == "multipart/form-data") {
-    multi_form_ = __parse_request_multiform(request_body, content_type);
+    multi_form_ = __parse_request_multi_form(request_body, content_type);
   } else if (content_type.type_ == "text/plain") {
     env_values_.push_back(request_body); // tmp, gtestに関わるので変更後テスト
   } else {
@@ -26,7 +26,7 @@ void RequestInfo::parse_request_body(std::string       &request_body,
 // TODO: =があるかなどのバリデート必要か
 // TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
 RequestInfo::EnvValues
-RequestInfo::__parse_request_envvalues(const std::string &request_body) {
+RequestInfo::__parse_request_env_values(const std::string &request_body) {
   RequestInfo::EnvValues res;
   tokenVector            tokens = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
@@ -72,8 +72,8 @@ tokenize_multiform(std::string request_body, const std::string &boundary) {
 //  各パートのForm情報をvalueとするmapが良いかも.
 //  keyは被ったら無視(RFC7578-3).
 RequestInfo::MultiForm
-RequestInfo::__parse_request_multiform(const std::string &request_body,
-                                       const ContentInfo &content_type) {
+RequestInfo::__parse_request_multi_form(const std::string &request_body,
+                                        const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
   it = content_type.parameter_.find("boundary");
   if (it == content_type.parameter_.end() || it->second == "") {

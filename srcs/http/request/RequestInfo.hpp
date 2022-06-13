@@ -44,9 +44,9 @@ private:
   static bool        __parse_request_connection(const std::string &connection);
   static size_t
   __parse_request_content_length(const std::string &content_length);
-  static EnvValues __parse_request_envvalues(const std::string &request_body);
-  static MultiForm __parse_request_multiform(const std::string &request_body,
-                                             const ContentInfo &content_type);
+  static EnvValues __parse_request_env_values(const std::string &request_body);
+  static MultiForm __parse_request_multi_form(const std::string &request_body,
+                                              const ContentInfo &content_type);
   static Form      __parse_request_form(std::string part_body);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
