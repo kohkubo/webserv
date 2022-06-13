@@ -39,8 +39,7 @@ func waitServerLaunch(r io.Reader) chan struct{} {
 	scanner := bufio.NewScanner(r)
 	go func() {
 		for scanner.Scan() {
-			txt := scanner.Text()
-			if txt == "start server process" {
+			if scanner.Text() == "start server process" {
 				close(done)
 				return
 			}
