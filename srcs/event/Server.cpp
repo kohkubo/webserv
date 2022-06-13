@@ -23,7 +23,7 @@ void Server::__add_listenfd_to_pollfds(
     const std::map<listenFd, confGroup> &conf_group_map) {
   std::map<listenFd, confGroup>::const_iterator it = conf_group_map.begin();
   for (; it != conf_group_map.end(); it++) {
-    struct pollfd new_pfd = {it->first, POLLIN, 5000};
+    struct pollfd new_pfd = {it->first, POLLIN, 0};
     __pollfds_.push_back(new_pfd);
   }
 }
@@ -60,7 +60,7 @@ void Server::run_loop() {
     __close_timedout_connection(__connection_map_);
     __reset_pollfds();
     // TODO: timeoutは仮 nakamoto
-    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 50000);
+    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 5000);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
       if (it->revents == 0) {
