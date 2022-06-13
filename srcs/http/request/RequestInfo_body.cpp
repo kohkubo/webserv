@@ -143,6 +143,6 @@ void RequestInfo::__add_form_to_form_map(formMap &form_map, const Form &form) {
     throw RequestInfo::BadRequestException();
   }
   if (form_map.count(it->second) == 0) {
-    form_map[it->second] = form;
+    form_map.insert(std::make_pair(it->second, form));
   }
 }
