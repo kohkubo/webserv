@@ -5,6 +5,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "utils/utils.hpp"
 
 // TODO: ステータスコードに合わせたレスポンスを生成
 void Request::__set_response_for_bad_request() {
@@ -89,15 +90,6 @@ RequestState Request::handle_request(std::string     &request_buffer,
     __set_response_for_bad_request();
   }
   return __state_;
-}
-
-bool Request::getline(std::string &request_buffer, std::string &line) {
-  std::size_t pos = request_buffer.find(CRLF);
-  if (pos == std::string::npos)
-    return false;
-  line = request_buffer.substr(0, pos);
-  request_buffer.erase(0, pos + 2);
-  return true;
 }
 
 std::string Request::__cutout_request_body(std::string &request_buffer,

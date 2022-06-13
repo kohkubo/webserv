@@ -68,7 +68,6 @@ public:
     // エラー || Connection: close -> true
     return Response(__response_, __request_info_.connection_close_);
   }
-  static bool getline(std::string &request_buffer, std::string &line);
 };
 
 #endif /* SRCS_EVENT_TRANSACTION_HPP */

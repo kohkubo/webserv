@@ -41,6 +41,15 @@ std::string tolower(const std::string &str) {
   return lower;
 }
 
+bool getline(std::string &request_buffer, std::string &line) {
+  std::size_t pos = request_buffer.find("\r\n");
+  if (pos == std::string::npos)
+    return false;
+  line = request_buffer.substr(0, pos);
+  request_buffer.erase(0, pos + 2);
+  return true;
+}
+
 bool is_uint8(const std::string &str) {
   if (str.size() == 1) {
     return (str[0] >= '0' && str[0] <= '9');
