@@ -45,11 +45,11 @@ private:
   static size_t
   __parse_request_content_length(const std::string &content_length);
   static EnvValues __parse_request_env_values(const std::string &request_body);
-  static FormMap   __parse_request_multi_form(std::string        request_body,
-                                              const ContentInfo &content_type);
+  static FormMap   __parse_request_form_map(std::string        request_body,
+                                            const ContentInfo &content_type);
   static void      __parse_form_header(const std::string  line,
                                        RequestInfo::Form &form);
-  static void __add_form_to_multi_form(FormMap &multi_form, const Form &form);
+  static void __add_form_to_form_map(FormMap &multi_form, const Form &form);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static ContentInfo __parse_content_info(const std::string &content);

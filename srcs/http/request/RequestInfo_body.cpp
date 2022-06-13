@@ -13,7 +13,7 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   if (content_type.type_ == "application/x-www-form-urlencoded") {
     env_values_ = __parse_request_env_values(request_body);
   } else if (content_type.type_ == "multipart/form-data") {
-    form_map_ = __parse_request_multi_form(request_body, content_type);
+    form_map_ = __parse_request_form_map(request_body, content_type);
   } else if (content_type.type_ == "text/plain") {
     env_values_.push_back(request_body); // tmp, gtestに関わるので変更後テスト
   } else {
@@ -22,9 +22,9 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   }
 }
 
-// TODO: 今のところ 読み取り文字数を無視して文字列を取り込みしています。
-// TODO: =があるかなどのバリデート必要か
-// TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
+// rakiyama
+//  TODO: =があるかなどのバリデート必要か rakiyama
+//  TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
 RequestInfo::EnvValues
 RequestInfo::__parse_request_env_values(const std::string &request_body) {
   RequestInfo::EnvValues res;
@@ -35,9 +35,17 @@ RequestInfo::__parse_request_env_values(const std::string &request_body) {
   return res;
 }
 
+// rakiyama
+//  TODO: ファイル名の%エンコード(RFC7578-2)は考慮してない
+//  TODO: フィールド名のascii制限(RFC7578-5)もとりあえず無視
+//  TODO: 現状, content-typeはデフォルトのtext/plain;
+//        charset=US-ASCIIであること前提
+//  TODO: コンテンツがfileの場合でも,
+//  filenameが指定されていない場合がある(RFC7578-4.2)
+//  TODO: filenameはそのまま使わずに, 場合(破壊的なパスなど)によっては変更する
 RequestInfo::FormMap
-RequestInfo::__parse_request_multi_form(std::string        request_body,
-                                        const ContentInfo &content_type) {
+RequestInfo::__parse_request_form_map(std::string        request_body,
+                                      const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
   it = content_type.parameter_.find("boundary");
   if (it == content_type.parameter_.end() || it->second == "") {
@@ -58,14 +66,14 @@ RequestInfo::__parse_request_multi_form(std::string        request_body,
   while (must_get_line(request_body, line)) {
     if (line == boundary) {
       if (s != BEGINNING) {
-        __add_form_to_multi_form(form_map, form);
+        __add_form_to_form_map(form_map, form);
       }
       form = Form();
       s    = HEADER;
       continue;
     }
     if (line == end) {
-      __add_form_to_multi_form(form_map, form);
+      __add_form_to_form_map(form_map, form);
       break;
     }
     if (line == "") {
@@ -83,17 +91,13 @@ RequestInfo::__parse_request_multi_form(std::string        request_body,
       form.content_ += line;
     }
   }
+  if (form_map.size() == 0) {
+    ERROR_LOG("multipart/form-data missing body");
+    throw RequestInfo::BadRequestException();
+  }
   return form_map;
 }
 
-// TODO: ファイル名の%エンコード(RFC7578-2)は考慮してない
-// TODO: フィールド名のascii制限(RFC7578-5)もとりあえず無視
-// TODO: ボディは一つ以上ないといけない
-// TODO: 現状, content-typeはデフォルトのtext/plain;
-// charset=US-ASCIIであること前提
-// TODO: コンテンツがfileの場合でも,
-// filenameが指定されていない場合がある(RFC7578-4.2)
-// TODO: filenameはそのまま使わずに, 場合(破壊的なパスなど)によっては変更する
 void RequestInfo::__parse_form_header(const std::string  line,
                                       RequestInfo::Form &form) {
   std::size_t pos = line.find(':');
@@ -115,8 +119,7 @@ void RequestInfo::__parse_form_header(const std::string  line,
   }
 }
 
-void RequestInfo::__add_form_to_multi_form(FormMap    &form_map,
-                                           const Form &form) {
+void RequestInfo::__add_form_to_form_map(FormMap &form_map, const Form &form) {
   if (form.content_disposition_.type_ != "form-data") {
     ERROR_LOG("part header: type must be form-data");
     throw BadRequestException();
