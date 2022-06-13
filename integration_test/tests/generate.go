@@ -24,6 +24,7 @@ func Generate() T {
 		testLimitExpect,
 		testLocation,
 		testServerName,
+		testReturn,
 	}
 	return s
 }
