@@ -117,7 +117,7 @@ void RequestInfo::__parse_form_header(const std::string  line,
   if (last_char == ' ' || last_char == '\t') {
     throw BadRequestException();
   }
-  const std::string field_value = trim(line.substr(pos + 1), ows_);
+  const std::string field_value = trim(line.substr(pos + 1), OWS_);
   if (field_name == "Content-Disposition" &&
       form.content_disposition_.type_ == "") {
     // form.content_dispositionが既にセットされていないならセットする
