@@ -36,8 +36,6 @@ RequestInfo::__parse_request_env_values(const std::string &request_body) {
 }
 
 // 関数説明: mutlipart/form-dataのrequest_bodyから各partを切り出してvectorに格納
-// RFC7578にはboundary・CRLF・"--"で区切られる程度しか書いてないので,
-// 実際にpostしてみた時の受信ボディに合わせてパースした.
 static std::vector<std::string>
 tokenize_multiform(std::string request_body, const std::string &boundary) {
   std::string first_boundary  = "--" + boundary + CRLF;
@@ -93,6 +91,7 @@ RequestInfo::__parse_request_multi_form(const std::string &request_body,
 // 関数説明: mutlipart/form-dataのボディから切り出されたpart_bodyをFormにパース
 // TODO: ファイル名の%エンコード(RFC7578-2)は考慮してない
 // TODO: フィールド名のascii制限(RFC7578-5)もとりあえず無視
+// TODO: ボディは一つ以上ないといけない
 // TODO: 現状, content-typeはデフォルトのtext/plain;
 // charset=US-ASCIIであること前提
 // TODO: コンテンツがfileの場合でも,
