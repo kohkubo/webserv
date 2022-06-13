@@ -41,12 +41,12 @@ std::string tolower(const std::string &str) {
   return lower;
 }
 
-bool getline(std::string &request_buffer, std::string &line) {
-  std::size_t pos = request_buffer.find("\r\n");
+bool must_get_line(std::string &source, std::string &line) {
+  std::size_t pos = source.find("\r\n");
   if (pos == std::string::npos)
     return false;
-  line = request_buffer.substr(0, pos);
-  request_buffer.erase(0, pos + 2);
+  line = source.substr(0, pos);
+  source.erase(0, pos + 2);
   return true;
 }
 

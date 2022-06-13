@@ -101,7 +101,7 @@ RequestInfo::__parse_request_multiform(const std::string &request_body,
 RequestInfo::Form RequestInfo::__parse_request_form(std::string part_body) {
   std::string                        line;
   std::map<std::string, std::string> field_map;
-  while (getline(part_body, line) && line != "") {
+  while (must_get_line(part_body, line) && line != "") {
     store_request_header_field_map(line, field_map);
   }
   std::map<std::string, std::string>::iterator it;
