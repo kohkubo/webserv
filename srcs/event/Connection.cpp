@@ -12,7 +12,7 @@
 #include "http/const/const_delimiter.hpp"
 
 void Connection::create_sequential_transaction() {
-  while (true) {
+  for (;;) {
     RequestState request_state =
         __request_.handle_request(__buffer_, __conf_group_);
     if (request_state != SUCCESS) {
@@ -29,7 +29,7 @@ bool Connection::append_receive_buffer() {
   std::vector<char> buf(buf_size);
   ssize_t           rc = recv(__conn_fd_, &buf[0], buf_size, MSG_DONTWAIT);
   if (rc == -1) {
-    std::cerr << "recv() failed." << std::endl;
+    ERROR_LOG("recv() failed.");
     exit(EXIT_FAILURE);
   }
   // fin from client
