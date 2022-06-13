@@ -10,7 +10,7 @@
 
 class RequestInfo {
 private:
-  static const std::string ows_;
+  static const std::string OWS_;
 
 public:
   struct ContentInfo {
