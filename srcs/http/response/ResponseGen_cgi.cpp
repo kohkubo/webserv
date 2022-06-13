@@ -13,7 +13,7 @@
 static std::string read_fd_tostring(int fd) {
   char        buf[1024];
   std::string s;
-  while (true) {
+  for (;;) {
     int n = read(fd, buf, sizeof(buf));
     if (n == 0)
       break;
@@ -49,8 +49,8 @@ std::string ResponseGenerator::__read_file_tostring_cgi(
     close(pipefd[READ_FD]);
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
-    // TODO: CスタイルのキャストからC++へのキャストへ変更 kohkubo
-    char *const  argv[]         = {(char *)"", (char *)path.c_str(), NULL};
+    char *const  argv[]         = {const_cast<char *>(""),
+                          const_cast<char *>(path.c_str()), NULL};
     char *const *env_char_array = vector_to_array(env);
     execve("/bin/sh", argv, env_char_array);
     delete[] env_char_array;

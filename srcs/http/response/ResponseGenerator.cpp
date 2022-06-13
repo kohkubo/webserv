@@ -9,7 +9,6 @@
 
 #include "config/Config.hpp"
 #include "http/const/const_error_contents.hpp"
-#include "http/const/const_header_field_values.hpp"
 #include "http/const/const_http_enums.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"

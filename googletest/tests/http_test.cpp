@@ -6,7 +6,6 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "http/const/const_header_field_values.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
