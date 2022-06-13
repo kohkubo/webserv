@@ -25,7 +25,8 @@ private:
                                                  const std::vector<Location> &locations);
 
   static std::string    __response_message(HttpStatusCode     status_code,
-                                           const std::string &body);
+                                           const std::string &body,
+                                           const Location    &location);
   static std::string    __file_path(const std::string &request_uri,
                                     const Location    &location);
   static bool           __is_error_status_code(HttpStatusCode status_code);
