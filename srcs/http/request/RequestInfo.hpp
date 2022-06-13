@@ -45,15 +45,15 @@ private:
   static size_t
   __parse_request_content_length(const std::string &content_length);
   static EnvValues __parse_request_env_values(const std::string &request_body);
-  static MultiForm __parse_request_multi_form(const std::string &request_body,
+  static MultiForm __parse_request_multi_form(std::string        request_body,
                                               const ContentInfo &content_type);
-  static Form      __parse_request_form(std::string part_body);
+  static void __parse_form(const std::string line, RequestInfo::Form &form);
+  static void __add_form(MultiForm &multi_form, const Form &form);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
-  static std::string
-  __parse_request_content_type(const std::string &content_type);
   static ContentInfo __parse_content_info(const std::string &content);
-  static std::string __cutout_prameter_value(std::string str);
+  static std::string
+  __cutout_prameter_value(std::string str); // ファイル内static関数で済む
 
 public:
   RequestInfo()

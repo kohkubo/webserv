@@ -35,42 +35,13 @@ RequestInfo::__parse_request_env_values(const std::string &request_body) {
   return res;
 }
 
-// 関数説明: mutlipart/form-dataのrequest_bodyから各partを切り出してvectorに格納
-static std::vector<std::string>
-tokenize_multiform(std::string request_body, const std::string &boundary) {
-  std::string first_boundary  = "--" + boundary + CRLF;
-  std::string middle_boundary = CRLF + "--" + boundary + CRLF;
-  std::string end_boundary    = CRLF + "--" + boundary + "--" + CRLF;
-  std::size_t pos             = request_body.find(first_boundary);
-  if (pos != 0) {
-    ERROR_LOG("part body: didn't start at the boundary");
-    throw RequestInfo::BadRequestException();
-  }
-  request_body.erase(0, pos + first_boundary.size());
-  std::vector<std::string> res;
-  while (true) {
-    if ((pos = request_body.find(middle_boundary)) != std::string::npos) {
-      res.push_back(request_body.substr(0, pos));
-      request_body.erase(0, pos + middle_boundary.size());
-    } else if ((pos = request_body.find(end_boundary)) != std::string::npos) {
-      res.push_back(request_body.substr(0, pos));
-      break;
-    } else {
-      ERROR_LOG("part body: missing end boundary");
-      throw RequestInfo::BadRequestException();
-    }
-  }
-  return res;
-}
-
-// 関数説明: mutlipart/form-dataのrequest_bodyをMultiFormにパース
 // TODO:
 //  現状, MultiFormは簡素化のためFormのvector.
 //  本来は各パートのフィールド名(nameで指定される)をkey
 //  各パートのForm情報をvalueとするmapが良いかも.
 //  keyは被ったら無視(RFC7578-3).
 RequestInfo::MultiForm
-RequestInfo::__parse_request_multi_form(const std::string &request_body,
+RequestInfo::__parse_request_multi_form(std::string        request_body,
                                         const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
   it = content_type.parameter_.find("boundary");
@@ -78,17 +49,46 @@ RequestInfo::__parse_request_multi_form(const std::string &request_body,
     ERROR_LOG("content-type: missing boundary");
     throw RequestInfo::BadRequestException();
   }
-  std::vector<std::string> tokens =
-      tokenize_multiform(request_body, it->second);
-  MultiForm                          multi_form;
-  std::vector<std::string>::iterator itm = tokens.begin();
-  for (; itm != tokens.end(); itm++) {
-    multi_form.push_back(__parse_request_form(*itm));
+  enum State {
+    FIRST,
+    RECV_HEADER,
+    RECV_BODY,
+  };
+  std::string boundary = "--" + it->second;
+  std::string end      = "--" + it->second + "--";
+  std::string line;
+  State       s = FIRST;
+  Form        f;
+  MultiForm   mf;
+  while (must_get_line(request_body, line)) {
+    if (line == boundary) {
+      if (s != FIRST) {
+        __add_form(mf, f);
+      }
+      s = RECV_HEADER;
+      f = Form();
+      continue;
+    }
+    if (line == end) {
+      __add_form(mf, f);
+      break;
+    }
+    if (line == "") {
+      s = RECV_BODY;
+      continue;
+    }
+    if (s == RECV_HEADER) {
+      __parse_form(line, f);
+    } else if (s == RECV_BODY) {
+      if (f.content_ != "") {
+        f.content_ += CRLF;
+      }
+      f.content_ += line;
+    }
   }
-  return multi_form;
+  return mf;
 }
 
-// 関数説明: mutlipart/form-dataのボディから切り出されたpart_bodyをFormにパース
 // TODO: ファイル名の%エンコード(RFC7578-2)は考慮してない
 // TODO: フィールド名のascii制限(RFC7578-5)もとりあえず無視
 // TODO: ボディは一つ以上ないといけない
@@ -97,31 +97,37 @@ RequestInfo::__parse_request_multi_form(const std::string &request_body,
 // TODO: コンテンツがfileの場合でも,
 // filenameが指定されていない場合がある(RFC7578-4.2)
 // TODO: filenameはそのまま使わずに, 場合(破壊的なパスなど)によっては変更する
-RequestInfo::Form RequestInfo::__parse_request_form(std::string part_body) {
-  std::string                        line;
-  std::map<std::string, std::string> field_map;
-  while (must_get_line(part_body, line) && line != "") {
-    store_request_header_field_map(line, field_map);
+void RequestInfo::__parse_form(const std::string  line,
+                               RequestInfo::Form &form) {
+  std::size_t pos = line.find(':');
+  if (pos == std::string::npos) {
+    throw BadRequestException();
   }
-  std::map<std::string, std::string>::iterator it;
-  it = field_map.find("Content-Disposition");
-  if (it == field_map.end()) {
-    ERROR_LOG("part header: missing Content-Disposition");
-    throw RequestInfo::BadRequestException();
+  const std::string field_name = line.substr(0, pos);
+  char              last_char  = field_name[field_name.size() - 1];
+  if (last_char == ' ' || last_char == '\t') {
+    throw BadRequestException();
   }
-  Form form;
-  form.content_disposition_ = __parse_content_info(it->second);
+  const std::string field_value = trim(line.substr(pos + 1), ows_);
+  if (field_name == "Content-Disposition" &&
+      form.content_disposition_.type_ == "") {
+    form.content_disposition_ = __parse_content_info(field_value);
+  }
+  if (field_name == "Content-Type" && form.content_type_.type_ == "") {
+    form.content_type_ = __parse_content_info(field_value);
+  }
+}
+
+void RequestInfo::__add_form(MultiForm &multi_form, const Form &form) {
   if (form.content_disposition_.type_ != "form-data") {
     ERROR_LOG("part header: type must be form-data");
     throw BadRequestException();
   }
-  std::map<std::string, std::string>::iterator itn;
-  itn = form.content_disposition_.parameter_.find("name");
-  if (itn == form.content_disposition_.parameter_.end()) {
+  std::map<std::string, std::string>::const_iterator it =
+      form.content_disposition_.parameter_.find("name");
+  if (it == form.content_disposition_.parameter_.end()) {
     ERROR_LOG("part header: missing name");
     throw RequestInfo::BadRequestException();
   }
-  form.content_type_ = __parse_content_info(field_map["Content-Type"]);
-  form.content_      = part_body;
-  return form;
+  multi_form.push_back(form);
 }
