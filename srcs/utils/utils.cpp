@@ -41,7 +41,7 @@ std::string tolower(const std::string &str) {
   return lower;
 }
 
-bool must_get_line(std::string &source, std::string &line) {
+bool getline(std::string &source, std::string &line) {
   std::size_t pos = source.find("\r\n");
   if (pos == std::string::npos)
     return false;

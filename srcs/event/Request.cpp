@@ -25,7 +25,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
   try {
     if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
-      while (must_get_line(request_buffer, line)) { // noexcept
+      while (getline(request_buffer, line)) { // noexcept
         if (__state_ == RECEIVING_STARTLINE) {
           __request_info_.check_first_multi_blank_line(line);
           // throws BadRequestException
@@ -104,7 +104,7 @@ bool Request::__get_next_chunk_line(NextChunkType chunk_type,
                                     std::string  &chunk,
                                     size_t        next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
-    return must_get_line(request_buffer, chunk);
+    return getline(request_buffer, chunk);
   }
   if (request_buffer.size() < next_chunk_size + CRLF.size()) {
     return false;

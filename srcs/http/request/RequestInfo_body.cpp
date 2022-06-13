@@ -74,7 +74,7 @@ RequestInfo::__parse_multi_part_loop(std::string        body,
   FormMap        form_map;
   Form           form;
   std::string    line;
-  while (must_get_line(body, line)) {
+  while (getline(body, line)) {
     if (line == boundary) {
       if (s != BEGINNING) {
         __add_form_to_form_map(form_map, form);
