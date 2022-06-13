@@ -36,10 +36,10 @@ func Restart(configPath string) error {
 
 func waitServerLaunch(r io.Reader) chan struct{} {
 	done := make(chan struct{})
-	scanErr := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(r)
 	go func() {
-		for scanErr.Scan() {
-			txt := scanErr.Text()
+		for scanner.Scan() {
+			txt := scanner.Text()
 			if txt == "start server process" {
 				close(done)
 				return
