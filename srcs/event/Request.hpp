@@ -33,7 +33,7 @@ private:
   std::size_t                        __next_chunk_size_;
   std::string                        __request_body_;
   std::map<std::string, std::string> __field_map_;
-  static const std::size_t           buffer_max_length_ = 8192;
+  static const std::size_t           BUFFER_MAX_LENGTH_ = 8192;
 
 private:
   static bool        __getline(std::string &request_buffer, std::string &line);

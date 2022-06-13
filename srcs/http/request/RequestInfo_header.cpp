@@ -8,7 +8,7 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-const std::string RequestInfo::ows_ = " \t";
+const std::string RequestInfo::OWS_ = " \t";
 
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースが終了 true。エラー→例外
@@ -53,7 +53,7 @@ void RequestInfo::store_request_header_field_map(
   if (last_char == ' ' || last_char == '\t') {
     throw BadRequestException();
   }
-  const std::string field_value = trim(header_line.substr(pos + 1), ows_);
+  const std::string field_value = trim(header_line.substr(pos + 1), OWS_);
   if (header_field_map.count(field_name) != 0u) {
     if (__is_comma_sparated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
@@ -107,7 +107,7 @@ RequestInfo::__parse_content_info(const std::string &content) {
   tokenVector   tokens = tokenize(content, ";", ";");
   tokenIterator it     = tokens.begin();
   for (; it != tokens.end(); it++) {
-    std::string str = trim(*it, ows_);
+    std::string str = trim(*it, OWS_);
     if (res.type_ == "") {
       res.type_ = tolower(str);
     } else {
