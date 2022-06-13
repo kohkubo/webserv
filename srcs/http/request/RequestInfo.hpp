@@ -17,7 +17,6 @@ public:
     std::string                        type_;
     std::map<std::string, std::string> parameter_;
   };
-  // mutlipart/form-data形式のボディの各partの情報を入れる構造体
   struct Form {
     ContentInfo content_disposition_;
     ContentInfo content_type_;
@@ -35,8 +34,8 @@ public:
   bool        is_chunked_;
   std::size_t content_length_;
   ContentInfo content_type_;
-  FormMap     form_map_;   // multipart/formdataの時のパース先
-  EnvValues   env_values_; // application/~urlencodedの時のパース先
+  FormMap     form_map_;
+  EnvValues   env_values_;
 
 private:
   static bool        __is_comma_sparated(std::string &field_name);
@@ -45,16 +44,18 @@ private:
   static size_t
   __parse_request_content_length(const std::string &content_length);
   static EnvValues __parse_request_env_values(const std::string &request_body);
-  static FormMap   __parse_request_form_map(std::string        request_body,
-                                            const ContentInfo &content_type);
+  static FormMap   __parse_request_multi_part(const std::string &request_body,
+                                              const ContentInfo &content_type);
+  static FormMap   __parse_multi_part_loop(std::string        body,
+                                           const std::string &boudary_specified);
   static void      __parse_form_header(const std::string  line,
                                        RequestInfo::Form &form);
   static void __add_form_to_form_map(FormMap &multi_form, const Form &form);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static ContentInfo __parse_content_info(const std::string &content);
-  static std::string
-  __cutout_prameter_value(std::string str); // ファイル内static関数で済む
+  // TODO: ↓ファイル内static関数で済む rakiyama
+  static std::string __cutout_prameter_value(std::string str);
 
 public:
   RequestInfo()
