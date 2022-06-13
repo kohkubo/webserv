@@ -100,3 +100,23 @@ TEST(request_parse_test, query_body) {
   EXPECT_EQ(info.env_values_[4], "pirates!!");
   // 今は"hoge=huga"の形でなくてもバリデートしてない
 }
+
+TEST(request_parse_test, query_string) {
+  std::string request = "GET /hoge.cgi?name=taro&age=15 HTTP/1.1\r\n"
+                        "Host: 127.0.0.1:50001\r\n"
+                        "User-Agent: curl/7.68.0\r\n"
+                        "Connection: close\r\n"
+                        "Accept: */*\r\n\r\n";
+
+  Config      config;
+  confGroup   conf_group;
+  conf_group.push_back(&config);
+  Request transaction;
+
+  transaction.handle_request(request, conf_group);
+  const RequestInfo &r = transaction.request_info();
+
+  EXPECT_EQ(r.method_, "GET");
+  EXPECT_EQ(r.request_target_, "/hoge.cgi");
+  EXPECT_EQ(r.query_string_, "name=taro&age=15");
+}
