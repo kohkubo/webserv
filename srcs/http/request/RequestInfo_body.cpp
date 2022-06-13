@@ -25,9 +25,9 @@ void RequestInfo::parse_request_body(std::string       &request_body,
 // rakiyama
 //  TODO: =があるかなどのバリデート必要か rakiyama
 //  TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
-RequestInfo::EnvValues
+RequestInfo::envValues
 RequestInfo::__parse_request_env_values(const std::string &request_body) {
-  RequestInfo::EnvValues res;
+  RequestInfo::envValues res;
   tokenVector            tokens = tokenize(request_body, "&", "&");
   for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
     res.push_back(*it);
@@ -43,7 +43,7 @@ RequestInfo::__parse_request_env_values(const std::string &request_body) {
 //  TODO: コンテンツがfileの場合でも,
 //  filenameが指定されていない場合がある(RFC7578-4.2)
 //  TODO: filenameはそのまま使わずに, 場合(破壊的なパスなど)によっては変更する
-RequestInfo::FormMap
+RequestInfo::formMap
 RequestInfo::__parse_request_multi_part(const std::string &request_body,
                                         const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
@@ -52,7 +52,7 @@ RequestInfo::__parse_request_multi_part(const std::string &request_body,
     ERROR_LOG("content-type: missing boundary");
     throw RequestInfo::BadRequestException();
   }
-  FormMap form_map = __parse_multi_part_loop(request_body, it->second);
+  formMap form_map = __parse_multi_part_loop(request_body, it->second);
   if (form_map.size() == 0) {
     ERROR_LOG("multipart/form-data missing body");
     throw RequestInfo::BadRequestException();
@@ -60,7 +60,7 @@ RequestInfo::__parse_request_multi_part(const std::string &request_body,
   return form_map;
 }
 
-RequestInfo::FormMap
+RequestInfo::formMap
 RequestInfo::__parse_multi_part_loop(std::string        body,
                                      const std::string &boudary_specified) {
   enum MultiPartState {
@@ -71,7 +71,7 @@ RequestInfo::__parse_multi_part_loop(std::string        body,
   MultiPartState s        = BEGINNING;
   std::string    boundary = "--" + boudary_specified;
   std::string    end      = "--" + boudary_specified + "--";
-  FormMap        form_map;
+  formMap        form_map;
   Form           form;
   std::string    line;
   while (getline(body, line)) {
@@ -131,7 +131,7 @@ void RequestInfo::__parse_form_header(const std::string  line,
   }
 }
 
-void RequestInfo::__add_form_to_form_map(FormMap &form_map, const Form &form) {
+void RequestInfo::__add_form_to_form_map(formMap &form_map, const Form &form) {
   if (form.content_disposition_.type_ != "form-data") {
     ERROR_LOG("multi part header: type must be form-data");
     throw BadRequestException();
