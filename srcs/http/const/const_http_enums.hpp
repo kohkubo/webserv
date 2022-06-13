@@ -5,6 +5,7 @@ enum HttpStatusCode {
   NONE                      = -1,
   OK_200                    = 200,
   NO_CONTENT_204            = 204,
+  MOVED_PERMANENTLY_301     = 301,
   NOT_MODIFIED_304          = 304,
   BAD_REQUEST_400           = 400,
   FORBIDDEN_403             = 403,

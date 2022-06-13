@@ -15,8 +15,7 @@
 
 // TODO: string -> vector<char>
 
-typedef class Config Config;
-typedef int          connFd;
+typedef int connFd;
 
 class Connection {
 private:
@@ -26,7 +25,7 @@ private:
   std::deque<Response>     __response_queue_;
   std::string              __buffer_;
   std::time_t              __last_event_time_;
-  static const std::time_t timeout_seconds_ = 60;
+  static const std::time_t TIMEOUT_SECONDS_ = 60;
 
 private:
   Connection() {}
@@ -39,13 +38,15 @@ public:
       , __last_event_time_(__time_now()) {}
   ~Connection() {}
 
+  connFd        conn_fd() const { return __conn_fd_; }
   void          create_sequential_transaction();
   struct pollfd create_pollfd() const;
   bool          append_receive_buffer();
   void          send_front_response();
   bool          is_timed_out() const {
-    return std::difftime(__time_now(), __last_event_time_) >= timeout_seconds_;
+    return std::difftime(__time_now(), __last_event_time_) >= TIMEOUT_SECONDS_;
   }
+  void close() const { ::close(__conn_fd_); }
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */
