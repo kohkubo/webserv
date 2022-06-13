@@ -21,7 +21,7 @@ TEST(request_parse_test, normal) {
   const RequestInfo &r = transaction.request_info();
 
   EXPECT_EQ(r.method_, "GET");
-  EXPECT_EQ(r.uri_, "/");
+  EXPECT_EQ(r.request_target_, "/");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
   EXPECT_EQ(r.connection_close_, true);
@@ -43,7 +43,7 @@ TEST(request_parse_test, normal_delete) {
   const RequestInfo &r = transaction.request_info();
 
   EXPECT_EQ(r.method_, "DELETE");
-  EXPECT_EQ(r.uri_, "/delete_target.tmp");
+  EXPECT_EQ(r.request_target_, "/delete_target.tmp");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
   EXPECT_EQ(r.connection_close_, true);
@@ -67,7 +67,7 @@ TEST(request_parse_test, normal_post) {
   const RequestInfo &r = transaction.request_info();
 
   EXPECT_EQ(r.method_, "POST");
-  EXPECT_EQ(r.uri_, "/target");
+  EXPECT_EQ(r.request_target_, "/target");
   EXPECT_EQ(r.version_, "HTTP/1.1");
   EXPECT_EQ(r.host_, "127.0.0.1");
   EXPECT_EQ(r.content_type_.type_, "application/x-www-form-urlencoded");

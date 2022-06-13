@@ -19,9 +19,10 @@ public:
     std::map<std::string, std::string> parameter_;
   };
 
-  bool        is_blank_first_line_;
-  std::string method_;
-  std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
+  bool                     is_blank_first_line_;
+  std::string              method_;
+  std::string              request_target_;
+  std::string              query_string_;
   std::string              version_;
   std::string              host_;
   bool                     connection_close_;

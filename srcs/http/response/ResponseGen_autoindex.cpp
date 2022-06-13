@@ -37,10 +37,10 @@ ResponseGenerator::__create_autoindex_body(const std::string &file_path,
   buff << "<!DOCTYPE html>\n"
        << "<html>\n"
        << "   <head>\n"
-       << "      <title>Index of " << request_info.uri_ << "</title>\n"
+       << "      <title>Index of " << request_info.request_target_ << "</title>\n"
        << "   </head>\n"
        << "   <body>\n"
-       << "      <h1>Index of " << request_info.uri_ << "</h1>\n"
+       << "      <h1>Index of " << request_info.request_target_ << "</h1>\n"
        << "      <ul style=\"list-style:none\">\n"
        <<          dir_list_lines(file_path)
        << "    </ul>\n"

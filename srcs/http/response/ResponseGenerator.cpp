@@ -45,7 +45,7 @@ ResponseGenerator::generate_response(const Config      &config,
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   const Location *location =
-      __select_proper_location(request_info.uri_, config.locations_);
+      __select_proper_location(request_info.request_target_, config.locations_);
   if (location == NULL) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     status_code = NOT_FOUND_404;
@@ -58,12 +58,12 @@ ResponseGenerator::generate_response(const Config      &config,
     status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
     return __response_message(status_code, body, *location);
   }
-  if (is_minus_depth(request_info.uri_)) {
+  if (is_minus_depth(request_info.request_target_)) {
     status_code = FORBIDDEN_403;
     body        = __error_page_body(*location, config, status_code);
     return __response_message(status_code, body, *location);
   }
-  std::string file_path = __file_path(request_info.uri_, *location);
+  std::string file_path = __file_path(request_info.request_target_, *location);
   if ("GET" == request_info.method_) {
     status_code = __handle_get_method(*location, file_path);
   } else if ("POST" == request_info.method_) {
