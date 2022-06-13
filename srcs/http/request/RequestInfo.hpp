@@ -23,11 +23,11 @@ public:
     ContentInfo content_type_;
     std::string content_;
   };
-  typedef std::vector<Form>        MultiForm;
-  typedef std::vector<std::string> EnvValues;
+  typedef std::map<std::string, Form> FormMap;
+  typedef std::vector<std::string>    EnvValues;
 
-  bool                             is_blank_first_line_;
-  std::string                      method_;
+  bool                                is_blank_first_line_;
+  std::string                         method_;
   std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
   std::string version_;
   std::string host_;
@@ -35,7 +35,7 @@ public:
   bool        is_chunked_;
   std::size_t content_length_;
   ContentInfo content_type_;
-  MultiForm   multi_form_; // multipart/formdataの時のパース先
+  FormMap     form_map_;   // multipart/formdataの時のパース先
   EnvValues   env_values_; // application/~urlencodedの時のパース先
 
 private:
@@ -45,11 +45,11 @@ private:
   static size_t
   __parse_request_content_length(const std::string &content_length);
   static EnvValues __parse_request_env_values(const std::string &request_body);
-  static MultiForm __parse_request_multi_form(std::string        request_body,
+  static FormMap   __parse_request_multi_form(std::string        request_body,
                                               const ContentInfo &content_type);
   static void      __parse_form_header(const std::string  line,
                                        RequestInfo::Form &form);
-  static void __add_form_to_multi_form(MultiForm &multi_form, const Form &form);
+  static void __add_form_to_multi_form(FormMap &multi_form, const Form &form);
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static ContentInfo __parse_content_info(const std::string &content);

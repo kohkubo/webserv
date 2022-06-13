@@ -39,8 +39,8 @@ TEST(request_body_parse_test, multiform) {
   content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
   RequestInfo info;
   info.parse_request_body(request_body, content_type);
-  RequestInfo::Form first_form  = info.multi_form_[0];
-  RequestInfo::Form second_form = info.multi_form_[1];
+  RequestInfo::Form first_form  = info.form_map_["name"];
+  RequestInfo::Form second_form = info.form_map_["upfile"];
   EXPECT_EQ(first_form.content_disposition_.type_, "form-data");
   EXPECT_EQ(first_form.content_disposition_.parameter_["name"], "name");
   EXPECT_EQ(first_form.content_, "aaa");

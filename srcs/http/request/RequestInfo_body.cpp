@@ -13,7 +13,7 @@ void RequestInfo::parse_request_body(std::string       &request_body,
   if (content_type.type_ == "application/x-www-form-urlencoded") {
     env_values_ = __parse_request_env_values(request_body);
   } else if (content_type.type_ == "multipart/form-data") {
-    multi_form_ = __parse_request_multi_form(request_body, content_type);
+    form_map_ = __parse_request_multi_form(request_body, content_type);
   } else if (content_type.type_ == "text/plain") {
     env_values_.push_back(request_body); // tmp, gtestに関わるので変更後テスト
   } else {
@@ -35,12 +35,7 @@ RequestInfo::__parse_request_env_values(const std::string &request_body) {
   return res;
 }
 
-// TODO:
-//  現状, MultiFormは簡素化のためFormのvector.
-//  本来は各パートのフィールド名(nameで指定される)をkey
-//  各パートのForm情報をvalueとするmapが良いかも.
-//  keyは被ったら無視(RFC7578-3).
-RequestInfo::MultiForm
+RequestInfo::FormMap
 RequestInfo::__parse_request_multi_form(std::string        request_body,
                                         const ContentInfo &content_type) {
   std::map<std::string, std::string>::const_iterator it;
@@ -51,35 +46,35 @@ RequestInfo::__parse_request_multi_form(std::string        request_body,
   }
   enum MultiFormState {
     BEGINNING,
-    RECEIVING_HEADER,
-    RECEIVING_BODY,
+    HEADER,
+    BODY,
   };
   std::string    boundary = "--" + it->second;
   std::string    end      = "--" + it->second + "--";
   std::string    line;
   MultiFormState s = BEGINNING;
-  MultiForm      multi_form;
+  FormMap        form_map;
   Form           form;
   while (must_get_line(request_body, line)) {
     if (line == boundary) {
       if (s != BEGINNING) {
-        __add_form_to_multi_form(multi_form, form);
+        __add_form_to_multi_form(form_map, form);
       }
       form = Form();
-      s    = RECEIVING_HEADER;
+      s    = HEADER;
       continue;
     }
     if (line == end) {
-      __add_form_to_multi_form(multi_form, form);
+      __add_form_to_multi_form(form_map, form);
       break;
     }
     if (line == "") {
-      s = RECEIVING_BODY;
+      s = BODY;
       continue;
     }
-    if (s == RECEIVING_HEADER) {
+    if (s == HEADER) {
       __parse_form_header(line, form);
-    } else if (s == RECEIVING_BODY) {
+    } else if (s == BODY) {
       if (form.content_ != "") {
         // これ以前のcontentが空でないなら,
         // bodyの途中で改行がある=CRLF付け足す
@@ -88,7 +83,7 @@ RequestInfo::__parse_request_multi_form(std::string        request_body,
       form.content_ += line;
     }
   }
-  return multi_form;
+  return form_map;
 }
 
 // TODO: ファイル名の%エンコード(RFC7578-2)は考慮してない
@@ -120,7 +115,7 @@ void RequestInfo::__parse_form_header(const std::string  line,
   }
 }
 
-void RequestInfo::__add_form_to_multi_form(MultiForm  &multi_form,
+void RequestInfo::__add_form_to_multi_form(FormMap    &form_map,
                                            const Form &form) {
   if (form.content_disposition_.type_ != "form-data") {
     ERROR_LOG("part header: type must be form-data");
@@ -132,5 +127,7 @@ void RequestInfo::__add_form_to_multi_form(MultiForm  &multi_form,
     ERROR_LOG("part header: missing name");
     throw RequestInfo::BadRequestException();
   }
-  multi_form.push_back(form);
+  if (form_map.count(it->second) == 0) {
+    form_map[it->second] = form;
+  }
 }
