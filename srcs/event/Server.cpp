@@ -9,10 +9,10 @@ void Server::__close_timedout_connection(
   std::map<connFd, Connection>::const_iterator it = connection_map.begin();
   while (it != connection_map.end()) {
     if (it->second.is_timed_out()) {
-      connFd conn_fd = it->first;
+      connFd erase_conn_fd = it->first;
+      it->second.close();
       it++;
-      close(conn_fd);
-      connection_map.erase(conn_fd);
+      connection_map.erase(erase_conn_fd);
     } else {
       it++;
     }
@@ -23,7 +23,7 @@ void Server::__add_listenfd_to_pollfds(
     const std::map<listenFd, confGroup> &conf_group_map) {
   std::map<listenFd, confGroup>::const_iterator it = conf_group_map.begin();
   for (; it != conf_group_map.end(); it++) {
-    struct pollfd new_pfd = {it->first, POLLIN, 0};
+    struct pollfd new_pfd = {it->first, POLLIN, 5000};
     __pollfds_.push_back(new_pfd);
   }
 }
@@ -38,19 +38,14 @@ void Server::__add_connfd_to_pollfds(
   }
 }
 
-void Server::__connection_receive_handler(connFd conn_fd) {
-  std::map<connFd, Connection>::iterator it = __connection_map_.find(conn_fd);
-  if (it == __connection_map_.end()) {
-    // TODO: この分岐には入らないはず いらなかったら消す?
-    return;
-  }
-  bool is_socket_closed_from_client = it->second.append_receive_buffer();
+void Server::__connection_receive_handler(Connection &connection) {
+  bool is_socket_closed_from_client = connection.append_receive_buffer();
   if (is_socket_closed_from_client) {
-    close(conn_fd);
-    __connection_map_.erase(conn_fd);
+    connection.close();
+    __connection_map_.erase(connection.conn_fd());
     return;
   }
-  it->second.create_sequential_transaction();
+  connection.create_sequential_transaction();
 }
 
 void Server::__insert_connection_map(listenFd listen_fd) {
@@ -61,11 +56,11 @@ void Server::__insert_connection_map(listenFd listen_fd) {
 
 void Server::run_loop() {
   ERROR_LOG("start server process");
-  while (true) {
+  for (;;) {
     __close_timedout_connection(__connection_map_);
     __reset_pollfds();
-    // timeoutは仮
-    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 50000);
+    // TODO: timeoutは仮 nakamoto
+    int nready = xpoll(&__pollfds_[0], __pollfds_.size(), 5000);
     std::vector<struct pollfd>::iterator it = __pollfds_.begin();
     for (; it != __pollfds_.end() && 0 < nready; it++) {
       if (it->revents == 0) {
@@ -79,10 +74,9 @@ void Server::run_loop() {
         continue;
       }
       if ((it->revents & POLLIN) != 0) {
-        __connection_receive_handler(it->fd);
+        __connection_receive_handler(__connection_map_.find(it->fd)->second);
       }
       if ((it->revents & POLLOUT) != 0) {
-        // TODO: []からの書き換え、findできないケースある??
         __connection_map_.find(it->fd)->second.send_front_response();
       }
     }

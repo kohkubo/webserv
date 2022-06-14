@@ -5,6 +5,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "utils/utils.hpp"
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
@@ -12,7 +13,7 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
   try {
     if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
-      while (__getline(request_buffer, line)) { // noexcept
+      while (getline(request_buffer, line)) { // noexcept
         if (__state_ == RECEIVING_STARTLINE) {
           __request_info_.check_first_multi_blank_line(line);
           // throws BadRequestException
@@ -71,7 +72,7 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
           ResponseGenerator::generate_response(*__config_, __request_info_);
     } else if (__state_ == RECEIVING_STARTLINE ||
                __state_ == RECEIVING_HEADER) {
-      __check_buffer_length_exception(request_buffer, buffer_max_length_);
+      __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
     __response_ = ResponseGenerator::generate_bad_response();
@@ -79,15 +80,6 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
     __state_                          = SUCCESS;
   }
   return __state_;
-}
-
-bool ReceiveRequest::__getline(std::string &request_buffer, std::string &line) {
-  std::size_t pos = request_buffer.find(CRLF);
-  if (pos == std::string::npos)
-    return false;
-  line = request_buffer.substr(0, pos);
-  request_buffer.erase(0, pos + 2);
-  return true;
 }
 
 std::string ReceiveRequest::__cutout_request_body(std::string &request_buffer,
@@ -102,7 +94,7 @@ bool ReceiveRequest::__get_next_chunk_line(NextChunkType chunk_type,
                                            std::string  &chunk,
                                            size_t        next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
-    return __getline(request_buffer, chunk);
+    return getline(request_buffer, chunk);
   }
   if (request_buffer.size() < next_chunk_size + CRLF.size()) {
     return false;
@@ -146,7 +138,7 @@ RequestState ReceiveRequest::__chunk_loop(std::string &request_buffer) {
     }
   }
   if (__next_chunk_ == CHUNK_SIZE)
-    __check_buffer_length_exception(request_buffer, buffer_max_length_);
+    __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   return RECEIVING_BODY;
 }
 

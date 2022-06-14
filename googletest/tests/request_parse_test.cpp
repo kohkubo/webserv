@@ -55,7 +55,7 @@ TEST(request_parse_test, normal_post) {
                         "User-Agent: curl/7.68.0\r\n"
                         "Connection: close\r\n"
                         "Accept: */*\r\n"
-                        "Content-Type: application/x-www-form-urlencoded\r\n"
+                        "Content-Type: applicATION/X-WWW-FORM-URlencoded\r\n"
                         "Content-Length: 18\r\n\r\n";
 
   Config      config;

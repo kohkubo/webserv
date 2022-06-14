@@ -46,8 +46,7 @@ public:
     try {
       __last_iterator_pos_ = __parse(start, end);
     } catch (const std::exception &e) {
-      ERROR_LOG(e.what());
-      exit(EXIT_FAILURE);
+      ERROR_EXIT(e.what());
     }
   }
   ~Config();
