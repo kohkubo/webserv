@@ -50,17 +50,6 @@ static std::string error_page_body(const Location      &location,
   return g_error_page_contents_map[status_code];
 }
 
-std::string ResponseGenerator::__body(const std::string &file_path,
-                                      const RequestInfo  request_info) {
-  if (has_suffix(file_path, ".sh")) {
-    return __read_file_tostring_cgi(file_path, request_info.env_values_);
-  }
-  if (has_suffix(file_path, "/")) {
-    return __create_autoindex_body(file_path, request_info);
-  }
-  return read_file_tostring(file_path);
-}
-
 static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }

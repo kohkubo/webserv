@@ -15,9 +15,31 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-bool ResponseGenerator::__is_error_status_code(HttpStatusCode status_code) {
+static bool is_error_status_code(HttpStatusCode status_code) {
   // TODO: エラーのステータスコードの扱いを決まったら再実装
   return status_code > 299 && status_code < 600;
+}
+
+static std::string create_file_path(const std::string &request_uri,
+                                    const Location    &location) {
+  std::string file_path;
+  file_path = location.root_ + request_uri;
+  if (has_suffix(file_path, "/") &&
+      is_file_exists(file_path + location.index_)) {
+    file_path += location.index_;
+  }
+  return file_path;
+}
+
+std::string ResponseGenerator::__body(const std::string &file_path,
+                                      const RequestInfo  request_info) {
+  if (has_suffix(file_path, ".sh")) {
+    return __read_file_tostring_cgi(file_path, request_info.env_values_);
+  }
+  if (has_suffix(file_path, "/")) {
+    return __create_autoindex_body(file_path, request_info);
+  }
+  return read_file_tostring(file_path);
 }
 
 std::string
@@ -43,7 +65,7 @@ ResponseGenerator::generate_response(const Config      &config,
   if (is_minus_depth(request_info.uri_)) {
     return generate_error_response(*location, config, FORBIDDEN_403);
   }
-  std::string file_path = __file_path(request_info.uri_, *location);
+  std::string file_path = create_file_path(request_info.uri_, *location);
   if ("GET" == request_info.method_) {
     status_code = __handle_get_method(*location, file_path);
   } else if ("POST" == request_info.method_) {
@@ -54,7 +76,7 @@ ResponseGenerator::generate_response(const Config      &config,
     LOG("unknown method: " << request_info.method_);
     status_code = NOT_IMPLEMENTED_501;
   }
-  if (__is_error_status_code(status_code)) {
+  if (is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(*location, config, status_code);
   }
@@ -79,17 +101,6 @@ const Location *ResponseGenerator::__select_proper_location(
     }
   }
   return ret_location;
-}
-
-std::string ResponseGenerator::__file_path(const std::string &request_uri,
-                                           const Location    &location) {
-  std::string file_path;
-  file_path = location.root_ + request_uri;
-  if (has_suffix(file_path, "/") &&
-      is_file_exists(file_path + location.index_)) {
-    file_path += location.index_;
-  }
-  return file_path;
 }
 
 // TODO: リンクやその他のファイルシステムの時どうするか
