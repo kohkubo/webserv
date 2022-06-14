@@ -17,6 +17,11 @@ public:
   static std::string generate_bad_response() {
     return "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
   }
+  // TODO
+  // Connectionのリファクタリングが終わり次第、generate_bad_responseをgenerate_error_responseに統合します。kohkubo
+  static std::string generate_error_response(const Location &location,
+                                             const Config   &config,
+                                             HttpStatusCode  status_code);
 
 private:
   ResponseGenerator();
@@ -36,9 +41,6 @@ private:
   static bool           __is_error_status_code(HttpStatusCode status_code);
   static HttpStatusCode __check_filepath_status(const Location    &location,
                                                 const std::string &file_path);
-  static std::string    __error_page_body(const Location      &location,
-                                          const Config        &config,
-                                          const HttpStatusCode status_code);
   static std::string    __body(const std::string &file_path,
                                const RequestInfo  request_info);
   static std::string    __create_autoindex_body(const std::string &file_path,

@@ -1,5 +1,8 @@
-#include "config/Location.hpp"
 #include "http/response/ResponseGenerator.hpp"
+
+#include "config/Location.hpp"
+#include "http/const/const_error_contents.hpp"
+#include "utils/file_io_utils.hpp"
 
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
@@ -20,36 +23,82 @@ std::map<int, std::string> init_response_status_phrase_map() {
   return res;
 }
 
+std::map<int, std::string> g_error_page_contents_map = init_page_contents_map();
+
+std::map<int, std::string> init_page_contents_map() {
+  std::map<int, std::string> res;
+  res[400] = content_400;
+  res[403] = content_403;
+  res[404] = content_404;
+  res[405] = content_405;
+  res[500] = content_500;
+  res[501] = content_501;
+  res[520] = content_520;
+  return res;
+}
+
+// TODO: config.error_page validate
+static std::string error_page_body(const Location      &location,
+                                   const Config        &config,
+                                   const HttpStatusCode status_code) {
+  std::map<int, std::string>::const_iterator it =
+      config.error_pages_.find(status_code);
+  if (it != config.error_pages_.end()) {
+    std::string file_path = location.root_ + it->second;
+    return read_file_tostring(file_path);
+  }
+  return g_error_page_contents_map[status_code];
+}
+
+std::string ResponseGenerator::__body(const std::string &file_path,
+                                      const RequestInfo  request_info) {
+  if (has_suffix(file_path, ".sh")) {
+    return __read_file_tostring_cgi(file_path, request_info.env_values_);
+  }
+  if (has_suffix(file_path, "/")) {
+    return __create_autoindex_body(file_path, request_info);
+  }
+  return read_file_tostring(file_path);
+}
+
+static std::string start_line(const HttpStatusCode status_code) {
+  return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
+}
+
+static std::string general_header() { return "Connection: close" + CRLF; }
+static std::string location_header(const Location &location,
+                                   HttpStatusCode  status_code) {
+  std::map<int, std::string>::const_iterator it =
+      location.return_.find(status_code);
+  return "Location: " + it->second + CRLF;
+}
+
+static std::string entity_header_and_body(const std::string &body) {
+  return "Content-Length: " + to_string(body.size()) + CRLF +
+         "Content-Type: text/html" + CRLF + CRLF + body;
+}
+
+std::string generate_bad_response(const Location &location,
+                                  const Config   &config,
+                                  HttpStatusCode  status_code) {
+  std::string response = start_line(status_code);
+  response += general_header();
+  std::string body = error_page_body(location, config, status_code);
+  response += entity_header_and_body(body);
+  return response;
+}
+
 std::string ResponseGenerator::__response_message(HttpStatusCode status_code,
                                                   const std::string &body,
                                                   const Location    &location) {
-  std::string response;
-  bool        has_body =
-      status_code != NO_CONTENT_204 || status_code == NOT_MODIFIED_304;
-
-  // start line
-  response = "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
-
-  if (has_body) {
-    // entity_header
-    response += "Content-Length: " + to_string(body.size()) + CRLF;
-    response += "Content-Type: text/html" + CRLF;
+  std::string response = start_line(status_code);
+  response += general_header();
+  if (status_code == NO_CONTENT_204) {
+    return response;
   }
-
-  // general_header
-  response += "Connection: close" + CRLF;
   if (MOVED_PERMANENTLY_301 == status_code) {
-    std::map<int, std::string>::const_iterator it =
-        location.return_.find(status_code);
-    response += "Location: " + it->second + CRLF;
+    response += location_header(location, status_code);
   }
-
-  // empty line
-  response += CRLF;
-
-  if (has_body) {
-    // body
-    response += body;
-  }
+  response += entity_header_and_body(body);
   return response;
 };
