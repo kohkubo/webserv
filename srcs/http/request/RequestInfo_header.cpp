@@ -67,7 +67,7 @@ void RequestInfo::parse_request_header(
 }
 
 // TODO: フィールド追加
-static bool is_comma_sparated(std::string &field_name) {
+static bool is_comma_separated(std::string &field_name) {
   (void)field_name;
   // カンマ区切りが定義されたフィールドか判定する。
   // tmp
@@ -88,7 +88,7 @@ void RequestInfo::store_request_header_field_map(
   }
   const std::string field_value = trim(header_line.substr(pos + 1), OWS_);
   if (header_field_map.count(field_name) != 0u) {
-    if (is_comma_sparated(field_name)) {
+    if (is_comma_separated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
     } else {
       throw BadRequestException();
