@@ -51,13 +51,17 @@ std::string ResponseGenerator::__read_file_tostring_cgi(
     close(pipefd[WRITE_FD]);
     // cgiスクリプトを実行可能ファイルとして扱う
     char *const  argv[]         = {const_cast<char *>(path.c_str()), NULL};
+    // TODO: 現在環境変数として渡している内容はbodyとしてcgiの標準入力へ
     char *const *env_char_array = vector_to_array(env);
+    // TODO: execveの前にスクリプトのあるディレクトリに移動
+    // TODO: cgiの環境変数作成
     execve(path.c_str(), argv, env_char_array);
     delete[] env_char_array;
     exit(0);
   }
   // parent
   close(pipefd[WRITE_FD]);
+  // cgiからのレスポンスは、ヘッダー＋レスポンスbody、要パース
   std::string s = read_fd_tostring(pipefd[READ_FD]);
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {
