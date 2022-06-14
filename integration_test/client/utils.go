@@ -6,10 +6,7 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"os"
 	"time"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 // コネクションを確立, connを通して送受信できる
@@ -45,26 +42,4 @@ func readParseResponse(src io.Reader, reqMethod string) (*http.Response, error) 
 	case err := <-ch_error:
 		return nil, err
 	}
-}
-
-// レスポンスが期待するヘッダーとボディを持っているか確認
-func compareResponse(resp *http.Response, expectResp *ResponseInfo) (int, error) {
-	var diff_flag int
-	diff_checker := func(title string, x interface{}, y interface{}) {
-		if diff := cmp.Diff(x, y); diff != "" {
-			fmt.Fprintf(os.Stderr, "%s mismatch (-want +got):\n%s", title, diff)
-			diff_flag++
-		}
-	}
-	diff_checker("status", expectResp.Status, resp.Status)
-	diff_checker("status code", expectResp.StatusCode, resp.StatusCode)
-	diff_checker("proto", expectResp.Proto, resp.Proto)
-	diff_checker("header", expectResp.Header, resp.Header)
-	diff_checker("close", expectResp.Close, resp.Close)
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, fmt.Errorf("failt to read response: %v", err)
-	}
-	diff_checker("body", expectResp.Body, body)
-	return diff_flag, nil
 }
