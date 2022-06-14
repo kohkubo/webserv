@@ -58,9 +58,8 @@ ResponseGenerator::generate_response(const Config      &config,
   if (__is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(*location, config, status_code);
-  } else {
-    body = __body(file_path, request_info);
   }
+  body = __body(file_path, request_info);
   return __response_message(status_code, body, *location);
 }
 
