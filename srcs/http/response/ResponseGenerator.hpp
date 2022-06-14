@@ -17,9 +17,8 @@ public:
 private:
   ResponseGenerator();
   ~ResponseGenerator();
-  static std::string
-  __read_file_tostring_cgi(const std::string              &path,
-                           const std::vector<std::string> &env);
+  static std::string __read_file_tostring_cgi(const std::string &path,
+                                              const RequestInfo &request_info);
   static const Location                       *
   __select_proper_location(const std::string           &request_uri,
                                                  const std::vector<Location> &locations);
