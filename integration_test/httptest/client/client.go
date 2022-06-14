@@ -1,4 +1,4 @@
-package checker
+package client
 
 import (
 	"fmt"
@@ -9,22 +9,14 @@ import (
 	"time"
 )
 
-type TestInfo struct {
-	Port             string
-	ReqPayload       []string
-	ExpectStatusCode int
-	ExpectHeader     http.Header
-	ExpectBody       []byte
-}
-
-type TestInfo2 struct {
-	Port           string
-	ReqPayload     []string
-	ExpectResponse string
-}
-
-type reponseChecker interface {
+type ReponseChecker interface {
 	Do(*http.Response) (int, error)
+}
+
+type Info struct {
+	Port            string
+	ReqPayload      []string
+	ResponseChecker ReponseChecker
 }
 
 type Client struct {
@@ -32,29 +24,15 @@ type Client struct {
 	reqPayload     []string
 	conn           net.Conn
 	gotResp        *http.Response
-	reponseChecker reponseChecker
+	reponseChecker ReponseChecker
 }
 
 // constructor
-func NewClient(info TestInfo) *Client {
+func NewClient(info Info) *Client {
 	newC := &Client{}
 	newC.port = info.Port
 	newC.reqPayload = info.ReqPayload
-	newC.reponseChecker = NewResponseChecker(info)
-	conn, err := connect(newC.port)
-	if err != nil {
-		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
-	}
-	newC.conn = conn
-	return newC
-}
-
-// constructor
-func NewClient2(info TestInfo2) *Client {
-	newC := &Client{}
-	newC.port = info.Port
-	newC.reqPayload = info.ReqPayload
-	newC.reponseChecker = NewResponseChecker2(info)
+	newC.reponseChecker = info.ResponseChecker
 	conn, err := connect(newC.port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))

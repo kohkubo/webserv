@@ -1,11 +1,13 @@
 package tests
 
 import (
-	"integration_test/checker"
+	"integration_test/httptest/client"
+	"integration_test/httptest/wholetest"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 // テストの用意
@@ -16,7 +18,14 @@ var testGET = testCatergory{
 		{
 			caseName: "GET / ",
 			test: func() bool {
-				clientA := checker.NewClient2(checker.TestInfo2{
+				body := fileToBytes("../html/index.html")
+				expect := "HTTP/1.1 200 OK\r\n" +
+					"Connection: close\r\n" +
+					"Content-Length: " + strconv.Itoa(len(body)) + "\r\n" +
+					"Content-Type: text/html\r\n" +
+					"\r\n" +
+					string(body)
+				client := client.NewClient(client.Info{
 					Port: "50000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -25,14 +34,9 @@ var testGET = testCatergory{
 						`Accept: */*` + "\r\n",
 						"\r\n",
 					},
-					ExpectResponse: "HTTP/1.1 200 OK\r\n" +
-						"Connection: close\r\n" +
-						"Content-Length: 127\r\n" +
-						"Content-Type: text/html\r\n" +
-						"\r\n" +
-						fileToString("../html/index.html"),
+					ResponseChecker: wholetest.NewResponseChecker(expect),
 				})
-				return clientA.DoAndCheck()
+				return client.DoAndCheck()
 			},
 		},
 		{

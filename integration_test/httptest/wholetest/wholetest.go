@@ -1,7 +1,8 @@
-package checker
+package wholetest
 
 import (
 	"fmt"
+	"integration_test/httptest/client"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -9,23 +10,20 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// "Connection"フィールドに関しては,
-// http.ResponseではCloseというメンバーに設定されていたので
-// TestInfoのHeader mapからConnectionだけ判定して, mapから削除
-func NewResponseChecker2(info TestInfo2) reponseChecker {
-	newResp := &Response2{}
-	newResp.message = info.ExpectResponse
+func NewResponseChecker(message string) client.ReponseChecker {
+	newResp := &Checker{}
+	newResp.message = message
 	return newResp
 }
 
 // 必要に応じてチェック項目(メンバー変数)を追加する
 // http.Response参照
-type Response2 struct {
+type Checker struct {
 	message string
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func (r Response2) Do(got *http.Response) (int, error) {
+func (c Checker) Do(got *http.Response) (int, error) {
 	var diff_flag int
 	diff_checker := func(title string, x interface{}, y interface{}) {
 		if diff := cmp.Diff(x, y); diff != "" {
@@ -33,10 +31,10 @@ func (r Response2) Do(got *http.Response) (int, error) {
 			diff_flag++
 		}
 	}
-	s, err := httputil.DumpResponse(got, true)
+	gotMessage, err := httputil.DumpResponse(got, true)
 	if err != nil {
 		return 0, err
 	}
-	diff_checker("message", r.message, string(s))
+	diff_checker("message", c.message, string(gotMessage))
 	return diff_flag, nil
 }
