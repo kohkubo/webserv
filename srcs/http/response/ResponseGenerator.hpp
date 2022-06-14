@@ -33,13 +33,6 @@ private:
   static HttpStatusCode __handle_method(const Location    &location,
                                         const RequestInfo &request_info,
                                         const std::string &file_path);
-  static HttpStatusCode __handle_post_method(const Location    &location,
-                                             const std::string &file_path);
-  static HttpStatusCode __handle_get_method(const Location    &location,
-                                            const std::string &file_path);
-  static HttpStatusCode __handle_delete_method(const Location    &location,
-                                               const RequestInfo &request_info,
-                                               const std::string &file_path);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
