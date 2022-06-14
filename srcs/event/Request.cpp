@@ -5,6 +5,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "utils/utils.hpp"
 
 // TODO: ステータスコードに合わせたレスポンスを生成
 void Request::__set_response_for_bad_request() {
@@ -24,7 +25,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
   try {
     if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
-      while (__getline(request_buffer, line)) { // noexcept
+      while (getline(request_buffer, line)) { // noexcept
         if (__state_ == RECEIVING_STARTLINE) {
           __request_info_.check_first_multi_blank_line(line);
           // throws BadRequestException
@@ -91,15 +92,6 @@ RequestState Request::handle_request(std::string     &request_buffer,
   return __state_;
 }
 
-bool Request::__getline(std::string &request_buffer, std::string &line) {
-  std::size_t pos = request_buffer.find(CRLF);
-  if (pos == std::string::npos)
-    return false;
-  line = request_buffer.substr(0, pos);
-  request_buffer.erase(0, pos + 2);
-  return true;
-}
-
 std::string Request::__cutout_request_body(std::string &request_buffer,
                                            size_t       content_length) {
   std::string request_body = request_buffer.substr(0, content_length);
@@ -112,7 +104,7 @@ bool Request::__get_next_chunk_line(NextChunkType chunk_type,
                                     std::string  &chunk,
                                     size_t        next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
-    return __getline(request_buffer, chunk);
+    return getline(request_buffer, chunk);
   }
   if (request_buffer.size() < next_chunk_size + CRLF.size()) {
     return false;
