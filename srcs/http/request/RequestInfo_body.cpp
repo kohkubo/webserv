@@ -116,11 +116,11 @@ void RequestInfo::__parse_form_header(const std::string  line,
     throw BadRequestException();
   }
   const std::string field_value = trim(line.substr(pos + 1), OWS_);
-  if (field_name == "Content-Disposition" &&
-      form.content_disposition_.type_ == "") {
+  // TODO: 既にformが指定されていると上書きされる rakiyama
+  if (field_name == "Content-Disposition") {
     form.content_disposition_ = __parse_content_info(field_value);
   }
-  if (field_name == "Content-Type" && form.content_type_.type_ == "") {
+  if (field_name == "Content-Type") {
     form.content_type_ = __parse_content_info(field_value);
   }
 }
