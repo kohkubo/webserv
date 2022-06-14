@@ -10,11 +10,11 @@ import (
 )
 
 type Client struct {
-	Port       string
-	ReqPayload []string
+	port       string
+	reqPayload []string
 	conn       net.Conn
 	method     string
-	resp       *http.Response
+	gotResp    *http.Response
 	expectResp *ResponseInfo
 }
 
@@ -40,15 +40,15 @@ type TestInfo struct {
 // constructor
 func NewClient(info TestInfo) *Client {
 	newC := &Client{}
-	newC.Port = info.Port
-	newC.ReqPayload = info.ReqPayload
+	newC.port = info.Port
+	newC.reqPayload = info.ReqPayload
 	newC.expectResp = NewResponseInfo(info)
-	conn, err := connect(newC.Port)
+	conn, err := connect(newC.port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
 	newC.conn = conn
-	newC.method = resolveMethod(newC.ReqPayload)
+	newC.method = resolveMethod(newC.reqPayload)
 	return newC
 }
 
@@ -84,20 +84,20 @@ func resolveMethod(reqPayload []string) string {
 
 // リクエスト送信
 func (c *Client) SendRequest() {
-	for _, r := range c.ReqPayload {
+	for _, r := range c.reqPayload {
 		_, err := fmt.Fprintf(c.conn, r)
 		if err != nil {
 			webserv.ExitWithKill(fmt.Errorf("sendRequest: %v", err))
 		}
 	}
-	c.ReqPayload = nil
+	c.reqPayload = nil
 }
 
 // 先頭のReqPayloadのみ送信
 func (c *Client) SendPartialRequest() {
-	if len(c.ReqPayload) != 0 {
-		r := c.ReqPayload[0]
-		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除したものに更新
+	if len(c.reqPayload) != 0 {
+		r := c.reqPayload[0]
+		c.reqPayload = c.reqPayload[1:] // 最初の要素を削除したものに更新
 		_, err := fmt.Fprintf(c.conn, r)
 		time.Sleep(1 * time.Millisecond) // 連続で使用された場合にリクエストが分かれるように
 		if err != nil {
@@ -108,24 +108,24 @@ func (c *Client) SendPartialRequest() {
 
 // レスポンスを受ける
 func (c *Client) RecvResponse() {
-	if len(c.ReqPayload) != 0 {
+	if len(c.reqPayload) != 0 {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: ReqPayload is not empty!"))
 	}
 	resp, err := readParseResponse(c.conn, c.method)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: %v", err))
 	}
-	c.resp = resp
+	c.gotResp = resp
 	c.conn.Close()
 }
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() bool {
-	result, err := compareResponse(c.resp, c.expectResp)
+	result, err := compareResponse(c.gotResp, c.expectResp)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
 	}
-	c.resp.Body.Close()
+	c.gotResp.Body.Close()
 	return result == 0
 }
 
