@@ -74,29 +74,3 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(r.connection_close_, true);
   EXPECT_EQ(r.content_length_, static_cast<std::size_t>(18));
 }
-
-TEST(request_parse_test, query_body) {
-  std::string request = "POST /target HTTP/1.1\r\n"
-                        "Host: 127.0.0.1:50001\r\n"
-                        "Content-Type: AppliCation/x-WWW-form-URLENCODED\r\n"
-                        "Content-Length: 45\r\n\r\n"
-                        "I'm=going"
-                        "&to=become"
-                        "&the=king"
-                        "&of=the"
-                        "&pirates!!";
-
-  Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Request transaction;
-
-  transaction.handle_request(request, conf_group);
-  const RequestInfo &info = transaction.request_info();
-  EXPECT_EQ(info.env_values_[0], "I'm=going");
-  EXPECT_EQ(info.env_values_[1], "to=become");
-  EXPECT_EQ(info.env_values_[2], "the=king");
-  EXPECT_EQ(info.env_values_[3], "of=the");
-  EXPECT_EQ(info.env_values_[4], "pirates!!");
-  // 今は"hoge=huga"の形でなくてもバリデートしてない
-}
