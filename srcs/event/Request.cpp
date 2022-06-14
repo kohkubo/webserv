@@ -19,6 +19,17 @@ void Request::__set_response_for_bad_request() {
   __request_info_.connection_close_ = true;
 }
 
+static const Config *select_proper_config(const confGroup   &conf_group,
+                                          const std::string &host_name) {
+  confGroup::const_iterator it = conf_group.begin();
+  for (; it != conf_group.end(); it++) {
+    if ((*it)->server_name_ == host_name) {
+      return *it;
+    }
+  }
+  return conf_group[0];
+}
+
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState Request::handle_request(std::string     &request_buffer,
                                      const confGroup &conf_group) {
@@ -44,7 +55,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
           }
           __request_info_.parse_request_header(__field_map_);
           // throws BadRequestException
-          __config_ = __select_proper_config(conf_group, __request_info_.host_);
+          __config_ = select_proper_config(conf_group, __request_info_.host_);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
@@ -116,17 +127,6 @@ bool Request::__get_next_chunk_line(NextChunkType chunk_type,
   }
   request_buffer.erase(0, CRLF.size());
   return true;
-}
-
-const Config *Request::__select_proper_config(const confGroup   &conf_group,
-                                              const std::string &host_name) {
-  confGroup::const_iterator it = conf_group.begin();
-  for (; it != conf_group.end(); it++) {
-    if ((*it)->server_name_ == host_name) {
-      return *it;
-    }
-  }
-  return conf_group[0];
 }
 
 RequestState Request::__chunk_loop(std::string &request_buffer) {

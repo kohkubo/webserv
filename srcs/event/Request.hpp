@@ -47,8 +47,6 @@ private:
                                          std::size_t max_body_size);
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  static const Config *__select_proper_config(const confGroup   &conf_group,
-                                              const std::string &host_name);
   // TODO: 命名変える
   void                 __set_response_for_bad_request();
 
