@@ -23,9 +23,6 @@ private:
   static std::string
                         __read_file_tostring_cgi(const std::string              &path,
                                                  const std::vector<std::string> &env);
-  static std::string    __response_message(HttpStatusCode     status_code,
-                                           const std::string &body,
-                                           const Location    &location);
   static std::string    __body(const std::string &file_path,
                                const RequestInfo &request_info);
   static std::string    __create_autoindex_body(const std::string &file_path,
