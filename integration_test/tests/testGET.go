@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"integration_test/client"
+	"integration_test/checker"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
@@ -16,7 +16,7 @@ var testGET = testCatergory{
 		{
 			caseName: "GET / ",
 			test: func() bool {
-				clientA := client.NewClient2(client.TestInfo2{
+				clientA := checker.NewClient2(checker.TestInfo2{
 					Port: "50000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
