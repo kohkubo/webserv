@@ -41,13 +41,13 @@ std::map<int, std::string> g_error_page_contents_map = init_page_contents_map();
 static std::string         error_page_body(const Location      &location,
                                            const Config        &config,
                                            const HttpStatusCode status_code) {
-  std::map<int, std::string>::const_iterator it =
-      config.error_pages_.find(status_code);
-  if (it != config.error_pages_.end()) {
-    std::string file_path = location.root_ + it->second;
-    return read_file_tostring(file_path);
+          std::map<int, std::string>::const_iterator it =
+              config.error_pages_.find(status_code);
+          if (it != config.error_pages_.end()) {
+            std::string file_path = location.root_ + it->second;
+            return read_file_tostring(file_path);
   }
-  return g_error_page_contents_map[status_code];
+          return g_error_page_contents_map[status_code];
 }
 
 static std::string start_line(const HttpStatusCode status_code) {
@@ -72,6 +72,9 @@ std::string generate_error_response(const Location &location,
                                     HttpStatusCode  status_code) {
   std::string response = start_line(status_code);
   response += general_header();
+  if (BAD_REQUEST_400 == status_code) {
+    return response;
+  }
   std::string body = error_page_body(location, config, status_code);
   response += entity_header_and_body(body);
   return response;

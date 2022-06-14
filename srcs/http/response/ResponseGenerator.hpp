@@ -13,12 +13,6 @@ class ResponseGenerator {
 public:
   static std::string generate_response(const Config      &config,
                                        const RequestInfo &request_info);
-  // TODO 仮の名前 kohkubo
-  static std::string generate_bad_response() {
-    return "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  }
-  // TODO
-  // Connectionのリファクタリングが終わり次第、generate_bad_responseをgenerate_error_responseに統合します。kohkubo
   static std::string generate_error_response(const Location &location,
                                              const Config   &config,
                                              HttpStatusCode  status_code);
