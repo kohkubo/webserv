@@ -1,4 +1,4 @@
-package separatetest
+package separatecheck
 
 import (
 	"fmt"

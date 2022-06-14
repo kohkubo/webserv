@@ -1,4 +1,4 @@
-package wholetest
+package wholecheck
 
 import (
 	"fmt"

@@ -2,7 +2,7 @@ package tests
 
 import (
 	"integration_test/httptest/client"
-	"integration_test/httptest/wholetest"
+	"integration_test/httptest/wholecheck"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
@@ -34,7 +34,7 @@ var testGET = testCatergory{
 						`Accept: */*` + "\r\n",
 						"\r\n",
 					},
-					ResponseChecker: wholetest.NewResponseChecker(expect),
+					ResponseChecker: wholecheck.NewResponseChecker(expect),
 				})
 				return client.DoAndCheck()
 			},
