@@ -15,7 +15,7 @@ public:
                                        const RequestInfo &request_info);
   // TODO 仮の名前 kohkubo
   static std::string generate_bad_response() {
-    return "HTTP/1.1 400 Bad ReceiveRequest\r\nconnection: close\r\n\r\n";
+    return "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
   }
 
 private:

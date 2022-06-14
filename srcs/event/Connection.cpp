@@ -19,7 +19,7 @@ void Connection::create_sequential_transaction() {
       break;
     }
     __response_queue_.push_back(__receive_request_.create_response());
-    __receive_request_ = ReceiveRequest();
+    __receive_request_ = Request();
   }
   __last_event_time_ = __time_now();
 }

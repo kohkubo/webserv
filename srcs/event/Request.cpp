@@ -1,4 +1,4 @@
-#include "event/ReceiveRequest.hpp"
+#include "event/Request.hpp"
 
 #include <sys/socket.h>
 
@@ -8,8 +8,8 @@
 #include "utils/utils.hpp"
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
-                                            const confGroup &conf_group) {
+RequestState Request::handle_request(std::string     &request_buffer,
+                                     const confGroup &conf_group) {
   try {
     if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
       std::string line;
@@ -82,17 +82,17 @@ RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
   return __state_;
 }
 
-std::string ReceiveRequest::__cutout_request_body(std::string &request_buffer,
-                                                  size_t       content_length) {
+std::string Request::__cutout_request_body(std::string &request_buffer,
+                                           size_t       content_length) {
   std::string request_body = request_buffer.substr(0, content_length);
   request_buffer.erase(0, content_length);
   return request_body;
 }
 
-bool ReceiveRequest::__get_next_chunk_line(NextChunkType chunk_type,
-                                           std::string  &request_buffer,
-                                           std::string  &chunk,
-                                           size_t        next_chunk_size) {
+bool Request::__get_next_chunk_line(NextChunkType chunk_type,
+                                    std::string  &request_buffer,
+                                    std::string  &chunk,
+                                    size_t        next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
     return getline(request_buffer, chunk);
   }
@@ -108,9 +108,8 @@ bool ReceiveRequest::__get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-const Config *
-ReceiveRequest::__select_proper_config(const confGroup   &conf_group,
-                                       const std::string &host_name) {
+const Config *Request::__select_proper_config(const confGroup   &conf_group,
+                                              const std::string &host_name) {
   confGroup::const_iterator it = conf_group.begin();
   for (; it != conf_group.end(); it++) {
     if ((*it)->server_name_ == host_name) {
@@ -120,7 +119,7 @@ ReceiveRequest::__select_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
-RequestState ReceiveRequest::__chunk_loop(std::string &request_buffer) {
+RequestState Request::__chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
   while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
                                __next_chunk_size_)) {
@@ -142,15 +141,15 @@ RequestState ReceiveRequest::__chunk_loop(std::string &request_buffer) {
   return RECEIVING_BODY;
 }
 
-void ReceiveRequest::__check_max_client_body_size_exception(
+void Request::__check_max_client_body_size_exception(
     std::size_t actual_body_size, std::size_t max_body_size) {
   if (actual_body_size > max_body_size) {
     throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
   }
 }
 
-void ReceiveRequest::__check_buffer_length_exception(
-    std::string &request_buffer, std::size_t buffer_max_length) {
+void Request::__check_buffer_length_exception(std::string &request_buffer,
+                                              std::size_t  buffer_max_length) {
   if (request_buffer.size() >= buffer_max_length) {
     request_buffer.clear();
     throw RequestInfo::BadRequestException();

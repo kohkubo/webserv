@@ -6,7 +6,7 @@
 #include <string>
 
 #include "config/Config.hpp"
-#include "event/SendResponse.hpp"
+#include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 
@@ -23,7 +23,7 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 // TODO: string -> vector<char>
 
-struct ReceiveRequest {
+struct Request {
 private:
   const Config                      *__config_;
   RequestState                       __state_;
@@ -51,7 +51,7 @@ private:
                                               const std::string &host_name);
 
 public:
-  ReceiveRequest()
+  Request()
       : __config_(NULL)
       , __state_(RECEIVING_STARTLINE)
       , __next_chunk_(CHUNK_SIZE)
@@ -61,10 +61,10 @@ public:
   const RequestInfo &request_info() const { return __request_info_; }
   RequestState       handle_request(std::string     &request_buffer,
                                     const confGroup &conf_group);
-  SendResponse       create_response() {
-    // TODO: is_close判定
+  Response           create_response() {
+              // TODO: is_close判定
     // エラー || Connection: close -> true
-    return SendResponse(__response_, __request_info_.connection_close_);
+    return Response(__response_, __request_info_.connection_close_);
   }
 };
 

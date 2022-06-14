@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "event/ReceiveRequest.hpp"
+#include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_parse_test, normal) {
@@ -15,7 +15,7 @@ TEST(request_parse_test, normal) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  ReceiveRequest transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -37,7 +37,7 @@ TEST(request_parse_test, normal_delete) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  ReceiveRequest transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -61,7 +61,7 @@ TEST(request_parse_test, normal_post) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  ReceiveRequest transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &r = transaction.request_info();
@@ -89,7 +89,7 @@ TEST(request_parse_test, query_body) {
   Config      config;
   confGroup   conf_group;
   conf_group.push_back(&config);
-  ReceiveRequest transaction;
+  Request transaction;
 
   transaction.handle_request(request, conf_group);
   const RequestInfo &info = transaction.request_info();

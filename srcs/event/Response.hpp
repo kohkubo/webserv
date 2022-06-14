@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_RESPONSE_HPP
-#define SRCS_EVENT_RESPONSE_HPP
+#ifndef SRCS_EVENT_Response_HPP
+#define SRCS_EVENT_Response_HPP
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -14,7 +14,7 @@ enum ResponseState {
   COMPLETE,
 };
 
-class SendResponse {
+class Response {
 private:
   ResponseState __state_;
   std::string   __response_;
@@ -27,12 +27,12 @@ private:
   }
 
 public:
-  SendResponse(std::string response_message, bool is_close)
+  Response(std::string response_message, bool is_close)
       : __state_(SENDING)
       , __response_(response_message)
       , __is_last_response_(is_close)
       , __send_count_(0) {}
-  ~SendResponse() {}
+  ~Response() {}
 
   bool          is_sending() const { return __state_ == SENDING; }
   ResponseState send(connFd conn_fd) {
@@ -49,4 +49,4 @@ public:
   }
 };
 
-#endif /* SRCS_EVENT_RESPONSE_HPP */
+#endif /* SRCS_EVENT_Response_HPP */
