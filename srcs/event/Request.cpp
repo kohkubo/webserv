@@ -18,6 +18,13 @@ static const Config *select_proper_config(const confGroup   &conf_group,
   return conf_group[0];
 }
 
+static std::string cutout_request_body(std::string &request_buffer,
+                                       size_t       content_length) {
+  std::string request_body = request_buffer.substr(0, content_length);
+  request_buffer.erase(0, content_length);
+  return request_body;
+}
+
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState Request::handle_request(std::string     &request_buffer,
                                      const confGroup &conf_group) {
@@ -69,9 +76,9 @@ RequestState Request::handle_request(std::string     &request_buffer,
             __request_body_.size(), __config_->client_max_body_size_);
         // throws BadRequestException
       } else if (request_buffer.size() >= __request_info_.content_length_) {
-        __request_body_ = __cutout_request_body(
-            request_buffer, __request_info_.content_length_);
-        __state_ = SUCCESS;
+        __request_body_ = cutout_request_body(request_buffer,
+                                              __request_info_.content_length_);
+        __state_        = SUCCESS;
       }
       if (__state_ == SUCCESS) {
         __request_info_.parse_request_body(__request_body_,
@@ -94,17 +101,9 @@ RequestState Request::handle_request(std::string     &request_buffer,
   return __state_;
 }
 
-std::string Request::__cutout_request_body(std::string &request_buffer,
-                                           size_t       content_length) {
-  std::string request_body = request_buffer.substr(0, content_length);
-  request_buffer.erase(0, content_length);
-  return request_body;
-}
-
-bool Request::__get_next_chunk_line(NextChunkType chunk_type,
-                                    std::string  &request_buffer,
-                                    std::string  &chunk,
-                                    size_t        next_chunk_size) {
+static bool get_next_chunk_line(NextChunkType chunk_type,
+                                std::string &request_buffer, std::string &chunk,
+                                size_t next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
     return getline(request_buffer, chunk);
   }
@@ -122,8 +121,8 @@ bool Request::__get_next_chunk_line(NextChunkType chunk_type,
 
 RequestState Request::__chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
-  while (__get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
-                               __next_chunk_size_)) {
+  while (get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
+                             __next_chunk_size_)) {
     if (__next_chunk_ == CHUNK_SIZE) {
       // TODO: validate chunk_line
       __next_chunk_size_ = hexstr_to_size(chunk_line);

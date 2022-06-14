@@ -36,12 +36,7 @@ private:
   static const std::size_t           BUFFER_MAX_LENGTH_ = 8192;
 
 private:
-  static std::string __cutout_request_body(std::string &request_buffer,
-                                           size_t       content_length);
-  static bool        __get_next_chunk_line(NextChunkType chunk_type,
-                                           std::string  &request_buffer,
-                                           std::string &chunk, size_t next_chunk_size);
-  RequestState       __chunk_loop(std::string &request_buffer);
+  RequestState __chunk_loop(std::string &request_buffer);
   static void
   __check_max_client_body_size_exception(std::size_t actual_body_size,
                                          std::size_t max_body_size);
@@ -60,7 +55,7 @@ public:
   RequestState       handle_request(std::string     &request_buffer,
                                     const confGroup &conf_group);
   Response           create_response() {
-    // TODO: is_close判定
+              // TODO: is_close判定
     // エラー || Connection: close -> true
     return Response(__response_, __request_info_.connection_close_);
   }
