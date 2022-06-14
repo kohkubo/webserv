@@ -11,10 +11,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-type reponseChecker interface {
-	Do(*http.Response) (int, error)
-}
-
 // "Connection"フィールドに関しては,
 // http.ResponseではCloseというメンバーに設定されていたので
 // TestInfoのHeader mapからConnectionだけ判定して, mapから削除

@@ -17,6 +17,16 @@ type TestInfo struct {
 	ExpectBody       []byte
 }
 
+type TestInfo2 struct {
+	Port           string
+	ReqPayload     []string
+	ExpectResponse string
+}
+
+type reponseChecker interface {
+	Do(*http.Response) (int, error)
+}
+
 type Client struct {
 	port           string
 	reqPayload     []string
@@ -31,6 +41,20 @@ func NewClient(info TestInfo) *Client {
 	newC.port = info.Port
 	newC.reqPayload = info.ReqPayload
 	newC.reponseChecker = NewResponseChecker(info)
+	conn, err := connect(newC.port)
+	if err != nil {
+		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
+	}
+	newC.conn = conn
+	return newC
+}
+
+// constructor
+func NewClient2(info TestInfo2) *Client {
+	newC := &Client{}
+	newC.port = info.Port
+	newC.reqPayload = info.ReqPayload
+	newC.reponseChecker = NewResponseChecker2(info)
 	conn, err := connect(newC.port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))

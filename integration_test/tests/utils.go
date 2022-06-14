@@ -20,3 +20,17 @@ func fileToBytes(fileName string) []byte {
 	}
 	return srcBytes
 }
+
+// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
+func fileToString(fileName string) string {
+	file, err := os.Open(fileName)
+	if err != nil {
+		webserv.ExitWithKill(fmt.Errorf("FileBytes: %v", err))
+	}
+	defer file.Close()
+	srcBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		webserv.ExitWithKill(fmt.Errorf("FileBytes: %v", err))
+	}
+	return string(srcBytes)
+}

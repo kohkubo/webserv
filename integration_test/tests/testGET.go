@@ -16,7 +16,7 @@ var testGET = testCatergory{
 		{
 			caseName: "GET / ",
 			test: func() bool {
-				clientA := client.NewClient(client.TestInfo{
+				clientA := client.NewClient2(client.TestInfo2{
 					Port: "50000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -25,13 +25,12 @@ var testGET = testCatergory{
 						`Accept: */*` + "\r\n",
 						"\r\n",
 					},
-					ExpectStatusCode: 200,
-					ExpectHeader: http.Header{
-						"Content-Length": []string{"127"},
-						"Content-Type":   []string{"text/html"},
-						"Connection":     []string{"close"},
-					},
-					ExpectBody: fileToBytes("../html/index.html"),
+					ExpectResponse: "HTTP/1.1 200 OK\r\n" +
+						"Connection: close\r\n" +
+						"Content-Length: 127\r\n" +
+						"Content-Type: text/html\r\n" +
+						"\r\n" +
+						fileToString("../html/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},
