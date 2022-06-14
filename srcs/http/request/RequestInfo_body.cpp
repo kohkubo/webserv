@@ -8,10 +8,23 @@
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
+// rakiyama
+//  TODO: =があるかなどのバリデート必要か rakiyama
+//  TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
+static RequestInfo::envValues
+parse_request_env_values(const std::string &request_body) {
+  RequestInfo::envValues res;
+  tokenVector            tokens = tokenize(request_body, "&", "&");
+  for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
+    res.push_back(*it);
+  }
+  return res;
+}
+
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const ContentInfo &content_type) {
   if (content_type.type_ == "application/x-www-form-urlencoded") {
-    env_values_ = __parse_request_env_values(request_body);
+    env_values_ = parse_request_env_values(request_body);
   } else if (content_type.type_ == "multipart/form-data") {
     form_map_ = __parse_request_multi_part(request_body, content_type);
   } else if (content_type.type_ == "text/plain") {
@@ -20,19 +33,6 @@ void RequestInfo::parse_request_body(std::string       &request_body,
     ERROR_LOG("unknown content-type:" + content_type.type_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
   }
-}
-
-// rakiyama
-//  TODO: =があるかなどのバリデート必要か rakiyama
-//  TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
-RequestInfo::envValues
-RequestInfo::__parse_request_env_values(const std::string &request_body) {
-  RequestInfo::envValues res;
-  tokenVector            tokens = tokenize(request_body, "&", "&");
-  for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
-    res.push_back(*it);
-  }
-  return res;
 }
 
 // rakiyama
@@ -60,6 +60,21 @@ RequestInfo::__parse_request_multi_part(const std::string &request_body,
   return form_map;
 }
 
+static void add_form_to_form_map(RequestInfo::formMap    &form_map,
+                                 const RequestInfo::Form &form) {
+  if (form.content_disposition_.type_ != "form-data") {
+    ERROR_LOG("multi part header: type must be form-data");
+    throw RequestInfo::BadRequestException();
+  }
+  std::map<std::string, std::string>::const_iterator it =
+      form.content_disposition_.parameter_.find("name");
+  if (it == form.content_disposition_.parameter_.end()) {
+    ERROR_LOG("multi part header: missing name");
+    throw RequestInfo::BadRequestException();
+  }
+  form_map.insert(std::make_pair(it->second, form));
+}
+
 RequestInfo::formMap
 RequestInfo::__parse_multi_part_loop(std::string        body,
                                      const std::string &boudary_specified) {
@@ -77,14 +92,14 @@ RequestInfo::__parse_multi_part_loop(std::string        body,
   while (getline(body, line)) {
     if (line == boundary) {
       if (state != BEGINNING) {
-        __add_form_to_form_map(form_map, form);
+        add_form_to_form_map(form_map, form);
       }
       form  = Form();
       state = HEADER;
       continue;
     }
     if (line == end) {
-      __add_form_to_form_map(form_map, form);
+      add_form_to_form_map(form_map, form);
       break;
     }
     if (line == "") {
@@ -123,18 +138,4 @@ void RequestInfo::__parse_form_header(const std::string  line,
   if (field_name == "Content-Type") {
     form.content_type_ = __parse_content_info(field_value);
   }
-}
-
-void RequestInfo::__add_form_to_form_map(formMap &form_map, const Form &form) {
-  if (form.content_disposition_.type_ != "form-data") {
-    ERROR_LOG("multi part header: type must be form-data");
-    throw BadRequestException();
-  }
-  std::map<std::string, std::string>::const_iterator it =
-      form.content_disposition_.parameter_.find("name");
-  if (it == form.content_disposition_.parameter_.end()) {
-    ERROR_LOG("multi part header: missing name");
-    throw RequestInfo::BadRequestException();
-  }
-  form_map.insert(std::make_pair(it->second, form));
 }

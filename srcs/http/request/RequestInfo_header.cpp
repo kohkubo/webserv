@@ -10,10 +10,35 @@
 
 const std::string RequestInfo::OWS_ = " \t";
 
+// TODO: Transfer-Encodingはカンマ区切りのフィールド
+static bool
+parse_request_transfer_encoding(const std::string &transfer_encoding) {
+  return transfer_encoding == "chunked";
+}
+
+// TODO: hostとportで分ける必要あるか確認
+static std::string parse_request_host(const std::string &host_line) {
+  std::size_t pos = host_line.find(':');
+  if (pos == std::string::npos) {
+    return host_line;
+  }
+  return host_line.substr(0, pos);
+}
+
+static bool parse_request_connection(const std::string &connection) {
+  // TODO: tolower ってことは cLoseとかもあり? kohkubo
+  return tolower(connection) == "close";
+}
+
+static size_t parse_request_content_length(const std::string &content_length) {
+  // TODO: atoiのエラー処理
+  return atoi(content_length.c_str());
+}
+
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースが終了 true。エラー→例外
-void              RequestInfo::parse_request_header(
-                 const std::map<std::string, std::string> &header_field_map) {
+void RequestInfo::parse_request_header(
+    const std::map<std::string, std::string> &header_field_map) {
   // call each field's parser
   std::map<std::string, std::string>::const_iterator itr;
   itr = header_field_map.find("Host");
@@ -22,23 +47,31 @@ void              RequestInfo::parse_request_header(
     // この例外処理、header_field_mapを格納し終わった後にすれば、header_field_mapをメンバ変数として持たなくて良い気がする
     throw BadRequestException(BAD_REQUEST_400, "Host field is not found.");
   }
-  host_ = __parse_request_host(itr->second);
+  host_ = parse_request_host(itr->second);
   itr   = header_field_map.find("Connection");
   if (itr != header_field_map.end()) {
-    connection_close_ = __parse_request_connection(itr->second);
+    connection_close_ = parse_request_connection(itr->second);
   }
   itr = header_field_map.find("Content-Length");
   if (itr != header_field_map.end()) {
-    content_length_ = __parse_request_content_length(itr->second);
+    content_length_ = parse_request_content_length(itr->second);
   }
   itr = header_field_map.find("Transfer-Encoding");
   if (itr != header_field_map.end()) {
-    is_chunked_ = __parse_request_transfer_encoding(itr->second);
+    is_chunked_ = parse_request_transfer_encoding(itr->second);
   }
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
     content_type_ = __parse_content_info(itr->second);
   }
+}
+
+// TODO: フィールド追加
+static bool is_comma_sparated(std::string &field_name) {
+  (void)field_name;
+  // カンマ区切りが定義されたフィールドか判定する。
+  // tmp
+  return false;
 }
 
 void RequestInfo::store_request_header_field_map(
@@ -55,7 +88,7 @@ void RequestInfo::store_request_header_field_map(
   }
   const std::string field_value = trim(header_line.substr(pos + 1), OWS_);
   if (header_field_map.count(field_name) != 0u) {
-    if (__is_comma_sparated(field_name)) {
+    if (is_comma_sparated(field_name)) {
       header_field_map[field_name] += ", " + field_value;
     } else {
       throw BadRequestException();
@@ -63,32 +96,6 @@ void RequestInfo::store_request_header_field_map(
   } else {
     header_field_map[field_name] = field_value;
   }
-}
-
-// TODO: hostとportで分ける必要あるか確認
-std::string RequestInfo::__parse_request_host(const std::string &host_line) {
-  std::size_t pos = host_line.find(':');
-  if (pos == std::string::npos) {
-    return host_line;
-  }
-  return host_line.substr(0, pos);
-}
-
-bool RequestInfo::__parse_request_connection(const std::string &connection) {
-  // TODO: tolower ってことは cLoseとかもあり? kohkubo
-  return tolower(connection) == "close";
-}
-
-size_t
-RequestInfo::__parse_request_content_length(const std::string &content_length) {
-  // TODO: atoiのエラー処理
-  return atoi(content_length.c_str());
-}
-
-// TODO: Transfer-Encodingはカンマ区切りのフィールド
-bool RequestInfo::__parse_request_transfer_encoding(
-    const std::string &transfer_encoding) {
-  return transfer_encoding == "chunked";
 }
 
 // content-typeのparameter(key=value)のvalueについて切り出す関数
@@ -135,7 +142,6 @@ RequestInfo::__parse_content_info(const std::string &content) {
       std::string key     = tolower(str.substr(0, equal_pos));
       std::string value   = cutout_parameter_value(str.substr(equal_pos + 1));
       res.parameter_[key] = value;
-      
     }
   }
   return res;
