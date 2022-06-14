@@ -72,9 +72,6 @@ std::string ResponseGenerator::generate_error_response(const Location &location,
                                     HttpStatusCode  status_code) {
   std::string response = start_line(status_code);
   response += general_header();
-  if (BAD_REQUEST_400 == status_code) {
-    return response;
-  }
   std::string body = error_page_body(location, config, status_code);
   response += entity_header_and_body(body);
   return response;
@@ -86,7 +83,7 @@ std::string ResponseGenerator::__response_message(HttpStatusCode status_code,
   std::string response = start_line(status_code);
   response += general_header();
   if (status_code == NO_CONTENT_204) {
-    return response;
+    return response + CRLF;
   }
   if (MOVED_PERMANENTLY_301 == status_code) {
     response += location_header(location, status_code);
