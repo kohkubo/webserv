@@ -36,7 +36,6 @@ private:
   static const std::size_t           BUFFER_MAX_LENGTH_ = 8192;
 
 private:
-  static bool        __getline(std::string &request_buffer, std::string &line);
   static std::string __cutout_request_body(std::string &request_buffer,
                                            size_t       content_length);
   static bool        __get_next_chunk_line(NextChunkType chunk_type,
