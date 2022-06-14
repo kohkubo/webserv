@@ -42,6 +42,26 @@ std::string ResponseGenerator::__body(const std::string &file_path,
   return read_file_tostring(file_path);
 }
 
+// 最長マッチ
+static const Location *
+select_proper_location(const std::string           &request_uri,
+                       const std::vector<Location> &locations) {
+  // clang-format off
+  std::string     path;
+  const Location *ret_location = NULL;
+  // clang-format on
+  std::vector<Location>::const_iterator it = locations.begin();
+  for (; it != locations.end(); ++it) {
+    if (request_uri.find(it->location_path_) == 0) {
+      if (path.size() < it->location_path_.size()) {
+        path         = it->location_path_;
+        ret_location = &(*it);
+      }
+    }
+  }
+  return ret_location;
+}
+
 std::string
 ResponseGenerator::generate_response(const Config      &config,
                                      const RequestInfo &request_info) {
@@ -51,7 +71,7 @@ ResponseGenerator::generate_response(const Config      &config,
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   const Location *location =
-      __select_proper_location(request_info.uri_, config.locations_);
+      select_proper_location(request_info.uri_, config.locations_);
   if (location == NULL) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     return generate_error_response(Location(), config, NOT_FOUND_404);
@@ -73,23 +93,4 @@ ResponseGenerator::generate_response(const Config      &config,
   }
   return __response_message(status_code, __body(file_path, request_info),
                             *location);
-}
-
-// 最長マッチ
-const Location *ResponseGenerator::__select_proper_location(
-    const std::string &request_uri, const std::vector<Location> &locations) {
-  // clang-format off
-  std::string     path;
-  const Location *ret_location = NULL;
-  // clang-format on
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); ++it) {
-    if (request_uri.find(it->location_path_) == 0) {
-      if (path.size() < it->location_path_.size()) {
-        path         = it->location_path_;
-        ret_location = &(*it);
-      }
-    }
-  }
-  return ret_location;
 }

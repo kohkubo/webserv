@@ -23,10 +23,6 @@ private:
   static std::string
   __read_file_tostring_cgi(const std::string              &path,
                            const std::vector<std::string> &env);
-  static const Location                       *
-  __select_proper_location(const std::string           &request_uri,
-                                                 const std::vector<Location> &locations);
-
   static std::string    __response_message(HttpStatusCode     status_code,
                                            const std::string &body,
                                            const Location    &location);
