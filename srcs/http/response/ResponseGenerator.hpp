@@ -36,46 +36,20 @@ private:
   static std::string    __response_message(HttpStatusCode     status_code,
                                            const std::string &body,
                                            const Location    &location);
-  static HttpStatusCode __check_filepath_status(const Location    &location,
-                                                const std::string &file_path);
   static std::string    __body(const std::string &file_path,
-                               const RequestInfo  request_info);
+                               const RequestInfo &request_info);
   static std::string    __create_autoindex_body(const std::string &file_path,
-                                                const RequestInfo  request_info);
-
-  static HttpStatusCode __handle_post_method(const Location   &location,
-                                             const std::string file_path) {
-    // TODO: ここらへんの処理、未定なので雑に書いています。
-    if (std::find(location.limit_except_.begin(), location.limit_except_.end(),
-                  "POST") == location.limit_except_.end()) {
-      return NOT_ALLOWED_405;
-    }
-    return __check_filepath_status(location, file_path);
-  }
-
-  static HttpStatusCode __handle_get_method(const Location   &location,
-                                            const std::string file_path) {
-    // TODO: ここらへんの処理、未定なので雑に書いています。
-    if (std::find(location.limit_except_.begin(), location.limit_except_.end(),
-                  "GET") == location.limit_except_.end()) {
-      return NOT_ALLOWED_405;
-    }
-    return __check_filepath_status(location, file_path);
-  }
-
-  static HttpStatusCode __delete_target_file(const RequestInfo request_info,
-                                             const std::string file_path);
-
-  static HttpStatusCode __handle_delete_method(const Location   &location,
-                                               const RequestInfo request_info,
-                                               const std::string file_path) {
-    // TODO: ここらへんの処理、未定なので雑に書いています。
-    if (std::find(location.limit_except_.begin(), location.limit_except_.end(),
-                  "DELETE") == location.limit_except_.end()) {
-      return NOT_ALLOWED_405;
-    }
-    return __delete_target_file(request_info, file_path);
-  }
+                                                const RequestInfo &request_info);
+  static HttpStatusCode __handle_method(const Location    &location,
+                                        const RequestInfo &request_info,
+                                        const std::string &file_path);
+  static HttpStatusCode __handle_post_method(const Location    &location,
+                                             const std::string &file_path);
+  static HttpStatusCode __handle_get_method(const Location    &location,
+                                            const std::string &file_path);
+  static HttpStatusCode __handle_delete_method(const Location    &location,
+                                               const RequestInfo &request_info,
+                                               const std::string &file_path);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

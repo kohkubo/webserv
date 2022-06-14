@@ -32,7 +32,7 @@ static std::string create_file_path(const std::string &request_uri,
 }
 
 std::string ResponseGenerator::__body(const std::string &file_path,
-                                      const RequestInfo  request_info) {
+                                      const RequestInfo &request_info) {
   if (has_suffix(file_path, ".sh")) {
     return __read_file_tostring_cgi(file_path, request_info.env_values_);
   }
@@ -66,16 +66,7 @@ ResponseGenerator::generate_response(const Config      &config,
     return generate_error_response(*location, config, FORBIDDEN_403);
   }
   std::string file_path = create_file_path(request_info.uri_, *location);
-  if ("GET" == request_info.method_) {
-    status_code = __handle_get_method(*location, file_path);
-  } else if ("POST" == request_info.method_) {
-    status_code = __handle_post_method(*location, file_path);
-  } else if ("DELETE" == request_info.method_) {
-    status_code = __handle_delete_method(*location, request_info, file_path);
-  } else {
-    LOG("unknown method: " << request_info.method_);
-    status_code = NOT_IMPLEMENTED_501;
-  }
+  status_code           = __handle_method(*location, request_info, file_path);
   if (is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(*location, config, status_code);
@@ -101,27 +92,4 @@ const Location *ResponseGenerator::__select_proper_location(
     }
   }
   return ret_location;
-}
-
-// TODO: リンクやその他のファイルシステムの時どうするか
-HttpStatusCode
-ResponseGenerator::__check_filepath_status(const Location    &location,
-                                           const std::string &file_path) {
-  if (has_suffix(file_path, "/")) {
-    if (is_dir_exists(file_path)) {
-      if (!location.autoindex_) {
-        return FORBIDDEN_403; // nginxに合わせた
-      }
-      return OK_200;
-    }
-    return NOT_FOUND_404;
-  }
-  if (!is_file_exists(file_path)) {
-    return NOT_FOUND_404;
-  }
-  if (!is_accessible(file_path, R_OK)) {
-    // TODO: Permission error が 403なのか確かめてない
-    return FORBIDDEN_403;
-  }
-  return OK_200;
 }

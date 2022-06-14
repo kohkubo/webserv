@@ -50,7 +50,7 @@ std::string ResponseGenerator::__read_file_tostring_cgi(
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
     char *const  argv[]         = {const_cast<char *>(""),
-                          const_cast<char *>(path.c_str()), NULL};
+                                   const_cast<char *>(path.c_str()), NULL};
     char *const *env_char_array = vector_to_array(env);
     execve("/bin/sh", argv, env_char_array);
     delete[] env_char_array;
