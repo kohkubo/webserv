@@ -14,7 +14,7 @@ var testGET = testCatergory{
 	config:       "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
-			caseName: "NEW TEST! GET / ",
+			caseName: "GET / ",
 			test: func() bool {
 				clientA := client.NewClient(client.TestInfo{
 					Port: "50000",
@@ -25,7 +25,7 @@ var testGET = testCatergory{
 						`Accept: */*` + "\r\n",
 						"\r\n",
 					},
-					ExpectStatusCode: http.StatusOK,
+					ExpectStatusCode: 200,
 					ExpectHeader: http.Header{
 						"Content-Length": []string{"127"},
 						"Content-Type":   []string{"text/html"},
