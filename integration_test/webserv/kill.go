@@ -8,7 +8,7 @@ import (
 
 func ExitWithKill(err error) {
 	colorprint.Stderr("Exit by unexpeted error!")
-	fmt.Fprintf(os.Stderr, "error : %v", err)
+	fmt.Fprintf(os.Stderr, "error : %v\n", err)
 	Kill()
 	os.Exit(1)
 }
