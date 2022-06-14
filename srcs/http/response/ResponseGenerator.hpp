@@ -21,8 +21,8 @@ private:
   ResponseGenerator();
   ~ResponseGenerator();
   static std::string
-  __read_file_tostring_cgi(const std::string              &path,
-                           const std::vector<std::string> &env);
+                        __read_file_tostring_cgi(const std::string              &path,
+                                                 const std::vector<std::string> &env);
   static std::string    __response_message(HttpStatusCode     status_code,
                                            const std::string &body,
                                            const Location    &location);
