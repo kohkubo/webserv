@@ -12,19 +12,34 @@
   do {                                                                         \
     std::cerr << msg << std::endl;                                             \
   } while (0)
+
 #define ERROR_LOG_WITH_ERRNO(msg)                                              \
   do {                                                                         \
     std::cerr << msg << ": " << strerror(errno) << std::endl;                  \
   } while (0)
+
 #define LOG(msg)                                                               \
   do {                                                                         \
     std::cout << msg << std::endl;                                             \
+  } while (0)
+
+#define ERROR_EXIT(msg)                                                        \
+  do {                                                                         \
+    ERROR_LOG(msg);                                                            \
+    exit(EXIT_FAILURE);                                                        \
+  } while (0)
+
+#define ERROR_EXIT_WITH_ERRNO(msg)                                             \
+  do {                                                                         \
+    ERROR_LOG_WITH_ERRNO(msg);                                                 \
+    exit(EXIT_FAILURE);                                                        \
   } while (0)
 
 bool        has_suffix(const std::string &str, const std::string &suffix);
 bool        has_prefix(const std::string &str, const std::string &prefix);
 std::string trim(std::string str, std::string cutset);
 std::string tolower(const std::string &str);
+bool        getline(std::string &source, std::string &line);
 
 template <typename T>
 std::string to_string(T val) {

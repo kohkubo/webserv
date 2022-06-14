@@ -72,13 +72,12 @@ tokenIterator Config::__parse_listen(tokenIterator pos, tokenIterator end) {
     throw UnexpectedTokenException("could not detect directive value.");
   tokenVector   l  = tokenize(*pos, ": ", " ");
   tokenIterator it = l.begin();
-  while (it != l.end()) {
+  for (; it != l.end(); it++) {
     if (is_digits(*it)) {
       listen_port_ = *it;
     } else if (is_ip(*it) || *it != ":") {
       listen_address_ = *it;
     }
-    it++;
   }
   __set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return pos + 2;
@@ -226,7 +225,6 @@ void Config::__set_getaddrinfo(const std::string &host, const std::string &port,
   hints.ai_socktype     = SOCK_STREAM;
   int error = getaddrinfo(host.c_str(), port.c_str(), &hints, addrinfo);
   if (error != 0) {
-    ERROR_LOG("getaddrinfo: " << gai_strerror(error));
-    exit(EXIT_FAILURE);
+    ERROR_EXIT("getaddrinfo: " << gai_strerror(error));
   }
 }

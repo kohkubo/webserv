@@ -30,7 +30,7 @@ private:
       const std::map<listenFd, confGroup> &conf_group_map);
   void
   __add_connfd_to_pollfds(const std::map<connFd, Connection> &connection_map);
-  void __connection_receive_handler(connFd conn_fd);
+  void __connection_receive_handler(Connection &connection);
   void __connection_send_handler(connFd conn_fd);
   void __insert_connection_map(connFd conn_fd);
 

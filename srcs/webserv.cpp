@@ -15,8 +15,7 @@ static const char *resolve_config_file(int argc, char **argv) {
   case 2:
     return (argv[1]);
   default:
-    ERROR_LOG("Usage: ./webserv [config file]");
-    exit(EXIT_FAILURE);
+    ERROR_EXIT("Usage: ./webserv [config file]");
   }
 }
 

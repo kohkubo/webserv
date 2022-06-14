@@ -49,12 +49,18 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     status_code = NOT_FOUND_404;
     body = __error_page_body(Location(), *request_info.config_, status_code);
-    return __response_message(status_code, body);
+    return __response_message(status_code, body, *location);
+  }
+  // return がセットされていたら
+  if (location->return_.size() != 0) {
+    // intをHttpStatusCodeに変換する
+    status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
+    return __response_message(status_code, body, *location);
   }
   if (is_minus_depth(request_info.uri_)) {
     status_code = FORBIDDEN_403;
     body = __error_page_body(*location, *request_info.config_, status_code);
-    return __response_message(status_code, body);
+    return __response_message(status_code, body, *location);
   }
   std::string file_path = __file_path(request_info.uri_, *location);
   if ("GET" == request_info.method_) {
@@ -73,7 +79,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
   } else {
     body = __body(file_path, request_info);
   }
-  return __response_message(status_code, body);
+  return __response_message(status_code, body, *location);
 }
 
 // 最長マッチ

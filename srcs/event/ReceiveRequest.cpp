@@ -5,89 +5,75 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "utils/utils.hpp"
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState ReceiveRequest::handle_request(std::string     &request_buffer,
                                             const confGroup &conf_group) {
-  try {
-    if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
-      std::string line;
-      while (__getline(request_buffer, line)) { // noexcept
-        if (__state_ == RECEIVING_STARTLINE) {
-          __request_info_.check_first_multi_blank_line(line);
+  if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
+    std::string line;
+    while (getline(request_buffer, line)) { // noexcept
+      if (__state_ == RECEIVING_STARTLINE) {
+        __request_info_.check_first_multi_blank_line(line);
+        // throws BadRequestException
+        if (__request_info_.is_blank_first_line_) {
+          continue;
+        }
+        RequestInfo::check_bad_parse_request_start_line(line);
+        // throws BadRequestException
+        __request_info_.parse_request_start_line(line); // noexcept
+        __state_ = RECEIVING_HEADER;
+      } else if (__state_ == RECEIVING_HEADER) {
+        if (line != "") {
+          RequestInfo::store_request_header_field_map(line, __field_map_);
           // throws BadRequestException
-          if (__request_info_.is_blank_first_line_) {
-            continue;
-          }
-          RequestInfo::check_bad_parse_request_start_line(line);
-          // throws BadRequestException
-          __request_info_.parse_request_start_line(line); // noexcept
-          __state_ = RECEIVING_HEADER;
-        } else if (__state_ == RECEIVING_HEADER) {
-          if (line != "") {
-            RequestInfo::store_request_header_field_map(line, __field_map_);
-            // throws BadRequestException
-            continue;
-          }
-          __request_info_.parse_request_header(__field_map_);
-          // throws BadRequestException
-          __request_info_.select_proper_config(conf_group,
-                                               __request_info_.host_);
-          // TODO: validate request_header
-          // delete with body
-          // has transfer-encoding but last elm is not chunked
-          // content-length and transfer-encoding -> delete content-length
-          __check_max_client_body_size_exception(
-              __request_info_.content_length_,
-              __request_info_.config_->client_max_body_size_);
-          if (__request_info_.content_length_ != 0 ||
-              __request_info_.is_chunked_) {
-            __state_ = RECEIVING_BODY;
-            break;
-          }
-          __state_ = SUCCESS;
+          continue;
+        }
+        __request_info_.parse_request_header(__field_map_);
+        // throws BadRequestException
+        __request_info_.select_proper_config(conf_group, __request_info_.host_);
+        // TODO: validate request_header
+        // delete with body
+        // has transfer-encoding but last elm is not chunked
+        // content-length and transfer-encoding -> delete content-length
+        __check_max_client_body_size_exception(
+            __request_info_.content_length_,
+            __request_info_.config_->client_max_body_size_);
+        if (__request_info_.content_length_ != 0 ||
+            __request_info_.is_chunked_) {
+          __state_ = RECEIVING_BODY;
           break;
         }
-      }
-    }
-    if (__state_ == RECEIVING_BODY) {
-      if (__request_info_.is_chunked_) {
-        __state_ = __chunk_loop(request_buffer);
-        // throws BadRequestException
-        // TODO: ここらへんの例外のクラスがどこに属しているのかバラバラな印象
-        // kohkubo
-        __check_max_client_body_size_exception(
-            __request_body_.size(),
-            __request_info_.config_->client_max_body_size_);
-        // throws BadRequestException
-      } else if (request_buffer.size() >= __request_info_.content_length_) {
-        __request_body_ = __cutout_request_body(
-            request_buffer, __request_info_.content_length_);
         __state_ = SUCCESS;
-      }
-      if (__state_ == SUCCESS) {
-        __request_info_.parse_request_body(__request_body_,
-                                           __request_info_.content_type_);
+        break;
       }
     }
+  }
+  if (__state_ == RECEIVING_BODY) {
+    if (__request_info_.is_chunked_) {
+      __state_ = __chunk_loop(request_buffer);
+      // throws BadRequestException
+      // TODO: ここらへんの例外のクラスがどこに属しているのかバラバラな印象
+      // kohkubo
+      __check_max_client_body_size_exception(
+          __request_body_.size(),
+          __request_info_.config_->client_max_body_size_);
+      // throws BadRequestException
+    } else if (request_buffer.size() >= __request_info_.content_length_) {
+      __request_body_ = __cutout_request_body(request_buffer,
+                                              __request_info_.content_length_);
+      __state_        = SUCCESS;
+    }
+    if (__state_ == SUCCESS) {
+      __request_info_.parse_request_body(__request_body_,
+                                         __request_info_.content_type_);
+    }
+  }
 
-    if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
-      __check_buffer_length_exception(request_buffer, buffer_max_length_);
-    }
-  } catch (const RequestInfo::BadRequestException &e) {
-    __request_info_.connection_close_ = true;
-    __state_                          = SUCCESS;
+  if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
+    __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   }
   return __state_;
-}
-
-bool ReceiveRequest::__getline(std::string &request_buffer, std::string &line) {
-  std::size_t pos = request_buffer.find(CRLF);
-  if (pos == std::string::npos)
-    return false;
-  line = request_buffer.substr(0, pos);
-  request_buffer.erase(0, pos + 2);
-  return true;
 }
 
 std::string ReceiveRequest::__cutout_request_body(std::string &request_buffer,
@@ -102,7 +88,7 @@ bool ReceiveRequest::__get_next_chunk_line(NextChunkType chunk_type,
                                            std::string  &chunk,
                                            size_t        next_chunk_size) {
   if (chunk_type == CHUNK_SIZE) {
-    return __getline(request_buffer, chunk);
+    return getline(request_buffer, chunk);
   }
   if (request_buffer.size() < next_chunk_size + CRLF.size()) {
     return false;
@@ -134,7 +120,7 @@ RequestState ReceiveRequest::__chunk_loop(std::string &request_buffer) {
     }
   }
   if (__next_chunk_ == CHUNK_SIZE)
-    __check_buffer_length_exception(request_buffer, buffer_max_length_);
+    __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   return RECEIVING_BODY;
 }
 
