@@ -14,12 +14,12 @@
 void Connection::create_sequential_transaction() {
   for (;;) {
     RequestState request_state =
-        __receive_request_.handle_request(__buffer_, __conf_group_);
+        __request_.handle_request(__buffer_, __conf_group_);
     if (request_state != SUCCESS) {
       break;
     }
-    __response_queue_.push_back(__receive_request_.create_response());
-    __receive_request_ = Request();
+    __response_queue_.push_back(__request_.create_response());
+    __request_ = Request();
   }
   __last_event_time_ = __time_now();
 }
