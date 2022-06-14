@@ -10,14 +10,23 @@ import (
 )
 
 type Client struct {
-	Port             string
-	ReqPayload       []string
-	ExpectStatusCode int
-	ExpectHeader     http.Header
-	ExpectBody       []byte
-	conn             net.Conn
-	method           string
-	resp             *http.Response
+	Port       string
+	ReqPayload []string
+	conn       net.Conn
+	method     string
+	resp       *http.Response
+	expectResp *ResponseInfo
+}
+
+// 必要に応じてチェック項目(メンバー変数)を追加する
+// http.Response参照
+type ResponseInfo struct {
+	Status     string
+	StatusCode int
+	Proto      string
+	Header     http.Header
+	Close      bool
+	Body       []byte
 }
 
 type TestInfo struct {
@@ -33,9 +42,7 @@ func NewClient(info TestInfo) *Client {
 	newC := &Client{}
 	newC.Port = info.Port
 	newC.ReqPayload = info.ReqPayload
-	newC.ExpectStatusCode = info.ExpectStatusCode
-	newC.ExpectHeader = info.ExpectHeader
-	newC.ExpectBody = info.ExpectBody
+	newC.expectResp = NewResponseInfo(info)
 	conn, err := connect(newC.Port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
@@ -43,6 +50,17 @@ func NewClient(info TestInfo) *Client {
 	newC.conn = conn
 	newC.method = resolveMethod(newC.ReqPayload)
 	return newC
+}
+
+func NewResponseInfo(info TestInfo) *ResponseInfo {
+	newResp := &ResponseInfo{}
+	newResp.Status = "200 OK"
+	newResp.StatusCode = info.ExpectStatusCode
+	newResp.Proto = "HTTP/1.1"
+	newResp.Header = info.ExpectHeader
+	newResp.Body = info.ExpectBody
+	newResp.Close = true
+	return newResp
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
@@ -103,7 +121,7 @@ func (c *Client) RecvResponse() {
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() bool {
-	result, err := compareResponse(c.resp, c.ExpectStatusCode, c.ExpectHeader, c.ExpectBody)
+	result, err := compareResponse(c.resp, c.expectResp)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
 	}

@@ -48,7 +48,7 @@ func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func compareResponse(resp *http.Response, expectStatusCode int, expectHeader http.Header, expectBody []byte) (int, error) {
+func compareResponse(resp *http.Response, expectResp *ResponseInfo) (int, error) {
 	var diff_flag int
 	diff_checker := func(title string, x interface{}, y interface{}) {
 		if diff := cmp.Diff(x, y); diff != "" {
@@ -56,13 +56,15 @@ func compareResponse(resp *http.Response, expectStatusCode int, expectHeader htt
 			diff_flag++
 		}
 	}
-	diff_checker("status", expectStatusCode, resp.StatusCode)
-	diff_checker("close", true, resp.Close)
-	diff_checker("header", expectHeader, resp.Header)
+	diff_checker("status", expectResp.Status, resp.Status)
+	diff_checker("status code", expectResp.StatusCode, resp.StatusCode)
+	diff_checker("proto", expectResp.Proto, resp.Proto)
+	diff_checker("header", expectResp.Header, resp.Header)
+	diff_checker("close", expectResp.Close, resp.Close)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, fmt.Errorf("failt to read response: %v", err)
 	}
-	diff_checker("body", expectBody, body)
+	diff_checker("body", expectResp.Body, body)
 	return diff_flag, nil
 }
