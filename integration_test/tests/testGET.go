@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"integration_test/client"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
@@ -13,9 +14,9 @@ var testGET = testCatergory{
 	config:       "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
-			caseName: "GET / ",
+			caseName: "NEW TEST! GET / ",
 			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
+				clientA := client.NewClient(client.TestInfo{
 					Port: "50000",
 					ReqPayload: []string{
 						"GET / HTTP/1.1\r\n",
@@ -25,8 +26,12 @@ var testGET = testCatergory{
 						"\r\n",
 					},
 					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("../html/index.html"),
+					ExpectHeader: http.Header{
+						"Content-Length": []string{"127"},
+						"Content-Type":   []string{"text/html"},
+						"Connection":     []string{"close"},
+					},
+					ExpectBody: fileToBytes("../html/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},

@@ -9,20 +9,20 @@ import (
 	"time"
 )
 
-type Client struct {
-	port           string
-	reqPayload     []string
-	conn           net.Conn
-	gotResp        *http.Response
-	reponseChecker reponseChecker
-}
-
 type TestInfo struct {
 	Port             string
 	ReqPayload       []string
 	ExpectStatusCode int
 	ExpectHeader     http.Header
 	ExpectBody       []byte
+}
+
+type Client struct {
+	port           string
+	reqPayload     []string
+	conn           net.Conn
+	gotResp        *http.Response
+	reponseChecker reponseChecker
 }
 
 // constructor
@@ -97,7 +97,7 @@ func resolveMethod(req []string) string {
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() bool {
-	result, err := c.reponseChecker.compare(c.gotResp)
+	result, err := c.reponseChecker.Do(c.gotResp)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
 	}

@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"integration_test/response"
+	"integration_test/webserv"
 	"io"
 	"net/http"
 	"os"
@@ -11,9 +12,12 @@ import (
 )
 
 type reponseChecker interface {
-	compare(*http.Response) (int, error)
+	Do(*http.Response) (int, error)
 }
 
+// "Connection"フィールドに関しては,
+// http.ResponseではCloseというメンバーに設定されていたので
+// TestInfoのHeader mapからConnectionだけ判定して, mapから削除
 func NewResponseChecker(info TestInfo) reponseChecker {
 	newResp := &Response{}
 	newResp.Status = response.Statuses[info.ExpectStatusCode]
@@ -21,8 +25,23 @@ func NewResponseChecker(info TestInfo) reponseChecker {
 	newResp.Proto = "HTTP/1.1"
 	newResp.Header = info.ExpectHeader
 	newResp.Body = info.ExpectBody
-	newResp.Close = true
+	newResp.Close = resolveClose(info.ExpectHeader)
 	return newResp
+}
+
+func resolveClose(header http.Header) bool {
+	close := false
+	if v, exist := header["Connection"]; !exist {
+		webserv.ExitWithKill(fmt.Errorf("Connection field not specified"))
+	} else if v[0] == "close" {
+		close = true
+	} else if v[0] == "keep-alive" {
+		close = false
+	} else {
+		webserv.ExitWithKill(fmt.Errorf("unknown Connection field: %v", v))
+	}
+	delete(header, "Connection")
+	return close
 }
 
 // 必要に応じてチェック項目(メンバー変数)を追加する
@@ -37,7 +56,7 @@ type Response struct {
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func (r Response) compare(got *http.Response) (int, error) {
+func (r Response) Do(got *http.Response) (int, error) {
 	var diff_flag int
 	diff_checker := func(title string, x interface{}, y interface{}) {
 		if diff := cmp.Diff(x, y); diff != "" {
