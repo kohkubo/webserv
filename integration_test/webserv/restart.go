@@ -4,41 +4,42 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"os/exec"
 	"time"
 )
 
-var current_process *exec.Cmd = nil
-var stderr io.ReadCloser
-var log string
+var currentProcess *exec.Cmd = nil
 
 // 指定したpathのconfigファイルでwebservを立ち上げる。
 func Restart(configPath string) error {
-	if current_process != nil {
+	if currentProcess != nil {
 		Kill()
 	}
-	current_process = exec.Command("./webserv", configPath)
-	// itestの実行ファイルがintegration_test/integration_testを期待
-	current_process.Dir = "../"
-	stderr, _ = current_process.StderrPipe()
-	current_process.Start()
+	currentProcess = exec.Command("./webserv", configPath)
+	currentProcess.Dir = "../"
+	pipeRead, pipeWrite, err := os.Pipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+	currentProcess.Stdout = os.Stdout
+	currentProcess.Stderr = io.MultiWriter(os.Stderr, pipeWrite)
+	currentProcess.Start()
 	select {
 	case <-time.After(10 * time.Second):
 		return fmt.Errorf("timout to wait server lauch")
-	case <-waitServerLaunch():
+	case <-waitServerLaunch(pipeRead):
 	}
 	return nil
 }
 
-func waitServerLaunch() chan struct{} {
+func waitServerLaunch(r io.Reader) chan struct{} {
 	done := make(chan struct{})
-	scanner := bufio.NewScanner(stderr)
+	scanner := bufio.NewScanner(r)
 	go func() {
-		log = ""
 		for scanner.Scan() {
-			txt := scanner.Text()
-			log = fmt.Sprintf("%s%s\n", log, txt)
-			if txt == "start server process" {
+			if scanner.Text() == "start server process" {
 				close(done)
 				return
 			}
