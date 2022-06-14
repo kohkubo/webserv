@@ -7,18 +7,6 @@
 #include "http/response/ResponseGenerator.hpp"
 #include "utils/utils.hpp"
 
-// TODO: ステータスコードに合わせたレスポンスを生成
-void Request::__set_response_for_bad_request() {
-  // 400エラー処理
-  // TODO: nginxのerror_pageディレクティブで400指定できるか確認。
-  // 指定できるとき、nginxはどうやってserverを決定しているか。
-  // serverが決定できる不正なリクエストと決定できないリクエストを実際に送信して確認？
-  // 現状は暫定的に、定型文を送信。
-  __response_ = "HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n";
-  __state_    = SUCCESS;
-  __request_info_.connection_close_ = true;
-}
-
 static const Config *select_proper_config(const confGroup   &conf_group,
                                           const std::string &host_name) {
   confGroup::const_iterator it = conf_group.begin();
@@ -98,7 +86,10 @@ RequestState Request::handle_request(std::string     &request_buffer,
       __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    __set_response_for_bad_request();
+    __response_ = ResponseGenerator::generate_error_response(
+        Location(), Config(), e.status());
+    __request_info_.connection_close_ = true;
+    __state_                          = SUCCESS;
   }
   return __state_;
 }

@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_TRANSACTION_HPP
-#define SRCS_EVENT_TRANSACTION_HPP
+#ifndef SRCS_EVENT_REQUEST_HPP
+#define SRCS_EVENT_REQUEST_HPP
 
 #include <sys/types.h>
 
@@ -47,8 +47,6 @@ private:
                                          std::size_t max_body_size);
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  // TODO: 命名変える
-  void                 __set_response_for_bad_request();
 
 public:
   Request()
@@ -68,4 +66,4 @@ public:
   }
 };
 
-#endif /* SRCS_EVENT_TRANSACTION_HPP */
+#endif /* SRCS_EVENT_REQUEST_HPP */
