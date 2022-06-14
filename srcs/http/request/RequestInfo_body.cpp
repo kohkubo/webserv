@@ -134,8 +134,7 @@ void RequestInfo::__parse_form_header(const std::string  line,
   // TODO: 既にformが指定されていると上書きされる rakiyama
   if (field_name == "Content-Disposition") {
     form.content_disposition_ = __parse_content_info(field_value);
-  }
-  if (field_name == "Content-Type") {
+  } else if (field_name == "Content-Type") {
     form.content_type_ = __parse_content_info(field_value);
   }
 }
