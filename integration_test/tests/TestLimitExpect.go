@@ -49,7 +49,7 @@ var testLimitExpect = testCatergory{
 						"\r\n",
 						"name=hoge",
 					},
-					ExpectStatusCode: 405,
+					ExpectStatusCode: http.StatusMethodNotAllowed,
 					ExpectHeader:     nil,
 					ExpectBody:       response.Content_405,
 				})
