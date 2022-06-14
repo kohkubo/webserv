@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"integration_test/response"
 	"io"
 	"net/http"
 	"os"
@@ -15,7 +16,7 @@ type reponseChecker interface {
 
 func NewResponseChecker(info TestInfo) reponseChecker {
 	newResp := &Response{}
-	newResp.Status = "200 OK"
+	newResp.Status = response.Statuses[info.ExpectStatusCode]
 	newResp.StatusCode = info.ExpectStatusCode
 	newResp.Proto = "HTTP/1.1"
 	newResp.Header = info.ExpectHeader
