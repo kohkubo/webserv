@@ -151,7 +151,7 @@ ResponseGenerator::__error_page_body(const Location      &location,
 }
 
 std::string ResponseGenerator::__body(const std::string &file_path,
-                                      const RequestInfo  request_info) {
+                                      const RequestInfo &request_info) {
   if (has_suffix(file_path, ".sh")) {
     return __read_file_tostring_cgi(file_path, request_info.env_values_);
   }

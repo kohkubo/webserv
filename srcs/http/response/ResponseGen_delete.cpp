@@ -10,8 +10,8 @@
 #include "utils/file_io_utils.hpp"
 
 HttpStatusCode
-ResponseGenerator::__delete_target_file(const RequestInfo request_info,
-                                        const std::string file_path) {
+ResponseGenerator::__delete_target_file(const RequestInfo &request_info,
+                                        const std::string &file_path) {
   if (request_info.content_length_ != 0) {
     ERROR_LOG("DELETE with body is unsupported");
     return BAD_REQUEST_400;
