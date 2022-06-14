@@ -49,10 +49,10 @@ std::string ResponseGenerator::__read_file_tostring_cgi(
     close(pipefd[READ_FD]);
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
-    char *const  argv[]         = {const_cast<char *>(""),
-                          const_cast<char *>(path.c_str()), NULL};
+    // cgiスクリプトを実行可能ファイルとして扱う
+    char *const  argv[]         = {const_cast<char *>(path.c_str()), NULL};
     char *const *env_char_array = vector_to_array(env);
-    execve("/bin/sh", argv, env_char_array);
+    execve(path.c_str(), argv, env_char_array);
     delete[] env_char_array;
     exit(0);
   }
