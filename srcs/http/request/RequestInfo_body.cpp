@@ -96,8 +96,6 @@ RequestInfo::__parse_multi_part_loop(std::string        body,
     }
     if (state == BODY) {
       if (form.content_ != "") {
-        // これ以前のcontentが空でないなら,
-        // bodyの途中で改行があるということなのでCRLF付け足す
         form.content_ += CRLF;
       }
       form.content_ += line;
@@ -120,13 +118,9 @@ void RequestInfo::__parse_form_header(const std::string  line,
   const std::string field_value = trim(line.substr(pos + 1), OWS_);
   if (field_name == "Content-Disposition" &&
       form.content_disposition_.type_ == "") {
-    // form.content_dispositionが既にセットされていないならセットする
-    // その確かめ方が今はform.content_disposition_.type_ == ""しかわからない
-    // rakiyama
     form.content_disposition_ = __parse_content_info(field_value);
   }
   if (field_name == "Content-Type" && form.content_type_.type_ == "") {
-    // 上に同じく rakiyama
     form.content_type_ = __parse_content_info(field_value);
   }
 }
@@ -142,7 +136,5 @@ void RequestInfo::__add_form_to_form_map(formMap &form_map, const Form &form) {
     ERROR_LOG("multi part header: missing name");
     throw RequestInfo::BadRequestException();
   }
-  if (form_map.count(it->second) == 0) {
-    form_map.insert(std::make_pair(it->second, form));
-  }
+  form_map.insert(std::make_pair(it->second, form));
 }
