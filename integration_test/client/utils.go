@@ -50,32 +50,19 @@ func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 // レスポンスが期待するヘッダーとボディを持っているか確認
 func compareResponse(resp *http.Response, expectStatusCode int, expectHeader http.Header, expectBody []byte) (int, error) {
 	var diff_flag int
-	if diff := cmp.Diff(expectStatusCode, resp.StatusCode); diff != "" {
-		fmt.Fprintf(os.Stderr, "status mismatch (-want +got):\n%s", diff)
-		diff_flag++
-	}
-	if diff := cmp.Diff(expectHeader, resp.Header); diff != "" {
-		fmt.Fprintf(os.Stderr, "header mismatch (-want +got):\n%s", diff)
-		diff_flag++
-	}
-	//for expect_k, expect_v := range expectHeader {
-	//	if actual_v, exist := resp.Header[expect_k]; !exist {
-	//		fmt.Fprintf(os.Stderr, "header no such header in response\n%v", expect_k)
-	//		diff_flag++
-	//	} else if diff := cmp.Diff(expect_v, actual_v); diff != "" {
-	//		fmt.Fprintf(os.Stderr, "header mismatch (-want +got):\n%s", diff)
-	//		diff_flag++
-	//	}
-	//}
-	if expectBody != nil {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return 0, fmt.Errorf("failt to read response: %v", err)
-		}
-		if diff := cmp.Diff(expectBody, body); diff != "" {
-			fmt.Fprintf(os.Stderr, "body mismatch (-want +got):\n%s", diff)
+	diff_checker := func(title string, x interface{}, y interface{}) {
+		if diff := cmp.Diff(x, y); diff != "" {
+			fmt.Fprintf(os.Stderr, "%s mismatch (-want +got):\n%s", title, diff)
 			diff_flag++
 		}
 	}
+	diff_checker("status", expectStatusCode, resp.StatusCode)
+	diff_checker("close", true, resp.Close)
+	diff_checker("header", expectHeader, resp.Header)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, fmt.Errorf("failt to read response: %v", err)
+	}
+	diff_checker("body", expectBody, body)
 	return diff_flag, nil
 }
