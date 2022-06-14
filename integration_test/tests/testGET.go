@@ -27,7 +27,7 @@ var testGET = testCatergory{
 					string(body)
 				client := client.NewClient(client.Info{
 					Port: "50000",
-					ReqPayload: []string{
+					RequestPayload: []string{
 						"GET / HTTP/1.1\r\n",
 						"Host: localhost:50000\r\n",
 						"User-Agent: curl/7.79.1\r\n",

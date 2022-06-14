@@ -15,7 +15,7 @@ type ReponseChecker interface {
 
 type Info struct {
 	Port            string
-	ReqPayload      []string
+	RequestPayload  []string
 	ResponseChecker ReponseChecker
 }
 
@@ -31,7 +31,7 @@ type Client struct {
 func NewClient(info Info) *Client {
 	newC := &Client{}
 	newC.port = info.Port
-	newC.reqPayload = info.ReqPayload
+	newC.reqPayload = info.RequestPayload
 	newC.reponseChecker = info.ResponseChecker
 	conn, err := connect(newC.port)
 	if err != nil {
