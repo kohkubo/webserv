@@ -54,8 +54,6 @@ private:
   static bool
   __parse_request_transfer_encoding(const std::string &transfer_encoding);
   static ContentInfo __parse_content_info(const std::string &content);
-  // TODO: ↓ファイル内static関数で済む rakiyama
-  static std::string __cutout_prameter_value(std::string str);
 
 public:
   RequestInfo()

@@ -91,6 +91,23 @@ bool RequestInfo::__parse_request_transfer_encoding(
   return transfer_encoding == "chunked";
 }
 
+// content-typeのparameter(key=value)のvalueについて切り出す関数
+// ""で囲まれていれば, それらを削除
+static std::string cutout_parameter_value(std::string str) {
+  if (str.size() == 0) {
+    return str;
+  }
+  std::size_t last = str.size() - 1;
+  if (str[0] == '\"' || str[last] == '\"') {
+    bool is_lacking_quote = (0 == last || str[0] != str[last]);
+    if (is_lacking_quote) {
+      throw RequestInfo::BadRequestException();
+    }
+    str = str.substr(1, last - 1);
+  }
+  return str;
+}
+
 // 例 Content-Type: multipart/form-data;boundary="boundary"
 // Content-Type = media-type = type "/" subtype *( OWS ";" OWS parameter )
 // parameter    = token "=" ( token / quoted-string )
@@ -116,26 +133,10 @@ RequestInfo::__parse_content_info(const std::string &content) {
         throw BadRequestException();
       }
       std::string key     = tolower(str.substr(0, equal_pos));
-      std::string value   = __cutout_prameter_value(str.substr(equal_pos + 1));
+      std::string value   = cutout_parameter_value(str.substr(equal_pos + 1));
       res.parameter_[key] = value;
+      
     }
   }
   return res;
-}
-
-// content-typeのparameter(key=value)のvalueについて切り出す関数
-// ""で囲まれていれば, それらを削除
-std::string RequestInfo::__cutout_prameter_value(std::string str) {
-  if (str.size() == 0) {
-    return str;
-  }
-  std::size_t last = str.size() - 1;
-  if (str[0] == '\"' || str[last] == '\"') {
-    bool is_lacking_quote = (0 == last || str[0] != str[last]);
-    if (is_lacking_quote) {
-      throw BadRequestException();
-    }
-    str = str.substr(1, last - 1);
-  }
-  return str;
 }
