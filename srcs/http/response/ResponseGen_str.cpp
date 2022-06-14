@@ -78,7 +78,7 @@ static std::string entity_header_and_body(const std::string &body) {
          "Content-Type: text/html" + CRLF + CRLF + body;
 }
 
-std::string generate_bad_response(const Location &location,
+std::string generate_error_response(const Location &location,
                                   const Config   &config,
                                   HttpStatusCode  status_code) {
   std::string response = start_line(status_code);

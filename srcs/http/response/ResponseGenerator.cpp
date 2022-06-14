@@ -24,7 +24,6 @@ std::string
 ResponseGenerator::generate_response(const Config      &config,
                                      const RequestInfo &request_info) {
   HttpStatusCode  status_code = NONE;
-  std::string     body;
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
@@ -39,7 +38,7 @@ ResponseGenerator::generate_response(const Config      &config,
   if (location->return_.size() != 0) {
     // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
-    return __response_message(status_code, body, *location);
+    return __response_message(status_code, "", *location);
   }
   if (is_minus_depth(request_info.uri_)) {
     return generate_error_response(*location, config, FORBIDDEN_403);
@@ -59,8 +58,8 @@ ResponseGenerator::generate_response(const Config      &config,
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(*location, config, status_code);
   }
-  body = __body(file_path, request_info);
-  return __response_message(status_code, body, *location);
+  return __response_message(status_code, __body(file_path, request_info),
+                            *location);
 }
 
 // 最長マッチ
