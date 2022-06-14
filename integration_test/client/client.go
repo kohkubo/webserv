@@ -68,7 +68,7 @@ func (c *Client) RecvResponse() {
 	if len(c.reqPayload) != 0 {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: ReqPayload is not empty!"))
 	}
-	resp, err := readParseResponse(c.conn, c.requestMethod())
+	resp, err := readParseResponse(c.conn, resolveMethod(c.reqPayload))
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: %v", err))
 	}
@@ -77,9 +77,9 @@ func (c *Client) RecvResponse() {
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
-func (c *Client) requestMethod() string {
+func resolveMethod(req []string) string {
 	var buff string
-	for _, v := range c.reqPayload {
+	for _, v := range req {
 		buff += v
 		if len("DELETE") < len(buff) {
 			break
