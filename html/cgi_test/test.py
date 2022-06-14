@@ -4,6 +4,8 @@ import cgi
 
 form = cgi.FieldStorage()
 
+
+# cgiのレスポンスの改行は\n(UNIX,POSIX共通)
 print("HTTP/1.0 200 OK")
 print("Content-type: text/html\n\n")
 print("")
