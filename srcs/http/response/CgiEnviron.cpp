@@ -22,11 +22,13 @@ create_environ_map(const std::string &path, const RequestInfo &request_info) {
   std::map<std::string, std::string> environ_map;
 
   // 内容は仮
-  environ_map["SCRIPT_NAME"]     = path;
-  environ_map["SERVER_SOFTWARE"] = "webserv 0.0.0";
-  environ_map["QUERY_STRING"]    = request_info.query_string_;
+  environ_map["SCRIPT_NAME"]       = path;
+  environ_map["SERVER_SOFTWARE"]   = "webserv 0.0.0";
 
-  environ_map["PATH_INFO"]       = get_realpath(path);
+  environ_map["QUERY_STRING"]      = request_info.query_string_;
+  environ_map["PATH_INFO"]         = get_realpath(path);
+  environ_map["PATH_TRANSLATED"]   = get_realpath(path);
+  environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
 
   return environ_map;
 }
