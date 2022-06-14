@@ -20,16 +20,29 @@ type Client struct {
 	resp             *http.Response
 }
 
+type TestInfo struct {
+	Port             string
+	ReqPayload       []string
+	ExpectStatusCode int
+	ExpectHeader     http.Header
+	ExpectBody       []byte
+}
+
 // constructor
-func NewClient(baseC Client) *Client {
-	newC := baseC
+func NewClient(info TestInfo) *Client {
+	newC := &Client{}
+	newC.Port = info.Port
+	newC.ReqPayload = info.ReqPayload
+	newC.ExpectStatusCode = info.ExpectStatusCode
+	newC.ExpectHeader = info.ExpectHeader
+	newC.ExpectBody = info.ExpectBody
 	conn, err := connect(newC.Port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
 	newC.conn = conn
 	newC.method = resolveMethod(newC.ReqPayload)
-	return &newC
+	return newC
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
