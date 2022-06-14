@@ -1,6 +1,21 @@
 #include "http/response/CgiEnviron.hpp"
 
+#include <limits.h>
+#include <stdlib.h>
+
 #include <cstring>
+
+#include "utils/utils.hpp"
+
+static std::string get_realpath(const std::string &path) {
+  char *abs_path = realpath(path.c_str(), NULL);
+  if (abs_path == NULL) {
+    ERROR_EXIT_WITH_ERRNO("get_realpath");
+  }
+  std::string res = std::string(abs_path);
+  free(abs_path);
+  return res;
+}
 
 static std::map<std::string, std::string>
 create_environ_map(const std::string &path, const RequestInfo &request_info) {
@@ -10,6 +25,8 @@ create_environ_map(const std::string &path, const RequestInfo &request_info) {
   environ_map["SCRIPT_NAME"]     = path;
   environ_map["SERVER_SOFTWARE"] = "webserv 0.0.0";
   environ_map["QUERY_STRING"]    = request_info.query_string_;
+
+  environ_map["PATH_INFO"]       = get_realpath(path);
 
   return environ_map;
 }
