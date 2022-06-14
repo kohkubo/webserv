@@ -49,6 +49,7 @@ ResponseGenerator::__read_file_tostring_cgi(const std::string &path,
     CgiEnviron cgi_environ(path, request_info);
     // TODO: request_info.env_valueはパースせずに標準出力へ
     // TODO: execveの前にスクリプトのあるディレクトリに移動
+    // TODO: timeout
     // error handling
     execve(path.c_str(), argv, cgi_environ.data());
     exit(0);
