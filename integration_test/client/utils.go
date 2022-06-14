@@ -22,14 +22,14 @@ func connect(port string) (net.Conn, error) {
 }
 
 // src(conn)からリクエストを受け取りパースする
-func readParseResponse(src io.Reader, method string) (*http.Response, error) {
+func readParseResponse(src io.Reader, reqMethod string) (*http.Response, error) {
 	ch_resp := make(chan *http.Response)
 	ch_error := make(chan error)
 	// resposenを受け取る
 	go func() {
 		r := bufio.NewReader(src)
 		req := &http.Request{
-			Method: method,
+			Method: reqMethod,
 		}
 		resp, err := http.ReadResponse(r, req)
 		if err != nil {

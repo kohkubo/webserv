@@ -13,7 +13,6 @@ type Client struct {
 	port       string
 	reqPayload []string
 	conn       net.Conn
-	method     string
 	gotResp    *http.Response
 	expectResp *ResponseInfo
 }
@@ -48,7 +47,6 @@ func NewClient(info TestInfo) *Client {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
 	newC.conn = conn
-	newC.method = resolveMethod(newC.reqPayload)
 	return newC
 }
 
@@ -61,25 +59,6 @@ func NewResponseInfo(info TestInfo) *ResponseInfo {
 	newResp.Body = info.ExpectBody
 	newResp.Close = true
 	return newResp
-}
-
-// リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
-func resolveMethod(reqPayload []string) string {
-	var buff string
-	for _, v := range reqPayload {
-		buff += v
-		if len("DELETE") < len(buff) {
-			break
-		}
-	}
-	switch {
-	case strings.HasPrefix(buff, "POST"):
-		return "POST"
-	case strings.HasPrefix(buff, "DELETE"):
-		return "DELETE"
-	default:
-		return "GET"
-	}
 }
 
 // リクエスト送信
@@ -111,12 +90,31 @@ func (c *Client) RecvResponse() {
 	if len(c.reqPayload) != 0 {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: ReqPayload is not empty!"))
 	}
-	resp, err := readParseResponse(c.conn, c.method)
+	resp, err := readParseResponse(c.conn, c.requestMethod())
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: %v", err))
 	}
 	c.gotResp = resp
 	c.conn.Close()
+}
+
+// リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
+func (c *Client) requestMethod() string {
+	var buff string
+	for _, v := range c.reqPayload {
+		buff += v
+		if len("DELETE") < len(buff) {
+			break
+		}
+	}
+	switch {
+	case strings.HasPrefix(buff, "POST"):
+		return "POST"
+	case strings.HasPrefix(buff, "DELETE"):
+		return "DELETE"
+	default:
+		return "GET"
+	}
 }
 
 // レスポンスが期待するものか確認する
