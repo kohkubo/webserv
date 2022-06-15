@@ -13,11 +13,10 @@ var testCgi = testCatergory{
 			caseName: "5000_cgi_get_normal",
 			test: func() bool {
 				Port := "50000"
-				Path := "/cgi.sh"
 				clientA := tester.NewClient(tester.Client{
 					Port: Port,
 					ReqPayload: []string{
-						"GET " + Path + " HTTP/1.1\r\n",
+						"GET /cgi_test.py?name=taro&blood=A&text=string HTTP/1.1\r\n",
 						"Host: localhost:" + Port + "\r\n",
 						"User-Agent: curl/7.79.1\r\n",
 						`Accept: */*` + "\r\n",
@@ -26,13 +25,11 @@ var testCgi = testCatergory{
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
 					ExpectBody: []byte(
-						`###########################
-name=
-blood=
-text=
-example=
-###########################
-`),
+						`name= taro
+blood= A
+text= string
+`,
+					),
 				})
 				return clientA.DoAndCheck()
 			},
