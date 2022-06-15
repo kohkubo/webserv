@@ -19,7 +19,7 @@ var testBadRequest = testCatergory{
 					ReqPayload: []string{
 						longline,
 					},
-					ExpectStatusCode: http.StatusBadRequest,
+					ExpectStatusCode: 400,
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})
@@ -58,7 +58,7 @@ var testBadRequest = testCatergory{
 						"\r\n",
 						longline,
 					},
-					ExpectStatusCode: http.StatusBadRequest,
+					ExpectStatusCode: 413,
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})
@@ -79,7 +79,7 @@ var testBadRequest = testCatergory{
 						"\r\n",
 						longline,
 					},
-					ExpectStatusCode: http.StatusBadRequest,
+					ExpectStatusCode: 400,
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})
@@ -102,7 +102,7 @@ var testBadRequest = testCatergory{
 						longline,
 						"\r\n",
 					},
-					ExpectStatusCode: http.StatusBadRequest,
+					ExpectStatusCode: 413,
 					ExpectHeader:     nil,
 					ExpectBody:       nil,
 				})

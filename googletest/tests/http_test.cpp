@@ -14,9 +14,9 @@
 
 TEST(http_test, create_response_info_get_normal) {
   std::string expect = "HTTP/1.1 200 OK\r\n"
+                       "Connection: close\r\n"
                        "Content-Length: 127\r\n"
                        "Content-Type: text/html\r\n"
-                       "Connection: close\r\n"
                        "\r\n"
                        "<!DOCTYPE html>\n"
                        "<html>\n"
@@ -55,9 +55,9 @@ TEST(http_test, create_response_info_get_403) {
 
   std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
+Connection: close\r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
-Connection: close\r\n\
 \r\n\
 <!DOCTYPE html>\n\
 <html>\n\
@@ -95,9 +95,9 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
 
   std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
+Connection: close\r\n\
 Content-Length: 9\r\n\
 Content-Type: text/html\r\n\
-Connection: close\r\n\
 \r\n\
 forbidden\
 ";
@@ -144,9 +144,9 @@ TEST(http_test, create_response_info_delete_404) {
 
   std::string expected_string  = "\
 HTTP/1.1 404 Not Found\r\n\
+Connection: close\r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
-Connection: close\r\n\
 \r\n\
 <!DOCTYPE html>\n\
 <html>\n\
@@ -178,9 +178,9 @@ TEST(http_test, create_response_info_delete_403) {
 
   std::string expected_response = "\
 HTTP/1.1 403 Forbidden\r\n\
+Connection: close\r\n\
 Content-Length: 145\r\n\
 Content-Type: text/html\r\n\
-Connection: close\r\n\
 \r\n\
 <!DOCTYPE html>\n\
 <html>\n\
@@ -217,9 +217,9 @@ TEST(http_test, create_response_info_delete_400) {
 
   std::string expected_response = "\
 HTTP/1.1 400 Bad Request\r\n\
+Connection: close\r\n\
 Content-Length: 147\r\n\
 Content-Type: text/html\r\n\
-Connection: close\r\n\
 \r\n\
 <!DOCTYPE html>\n\
 <html>\n\
