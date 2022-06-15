@@ -8,9 +8,6 @@ import (
 	"time"
 )
 
-// TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
-//"integration_test/conf/limit_expect.conf"はどこで使う？
-
 func main() {
 	var status int
 	select {
