@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_TRANSACTION_HPP
-#define SRCS_EVENT_TRANSACTION_HPP
+#ifndef SRCS_EVENT_REQUEST_HPP
+#define SRCS_EVENT_REQUEST_HPP
 
 #include <sys/types.h>
 
@@ -49,8 +49,6 @@ private:
                                               std::size_t  buffer_limit_length);
   static const Config *__select_proper_config(const confGroup   &conf_group,
                                               const std::string &host_name);
-  // TODO: 命名変える
-  void                 __set_response_for_bad_request();
 
 public:
   Request()
@@ -70,4 +68,4 @@ public:
   }
 };
 
-#endif /* SRCS_EVENT_TRANSACTION_HPP */
+#endif /* SRCS_EVENT_REQUEST_HPP */
