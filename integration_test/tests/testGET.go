@@ -3,6 +3,7 @@ package tests
 import (
 	"integration_test/httptest/client"
 	"integration_test/httptest/wholecheck"
+	"integration_test/client"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
