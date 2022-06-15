@@ -21,14 +21,24 @@ static std::map<std::string, std::string>
 create_environ_map(const std::string &path, const RequestInfo &request_info) {
   std::map<std::string, std::string> environ_map;
 
-  // 内容は仮
-  environ_map["SCRIPT_NAME"]       = path;
-  environ_map["SERVER_SOFTWARE"]   = "webserv 0.0.0";
-
-  environ_map["QUERY_STRING"]      = request_info.query_string_;
+  environ_map["AUTH_TYPE"] = "";
+  if (request_info.has_body()) {
+    environ_map["CONTENT_LENGTH"] = to_string(request_info.body_.size());
+    environ_map["CONTENT_TYPE"]   = request_info.content_type_.type_;
+  }
+  environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
   environ_map["PATH_INFO"]         = get_realpath(path);
   environ_map["PATH_TRANSLATED"]   = get_realpath(path);
-  environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
+  environ_map["QUERY_STRING"]      = request_info.query_string_;
+
+  // addrinfoからアドレスを文字列に変換
+  environ_map["REMOTE_ADDR"]       = "";
+
+  // request_targetからファイルのパスだけ取る。
+  // ex) target: /hoge/test.py script_name: /test.py
+  environ_map["SCRIPT_NAME"]       = request_info.request_target_;
+
+  environ_map["SERVER_SOFTWARE"]   = "webserv 0.0.0";
   environ_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
 
   return environ_map;
