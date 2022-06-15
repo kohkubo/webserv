@@ -91,7 +91,9 @@ var testIOMulti = testCatergory{
 					ExpectHeader:     nil,
 					ExpectBody:       fileToBytes("../html/index.html"),
 				}
-				numOfClient := 10 // 時間がかかるので一旦10, 5000とかでもいけたけど。。。いけて良いのか?
+				numOfClient := 10
+				// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け
+				// 現状だとエラーが返ってくるのでテストとして修正すべき
 				var clients []*tester.Client
 				for i := 0; i < numOfClient; i++ {
 					clients = append(clients, tester.NewClient(baseClient))
