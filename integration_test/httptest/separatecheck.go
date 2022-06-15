@@ -1,4 +1,4 @@
-package client
+package httptest
 
 import (
 	"fmt"
@@ -11,21 +11,17 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-type reponseChecker interface {
-	Do(*http.Response) (int, error)
-}
-
 // "Connection"フィールドに関しては,
 // http.ResponseではCloseというメンバーに設定されていたので
 // TestInfoのHeader mapからConnectionだけ判定して, mapから削除
-func NewResponseChecker(info TestInfo) reponseChecker {
-	newResp := &Response{}
-	newResp.Status = response.Statuses[info.ExpectStatusCode]
-	newResp.StatusCode = info.ExpectStatusCode
+func NewResponseChecker(statusCode int, header http.Header, body []byte) ReponseChecker {
+	newResp := &Checker{}
+	newResp.Status = response.Statuses[statusCode]
+	newResp.StatusCode = statusCode
 	newResp.Proto = "HTTP/1.1"
-	newResp.Header = info.ExpectHeader
-	newResp.Body = info.ExpectBody
-	newResp.Close = resolveClose(info.ExpectHeader)
+	newResp.Header = header
+	newResp.Body = body
+	newResp.Close = resolveClose(header)
 	return newResp
 }
 
@@ -46,7 +42,7 @@ func resolveClose(header http.Header) bool {
 
 // 必要に応じてチェック項目(メンバー変数)を追加する
 // http.Response参照
-type Response struct {
+type Checker struct {
 	Status     string
 	StatusCode int
 	Proto      string
@@ -56,7 +52,7 @@ type Response struct {
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func (r Response) Do(got *http.Response) (int, error) {
+func (c Checker) Check(got *http.Response) (int, error) {
 	var diff_flag int
 	diff_checker := func(title string, x interface{}, y interface{}) {
 		if diff := cmp.Diff(x, y); diff != "" {
@@ -64,15 +60,15 @@ func (r Response) Do(got *http.Response) (int, error) {
 			diff_flag++
 		}
 	}
-	diff_checker("status", r.Status, got.Status)
-	diff_checker("status code", r.StatusCode, got.StatusCode)
-	diff_checker("proto", r.Proto, got.Proto)
-	diff_checker("header", r.Header, got.Header)
-	diff_checker("close", r.Close, got.Close)
+	diff_checker("status", c.Status, got.Status)
+	diff_checker("status code", c.StatusCode, got.StatusCode)
+	diff_checker("proto", c.Proto, got.Proto)
+	diff_checker("header", c.Header, got.Header)
+	diff_checker("close", c.Close, got.Close)
 	body, err := io.ReadAll(got.Body)
 	if err != nil {
 		return 0, fmt.Errorf("failt to read response: %v", err)
 	}
-	diff_checker("body", r.Body, body)
+	diff_checker("body", c.Body, body)
 	return diff_flag, nil
 }

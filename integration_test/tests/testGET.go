@@ -1,8 +1,7 @@
 package tests
 
 import (
-	"integration_test/httptest/client"
-	"integration_test/httptest/wholecheck"
+	"integration_test/httptest"
 	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
@@ -18,26 +17,25 @@ var testGET = testCatergory{
 		{
 			caseName: "GET / ",
 			test: func() bool {
-				port := "50000"
-				request := []string{
-					"GET / HTTP/1.1\r\n",
-					"Host: localhost:" + port + "\r\n",
-					"User-Agent: curl/7.79.1\r\n",
-					`Accept: */*` + "\r\n",
-					"\r\n",
-				}
 				expectBody := fileToBytes("../html/index.html")
 				contentLen := strconv.Itoa(len(expectBody))
-				expectResponse := "HTTP/1.1 200 OK\r\n" +
-					"Connection: close\r\n" +
-					"Content-Length: " + contentLen + "\r\n" +
-					"Content-Type: text/html\r\n" +
-					"\r\n" +
-					string(expectBody)
-				client := client.NewClient(client.Info{
-					Port:            port,
-					RequestPayload:  request,
-					ResponseChecker: wholecheck.NewResponseChecker(expectResponse),
+				port := "50000"
+				client := httptest.NewClient(httptest.TestInfo{
+					Port: port,
+					RequestPayload: []string{
+						"GET / HTTP/1.1\r\n",
+						"Host: localhost:" + port + "\r\n",
+						"User-Agent: curl/7.79.1\r\n",
+						`Accept: */*` + "\r\n",
+						"\r\n",
+					},
+					ExpectStatusCode: 200,
+					ExpectHeader: http.Header{
+						"Connection":     []string{"close"},
+						"Content-Length": []string{contentLen},
+						"Content-Type":   []string{"text/html"},
+					},
+					ExpectBody: expectBody,
 				})
 				return client.DoAndCheck()
 			},

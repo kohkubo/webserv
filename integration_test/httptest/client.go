@@ -1,4 +1,4 @@
-package client
+package httptest
 
 import (
 	"fmt"
@@ -9,14 +9,12 @@ import (
 	"time"
 )
 
-type ReponseChecker interface {
-	Do(*http.Response) (int, error)
-}
-
-type Info struct {
-	Port            string
-	RequestPayload  []string
-	ResponseChecker ReponseChecker
+type TestInfo struct {
+	Port             string
+	RequestPayload   []string
+	ExpectStatusCode int
+	ExpectHeader     http.Header
+	ExpectBody       []byte
 }
 
 type Client struct {
@@ -27,18 +25,22 @@ type Client struct {
 	reponseChecker ReponseChecker
 }
 
+type ReponseChecker interface {
+	Check(*http.Response) (int, error)
+}
+
 // constructor
-func NewClient(info Info) *Client {
-	newC := &Client{}
-	newC.port = info.Port
-	newC.reqPayload = info.RequestPayload
-	newC.reponseChecker = info.ResponseChecker
-	conn, err := connect(newC.port)
+func NewClient(info TestInfo) *Client {
+	c := &Client{}
+	c.port = info.Port
+	c.reqPayload = info.RequestPayload
+	c.reponseChecker = NewResponseChecker(info.ExpectStatusCode, info.ExpectHeader, info.ExpectBody)
+	conn, err := connect(c.port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
-	newC.conn = conn
-	return newC
+	c.conn = conn
+	return c
 }
 
 // リクエスト送信
@@ -99,7 +101,7 @@ func resolveMethod(req []string) string {
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() bool {
-	result, err := c.reponseChecker.Do(c.gotResp)
+	result, err := c.reponseChecker.Check(c.gotResp)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
 	}
