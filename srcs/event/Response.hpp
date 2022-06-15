@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_Response_HPP
-#define SRCS_EVENT_Response_HPP
+#ifndef SRCS_EVENT_RESPONSE_HPP
+#define SRCS_EVENT_RESPONSE_HPP
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -49,4 +49,4 @@ public:
   }
 };
 
-#endif /* SRCS_EVENT_Response_HPP */
+#endif /* SRCS_EVENT_RESPONSE_HPP */
