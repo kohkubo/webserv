@@ -18,23 +18,26 @@ var testGET = testCatergory{
 		{
 			caseName: "GET / ",
 			test: func() bool {
-				body := fileToBytes("../html/index.html")
-				expect := "HTTP/1.1 200 OK\r\n" +
+				port := "50000"
+				request := []string{
+					"GET / HTTP/1.1\r\n",
+					"Host: localhost:" + port + "\r\n",
+					"User-Agent: curl/7.79.1\r\n",
+					`Accept: */*` + "\r\n",
+					"\r\n",
+				}
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
+				expectResponse := "HTTP/1.1 200 OK\r\n" +
 					"Connection: close\r\n" +
-					"Content-Length: " + strconv.Itoa(len(body)) + "\r\n" +
+					"Content-Length: " + contentLen + "\r\n" +
 					"Content-Type: text/html\r\n" +
 					"\r\n" +
-					string(body)
+					string(expectBody)
 				client := client.NewClient(client.Info{
-					Port: "50000",
-					RequestPayload: []string{
-						"GET / HTTP/1.1\r\n",
-						"Host: localhost:50000\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
-						"\r\n",
-					},
-					ResponseChecker: wholecheck.NewResponseChecker(expect),
+					Port:            port,
+					RequestPayload:  request,
+					ResponseChecker: wholecheck.NewResponseChecker(expectResponse),
 				})
 				return client.DoAndCheck()
 			},
