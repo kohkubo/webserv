@@ -29,6 +29,7 @@ create_environ_map(const std::string &path, const RequestInfo &request_info) {
   environ_map["PATH_INFO"]         = get_realpath(path);
   environ_map["PATH_TRANSLATED"]   = get_realpath(path);
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
+  environ_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
 
   return environ_map;
 }
