@@ -17,9 +17,9 @@ var testGET = testCatergory{
 		{
 			caseName: "GET / ",
 			test: func() bool {
+				port := "50000"
 				expectBody := fileToBytes("../html/index.html")
 				contentLen := strconv.Itoa(len(expectBody))
-				port := "50000"
 				client := httptest.NewClient(httptest.TestInfo{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
