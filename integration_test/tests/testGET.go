@@ -22,18 +22,16 @@ var testGET = testCatergory{
 				port := "50000"
 				client := httptest.NewClient(httptest.TestInfo{
 					Port: port,
-					RequestPayload: []string{
-						"GET / HTTP/1.1\r\n",
-						"Host: localhost:" + port + "\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
-					},
 					ExpectStatusCode: 200,
 					ExpectHeader: http.Header{
-						"Connection":     []string{"close"},
-						"Content-Length": []string{contentLen},
-						"Content-Type":   []string{"text/html"},
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
 				})
