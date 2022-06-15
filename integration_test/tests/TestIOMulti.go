@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"integration_test/response"
+	"integration_test/httpresp"
 	"integration_test/tester"
 	"net/http"
 )
@@ -35,7 +35,7 @@ var testIOMulti = testCatergory{
 					},
 					ExpectStatusCode: http.StatusNotFound,
 					ExpectHeader:     nil,
-					ExpectBody:       response.Content_404,
+					ExpectBody:       httpresp.ErrorBody(404),
 				})
 
 				clientC := tester.NewClient(tester.Client{
@@ -47,7 +47,7 @@ var testIOMulti = testCatergory{
 					},
 					ExpectStatusCode: http.StatusNotFound,
 					ExpectHeader:     nil,
-					ExpectBody:       response.Content_404,
+					ExpectBody:       httpresp.ErrorBody(404),
 				})
 
 				clientA.SendPartialRequest()

@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"integration_test/response"
+	"integration_test/httpresp"
 	"integration_test/tester"
 	"net/http"
 )
@@ -51,7 +51,7 @@ var testLimitExpect = testCatergory{
 					},
 					ExpectStatusCode: http.StatusMethodNotAllowed,
 					ExpectHeader:     nil,
-					ExpectBody:       response.Content_405,
+					ExpectBody:       httpresp.ErrorBody(405),
 				})
 				return clientA.DoAndCheck()
 			},

@@ -1,8 +1,8 @@
 package tests
 
 import (
+	"integration_test/httpresp"
 	"integration_test/httptest"
-	"integration_test/response"
 	"integration_test/tester"
 	"net/http"
 	"os"
@@ -73,7 +73,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusNotFound,
 					ExpectHeader:     nil,
-					ExpectBody:       response.Content_404,
+					ExpectBody:       httpresp.ErrorBody(404),
 				})
 				return clientA.DoAndCheck()
 			},
@@ -95,7 +95,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: 403,
 					ExpectHeader:     nil,
-					ExpectBody:       response.Content_403,
+					ExpectBody:       httpresp.ErrorBody(403),
 				})
 				os.Chmod("../html/index.html", 000)
 				result := clientA.DoAndCheck()
@@ -117,7 +117,7 @@ var testGET = testCatergory{
 					},
 					ExpectStatusCode: http.StatusForbidden,
 					ExpectHeader:     nil,
-					ExpectBody:       response.Content_403,
+					ExpectBody:       httpresp.ErrorBody(403),
 				})
 				return clientA.DoAndCheck()
 			},

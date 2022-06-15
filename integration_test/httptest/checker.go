@@ -2,11 +2,11 @@ package httptest
 
 import (
 	"fmt"
+	"integration_test/httpresp"
 	"integration_test/webserv"
 	"io"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -16,7 +16,7 @@ import (
 // TestInfoのHeader mapからConnectionだけ判定して, mapから削除
 func NewResponseChecker(statusCode int, header http.Header, body []byte) ReponseChecker {
 	c := &Checker{}
-	c.Status = fmt.Sprintf("%s %s", strconv.Itoa(statusCode), http.StatusText(statusCode))
+	c.Status = httpresp.Status(statusCode)
 	c.StatusCode = statusCode
 	c.Proto = "HTTP/1.1"
 	c.Header = header

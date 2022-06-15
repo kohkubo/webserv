@@ -3,7 +3,7 @@ package tests
 import (
 	"errors"
 	"fmt"
-	"integration_test/response"
+	"integration_test/httpresp"
 	"integration_test/tester"
 	"integration_test/webserv"
 	"net/http"
@@ -74,7 +74,7 @@ var testDELETE = testCatergory{
 					},
 					ExpectStatusCode: http.StatusNotFound,
 					ExpectHeader:     nil,
-					ExpectBody:       response.Content_404,
+					ExpectBody:       httpresp.ErrorBody(404),
 				})
 				return clientA.DoAndCheck()
 			},
