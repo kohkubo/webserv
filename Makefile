@@ -37,6 +37,9 @@ cav: $(objs)
 itest: $(NAME)
 	$(MAKE) -C $(itestdir) run
 
+.PHONY: wtest
+wtest: test itest
+
 .PHONY: clean
 clean:
 	$(RM) $(objs) $(deps)
