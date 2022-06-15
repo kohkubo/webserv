@@ -9,8 +9,6 @@ import (
 )
 
 // TODO: 一つのクライアントから複数リクエスト->複数レスポンス, スライスとか使うか
-// httputil.DumpResponse(c.gotResp, true)を使えばhttp.Responseからhttpメッセージ全体を取ってこれる
-//  -> ただ, 検証する側がヘッダーの順番(ソースコード追っていくとわかる)まで気にしなきゃいけないのはどうだろう
 //"integration_test/conf/limit_expect.conf"はどこで使う？
 
 func main() {
