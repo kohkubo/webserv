@@ -39,7 +39,7 @@ std::string read_file_tostring(const std::string &path) {
   if (file.fail()) {
     ERROR_LOG(path << " is not found.");
     ERROR_LOG("error: read_file_tostring");
-    return ""; // TODO: エラーを呼び出し元に通知
+    return ""; // TODO: エラーを呼び出し元に通知 exitかな rakiyama
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
