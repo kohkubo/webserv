@@ -136,7 +136,12 @@ static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
-static std::string general_header() { return "Connection: close" + CRLF; }
+static std::string connection_header(const RequestInfo &request_info) {
+  if (request_info.connection_close_) {
+    return "Connection: close" + CRLF;
+  }
+  return "Connection: keep-alive" + CRLF;
+}
 static std::string location_header(const Location &location,
                                    HttpStatusCode  status_code) {
   std::map<int, std::string>::const_iterator it =
@@ -155,7 +160,7 @@ ResponseGenerator::generate_error_response(const Location &location,
                                            HttpStatusCode  status_code) {
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
-  response += general_header();
+  response += "Connection: close" + CRLF;
   std::string body = error_page_body(location, config, status_code);
   response += entity_header_and_body(body);
   LOG(response);
@@ -164,9 +169,10 @@ ResponseGenerator::generate_error_response(const Location &location,
 
 static std::string response_message(HttpStatusCode     status_code,
                                     const std::string &body,
-                                    const Location    &location) {
+                                    const Location    &location,
+                                    const RequestInfo &request_info) {
   std::string response = start_line(status_code);
-  response += general_header();
+  response += connection_header(request_info);
   if (status_code == NO_CONTENT_204) {
     return response + CRLF;
   }
@@ -195,7 +201,7 @@ ResponseGenerator::generate_response(const Config      &config,
   if (location->return_.size() != 0) {
     // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
-    return response_message(status_code, "", *location);
+    return response_message(status_code, "", *location, request_info);
   }
   if (is_minus_depth(request_info.uri_)) {
     return generate_error_response(*location, config, FORBIDDEN_403);
@@ -207,5 +213,5 @@ ResponseGenerator::generate_response(const Config      &config,
     return generate_error_response(*location, config, status_code);
   }
   return response_message(status_code, __body(file_path, request_info),
-                          *location);
+                          *location, request_info);
 }
