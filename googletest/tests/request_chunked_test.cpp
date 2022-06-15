@@ -32,7 +32,7 @@ TEST(request_chunked_test, chunked_body) {
   const RequestInfo &info = transaction.request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  EXPECT_EQ(info.env_values_[0],
+  EXPECT_EQ(info.body_,
             "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello "
             "world\ntest");
 }
@@ -71,7 +71,7 @@ TEST(request_chunked_test, chunked_body_split) {
   const RequestInfo &info = transaction.request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  EXPECT_EQ(info.env_values_[0],
+  EXPECT_EQ(info.body_,
             "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello "
             "world\ntest");
 }

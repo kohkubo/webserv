@@ -48,7 +48,7 @@ ResponseGenerator::__read_file_tostring_cgi(const std::string &path,
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
                     const_cast<char *>(path.c_str()), NULL};
     CgiEnviron cgi_environ(path, request_info);
-    // TODO: request_info.env_valueはパースせずに標準出力へ
+    // TODO: request_info.body_はパースせずに標準出力へ
     // TODO: execveの前にスクリプトのあるディレクトリに移動
     // TODO: timeout
     // error handling
