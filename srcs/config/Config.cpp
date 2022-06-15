@@ -50,7 +50,7 @@ tokenIterator Config::__parse(tokenIterator pos, tokenIterator end) {
     pos = __parse_location(pos, end);
     pos = __parse_listen(pos, end);
     pos = __parse_string_directive("server_name", server_name_, pos, end);
-    pos = __parse_sizet_directive("client_max_body_size", client_max_body_size_, pos, end);
+    pos = __parse_size_directive("client_max_body_size", client_max_body_size_, pos, end);
     pos = __parse_map_directive("error_page", error_pages_, pos, end);
     // clang-format on
     if (pos == head) {
@@ -169,9 +169,9 @@ tokenIterator Config::__parse_string_directive(std::string   key,
   return pos + 2;
 }
 
-tokenIterator Config::__parse_sizet_directive(std::string key, size_t &value,
-                                              tokenIterator pos,
-                                              tokenIterator end) {
+tokenIterator Config::__parse_size_directive(std::string key, size_t &value,
+                                             tokenIterator pos,
+                                             tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;

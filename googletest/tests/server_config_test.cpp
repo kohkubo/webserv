@@ -207,7 +207,7 @@ TEST(server_config_test, parse_boolean_directive) {
   }
 }
 
-TEST(server_config_test, parse_sizet_directive) {
+TEST(server_config_test, parse_size_directive) {
   {
     std::string str = "server {\n"
                       "    client_max_body_size 1000;\n"

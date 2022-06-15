@@ -10,11 +10,3 @@ RequestInfo::BadRequestException::BadRequestException(HttpStatusCode     status,
 HttpStatusCode RequestInfo::BadRequestException::status() const {
   return __status_;
 }
-
-// TODO: フィールド追加
-bool RequestInfo::__is_comma_sparated(std::string &field_name) {
-  (void)field_name;
-  // カンマ区切りが定義されたフィールドか判定する。
-  // tmp
-  return false;
-}

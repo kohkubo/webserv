@@ -69,9 +69,9 @@ private:
                                                 std::string  &value,
                                                 tokenIterator pos,
                                                 tokenIterator end);
-  static tokenIterator __parse_sizet_directive(std::string key, size_t &value,
-                                               tokenIterator pos,
-                                               tokenIterator end);
+  static tokenIterator __parse_size_directive(std::string key, size_t &value,
+                                              tokenIterator pos,
+                                              tokenIterator end);
   static tokenIterator __parse_bool_directive(std::string key, bool &value,
                                               tokenIterator pos,
                                               tokenIterator end);
