@@ -74,6 +74,8 @@ public:
     HttpStatusCode status() const;
   };
 
+  bool        has_body() const { return content_length_ != 0 || is_chunked_; }
+
   static void store_request_header_field_map(
       const std::string                  &header_line,
       std::map<std::string, std::string> &header_field_map);

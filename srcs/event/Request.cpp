@@ -40,8 +40,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
           __check_max_client_body_size_exception(
               __request_info_.content_length_,
               __config_->client_max_body_size_);
-          if (__request_info_.content_length_ != 0 ||
-              __request_info_.is_chunked_) {
+          if (__request_info_.has_body()) {
             __state_ = RECEIVING_BODY;
             break;
           }
