@@ -36,19 +36,12 @@ private:
   static const std::size_t           BUFFER_MAX_LENGTH_ = 8192;
 
 private:
-  static std::string __cutout_request_body(std::string &request_buffer,
-                                           size_t       content_length);
-  static bool        __get_next_chunk_line(NextChunkType chunk_type,
-                                           std::string  &request_buffer,
-                                           std::string &chunk, size_t next_chunk_size);
-  RequestState       __chunk_loop(std::string &request_buffer);
+  RequestState __chunk_loop(std::string &request_buffer);
   static void
   __check_max_client_body_size_exception(std::size_t actual_body_size,
                                          std::size_t max_body_size);
   static void __check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  static const Config *__select_proper_config(const confGroup   &conf_group,
-                                              const std::string &host_name);
 
 public:
   Request()

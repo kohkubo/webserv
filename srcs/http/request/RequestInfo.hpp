@@ -38,24 +38,13 @@ public:
   envValues   env_values_;
 
 private:
-  static bool        __is_comma_sparated(std::string &field_name);
-  static std::string __parse_request_host(const std::string &host_line);
-  static bool        __parse_request_connection(const std::string &connection);
-  static size_t
-  __parse_request_content_length(const std::string &content_length);
-  static envValues __parse_request_env_values(const std::string &request_body);
-  static formMap   __parse_request_multi_part(const std::string &request_body,
-                                              const ContentInfo &content_type);
-  static formMap   __parse_multi_part_loop(std::string        body,
-                                           const std::string &boudary_specified);
-  static void      __parse_form_header(const std::string  line,
-                                       RequestInfo::Form &form);
-  static void __add_form_to_form_map(formMap &multi_form, const Form &form);
-  static bool
-  __parse_request_transfer_encoding(const std::string &transfer_encoding);
+  static formMap     __parse_request_multi_part(const std::string &request_body,
+                                                const ContentInfo &content_type);
+  static formMap     __parse_multi_part_loop(std::string        body,
+                                             const std::string &boudary_specified);
+  static void        __parse_form_header(const std::string  line,
+                                         RequestInfo::Form &form);
   static ContentInfo __parse_content_info(const std::string &content);
-  // TODO: ↓ファイル内static関数で済む rakiyama
-  static std::string __cutout_prameter_value(std::string str);
 
 public:
   RequestInfo()
