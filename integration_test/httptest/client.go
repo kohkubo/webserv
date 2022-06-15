@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type TestInfo struct {
+type TestSource struct {
 	Port             string
 	Request          string
 	ExpectStatusCode int
@@ -18,12 +18,13 @@ type TestInfo struct {
 }
 
 type Client struct {
-	port           string
-	request        string
-	sendCnt        int
-	conn           net.Conn
-	gotResp        *http.Response
-	reponseChecker ReponseChecker
+	Port           string
+	Request        string
+	SendCnt        int
+	Conn           net.Conn
+	Close          bool
+	GotResponse    *http.Response
+	ReponseChecker ReponseChecker
 }
 
 type ReponseChecker interface {
@@ -31,53 +32,56 @@ type ReponseChecker interface {
 }
 
 // constructor
-func NewClient(info TestInfo) *Client {
+func NewClient(info TestSource) *Client {
 	c := &Client{}
-	c.port = info.Port
-	c.request = info.Request
-	c.reponseChecker = NewResponseChecker(info.ExpectStatusCode, info.ExpectHeader, info.ExpectBody)
-	conn, err := connect(c.port)
+	c.Port = info.Port
+	c.Request = info.Request
+	conn, err := connect(c.Port)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
-	c.conn = conn
+	c.Conn = conn
+	c.Close = true
+	c.ReponseChecker = NewResponseChecker(info.ExpectStatusCode, info.ExpectHeader, info.ExpectBody)
 	return c
 }
 
 // リクエスト送信
 func (c *Client) SendAllRequest() {
-	c.SendPartialRequest(len(c.request))
+	c.SendPartialRequest(len(c.Request))
 }
 
 // 先頭のReqPayloadのみ送信
 func (c *Client) SendPartialRequest(n int) {
-	len := len(c.request)
-	if c.sendCnt < len {
-		limit := c.sendCnt + n
+	len := len(c.Request)
+	if c.SendCnt < len {
+		limit := c.SendCnt + n
 		if len < limit {
 			limit = len
 		}
-		sendN, err := fmt.Fprintf(c.conn, c.request[c.sendCnt:limit])
+		sendN, err := fmt.Fprintf(c.Conn, c.Request[c.SendCnt:limit])
 		// 連続で使用された場合にリクエストが分かれるようにsleep
 		time.Sleep(1 * time.Millisecond)
 		if err != nil {
 			webserv.ExitWithKill(fmt.Errorf("sendPartialRequest: %v", err))
 		}
-		c.sendCnt += sendN
+		c.SendCnt += sendN
 	}
 }
 
 // レスポンスを受ける
 func (c *Client) RecvResponse() {
-	if c.sendCnt != len(c.request) {
+	if c.SendCnt != len(c.Request) {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: all request is not send!"))
 	}
-	resp, err := readParseResponse(c.conn, resolveMethod(c.request))
+	resp, err := readParseResponse(c.Conn, resolveMethod(c.Request))
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("recvResponse: %v", err))
 	}
-	c.gotResp = resp
-	c.conn.Close()
+	c.GotResponse = resp
+	if c.Close {
+		c.Conn.Close()
+	}
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
@@ -94,11 +98,11 @@ func resolveMethod(req string) string {
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() bool {
-	result, err := c.reponseChecker.Check(c.gotResp)
+	result, err := c.ReponseChecker.Check(c.GotResponse)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
 	}
-	c.gotResp.Body.Close()
+	c.GotResponse.Body.Close()
 	return result == 0
 }
 

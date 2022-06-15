@@ -20,7 +20,7 @@ var testGET = testCatergory{
 				port := "50000"
 				expectBody := fileToBytes("../html/index.html")
 				contentLen := strconv.Itoa(len(expectBody))
-				client := httptest.NewClient(httptest.TestInfo{
+				src := httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
@@ -34,7 +34,8 @@ var testGET = testCatergory{
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
-				})
+				}
+				client := httptest.NewClient(src)
 				return client.DoAndCheck()
 			},
 		},
