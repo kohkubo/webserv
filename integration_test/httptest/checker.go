@@ -15,14 +15,14 @@ import (
 // http.ResponseではCloseというメンバーに設定されていたので
 // TestInfoのHeader mapからConnectionだけ判定して, mapから削除
 func NewResponseChecker(statusCode int, header http.Header, body []byte) ReponseChecker {
-	newResp := &Checker{}
-	newResp.Status = response.Statuses[statusCode]
-	newResp.StatusCode = statusCode
-	newResp.Proto = "HTTP/1.1"
-	newResp.Header = header
-	newResp.Body = body
-	newResp.Close = resolveClose(header)
-	return newResp
+	c := &Checker{}
+	c.Status = response.Statuses[statusCode]
+	c.StatusCode = statusCode
+	c.Proto = "HTTP/1.1"
+	c.Header = header
+	c.Body = body
+	c.Close = resolveClose(header)
+	return c
 }
 
 func resolveClose(header http.Header) bool {
