@@ -37,9 +37,8 @@ bool is_dir_exists(const std::string &path) {
 std::string read_file_tostring(const std::string &path) {
   std::ifstream file(path.c_str());
   if (file.fail()) {
-    ERROR_LOG(path << " is not found.");
-    ERROR_LOG("error: read_file_tostring");
-    return ""; // TODO: エラーを呼び出し元に通知 exitかな rakiyama
+    ERROR_LOG_WITH_ERRNO("read_file_tostring:" + path);
+    return ""; // TODO: エラーを呼び出し元に通知 rakiyama
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
@@ -47,6 +46,19 @@ std::string read_file_tostring(const std::string &path) {
   // その他のエラーケースに関しても再現が困難なので現状エラー確認なし.
   file.close();
   return buffer.str();
+}
+
+// ファイルが既に存在する時の挙動まだわからない rakiyama
+bool write_string_tofile(const std::string &file_path,
+                         const std::string &content) {
+  std::ofstream outfile(file_path);
+  if (outfile.fail()) {
+    ERROR_EXIT_WITH_ERRNO("write_string_tofile");
+    return false;
+  }
+  outfile << content;
+  outfile.close();
+  return true;
 }
 
 bool remove_file(const std::string &file_path) {
