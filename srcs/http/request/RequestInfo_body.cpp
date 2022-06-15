@@ -8,19 +8,6 @@
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
-// rakiyama
-//  TODO: =があるかなどのバリデート必要か rakiyama
-//  TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
-static RequestInfo::envValues
-parse_request_env_values(const std::string &request_body) {
-  RequestInfo::envValues res;
-  tokenVector            tokens = tokenize(request_body, "&", "&");
-  for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
-    res.push_back(*it);
-  }
-  return res;
-}
-
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const ContentInfo &content_type) {
   if (content_type.type_ == "application/x-www-form-urlencoded" ||
