@@ -46,6 +46,22 @@ func NewClient(info TestSource) *Client {
 	return c
 }
 
+// リクエストの送信, 受信, 結果の確認まで行う
+// 成功->true, 失敗->false
+func (c *Client) DoAndCheck() bool {
+	if err := c.SendAllRequest(); err != nil {
+		webserv.ExitWithKill(err)
+	}
+	if err := c.RecvResponse(); err != nil {
+		webserv.ExitWithKill(err)
+	}
+	result, err := c.IsExpectedResponse()
+	if err != nil {
+		webserv.ExitWithKill(err)
+	}
+	return result
+}
+
 // リクエスト送信
 func (c *Client) SendAllRequest() error {
 	return c.SendPartialRequest(len(c.Request))
@@ -106,20 +122,4 @@ func (c *Client) IsExpectedResponse() (bool, error) {
 	}
 	c.GotResponse.Body.Close()
 	return result == 0, err
-}
-
-// リクエストの送信, 受信, 結果の確認まで行う
-// 成功->true, 失敗->false
-func (c *Client) DoAndCheck() bool {
-	if err := c.SendAllRequest(); err != nil {
-		webserv.ExitWithKill(err)
-	}
-	if err := c.RecvResponse(); err != nil {
-		webserv.ExitWithKill(err)
-	}
-	result, err := c.IsExpectedResponse()
-	if err != nil {
-		webserv.ExitWithKill(err)
-	}
-	return result
 }
