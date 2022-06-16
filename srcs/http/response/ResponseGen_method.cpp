@@ -85,9 +85,9 @@ static HttpStatusCode handle_delete_method(const Location    &location,
 }
 
 HttpStatusCode
-ResponseGenerator::__handle_method(const Location    &location,
-                                   const RequestInfo &request_info,
-                                   const std::string &file_path) {
+ResponseGenerator::_handle_method(const Location    &location,
+                                  const RequestInfo &request_info,
+                                  const std::string &file_path) {
   HttpStatusCode status_code = NONE;
   if ("GET" == request_info.method_) {
     status_code = handle_get_method(location, file_path);
