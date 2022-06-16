@@ -65,25 +65,15 @@ static bool is_error_status_code(HttpStatusCode status_code) {
   return status_code > 299 && status_code < 600;
 }
 
-static std::string create_file_path(const std::string &request_uri,
-                                    const Location    &location) {
-  std::string file_path;
-  file_path = location.root_ + request_uri;
-  if (has_suffix(file_path, "/") &&
-      is_file_exists(file_path + location.index_)) {
-    file_path += location.index_;
-  }
-  return file_path;
-}
-
 // TODO: config.error_page validate
 static std::string error_page_body(const RequestInfo &request_info,
                                    HttpStatusCode     status_code) {
   std::map<int, std::string>::const_iterator it =
       request_info.config_->error_pages_.find(status_code);
   if (it != request_info.config_->error_pages_.end()) {
-    std::string file_path = request_info.location_->root_ + it->second;
-    RetPair     ret_pair  = read_file_to_str(file_path);
+    std::string file_path_ =
+        request_info.location_->root_ + it->second;
+    RetPair ret_pair = read_file_to_str(request_info.file_path_);
     if (!ret_pair.is_err_) {
       return ret_pair.str_;
     }
@@ -105,15 +95,14 @@ static std::string error_page_body(const RequestInfo &request_info,
          "</html>";
 }
 
-std::string ResponseGenerator::_body(const std::string &file_path,
-                                     const RequestInfo &request_info) {
-  if (has_suffix(file_path, ".py")) {
-    return _read_file_to_str_cgi(file_path, request_info);
+std::string ResponseGenerator::_body(const RequestInfo &request_info) {
+  if (has_suffix(request_info.file_path_, ".py")) {
+    return _read_file_to_str_cgi(request_info);
   }
-  if (has_suffix(file_path, "/")) {
-    return _create_autoindex_body(file_path, request_info);
+  if (has_suffix(request_info.file_path_, "/")) {
+    return _create_autoindex_body(request_info);
   }
-  RetPair ret_pair = read_file_to_str(file_path);
+  RetPair ret_pair = read_file_to_str(request_info.file_path_);
   if (ret_pair.is_err_) {
     // TODO:
     // ロジックに整理が必要かも。requst_infoにlocationとconfigをもたせたほうがよい。
@@ -187,10 +176,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
   // if (is_minus_depth(request_info.request_target_)) {
   //   return generate_error_response(*location, config, FORBIDDEN_403);
   // }
-  std::string file_path =
-      create_file_path(request_info.request_target_, *request_info.location_);
-  status_code =
-      _handle_method(*request_info.location_, request_info, file_path);
+  status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(request_info, status_code);
@@ -201,6 +187,6 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     // kohkubo
     return response_message(status_code, "", *request_info.location_);
   }
-  return response_message(status_code, _body(file_path, request_info),
+  return response_message(status_code, _body(request_info),
                           *request_info.location_);
 }

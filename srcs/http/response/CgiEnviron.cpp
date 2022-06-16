@@ -8,8 +8,8 @@
 
 #include "utils/utils.hpp"
 
-static std::string get_realpath(const std::string &path) {
-  char *abs_path = realpath(path.c_str(), NULL);
+static std::string get_realpath(const std::string &file_path) {
+  char *abs_path = realpath(file_path.c_str(), NULL);
   if (abs_path == NULL) {
     // TODO: ここはexitで大丈夫？？ kohkubo
     ERROR_EXIT_WITH_ERRNO("get_realpath");
@@ -19,8 +19,7 @@ static std::string get_realpath(const std::string &path) {
   return res;
 }
 
-static environMap create_environ_map(const std::string &path,
-                                     const RequestInfo &request_info) {
+static environMap create_environ_map(const RequestInfo &request_info) {
   environMap environ_map;
 
   if (request_info.has_body()) {
@@ -28,8 +27,8 @@ static environMap create_environ_map(const std::string &path,
     environ_map["CONTENT_TYPE"]   = request_info.content_type_.type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-  environ_map["PATH_INFO"]         = get_realpath(path);
-  environ_map["PATH_TRANSLATED"]   = get_realpath(path);
+  environ_map["PATH_INFO"]         = get_realpath(request_info.file_path_);
+  environ_map["PATH_TRANSLATED"]   = get_realpath(request_info.file_path_);
   environ_map["QUERY_STRING"]      = request_info.query_string_;
   environ_map["REQUEST_METHOD"]    = request_info.method_;
   environ_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
@@ -65,9 +64,8 @@ static char **create_cgi_environ(environMap environ_map) {
   return cgi_environ;
 }
 
-CgiEnviron::CgiEnviron(const std::string &path,
-                       const RequestInfo &request_info) {
-  environMap environ_map = create_environ_map(path, request_info);
+CgiEnviron::CgiEnviron(const RequestInfo &request_info) {
+  environMap environ_map = create_environ_map(request_info);
   _environ_              = create_cgi_environ(environ_map);
 }
 

@@ -30,8 +30,7 @@ static std::string dir_list_lines(const std::string &file_path) {
 }
 
 std::string
-ResponseGenerator::_create_autoindex_body(const std::string &file_path,
-                                          const RequestInfo &request_info) {
+ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info) {
   std::stringstream buff;
   // clang-format off
   buff << "<!DOCTYPE html>\n"
@@ -42,7 +41,7 @@ ResponseGenerator::_create_autoindex_body(const std::string &file_path,
        << "   <body>\n"
        << "      <h1>Index of " << request_info.request_target_ << "</h1>\n"
        << "      <ul style=\"list-style:none\">\n"
-       <<          dir_list_lines(file_path)
+       <<          dir_list_lines(request_info.file_path_)
        << "    </ul>\n"
        << "   </body>\n"
        << "</html>";

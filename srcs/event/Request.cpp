@@ -5,6 +5,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 static const Config *select_proper_config(const confGroup   &conf_group,
@@ -43,6 +44,16 @@ select_proper_location(const std::string           &request_uri,
     }
   }
   return location;
+}
+
+static std::string create_file_path(const std::string &request_target,
+                                    const Location    &location) {
+  std::string file_path = location.root_ + request_target;
+  if (has_suffix(file_path, "/") &&
+      is_file_exists(file_path + location.index_)) {
+    file_path += location.index_;
+  }
+  return file_path;
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
@@ -84,6 +95,8 @@ RequestState Request::handle_request(std::string     &request_buffer,
               LOG("########################");
               throw RequestInfo::BadRequestException(NOT_FOUND_404);
             }
+            _request_info_.file_path_ = create_file_path(
+                _request_info_.request_target_, *_request_info_.location_);
           }
           // TODO: validate request_header
           // delete with body

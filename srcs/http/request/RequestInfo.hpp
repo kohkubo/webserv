@@ -36,6 +36,7 @@ public:
   bool                                connection_close_;
   bool                                is_chunked_;
   std::size_t                         content_length_;
+  std::string                         file_path_;
   const Config                       *config_;
   const Location                     *location_;
   ContentInfo                         content_type_;
