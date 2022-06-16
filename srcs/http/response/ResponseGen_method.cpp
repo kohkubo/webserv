@@ -35,7 +35,6 @@ static HttpStatusCode check_filepath_status(const Location    &location,
 static HttpStatusCode save_posted_file(const Location    &location,
                                        const RequestInfo &request_info,
                                        const std::string &file_path) {
-  std::cout << "~~~~~~" << std::endl;
   if (!location.upload_file_) {
     return NOT_ALLOWED_405;
   }
