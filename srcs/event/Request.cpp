@@ -140,10 +140,12 @@ RequestState Request::handle_request(std::string     &request_buffer,
   } catch (const RequestInfo::BadRequestException &e) {
     // TODO: この初期化いらないかも kohkubo
     if (_request_info_.config_ == NULL) {
-      _request_info_.config_ = new Config();
+      Config config;
+      _request_info_.config_ = &config;
     }
     if (_request_info_.location_ == NULL) {
-      _request_info_.location_ = new Location();
+      Location location;
+      _request_info_.location_ = &location;
     }
     _response_ =
         ResponseGenerator::generate_error_response(_request_info_, e.status());
