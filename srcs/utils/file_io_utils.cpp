@@ -34,8 +34,8 @@ bool is_dir_exists(const std::string &path) {
   return ((file_info.st_mode & S_IFMT) == S_IFDIR);
 }
 
-retPair read_file_to_str(const std::string &path) {
-  retPair       ret_pair = {};
+RetPair read_file_to_str(const std::string &path) {
+  RetPair       ret_pair = {};
   std::ifstream file(path.c_str());
   if (file.fail()) {
     ret_pair.is_err_ = true;
