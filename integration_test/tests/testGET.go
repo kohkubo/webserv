@@ -45,7 +45,7 @@ var testGET = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /dir1/index2.html HTTP/1.1\r\n" +
-						"Host: localhost:50000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -69,7 +69,7 @@ var testGET = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /no_such_file_404 HTTP/1.1\r\n" +
-						"Host: localhost:50000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -96,7 +96,7 @@ var testGET = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:50000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -123,7 +123,7 @@ var testGET = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /../ HTTP/1.1\r\n" +
-						"Host: localhost:50000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",

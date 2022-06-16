@@ -12,14 +12,14 @@ var testServerName = testCatergory{
 		{
 			caseName: "match_hoge",
 			test: func() bool {
-
+				port := "50001"
 				expectBody := []byte("index in dir1")
 
 				expectStatusCode := 200
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: "50001",
+					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: hoge.com:50001\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -37,14 +37,14 @@ var testServerName = testCatergory{
 		{
 			caseName: "match_fuga",
 			test: func() bool {
-
+				port := "50001"
 				expectBody := []byte("index in dir2")
 
 				expectStatusCode := 200
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: "50001",
+					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: fuga.com:50001\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -62,14 +62,14 @@ var testServerName = testCatergory{
 		{
 			caseName: "no_match",
 			test: func() bool {
-
+				port := "50001"
 				expectBody := []byte("index in server_name")
 
 				expectStatusCode := 200
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: "50001",
+					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: no_such_host.com:50001\r\n" +
+						"Host: no_such_host.com:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",

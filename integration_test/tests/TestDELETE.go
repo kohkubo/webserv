@@ -37,7 +37,7 @@ var testDELETE = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "DELETE " + deleteFilePath + " HTTP/1.1\r\n" +
-						"Host: localhost:55000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -74,7 +74,7 @@ var testDELETE = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "DELETE /no_such_file HTTP/1.1\r\n" +
-						"Host: localhost:55000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
