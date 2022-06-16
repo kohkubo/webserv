@@ -34,7 +34,6 @@ var testBadRequest = testCatergory{
 				return clientA.DoAndCheck()
 			},
 		},
-
 		{
 			caseName: "too long header",
 			test: func() bool {
@@ -87,7 +86,6 @@ var testBadRequest = testCatergory{
 				return clientA.DoAndCheck()
 			},
 		},
-
 		{
 			caseName: "too long chunk size line",
 			test: func() bool {
@@ -115,7 +113,6 @@ var testBadRequest = testCatergory{
 				return clientA.DoAndCheck()
 			},
 		},
-
 		{
 			caseName: "too long chunked body",
 			test: func() bool {
@@ -145,7 +142,6 @@ var testBadRequest = testCatergory{
 				return clientA.DoAndCheck()
 			},
 		},
-
 		{
 			caseName: "invalid chunk size",
 			test: func() bool {
