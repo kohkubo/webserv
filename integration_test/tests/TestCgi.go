@@ -14,10 +14,9 @@ var testCgi = testCatergory{
 			caseName: "5000_cgi_get_normal",
 			test: func() bool {
 				expectBody := []byte(
-					`name= taro
-blood= A
-text= string
-`,
+					"name= taro\n" +
+						"blood= A\n" +
+						"text= string\n",
 				)
 				contentLen := strconv.Itoa(len(expectBody))
 				expectStatusCode := 200
