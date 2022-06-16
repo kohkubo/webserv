@@ -138,9 +138,9 @@ static std::string start_line(const HttpStatusCode status_code) {
 
 static std::string connection_header(const RequestInfo &request_info) {
   if (request_info.connection_close_) {
-    return "Connection: close" + CRLF;
+    return "Connection: Close" + CRLF;
   }
-  return "Connection: keep-alive" + CRLF;
+  return "Connection: Keep-Alive" + CRLF;
 }
 static std::string location_header(const Location &location,
                                    HttpStatusCode  status_code) {
