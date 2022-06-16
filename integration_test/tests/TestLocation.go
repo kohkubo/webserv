@@ -12,11 +12,11 @@ var testLocation = testCatergory{
 		{
 			caseName: "locationでdir1を指定できているか",
 			test: func() bool {
-
+				port := "50000"
 				expectStatusCode := 200
 				expectBody, contentLen := bytesAndLen("html/dir1/index.html")
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: "50000",
+					Port: port,
 					Request: "GET /dir1/ HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
