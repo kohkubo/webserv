@@ -25,7 +25,6 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 struct Request {
 private:
-  const Config                      *_config_;
   RequestState                       _state_;
   RequestInfo                        _request_info_;
   std::string                        _response_;
@@ -45,8 +44,7 @@ private:
 
 public:
   Request()
-      : _config_(NULL)
-      , _state_(RECEIVING_STARTLINE)
+      : _state_(RECEIVING_STARTLINE)
       , _next_chunk_(CHUNK_SIZE)
       , _next_chunk_size_(-1) {}
 
@@ -55,7 +53,7 @@ public:
   RequestState       handle_request(std::string     &request_buffer,
                                     const confGroup &conf_group);
   Response           create_response() {
-    // TODO: is_close判定
+              // TODO: is_close判定
     // エラー || Connection: close -> true
     return Response(_response_, _request_info_.connection_close_);
   }

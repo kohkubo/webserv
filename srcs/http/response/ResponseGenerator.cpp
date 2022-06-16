@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 #include "config/Config.hpp"
+#include "config/Location.hpp"
 #include "http/const/const_http_enums.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
@@ -76,13 +77,12 @@ static std::string create_file_path(const std::string &request_uri,
 }
 
 // TODO: config.error_page validate
-static std::string error_page_body(const Location &location,
-                                   const Config   &config,
-                                   HttpStatusCode  status_code) {
+static std::string error_page_body(const RequestInfo   &request_info,
+                                   HttpStatusCode status_code) {
   std::map<int, std::string>::const_iterator it =
-      config.error_pages_.find(status_code);
-  if (it != config.error_pages_.end()) {
-    std::string file_path = location.root_ + it->second;
+      request_info.config_->error_pages_.find(status_code);
+  if (it != request_info.config_->error_pages_.end()) {
+    std::string file_path = request_info.location_->root_ + it->second;
     retPair     ret_pair  = read_file_to_str(file_path);
     if (!ret_pair.is_err_) {
       return ret_pair.str_;
@@ -125,26 +125,6 @@ std::string ResponseGenerator::_body(const std::string &file_path,
   return ret_pair.str_;
 }
 
-// 最長マッチ
-static const Location *
-select_proper_location(const std::string           &request_uri,
-                       const std::vector<Location> &locations) {
-  // clang-format off
-  std::string     path;
-  const Location *ret_location = NULL;
-  // clang-format on
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); ++it) {
-    if (request_uri.find(it->location_path_) == 0) {
-      if (path.size() < it->location_path_.size()) {
-        path         = it->location_path_;
-        ret_location = &(*it);
-      }
-    }
-  }
-  return ret_location;
-}
-
 static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
@@ -163,13 +143,13 @@ static std::string entity_header_and_body(const std::string &body) {
 }
 
 std::string
-ResponseGenerator::generate_error_response(const Location &location,
-                                           const Config   &config,
-                                           HttpStatusCode  status_code) {
+ResponseGenerator::generate_error_response(const RequestInfo &request_info,
+                                           HttpStatusCode     status_code) {
+  LOG("generate_error_response()");
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   response += general_header();
-  std::string body = error_page_body(location, config, status_code);
+  std::string body = error_page_body(request_info, status_code);
   response += entity_header_and_body(body);
   LOG(response);
   return response;
@@ -191,41 +171,36 @@ static std::string response_message(HttpStatusCode     status_code,
 };
 
 std::string
-ResponseGenerator::generate_response(const Config      &config,
-                                     const RequestInfo &request_info) {
-  HttpStatusCode  status_code = NONE;
+ResponseGenerator::generate_response(const RequestInfo &request_info) {
+  HttpStatusCode status_code = NONE;
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
-  const Location *location =
-      select_proper_location(request_info.request_target_, config.locations_);
-  if (location == NULL) {
-    // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
-    return generate_error_response(Location(), config, NOT_FOUND_404);
-  }
   // return がセットされていたら
-  if (location->return_.size() != 0) {
+  if (request_info.location_->return_.size() != 0) {
     // intをHttpStatusCodeに変換する
-    status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
-    return response_message(status_code, "", *location);
+    status_code = static_cast<HttpStatusCode>(
+        request_info.location_->return_.begin()->first);
+    return response_message(status_code, "", *request_info.location_);
   }
   // if (is_minus_depth(request_info.request_target_)) {
   //   return generate_error_response(*location, config, FORBIDDEN_403);
   // }
   std::string file_path =
-      create_file_path(request_info.request_target_, *location);
-  status_code = _handle_method(*location, request_info, file_path);
+      create_file_path(request_info.request_target_, *request_info.location_);
+  status_code =
+      _handle_method(*request_info.location_, request_info, file_path);
   if (is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
-    return generate_error_response(*location, config, status_code);
+    return generate_error_response(request_info, status_code);
   }
   if (status_code == NO_CONTENT_204) {
     // TODO:
     // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
     // kohkubo
-    return response_message(status_code, "", *location);
+    return response_message(status_code, "", *request_info.location_);
   }
   return response_message(status_code, _body(file_path, request_info),
-                          *location);
+                          *request_info.location_);
 }

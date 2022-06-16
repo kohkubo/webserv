@@ -11,11 +11,9 @@
 
 class ResponseGenerator {
 public:
-  static std::string generate_response(const Config      &config,
-                                       const RequestInfo &request_info);
-  static std::string generate_error_response(const Location &location,
-                                             const Config   &config,
-                                             HttpStatusCode  status_code);
+  static std::string generate_response(const RequestInfo &request_info);
+  static std::string generate_error_response(const RequestInfo &request_info,
+                                             HttpStatusCode     status_code);
 
 private:
   ResponseGenerator();

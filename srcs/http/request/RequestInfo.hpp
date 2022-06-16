@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "config/Config.hpp"
+#include "config/Location.hpp"
 #include "http/const/const_http_enums.hpp"
 #include "utils/tokenize.hpp"
 
@@ -34,6 +36,8 @@ public:
   bool                                connection_close_;
   bool                                is_chunked_;
   std::size_t                         content_length_;
+  const Config                       *config_;
+  const Location                     *location_;
   ContentInfo                         content_type_;
   formMap                             form_map_;
 
@@ -52,7 +56,9 @@ public:
       , method_("")
       , connection_close_(false)
       , is_chunked_(false)
-      , content_length_(0) {}
+      , content_length_(0)
+      , config_(NULL)
+      , location_(NULL) {}
 
   class BadRequestException : public std::logic_error {
   private:
