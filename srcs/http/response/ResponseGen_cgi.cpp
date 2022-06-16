@@ -46,7 +46,7 @@ ResponseGenerator::_read_file_to_str_cgi(const std::string &path,
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
-                         const_cast<char *>(path.c_str()), NULL};
+                    const_cast<char *>(path.c_str()), NULL};
     CgiEnviron cgi_environ(path, request_info);
     // TODO: request_info.body_はパースせずに標準出力へ
     // TODO: execveの前にスクリプトのあるディレクトリに移動

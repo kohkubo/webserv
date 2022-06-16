@@ -77,8 +77,8 @@ static std::string create_file_path(const std::string &request_uri,
 }
 
 // TODO: config.error_page validate
-static std::string error_page_body(const RequestInfo   &request_info,
-                                   HttpStatusCode status_code) {
+static std::string error_page_body(const RequestInfo &request_info,
+                                   HttpStatusCode     status_code) {
   std::map<int, std::string>::const_iterator it =
       request_info.config_->error_pages_.find(status_code);
   if (it != request_info.config_->error_pages_.end()) {
