@@ -18,7 +18,7 @@ func Generate() T {
 		testGET,
 		testDELETE,
 		//testIOMulti,
-		//testCgi,
+		testCgi,
 		testAutoindex,
 		testBadRequest,
 		testLimitExpect,
