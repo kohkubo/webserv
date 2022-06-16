@@ -19,7 +19,7 @@ ConfGroupMapGenerator::ConfGroupMapGenerator(const char *config_file_path) {
 }
 
 void ConfGroupMapGenerator::_read_config(const char *config_file_path) {
-  RetPair ret_pair = read_file_to_str(config_file_path);
+  Result ret_pair = read_file_to_str(config_file_path);
   if (ret_pair.is_err_) {
     ERROR_EXIT(config_file_path << " is not found or can't read.");
   }

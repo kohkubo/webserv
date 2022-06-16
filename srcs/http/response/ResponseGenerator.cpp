@@ -72,7 +72,7 @@ static std::string error_page_body(const RequestInfo &request_info,
       request_info.config_->error_pages_.find(status_code);
   if (it != request_info.config_->error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
-    RetPair     ret_pair  = read_file_to_str(file_path);
+    Result      ret_pair  = read_file_to_str(file_path);
     if (!ret_pair.is_err_) {
       return ret_pair.str_;
     }
@@ -104,7 +104,7 @@ std::string ResponseGenerator::_body(const RequestInfo &request_info) {
   if (has_suffix(request_info.file_path_, "/")) {
     return _create_autoindex_body(request_info);
   }
-  RetPair ret_pair = read_file_to_str(request_info.file_path_);
+  Result ret_pair = read_file_to_str(request_info.file_path_);
   if (ret_pair.is_err_) {
     // TODO:
     // ロジックに整理が必要かも。requst_infoにlocationとconfigをもたせたほうがよい。
