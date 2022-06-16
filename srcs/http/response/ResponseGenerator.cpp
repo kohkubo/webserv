@@ -84,6 +84,7 @@ static std::string error_page_body(const RequestInfo &request_info,
   errorPageMap::const_iterator it = config->error_pages_.find(status_code);
   if (it != config->error_pages_.end()) {
     std::string file_path = location->root_ + it->second;
+    // TODO: 無いエラーページを指定した場合、nginxではどのような挙動になるのかチェックが必要
     Result      result    = read_file_to_str(file_path);
     if (!result.is_err_) {
       return result.str_;
