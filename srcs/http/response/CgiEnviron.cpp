@@ -68,12 +68,12 @@ static char **create_cgi_environ(environMap environ_map) {
 CgiEnviron::CgiEnviron(const std::string &path,
                        const RequestInfo &request_info) {
   environMap environ_map = create_environ_map(path, request_info);
-  __environ_             = create_cgi_environ(environ_map);
+  _environ_              = create_cgi_environ(environ_map);
 }
 
 CgiEnviron::~CgiEnviron() {
-  for (size_t i = 0; __environ_[i] != NULL; i++) {
-    delete __environ_[i];
+  for (size_t i = 0; _environ_[i] != NULL; i++) {
+    delete _environ_[i];
   }
-  delete[] __environ_;
+  delete[] _environ_;
 }

@@ -29,75 +29,73 @@ static std::string cutout_request_body(std::string &request_buffer,
 RequestState Request::handle_request(std::string     &request_buffer,
                                      const confGroup &conf_group) {
   try {
-    if (__state_ == RECEIVING_STARTLINE || __state_ == RECEIVING_HEADER) {
+    if (_state_ == RECEIVING_STARTLINE || _state_ == RECEIVING_HEADER) {
       std::string line;
       while (getline(request_buffer, line)) { // noexcept
-        if (__state_ == RECEIVING_STARTLINE) {
-          __request_info_.check_first_multi_blank_line(line);
+        if (_state_ == RECEIVING_STARTLINE) {
+          _request_info_.check_first_multi_blank_line(line);
           // throws BadRequestException
-          if (__request_info_.is_blank_first_line_) {
+          if (_request_info_.is_blank_first_line_) {
             continue;
           }
           RequestInfo::check_bad_parse_request_start_line(line);
           // throws BadRequestException
-          __request_info_.parse_request_start_line(line); // noexcept
-          __state_ = RECEIVING_HEADER;
-        } else if (__state_ == RECEIVING_HEADER) {
+          _request_info_.parse_request_start_line(line); // noexcept
+          _state_ = RECEIVING_HEADER;
+        } else if (_state_ == RECEIVING_HEADER) {
           if (line != "") {
-            RequestInfo::store_request_header_field_map(line, __field_map_);
+            RequestInfo::store_request_header_field_map(line, _field_map_);
             // throws BadRequestException
             continue;
           }
-          __request_info_.parse_request_header(__field_map_);
+          _request_info_.parse_request_header(_field_map_);
           // throws BadRequestException
-          __config_ = select_proper_config(conf_group, __request_info_.host_);
+          _config_ = select_proper_config(conf_group, _request_info_.host_);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
           // content-length and transfer-encoding -> delete content-length
-          __check_max_client_body_size_exception(
-              __request_info_.content_length_,
-              __config_->client_max_body_size_);
-          if (__request_info_.has_body()) {
-            __state_ = RECEIVING_BODY;
+          _check_max_client_body_size_exception(
+              _request_info_.content_length_, _config_->client_max_body_size_);
+          if (_request_info_.has_body()) {
+            _state_ = RECEIVING_BODY;
             break;
           }
-          __state_ = SUCCESS;
+          _state_ = SUCCESS;
           break;
         }
       }
     }
-    if (__state_ == RECEIVING_BODY) {
-      if (__request_info_.is_chunked_) {
-        __state_ = __chunk_loop(request_buffer);
+    if (_state_ == RECEIVING_BODY) {
+      if (_request_info_.is_chunked_) {
+        _state_ = _chunk_loop(request_buffer);
         // throws BadRequestException
-        __check_max_client_body_size_exception(
-            __request_body_.size(), __config_->client_max_body_size_);
+        _check_max_client_body_size_exception(_request_body_.size(),
+                                              _config_->client_max_body_size_);
         // throws BadRequestException
-      } else if (request_buffer.size() >= __request_info_.content_length_) {
-        __request_body_ = cutout_request_body(request_buffer,
-                                              __request_info_.content_length_);
-        __state_        = SUCCESS;
+      } else if (request_buffer.size() >= _request_info_.content_length_) {
+        _request_body_ =
+            cutout_request_body(request_buffer, _request_info_.content_length_);
+        _state_ = SUCCESS;
       }
-      if (__state_ == SUCCESS) {
-        __request_info_.parse_request_body(__request_body_,
-                                           __request_info_.content_type_);
+      if (_state_ == SUCCESS) {
+        _request_info_.parse_request_body(_request_body_,
+                                          _request_info_.content_type_);
       }
     }
-    if (__state_ == SUCCESS) {
-      __response_ =
-          ResponseGenerator::generate_response(*__config_, __request_info_);
-    } else if (__state_ == RECEIVING_STARTLINE ||
-               __state_ == RECEIVING_HEADER) {
-      __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+    if (_state_ == SUCCESS) {
+      _response_ =
+          ResponseGenerator::generate_response(*_config_, _request_info_);
+    } else if (_state_ == RECEIVING_STARTLINE || _state_ == RECEIVING_HEADER) {
+      _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    __response_ = ResponseGenerator::generate_error_response(
+    _response_ = ResponseGenerator::generate_error_response(
         Location(), Config(), e.status());
-    __request_info_.connection_close_ = true;
-    __state_                          = SUCCESS;
+    _request_info_.connection_close_ = true;
+    _state_                          = SUCCESS;
   }
-  return __state_;
+  return _state_;
 }
 
 static bool get_next_chunk_line(NextChunkType chunk_type,
@@ -118,37 +116,37 @@ static bool get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-RequestState Request::__chunk_loop(std::string &request_buffer) {
+RequestState Request::_chunk_loop(std::string &request_buffer) {
   std::string chunk_line;
-  while (get_next_chunk_line(__next_chunk_, request_buffer, chunk_line,
-                             __next_chunk_size_)) {
-    if (__next_chunk_ == CHUNK_SIZE) {
+  while (get_next_chunk_line(_next_chunk_, request_buffer, chunk_line,
+                             _next_chunk_size_)) {
+    if (_next_chunk_ == CHUNK_SIZE) {
       // TODO: validate chunk_line
-      __next_chunk_size_ = hexstr_to_size(chunk_line);
-      __next_chunk_      = CHUNK_DATA;
+      _next_chunk_size_ = hexstr_to_size(chunk_line);
+      _next_chunk_      = CHUNK_DATA;
     } else {
-      bool is_last_chunk = __next_chunk_size_ == 0 && chunk_line == "";
+      bool is_last_chunk = _next_chunk_size_ == 0 && chunk_line == "";
       if (is_last_chunk) {
         return SUCCESS;
       }
-      __request_body_.append(chunk_line);
-      __next_chunk_ = CHUNK_SIZE;
+      _request_body_.append(chunk_line);
+      _next_chunk_ = CHUNK_SIZE;
     }
   }
-  if (__next_chunk_ == CHUNK_SIZE)
-    __check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+  if (_next_chunk_ == CHUNK_SIZE)
+    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   return RECEIVING_BODY;
 }
 
-void Request::__check_max_client_body_size_exception(
+void Request::_check_max_client_body_size_exception(
     std::size_t actual_body_size, std::size_t max_body_size) {
   if (actual_body_size > max_body_size) {
     throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
   }
 }
 
-void Request::__check_buffer_length_exception(std::string &request_buffer,
-                                              std::size_t  buffer_max_length) {
+void Request::_check_buffer_length_exception(std::string &request_buffer,
+                                             std::size_t  buffer_max_length) {
   if (request_buffer.size() >= buffer_max_length) {
     request_buffer.clear();
     throw RequestInfo::BadRequestException();
