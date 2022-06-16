@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 )
 
 var testCgi = testCatergory{
@@ -14,8 +13,8 @@ var testCgi = testCatergory{
 			caseName: "5000_cgi_get_normal",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectBody, contentLen := bytesAndLen("../html/index.html")
+
 				Port := "50000"
 				Path := "/cgi.sh"
 				clientA := httptest.NewClient(httptest.TestSource{
