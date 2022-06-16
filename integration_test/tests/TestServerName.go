@@ -19,7 +19,7 @@ var testServerName = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:" + port + "\r\n" +
+						"Host: hoge.com:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -44,7 +44,7 @@ var testServerName = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:" + port + "\r\n" +
+						"Host: fuga.com:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
