@@ -44,7 +44,7 @@ public:
   bool          append_receive_buffer();
   void          send_front_response();
   bool          is_timed_out() const {
-             return std::difftime(_time_now(), _last_event_time_) >= TIMEOUT_SECONDS_;
+    return std::difftime(_time_now(), _last_event_time_) >= TIMEOUT_SECONDS_;
   }
   void close() const { ::close(_conn_fd_); }
 };

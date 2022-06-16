@@ -22,9 +22,9 @@ private:
   Server(Server const &other);
   Server &operator=(Server const &other);
   void    _reset_pollfds() {
-       _pollfds_.clear();
-       _add_listenfd_to_pollfds(_conf_group_map_);
-       _add_connfd_to_pollfds(_connection_map_);
+    _pollfds_.clear();
+    _add_listenfd_to_pollfds(_conf_group_map_);
+    _add_connfd_to_pollfds(_connection_map_);
   }
   void
   _add_listenfd_to_pollfds(const std::map<listenFd, confGroup> &conf_group_map);
