@@ -28,16 +28,16 @@ static std::string read_fd_tostring(int fd) {
 
 // TODO: error処理
 std::string
-ResponseGenerator::_read_file_tostring_cgi(const std::string &path,
-                                           const RequestInfo &request_info) {
+ResponseGenerator::_read_file_to_str_cgi(const std::string &path,
+                                         const RequestInfo &request_info) {
   int pipefd[2] = {0, 0};
   if (pipe(pipefd) == -1) {
-    ERROR_LOG("error: pipe in read_file_tostring_cgi");
+    ERROR_LOG("error: pipe in read_file_to_str_cgi");
     return "";
   }
   pid_t pid = fork();
   if (pid == -1) {
-    ERROR_LOG("error: fork in read_file_tostring_cgi");
+    ERROR_LOG("error: fork in read_file_to_str_cgi");
     return "";
   }
   // child
@@ -46,7 +46,7 @@ ResponseGenerator::_read_file_tostring_cgi(const std::string &path,
     dup2(pipefd[WRITE_FD], STDOUT_FILENO);
     close(pipefd[WRITE_FD]);
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
-                    const_cast<char *>(path.c_str()), NULL};
+                         const_cast<char *>(path.c_str()), NULL};
     CgiEnviron cgi_environ(path, request_info);
     // TODO: request_info.body_はパースせずに標準出力へ
     // TODO: execveの前にスクリプトのあるディレクトリに移動
@@ -62,7 +62,7 @@ ResponseGenerator::_read_file_tostring_cgi(const std::string &path,
   std::string s = read_fd_tostring(pipefd[READ_FD]);
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {
-    ERROR_LOG("error: waitpid in read_file_tostring_cgi");
+    ERROR_LOG("error: waitpid in read_file_to_str_cgi");
     return "";
   }
   return s;

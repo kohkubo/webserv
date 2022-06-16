@@ -20,8 +20,8 @@ public:
 private:
   ResponseGenerator();
   ~ResponseGenerator();
-  static std::string    _read_file_tostring_cgi(const std::string &path,
-                                                const RequestInfo &request_info);
+  static std::string    _read_file_to_str_cgi(const std::string &path,
+                                              const RequestInfo &request_info);
   static std::string    _body(const std::string &file_path,
                               const RequestInfo &request_info);
   static std::string    _create_autoindex_body(const std::string &file_path,

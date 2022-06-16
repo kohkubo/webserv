@@ -75,15 +75,51 @@ static std::string create_file_path(const std::string &request_uri,
   return file_path;
 }
 
+// TODO: config.error_page validate
+static std::string error_page_body(const Location &location,
+                                   const Config   &config,
+                                   HttpStatusCode  status_code) {
+  std::map<int, std::string>::const_iterator it =
+      config.error_pages_.find(status_code);
+  if (it != config.error_pages_.end()) {
+    std::string file_path = location.root_ + it->second;
+    retPair     ret_pair  = read_file_to_str(file_path);
+    if (!ret_pair.is_err_) {
+      return ret_pair.str_;
+    }
+    status_code = INTERNAL_SERVER_ERROR_500;
+  }
+  return "<!DOCTYPE html>\n"
+         "<html>\n"
+         "    <head>\n"
+         "        <title>" +
+         to_string(status_code) +
+         "</title>\n"
+         "    </head>\n"
+         "    <body>\n"
+         "<h2>" +
+         g_response_status_phrase_map[status_code] +
+         "</h2>\n"
+         "default error page\n"
+         "    </body>\n"
+         "</html>";
+}
+
 std::string ResponseGenerator::_body(const std::string &file_path,
                                      const RequestInfo &request_info) {
   if (has_suffix(file_path, ".py")) {
-    return _read_file_tostring_cgi(file_path, request_info);
+    return _read_file_to_str_cgi(file_path, request_info);
   }
   if (has_suffix(file_path, "/")) {
     return _create_autoindex_body(file_path, request_info);
   }
-  return read_file_tostring(file_path);
+  retPair ret_pair = read_file_to_str(file_path);
+  if (ret_pair.is_err_) {
+    // TODO 500error
+    LOG("aaaaaaaaaaaaaaa");
+    exit(1);
+  }
+  return ret_pair.str_;
 }
 
 // 最長マッチ
@@ -104,32 +140,6 @@ select_proper_location(const std::string           &request_uri,
     }
   }
   return ret_location;
-}
-
-// TODO: config.error_page validate
-static std::string error_page_body(const Location      &location,
-                                   const Config        &config,
-                                   const HttpStatusCode status_code) {
-  std::map<int, std::string>::const_iterator it =
-      config.error_pages_.find(status_code);
-  if (it != config.error_pages_.end()) {
-    std::string file_path = location.root_ + it->second;
-    return read_file_tostring(file_path);
-  }
-  return "<!DOCTYPE html>\n"
-         "<html>\n"
-         "    <head>\n"
-         "        <title>" +
-         to_string(status_code) +
-         "</title>\n"
-         "    </head>\n"
-         "    <body>\n"
-         "<h2>" +
-         g_response_status_phrase_map[status_code] +
-         "</h2>\n"
-         "default error page\n"
-         "    </body>\n"
-         "</html>";
 }
 
 static std::string start_line(const HttpStatusCode status_code) {
@@ -197,15 +207,21 @@ ResponseGenerator::generate_response(const Config      &config,
     status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
     return response_message(status_code, "", *location);
   }
-  if (is_minus_depth(request_info.request_target_)) {
-    return generate_error_response(*location, config, FORBIDDEN_403);
-  }
+  // if (is_minus_depth(request_info.request_target_)) {
+  //   return generate_error_response(*location, config, FORBIDDEN_403);
+  // }
   std::string file_path =
       create_file_path(request_info.request_target_, *location);
   status_code = _handle_method(*location, request_info, file_path);
   if (is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(*location, config, status_code);
+  }
+  if (status_code == NO_CONTENT_204) {
+    // TODO:
+    // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
+    // kohkubo
+    return response_message(status_code, "", *location);
   }
   return response_message(status_code, _body(file_path, request_info),
                           *location);

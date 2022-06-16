@@ -83,11 +83,17 @@ TEST(util_test, test_is_digits) {
   EXPECT_EQ(is_digits("hello"), false);
 }
 
-TEST(util_test, test_read_file_tostring) {
-  EXPECT_EQ(read_file_tostring(TEST_FILE), TEST_CONTENT);
-  EXPECT_EQ(read_file_tostring(EMPTY_FILE), "");
-  EXPECT_EQ(read_file_tostring(NO_SUCH_FILE), ""); // TODO: エラーを拾う
-  //ファイルに読み込み権限がないとNO_SUCH_FILEと同じ挙動です。
+static void read_file_to_str_test(const std::string &path, bool is_err,
+                                  const std::string &str) {
+  retPair ret_pair = read_file_to_str(path);
+  EXPECT_EQ(ret_pair.is_err_, is_err);
+  EXPECT_EQ(ret_pair.str_, str);
+}
+
+TEST(util_test, test_read_file_to_str) {
+  read_file_to_str_test(TEST_FILE, false, TEST_CONTENT);
+  read_file_to_str_test(EMPTY_FILE, false, "");
+  read_file_to_str_test(NO_SUCH_FILE, true, "");
 }
 
 TEST(util_test, test_is_file_exists) {
@@ -97,7 +103,7 @@ TEST(util_test, test_is_file_exists) {
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 
-#define TEST_DIR "../html/test_dir"
+#define TEST_DIR  "../html/test_dir"
 #define EMPTY_DIR "../html/empty_dir"
 
 TEST(util_test, is_dir) {
