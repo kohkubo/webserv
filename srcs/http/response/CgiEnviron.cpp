@@ -19,8 +19,9 @@ static std::string get_realpath(const std::string &file_path) {
   return res;
 }
 
-static environMap create_environ_map(const RequestInfo &request_info) {
-  environMap environ_map;
+static std::map<std::string, std::string>
+create_environ_map(const std::string &path, const RequestInfo &request_info) {
+  std::map<std::string, std::string> environ_map;
 
   if (request_info.has_body()) {
     environ_map["CONTENT_LENGTH"] = to_string(request_info.body_.size());
@@ -53,9 +54,10 @@ static environMap create_environ_map(const RequestInfo &request_info) {
   return environ_map;
 }
 
-static char **create_cgi_environ(environMap environ_map) {
-  char               **cgi_environ = new char *[environ_map.size() + 1];
-  environMap::iterator it          = environ_map.begin();
+static char **
+create_cgi_environ(const std::map<std::string, std::string> &environ_map) {
+  char **cgi_environ = new char *[environ_map.size() + 1];
+  std::map<std::string, std::string>::const_iterator it = environ_map.begin();
   for (std::size_t i = 0; it != environ_map.end(); i++, it++) {
     std::string value = it->first + "=" + it->second;
     cgi_environ[i]    = ::strdup(value.c_str());
@@ -64,9 +66,11 @@ static char **create_cgi_environ(environMap environ_map) {
   return cgi_environ;
 }
 
-CgiEnviron::CgiEnviron(const RequestInfo &request_info) {
-  environMap environ_map = create_environ_map(request_info);
-  _environ_              = create_cgi_environ(environ_map);
+CgiEnviron::CgiEnviron(const std::string &path,
+                       const RequestInfo &request_info) {
+  std::map<std::string, std::string> environ_map =
+      create_environ_map(path, request_info);
+  _environ_ = create_cgi_environ(environ_map);
 }
 
 CgiEnviron::~CgiEnviron() {
