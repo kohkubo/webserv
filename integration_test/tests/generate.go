@@ -21,7 +21,7 @@ func Generate() T {
 		//testCgi,
 		//testAutoindex,
 		testBadRequest,
-		//testLimitExpect,
+		testLimitExpect,
 		//testLocation,
 		//testServerName,
 		//testReturn,

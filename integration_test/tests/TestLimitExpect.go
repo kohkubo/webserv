@@ -6,7 +6,7 @@ import (
 )
 
 var testLimitExpect = testCatergory{
-	categoryName: "limit exept",
+	categoryName: "limit expect",
 	config:       "integration_test/conf/test.conf",
 	testCases: []testCase{
 		{
