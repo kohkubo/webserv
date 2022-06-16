@@ -5,13 +5,13 @@
 
 class CgiEnviron {
 private:
-  char **__environ_;
+  char **_environ_;
 
 private:
   CgiEnviron() {}
 
 public:
-  char **environ() { return __environ_; }
+  char **environ() { return _environ_; }
   CgiEnviron(const std::string &path, const RequestInfo &request_info);
   ~CgiEnviron();
 };

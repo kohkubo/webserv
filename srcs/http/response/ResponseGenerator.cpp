@@ -75,13 +75,13 @@ static std::string create_file_path(const std::string &request_uri,
   return file_path;
 }
 
-std::string ResponseGenerator::__body(const std::string &file_path,
-                                      const RequestInfo &request_info) {
+std::string ResponseGenerator::_body(const std::string &file_path,
+                                     const RequestInfo &request_info) {
   if (has_suffix(file_path, ".py")) {
-    return __read_file_tostring_cgi(file_path, request_info);
+    return _read_file_tostring_cgi(file_path, request_info);
   }
   if (has_suffix(file_path, "/")) {
-    return __create_autoindex_body(file_path, request_info);
+    return _create_autoindex_body(file_path, request_info);
   }
   return read_file_tostring(file_path);
 }
@@ -208,11 +208,11 @@ ResponseGenerator::generate_response(const Config      &config,
   }
   std::string file_path =
       create_file_path(request_info.request_target_, *location);
-  status_code = __handle_method(*location, request_info, file_path);
+  status_code = _handle_method(*location, request_info, file_path);
   if (is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(*location, config, status_code);
   }
-  return response_message(status_code, __body(file_path, request_info),
+  return response_message(status_code, _body(file_path, request_info),
                           *location, request_info);
 }
