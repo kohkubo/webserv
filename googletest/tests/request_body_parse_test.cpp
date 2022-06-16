@@ -10,11 +10,11 @@ TEST(request_body_parse_test, urlencoded) {
                                           "&the=king"
                                           "&of=the"
                                           "&pirates!!";
-  RequestInfo::ContentInfo content_type;
-  content_type.type_ = "application/x-www-form-urlencoded";
-  RequestInfo info;
-  info.parse_request_body(request_body, content_type);
-  EXPECT_EQ(info.body_, request_body);
+  RequestInfo::ContentInfo content_info;
+  content_info.type_ = "application/x-www-form-urlencoded";
+  RequestInfo request_info;
+  request_info.parse_request_body(request_body, content_info);
+  EXPECT_EQ(request_info.body_, request_body);
 }
 
 TEST(request_body_parse_test, multi_part) {
@@ -29,13 +29,13 @@ TEST(request_body_parse_test, multi_part) {
                              "\r\n"
                              "content\r\n"
                              "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
-  RequestInfo::ContentInfo content_type;
-  content_type.type_ = "multipart/form-data";
-  content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
-  RequestInfo info;
-  info.parse_request_body(request_body, content_type);
-  RequestInfo::Form first_form  = info.form_map_["name"];
-  RequestInfo::Form second_form = info.form_map_["upfile"];
+  RequestInfo::ContentInfo content_info;
+  content_info.type_ = "multipart/form-data";
+  content_info.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+  RequestInfo request_info;
+  request_info.parse_request_body(request_body, content_info);
+  RequestInfo::Form first_form  = request_info.form_map_["name"];
+  RequestInfo::Form second_form = request_info.form_map_["upfile"];
   EXPECT_EQ(first_form.content_disposition_.type_, "form-data");
   EXPECT_EQ(first_form.content_disposition_.parameter_["name"], "name");
   EXPECT_EQ(first_form.content_, "aaa");
@@ -59,13 +59,13 @@ TEST(request_body_parse_test, multi_part_content_has_CRLF) {
                              "\r\n"
                              "con\r\nte\r\nnt\r\n"
                              "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
-  RequestInfo::ContentInfo content_type;
-  content_type.type_ = "multipart/form-data";
-  content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
-  RequestInfo info;
-  info.parse_request_body(request_body, content_type);
-  RequestInfo::Form first_form  = info.form_map_["name"];
-  RequestInfo::Form second_form = info.form_map_["upfile"];
+  RequestInfo::ContentInfo content_info;
+  content_info.type_ = "multipart/form-data";
+  content_info.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+  RequestInfo request_info;
+  request_info.parse_request_body(request_body, content_info);
+  RequestInfo::Form first_form  = request_info.form_map_["name"];
+  RequestInfo::Form second_form = request_info.form_map_["upfile"];
   EXPECT_EQ(first_form.content_disposition_.type_, "form-data");
   EXPECT_EQ(first_form.content_disposition_.parameter_["name"], "name");
   EXPECT_EQ(first_form.content_, "aaa");
@@ -84,11 +84,11 @@ TEST(request_body_parse_test, exception_multipart_missing_contentdisposition) {
                              "\r\n"
                              "content\r\n"
                              "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
-  RequestInfo::ContentInfo content_type;
-  content_type.type_ = "multipart/form-data";
-  content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_body(request_body, content_type),
+  RequestInfo::ContentInfo content_info;
+  content_info.type_ = "multipart/form-data";
+  content_info.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+  RequestInfo request_info;
+  EXPECT_THROW(request_info.parse_request_body(request_body, content_info),
                RequestInfo::BadRequestException);
   // clang-format on
 }
@@ -101,11 +101,11 @@ TEST(request_body_parse_test, exception_multipart_nosuchtype) {
                              "\r\n"
                              "content\r\n"
                              "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
-  RequestInfo::ContentInfo content_type;
-  content_type.type_ = "multipart/form-data";
-  content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
-  RequestInfo info;
-  EXPECT_THROW(info.parse_request_body(request_body, content_type),
+  RequestInfo::ContentInfo content_info;
+  content_info.type_ = "multipart/form-data";
+  content_info.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+  RequestInfo request_info;
+  EXPECT_THROW(request_info.parse_request_body(request_body, content_info),
                RequestInfo::BadRequestException);
   // clang-format on
 }
@@ -118,11 +118,11 @@ TEST(request_body_parse_test, exception_multipart_missing_name) {
                               "\r\n"
                               "content\r\n"
                               "------WebKitFormBoundaryhBP36BYMHJOCgZsX--\r\n";
-   RequestInfo::ContentInfo content_type;
-   content_type.type_ = "multipart/form-data";
-   content_type.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
-   RequestInfo info;
-   EXPECT_THROW(info.parse_request_body(request_body, content_type),
+   RequestInfo::ContentInfo content_info;
+   content_info.type_ = "multipart/form-data";
+   content_info.parameter_["boundary"] = "----WebKitFormBoundaryhBP36BYMHJOCgZsX";
+   RequestInfo request_info;
+   EXPECT_THROW(request_info.parse_request_body(request_body, content_info),
                 RequestInfo::BadRequestException);
   // clang-format on
 }

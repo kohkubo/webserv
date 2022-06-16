@@ -8,49 +8,49 @@
 #define SPACES "\v\r\f\t\n "
 
 TEST(tokenize_test, simple_split) {
-  std::vector<std::string> l = tokenize("apple,orange,banana", ",", SPACES);
-  std::vector<std::string>::iterator it = l.begin();
+  tokenVector token_vector = tokenize("apple,orange,banana", ",", SPACES);
+  tokenVector::iterator it = token_vector.begin();
   EXPECT_EQ(*it++, std::string("apple"));
   EXPECT_EQ(*it++, std::string(","));
   EXPECT_EQ(*it++, std::string("orange"));
   EXPECT_EQ(*it++, std::string(","));
   EXPECT_EQ(*it++, std::string("banana"));
-  EXPECT_EQ(it, l.end());
+  EXPECT_EQ(it, token_vector.end());
 }
 
 TEST(tokenize_test, no_delimiter) {
-  std::vector<std::string> l = tokenize("apple,orange,banana", " ", SPACES);
-  std::vector<std::string>::iterator it = l.begin();
+  tokenVector token_vector = tokenize("apple,orange,banana", " ", SPACES);
+  tokenVector::iterator it = token_vector.begin();
   EXPECT_EQ(*it++, std::string("apple,orange,banana"));
-  EXPECT_EQ(it, l.end());
+  EXPECT_EQ(it, token_vector.end());
 }
 
 TEST(tokenize_test, multi_delimiter) {
-  std::vector<std::string> l = tokenize("apple, orange, banana", " ,", SPACES);
-  std::vector<std::string>::iterator it = l.begin();
+  tokenVector token_vector = tokenize("apple, orange, banana", " ,", SPACES);
+  tokenVector::iterator it = token_vector.begin();
   EXPECT_EQ(*it++, std::string("apple"));
   EXPECT_EQ(*it++, std::string(","));
   EXPECT_EQ(*it++, std::string("orange"));
   EXPECT_EQ(*it++, std::string(","));
   EXPECT_EQ(*it++, std::string("banana"));
-  EXPECT_EQ(it, l.end());
+  EXPECT_EQ(it, token_vector.end());
 }
 
 TEST(tokenize_test, skip_front_back) {
-  std::vector<std::string> l =
+  tokenVector token_vector =
       tokenize("\n apple, orange, banana \n", " ,", SPACES);
-  std::vector<std::string>::iterator it = l.begin();
+  tokenVector::iterator it = token_vector.begin();
   EXPECT_EQ(*it++, std::string("apple"));
   EXPECT_EQ(*it++, std::string(","));
   EXPECT_EQ(*it++, std::string("orange"));
   EXPECT_EQ(*it++, std::string(","));
   EXPECT_EQ(*it++, std::string("banana"));
-  EXPECT_EQ(it, l.end());
+  EXPECT_EQ(it, token_vector.end());
 }
 
 TEST(tokenize_test, delimiter) {
-  std::vector<std::string>           l  = tokenize("{{}}{}{,}", "{},", SPACES);
-  std::vector<std::string>::iterator it = l.begin();
+  tokenVector           token_vector = tokenize("{{}}{}{,}", "{},", SPACES);
+  tokenVector::iterator it           = token_vector.begin();
   EXPECT_EQ(*it++, std::string("{"));
   EXPECT_EQ(*it++, std::string("{"));
   EXPECT_EQ(*it++, std::string("}"));
@@ -60,18 +60,18 @@ TEST(tokenize_test, delimiter) {
   EXPECT_EQ(*it++, std::string("{"));
   EXPECT_EQ(*it++, std::string(","));
   EXPECT_EQ(*it++, std::string("}"));
-  EXPECT_EQ(it, l.end());
+  EXPECT_EQ(it, token_vector.end());
 }
 
 TEST(tokenize_test, config) {
-  std::string                        str  = "server {\n"
-                                            "  listen 127.0.0.1:80;\n"
-                                            "  location /hoge {\n"
-                                            "    root /var/fuga;\n"
-                                            "  }\n"
-                                            "}\n";
-  std::vector<std::string>           test = tokenize(str, SPACES "{};", SPACES);
-  std::vector<std::string>::iterator it   = test.begin();
+  std::string           str  = "server {\n"
+                               "  listen 127.0.0.1:80;\n"
+                               "  location /hoge {\n"
+                               "    root /var/fuga;\n"
+                               "  }\n"
+                               "}\n";
+  tokenVector           test = tokenize(str, SPACES "{};", SPACES);
+  tokenVector::iterator it   = test.begin();
   EXPECT_EQ(*it++, std::string("server"));
   EXPECT_EQ(*it++, std::string("{"));
   EXPECT_EQ(*it++, std::string("listen"));
@@ -89,14 +89,14 @@ TEST(tokenize_test, config) {
 }
 
 TEST(tokenize_test, httpReqest) {
-  std::string                        str  = "POST /search.html HTTP/1.1\r\n"
-                                            "Host: wa3.i-3-i.info\r\n"
-                                            "Connection: keep-alive\r\n"
-                                            "\r\n"
-                                            "body";
+  std::string           str  = "POST /search.html HTTP/1.1\r\n"
+                               "Host: wa3.i-3-i.info\r\n"
+                               "Connection: keep-alive\r\n"
+                               "\r\n"
+                               "body";
 
-  std::vector<std::string>           test = tokenize(str, "\r\n:", " ");
-  std::vector<std::string>::iterator it   = test.begin();
+  tokenVector           test = tokenize(str, "\r\n:", " ");
+  tokenVector::iterator it   = test.begin();
   EXPECT_EQ(*it++, std::string("POST /search.html HTTP/1.1"));
   EXPECT_EQ(*it++, std::string("\r"));
   EXPECT_EQ(*it++, std::string("\n"));
