@@ -20,7 +20,7 @@ func Generate() T {
 		//testIOMulti,
 		//testCgi,
 		//testAutoindex,
-		//testBadRequest,
+		testBadRequest,
 		//testLimitExpect,
 		//testLocation,
 		//testServerName,

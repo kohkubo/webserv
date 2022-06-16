@@ -14,13 +14,15 @@ var testBadRequest = testCatergory{
 			caseName: "too long request line",
 			test: func() bool {
 
-				expectBody, contentLen := bytesAndLen("../html/index.html")
+				expectStatusCode := 400
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 
 				longline := strings.Repeat("a", 8192)
+				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port:             "55000",
+					Port:             port,
 					Request:          longline,
-					ExpectStatusCode: 400,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -36,15 +38,16 @@ var testBadRequest = testCatergory{
 			caseName: "too long header",
 			test: func() bool {
 
-				expectBody, contentLen := bytesAndLen("../html/index.html")
-
 				longline := strings.Repeat("a", 8192)
 				port := "55000"
+				expectStatusCode := 400
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
 						longline,
-					ExpectStatusCode: http.StatusBadRequest,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -60,18 +63,19 @@ var testBadRequest = testCatergory{
 			caseName: "too long content length",
 			test: func() bool {
 
-				expectBody, contentLen := bytesAndLen("../html/index.html")
+				expectStatusCode := 413
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 
 				longline := strings.Repeat("a", 1025)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:55000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"Content-Length: 1025\r\n" +
 						"\r\n" +
 						longline,
-					ExpectStatusCode: 413,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -87,18 +91,19 @@ var testBadRequest = testCatergory{
 			caseName: "too long chunk size line",
 			test: func() bool {
 
-				expectBody, contentLen := bytesAndLen("../html/index.html")
+				expectStatusCode := 400
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 
 				longline := strings.Repeat("a", 8192)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:55000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
 						longline,
-					ExpectStatusCode: 400,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -114,20 +119,21 @@ var testBadRequest = testCatergory{
 			caseName: "too long chunked body",
 			test: func() bool {
 
-				expectBody, contentLen := bytesAndLen("../html/index.html")
+				expectStatusCode := 413
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 
 				longline := strings.Repeat("a", 1025)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:55000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
 						"401\r\n" +
 						longline +
 						"\r\n",
-					ExpectStatusCode: 413,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -143,19 +149,20 @@ var testBadRequest = testCatergory{
 			caseName: "invalid chunk size",
 			test: func() bool {
 
-				expectBody, contentLen := bytesAndLen("../html/index.html")
+				expectStatusCode := 400
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:55000\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
 						"4\r\n" +
 						"Mozilla \r\n" +
 						"\r\n",
-					ExpectStatusCode: http.StatusBadRequest,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
