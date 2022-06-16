@@ -17,7 +17,7 @@ const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
 
 class Config {
 private:
-  tokenIterator _last_iterator_pos_;
+  tokenIterator __last_iterator_pos_;
 
 public:
   std::string                listen_address_;
@@ -44,7 +44,7 @@ public:
       , server_name_("")
       , addrinfo_(NULL) {
     try {
-      _last_iterator_pos_ = _parse(start, end);
+      __last_iterator_pos_ = __parse(start, end);
     } catch (const std::exception &e) {
       ERROR_EXIT(e.what());
     }
@@ -52,32 +52,33 @@ public:
   ~Config();
   Config(const Config &other);
   Config       &operator=(const Config &other);
-  tokenIterator last_iterator_pos() { return _last_iterator_pos_; }
+  tokenIterator last_iterator_pos() { return __last_iterator_pos_; }
 
 private:
-  tokenIterator _parse(tokenIterator pos, tokenIterator end);
-  static void _set_getaddrinfo(const std::string &host, const std::string &port,
-                               struct addrinfo **addrinfo);
-  tokenIterator        _parse_listen(tokenIterator pos, tokenIterator end);
-  tokenIterator        _parse_location(tokenIterator pos, tokenIterator end);
-  static tokenIterator _parse_map_directive(std::string                 key,
-                                            std::map<int, std::string> &value,
-                                            tokenIterator               pos,
-                                            tokenIterator               end);
-  static tokenIterator _parse_string_directive(std::string   key,
-                                               std::string  &value,
-                                               tokenIterator pos,
-                                               tokenIterator end);
-  static tokenIterator _parse_size_directive(std::string key, size_t &value,
-                                             tokenIterator pos,
-                                             tokenIterator end);
-  static tokenIterator _parse_bool_directive(std::string key, bool &value,
-                                             tokenIterator pos,
-                                             tokenIterator end);
-  static tokenIterator _parse_vector_directive(std::string               key,
-                                               std::vector<std::string> &value,
-                                               tokenIterator             pos,
-                                               tokenIterator             end);
+  tokenIterator        __parse(tokenIterator pos, tokenIterator end);
+  static void          __set_getaddrinfo(const std::string &host,
+                                         const std::string &port,
+                                         struct addrinfo  **addrinfo);
+  tokenIterator        __parse_listen(tokenIterator pos, tokenIterator end);
+  tokenIterator        __parse_location(tokenIterator pos, tokenIterator end);
+  static tokenIterator __parse_map_directive(std::string                 key,
+                                             std::map<int, std::string> &value,
+                                             tokenIterator               pos,
+                                             tokenIterator               end);
+  static tokenIterator __parse_string_directive(std::string   key,
+                                                std::string  &value,
+                                                tokenIterator pos,
+                                                tokenIterator end);
+  static tokenIterator __parse_size_directive(std::string key, size_t &value,
+                                              tokenIterator pos,
+                                              tokenIterator end);
+  static tokenIterator __parse_bool_directive(std::string key, bool &value,
+                                              tokenIterator pos,
+                                              tokenIterator end);
+  static tokenIterator __parse_vector_directive(std::string               key,
+                                                std::vector<std::string> &value,
+                                                tokenIterator             pos,
+                                                tokenIterator             end);
 };
 
 // TODO: Config ポインタ -> 実体

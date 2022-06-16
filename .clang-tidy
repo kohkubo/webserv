@@ -52,12 +52,12 @@ CheckOptions:
     value:           UPPER_CASE
   - key:             readability-identifier-naming.ClassConstantSuffix
     value:           _
-    # Private _func
+    # Private __func
   - key:             readability-identifier-naming.PrivateMethodPrefix
-    value:           _
-    # Private _val_
+    value:           __
+    # Private __val_
   - key:             readability-identifier-naming.PrivateMemberPrefix
-    value:           _
+    value:           __
   - key:             readability-identifier-naming.PrivateMemberSuffix
     value:           _
     # Protected _val_

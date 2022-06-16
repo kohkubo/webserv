@@ -16,36 +16,36 @@ enum ResponseState {
 
 class Response {
 private:
-  ResponseState _state_;
-  std::string   _response_;
-  bool          _is_last_response_;
-  ssize_t       _send_count_;
+  ResponseState __state_;
+  std::string   __response_;
+  bool          __is_last_response_;
+  ssize_t       __send_count_;
 
 private:
-  inline bool _is_send_all() const {
-    return _send_count_ == static_cast<ssize_t>(_response_.size());
+  inline bool __is_send_all() const {
+    return __send_count_ == static_cast<ssize_t>(__response_.size());
   }
 
 public:
   Response(std::string response_message, bool is_close)
-      : _state_(SENDING)
-      , _response_(response_message)
-      , _is_last_response_(is_close)
-      , _send_count_(0) {}
+      : __state_(SENDING)
+      , __response_(response_message)
+      , __is_last_response_(is_close)
+      , __send_count_(0) {}
   ~Response() {}
 
-  bool          is_sending() const { return _state_ == SENDING; }
+  bool          is_sending() const { return __state_ == SENDING; }
   ResponseState send(connFd conn_fd) {
-    const char *rest_str   = _response_.c_str() + _send_count_;
-    size_t      rest_count = _response_.size() - _send_count_;
-    _send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
-    if (_is_last_response_ && _is_send_all()) {
+    const char *rest_str   = __response_.c_str() + __send_count_;
+    size_t      rest_count = __response_.size() - __send_count_;
+    __send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
+    if (__is_last_response_ && __is_send_all()) {
       shutdown(conn_fd, SHUT_WR);
-      _state_ = CLOSING;
-    } else if (_is_send_all()) {
-      _state_ = COMPLETE;
+      __state_ = CLOSING;
+    } else if (__is_send_all()) {
+      __state_ = COMPLETE;
     }
-    return _state_;
+    return __state_;
   }
 };
 

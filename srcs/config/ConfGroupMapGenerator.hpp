@@ -5,7 +5,7 @@
 
 class ConfGroupMapGenerator {
 private:
-  serverList _server_list_;
+  serverList __server_list_;
 
 public:
   ConfGroupMapGenerator(const char *config_file_path);
@@ -16,7 +16,7 @@ private:
   ConfGroupMapGenerator();
   ConfGroupMapGenerator(const ConfGroupMapGenerator &other);
   ConfGroupMapGenerator &operator=(const ConfGroupMapGenerator &other);
-  void                   _read_config(const char *config_file_path);
+  void                   __read_config(const char *config_file_path);
 };
 
 #endif /* SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP */

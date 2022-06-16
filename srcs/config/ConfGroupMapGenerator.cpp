@@ -15,10 +15,10 @@
 #include "utils/utils.hpp"
 
 ConfGroupMapGenerator::ConfGroupMapGenerator(const char *config_file_path) {
-  _read_config(config_file_path);
+  __read_config(config_file_path);
 }
 
-void ConfGroupMapGenerator::_read_config(const char *config_file_path) {
+void ConfGroupMapGenerator::__read_config(const char *config_file_path) {
   std::string contents     = read_file_tostring(config_file_path);
   tokenVector token_vector = tokenize(contents, CONFIG_DELIMITER, CONFIG_SKIP);
   tokenIterator it         = token_vector.begin();
@@ -26,7 +26,7 @@ void ConfGroupMapGenerator::_read_config(const char *config_file_path) {
     if (*it == "server") {
       Config config(it, token_vector.end());
       it = config.last_iterator_pos();
-      _server_list_.push_back(config);
+      __server_list_.push_back(config);
     } else {
       ERROR_EXIT("unexpected token: " << *it);
     }
@@ -65,8 +65,8 @@ static bool is_include_same_server_name(const Config &conf,
 
 std::map<listenFd, confGroup> ConfGroupMapGenerator::generate() {
   std::map<listenFd, confGroup> confgroup_map;
-  serverList::const_iterator    sl_it = _server_list_.begin();
-  for (; sl_it != _server_list_.end(); sl_it++) {
+  serverList::const_iterator    sl_it = __server_list_.begin();
+  for (; sl_it != __server_list_.end(); sl_it++) {
     std::map<listenFd, confGroup>::iterator it =
         find_same_socket(*sl_it, confgroup_map);
     if (it != confgroup_map.end()) {

@@ -34,24 +34,24 @@ Config &Config::operator=(const Config &other) {
   server_name_          = other.server_name_;
   error_pages_          = other.error_pages_;
   locations_            = other.locations_;
-  _set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
+  __set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return *this;
 }
 
 Config::~Config() { freeaddrinfo(addrinfo_); }
 
-tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
+tokenIterator Config::__parse(tokenIterator pos, tokenIterator end) {
   pos++;
   if (*pos++ != "{")
     throw UnexpectedTokenException("server directive does not have context.");
   while (pos != end && *pos != "}") {
     tokenIterator head = pos;
     // clang-format off
-    pos = _parse_location(pos, end);
-    pos = _parse_listen(pos, end);
-    pos = _parse_string_directive("server_name", server_name_, pos, end);
-    pos = _parse_size_directive("client_max_body_size", client_max_body_size_, pos, end);
-    pos = _parse_map_directive("error_page", error_pages_, pos, end);
+    pos = __parse_location(pos, end);
+    pos = __parse_listen(pos, end);
+    pos = __parse_string_directive("server_name", server_name_, pos, end);
+    pos = __parse_size_directive("client_max_body_size", client_max_body_size_, pos, end);
+    pos = __parse_map_directive("error_page", error_pages_, pos, end);
     // clang-format on
     if (pos == head) {
       throw UnexpectedTokenException("parse server directive failed.");
@@ -64,7 +64,7 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   return ++pos;
 }
 
-tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
+tokenIterator Config::__parse_listen(tokenIterator pos, tokenIterator end) {
   if (*pos != "listen")
     return pos;
   pos++;
@@ -79,7 +79,7 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
       listen_address_ = *it;
     }
   }
-  _set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
+  __set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return pos + 2;
 }
 
@@ -95,7 +95,7 @@ is_location_path_duplication(const std::string           &location_path,
   return false;
 }
 
-tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
+tokenIterator Config::__parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
   Location location;
@@ -110,13 +110,13 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   while (pos != end && *pos != "}") {
     tokenIterator head = pos;
     // clang-format off
-    pos = _parse_string_directive("root", location.root_, pos, end);
-    pos = _parse_string_directive("index", location.index_, pos, end);
-    pos = _parse_bool_directive("autoindex", location.autoindex_, pos, end);
-    pos = _parse_map_directive("return", location.return_, pos, end);
-    pos = _parse_vector_directive("limit_except", location.limit_except_, pos, end);
-    pos = _parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
-    pos = _parse_bool_directive("upload_file", location.upload_file_, pos, end);
+    pos = __parse_string_directive("root", location.root_, pos, end);
+    pos = __parse_string_directive("index", location.index_, pos, end);
+    pos = __parse_bool_directive("autoindex", location.autoindex_, pos, end);
+    pos = __parse_map_directive("return", location.return_, pos, end);
+    pos = __parse_vector_directive("limit_except", location.limit_except_, pos, end);
+    pos = __parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
+    pos = __parse_bool_directive("upload_file", location.upload_file_, pos, end);
     // clang-format on
     if (pos == head) {
       throw UnexpectedTokenException("parse location directive failed.");
@@ -143,10 +143,10 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   return ++pos;
 }
 
-tokenIterator Config::_parse_map_directive(std::string                 key,
-                                           std::map<int, std::string> &value,
-                                           tokenIterator               pos,
-                                           tokenIterator               end) {
+tokenIterator Config::__parse_map_directive(std::string                 key,
+                                            std::map<int, std::string> &value,
+                                            tokenIterator               pos,
+                                            tokenIterator               end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -156,10 +156,10 @@ tokenIterator Config::_parse_map_directive(std::string                 key,
   return pos + 3;
 }
 
-tokenIterator Config::_parse_string_directive(std::string   key,
-                                              std::string  &value,
-                                              tokenIterator pos,
-                                              tokenIterator end) {
+tokenIterator Config::__parse_string_directive(std::string   key,
+                                               std::string  &value,
+                                               tokenIterator pos,
+                                               tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -169,9 +169,9 @@ tokenIterator Config::_parse_string_directive(std::string   key,
   return pos + 2;
 }
 
-tokenIterator Config::_parse_size_directive(std::string key, size_t &value,
-                                            tokenIterator pos,
-                                            tokenIterator end) {
+tokenIterator Config::__parse_size_directive(std::string key, size_t &value,
+                                             tokenIterator pos,
+                                             tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -183,9 +183,9 @@ tokenIterator Config::_parse_size_directive(std::string key, size_t &value,
   return pos + 2;
 }
 
-tokenIterator Config::_parse_bool_directive(std::string key, bool &value,
-                                            tokenIterator pos,
-                                            tokenIterator end) {
+tokenIterator Config::__parse_bool_directive(std::string key, bool &value,
+                                             tokenIterator pos,
+                                             tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -200,10 +200,10 @@ tokenIterator Config::_parse_bool_directive(std::string key, bool &value,
   return pos + 2;
 }
 
-tokenIterator Config::_parse_vector_directive(std::string               key,
-                                              std::vector<std::string> &value,
-                                              tokenIterator             pos,
-                                              tokenIterator             end) {
+tokenIterator Config::__parse_vector_directive(std::string               key,
+                                               std::vector<std::string> &value,
+                                               tokenIterator             pos,
+                                               tokenIterator             end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -217,8 +217,8 @@ tokenIterator Config::_parse_vector_directive(std::string               key,
   return pos + 1;
 }
 
-void Config::_set_getaddrinfo(const std::string &host, const std::string &port,
-                              struct addrinfo **addrinfo) {
+void Config::__set_getaddrinfo(const std::string &host, const std::string &port,
+                               struct addrinfo **addrinfo) {
   struct addrinfo hints = {};
 
   hints.ai_family       = AF_INET;
