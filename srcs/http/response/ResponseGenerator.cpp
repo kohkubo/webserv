@@ -72,6 +72,7 @@ static std::string error_page_body(const RequestInfo &request_info,
   const Location *location   = NULL;
   bool            malloc_flg = false;
   if (request_info.config_ == NULL) {
+    // TODO: 現状この書き方になってしまう。いい書き方あったら、教えてほしいです kohkubo
     config     = new Config();
     location   = new Location();
     malloc_flg = true;
