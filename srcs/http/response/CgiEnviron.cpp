@@ -2,6 +2,7 @@
 
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <cstring>
 
@@ -10,6 +11,7 @@
 static std::string get_realpath(const std::string &path) {
   char *abs_path = realpath(path.c_str(), NULL);
   if (abs_path == NULL) {
+    // TODO: ここはexitで大丈夫？？ kohkubo
     ERROR_EXIT_WITH_ERRNO("get_realpath");
   }
   std::string res = std::string(abs_path);
@@ -17,9 +19,9 @@ static std::string get_realpath(const std::string &path) {
   return res;
 }
 
-static std::map<std::string, std::string>
-create_environ_map(const std::string &path, const RequestInfo &request_info) {
-  std::map<std::string, std::string> environ_map;
+static environMap create_environ_map(const std::string &path,
+                                     const RequestInfo &request_info) {
+  environMap environ_map;
 
   if (request_info.has_body()) {
     environ_map["CONTENT_LENGTH"] = to_string(request_info.body_.size());
@@ -52,20 +54,12 @@ create_environ_map(const std::string &path, const RequestInfo &request_info) {
   return environ_map;
 }
 
-static char *my_strdup(std::string str) {
-  char *res = new char[str.size() + 1];
-  strncpy(res, str.c_str(), str.size());
-  res[str.size()] = '\0';
-  return res;
-}
-
-static char **
-create_cgi_environ(std::map<std::string, std::string> environ_map) {
-  char **cgi_environ = new char *[environ_map.size() + 1];
-  std::map<std::string, std::string>::iterator it = environ_map.begin();
+static char **create_cgi_environ(environMap environ_map) {
+  char               **cgi_environ = new char *[environ_map.size() + 1];
+  environMap::iterator it          = environ_map.begin();
   for (std::size_t i = 0; it != environ_map.end(); i++, it++) {
     std::string value = it->first + "=" + it->second;
-    cgi_environ[i]    = my_strdup(value);
+    cgi_environ[i]    = ::strdup(value.c_str());
   }
   cgi_environ[environ_map.size()] = NULL;
   return cgi_environ;
@@ -73,9 +67,8 @@ create_cgi_environ(std::map<std::string, std::string> environ_map) {
 
 CgiEnviron::CgiEnviron(const std::string &path,
                        const RequestInfo &request_info) {
-  std::map<std::string, std::string> environ_map =
-      create_environ_map(path, request_info);
-  __environ_ = create_cgi_environ(environ_map);
+  environMap environ_map = create_environ_map(path, request_info);
+  __environ_             = create_cgi_environ(environ_map);
 }
 
 CgiEnviron::~CgiEnviron() {
