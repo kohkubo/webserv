@@ -139,14 +139,14 @@ RequestState Request::handle_request(std::string     &request_buffer,
     }
   } catch (const RequestInfo::BadRequestException &e) {
     // TODO: この初期化いらないかも kohkubo
-    if (_request_info_.config_ == NULL) {
-      Config config;
-      _request_info_.config_ = &config;
-    }
-    if (_request_info_.location_ == NULL) {
-      Location location;
-      _request_info_.location_ = &location;
-    }
+    // if (_request_info_.config_ == NULL) {
+    //   Config config;
+    //   _request_info_.config_ = &config;
+    // }
+    // if (_request_info_.location_ == NULL) {
+    //   Location location;
+    //   _request_info_.location_ = &location;
+    // }
     _response_ =
         ResponseGenerator::generate_error_response(_request_info_, e.status());
     _request_info_.connection_close_ = true;
