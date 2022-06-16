@@ -77,8 +77,8 @@ static std::string create_file_path(const std::string &request_uri,
 
 std::string ResponseGenerator::__body(const std::string &file_path,
                                       const RequestInfo &request_info) {
-  if (has_suffix(file_path, ".sh")) {
-    return __read_file_tostring_cgi(file_path, request_info.env_values_);
+  if (has_suffix(file_path, ".py")) {
+    return __read_file_tostring_cgi(file_path, request_info);
   }
   if (has_suffix(file_path, "/")) {
     return __create_autoindex_body(file_path, request_info);
@@ -186,7 +186,7 @@ ResponseGenerator::generate_response(const Config      &config,
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   const Location *location =
-      select_proper_location(request_info.uri_, config.locations_);
+      select_proper_location(request_info.request_target_, config.locations_);
   if (location == NULL) {
     // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
     return generate_error_response(Location(), config, NOT_FOUND_404);
@@ -197,11 +197,12 @@ ResponseGenerator::generate_response(const Config      &config,
     status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
     return response_message(status_code, "", *location);
   }
-  if (is_minus_depth(request_info.uri_)) {
+  if (is_minus_depth(request_info.request_target_)) {
     return generate_error_response(*location, config, FORBIDDEN_403);
   }
-  std::string file_path = create_file_path(request_info.uri_, *location);
-  status_code           = __handle_method(*location, request_info, file_path);
+  std::string file_path =
+      create_file_path(request_info.request_target_, *location);
+  status_code = __handle_method(*location, request_info, file_path);
   if (is_error_status_code(status_code)) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(*location, config, status_code);
