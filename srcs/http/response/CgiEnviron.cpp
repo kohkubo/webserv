@@ -54,9 +54,9 @@ static environMap create_environ_map(const std::string &path,
   return environ_map;
 }
 
-static char **create_cgi_environ(environMap environ_map) {
+static char **create_cgi_environ(const environMap &environ_map) {
   char               **cgi_environ = new char *[environ_map.size() + 1];
-  environMap::iterator it          = environ_map.begin();
+  environMap::const_iterator it          = environ_map.begin();
   for (std::size_t i = 0; it != environ_map.end(); i++, it++) {
     std::string value = it->first + "=" + it->second;
     cgi_environ[i]    = ::strdup(value.c_str());
@@ -67,8 +67,9 @@ static char **create_cgi_environ(environMap environ_map) {
 
 CgiEnviron::CgiEnviron(const std::string &path,
                        const RequestInfo &request_info) {
-  environMap environ_map = create_environ_map(path, request_info);
-  __environ_             = create_cgi_environ(environ_map);
+  environMap environ_map =
+      create_environ_map(path, request_info);
+  __environ_ = create_cgi_environ(environ_map);
 }
 
 CgiEnviron::~CgiEnviron() {
