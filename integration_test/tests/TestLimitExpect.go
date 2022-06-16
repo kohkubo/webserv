@@ -26,7 +26,7 @@ var testLimitExpect = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("../html/index.html"),
+					ExpectBody:       fileToBytes("html/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},

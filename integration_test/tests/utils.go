@@ -11,6 +11,7 @@ import (
 func fileToBytes(fileName string) []byte {
 	file, err := os.Open(fileName)
 	if err != nil {
+		fmt.Println(fileName)
 		webserv.ExitWithKill(fmt.Errorf("FileBytes: %v", err))
 	}
 	defer file.Close()

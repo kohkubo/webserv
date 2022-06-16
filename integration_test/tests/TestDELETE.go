@@ -20,7 +20,7 @@ var testDELETE = testCatergory{
 			test: func() bool {
 				// setup file to delete
 				deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
-				rootRelativePath := "../html"                               // configで指定されているrootへの(integration_testからの)相対パス
+				rootRelativePath := "html"                                  // configで指定されているrootへの(integration_testからの)相対パス
 				deleteFileRelativePath := rootRelativePath + deleteFilePath // ターゲットURIへの相対パス
 				if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
 					webserv.ExitWithKill(err)

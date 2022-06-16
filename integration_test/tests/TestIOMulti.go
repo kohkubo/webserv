@@ -23,7 +23,7 @@ var testIOMulti = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("../html/index.html"),
+					ExpectBody:       fileToBytes("html/index.html"),
 				})
 
 				clientB := tester.NewClient(tester.Client{
@@ -89,7 +89,7 @@ var testIOMulti = testCatergory{
 					},
 					ExpectStatusCode: http.StatusOK,
 					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("../html/index.html"),
+					ExpectBody:       fileToBytes("html/index.html"),
 				}
 				numOfClient := 10 // 時間がかかるので一旦10, 5000とかでもいけたけど。。。いけて良いのか?
 				var clients []*tester.Client
