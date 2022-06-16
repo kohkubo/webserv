@@ -79,8 +79,7 @@ static std::string error_page_body(const RequestInfo &request_info,
     config   = request_info.config_;
     location = request_info.location_;
   }
-  std::map<int, std::string>::const_iterator it =
-      config->error_pages_.find(status_code);
+  errorPageMap::const_iterator it = config->error_pages_.find(status_code);
   if (it != config->error_pages_.end()) {
     std::string file_path = location->root_ + it->second;
     Result      result    = read_file_to_str(file_path);

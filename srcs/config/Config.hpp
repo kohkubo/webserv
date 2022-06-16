@@ -12,21 +12,23 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
-const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
+const std::string                  CONFIG_DELIMITER = "\v\r\f\t\n {};";
+const std::string                  CONFIG_SKIP      = "\v\r\f\t\n ";
+
+typedef std::map<int, std::string> errorPageMap;
 
 class Config {
 private:
   tokenIterator _last_iterator_pos_;
 
 public:
-  std::string                listen_address_;
-  std::string                listen_port_;
-  size_t                     client_max_body_size_;
-  std::string                server_name_;
-  struct addrinfo           *addrinfo_;
-  std::map<int, std::string> error_pages_;
-  std::vector<Location>      locations_;
+  std::string           listen_address_;
+  std::string           listen_port_;
+  size_t                client_max_body_size_;
+  std::string           server_name_;
+  struct addrinfo      *addrinfo_;
+  errorPageMap          error_pages_;
+  std::vector<Location> locations_;
 
   // error_page;
 public:
