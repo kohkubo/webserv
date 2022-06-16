@@ -47,12 +47,12 @@ func NewClient(info TestSource) *Client {
 }
 
 // リクエスト送信
-func (c *Client) SendAllRequest() {
-	c.SendPartialRequest(len(c.Request))
+func (c *Client) SendAllRequest() error {
+	return c.SendPartialRequest(len(c.Request))
 }
 
 // 先頭のReqPayloadのみ送信
-func (c *Client) SendPartialRequest(n int) {
+func (c *Client) SendPartialRequest(n int) (err error) {
 	len := len(c.Request)
 	if c.SendCnt < len {
 		limit := c.SendCnt + n
@@ -63,25 +63,27 @@ func (c *Client) SendPartialRequest(n int) {
 		// 連続で使用された場合にリクエストが分かれるようにsleep
 		time.Sleep(1 * time.Millisecond)
 		if err != nil {
-			webserv.ExitWithKill(fmt.Errorf("sendPartialRequest: %v", err))
+			return fmt.Errorf("sendPartialRequest: %v", err)
 		}
 		c.SendCnt += sendN
 	}
+	return err
 }
 
 // レスポンスを受ける
-func (c *Client) RecvResponse() {
+func (c *Client) RecvResponse() error {
 	if c.SendCnt != len(c.Request) {
-		webserv.ExitWithKill(fmt.Errorf("recvResponse: all request is not send!"))
+		return fmt.Errorf("recvResponse: all request is not send!")
 	}
 	resp, err := readParseResponse(c.Conn, resolveMethod(c.Request))
 	if err != nil {
-		webserv.ExitWithKill(fmt.Errorf("recvResponse: %v", err))
+		return fmt.Errorf("recvResponse: %v", err)
 	}
 	c.GotResponse = resp
 	if c.Close {
 		c.Conn.Close()
 	}
+	return err
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
@@ -97,19 +99,27 @@ func resolveMethod(req string) string {
 }
 
 // レスポンスが期待するものか確認する
-func (c *Client) IsExpectedResponse() bool {
+func (c *Client) IsExpectedResponse() (bool, error) {
 	result, err := c.ReponseChecker.Check(c.GotResponse)
 	if err != nil {
-		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
+		return false, fmt.Errorf("isExpectedResult: %v", err)
 	}
 	c.GotResponse.Body.Close()
-	return result == 0
+	return result == 0, err
 }
 
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
 func (c *Client) DoAndCheck() bool {
-	c.SendAllRequest()
-	c.RecvResponse()
-	return c.IsExpectedResponse()
+	if err := c.SendAllRequest(); err != nil {
+		webserv.ExitWithKill(err)
+	}
+	if err := c.RecvResponse(); err != nil {
+		webserv.ExitWithKill(err)
+	}
+	result, err := c.IsExpectedResponse()
+	if err != nil {
+		webserv.ExitWithKill(err)
+	}
+	return result
 }
