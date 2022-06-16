@@ -38,13 +38,13 @@ public:
   formMap                             form_map_;
 
 private:
-  static formMap     __parse_request_multi_part(const std::string &request_body,
-                                                const ContentInfo &content_type);
-  static formMap     __parse_multi_part_loop(std::string        body,
-                                             const std::string &boudary_specified);
-  static void        __parse_form_header(const std::string  line,
-                                         RequestInfo::Form &form);
-  static ContentInfo __parse_content_info(const std::string &content);
+  static formMap     _parse_request_multi_part(const std::string &request_body,
+                                               const ContentInfo &content_type);
+  static formMap     _parse_multi_part_loop(std::string        body,
+                                            const std::string &boudary_specified);
+  static void        _parse_form_header(const std::string  line,
+                                        RequestInfo::Form &form);
+  static ContentInfo _parse_content_info(const std::string &content);
 
 public:
   RequestInfo()
@@ -56,7 +56,7 @@ public:
 
   class BadRequestException : public std::logic_error {
   private:
-    HttpStatusCode __status_;
+    HttpStatusCode _status_;
 
   public:
     BadRequestException(HttpStatusCode     status = BAD_REQUEST_400,

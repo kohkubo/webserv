@@ -28,8 +28,8 @@ static std::string read_fd_tostring(int fd) {
 
 // TODO: error処理
 std::string
-ResponseGenerator::__read_file_tostring_cgi(const std::string &path,
-                                            const RequestInfo &request_info) {
+ResponseGenerator::_read_file_tostring_cgi(const std::string &path,
+                                           const RequestInfo &request_info) {
   int pipefd[2] = {0, 0};
   if (pipe(pipefd) == -1) {
     ERROR_LOG("error: pipe in read_file_tostring_cgi");
