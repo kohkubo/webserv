@@ -2,6 +2,8 @@ package tests
 
 import (
 	"integration_test/httptest"
+	"net/http"
+	"strconv"
 )
 
 // テストの用意
@@ -13,8 +15,9 @@ var testReturn = testCatergory{
 			caseName: "return 301",
 			test: func() bool {
 
-				//expectBody, contentLen := bytesAndLen("../html/index.html")
-				//
+				expectStatusCode := 301
+				expectBody := []byte{}
+				contentLen := strconv.Itoa(len(expectBody))
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: "50002",
 					Request: "GET / HTTP/1.1\r\n" +
@@ -22,7 +25,14 @@ var testReturn = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 301,
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+						"Location":       {"http://location:50001/"},
+					},
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},

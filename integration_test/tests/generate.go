@@ -22,9 +22,9 @@ func Generate() T {
 		//testAutoindex,
 		testBadRequest,
 		testLimitExpect,
-		//testLocation,
-		//testServerName,
-		//testReturn,
+		testLocation,
+		testServerName,
+		testReturn,
 	}
 	return s
 }
