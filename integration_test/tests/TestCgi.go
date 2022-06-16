@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"integration_test/tester"
+	"integration_test/httptest"
 	"net/http"
+	"strconv"
 )
 
 var testCgi = testCatergory{
@@ -12,19 +13,24 @@ var testCgi = testCatergory{
 		{
 			caseName: "5000_cgi_get_normal",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				Port := "50000"
 				Path := "/cgi.sh"
-				clientA := tester.NewClient(tester.Client{
+				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
-					ReqPayload: []string{
-						"GET " + Path + " HTTP/1.1\r\n",
-						"Host: localhost:" + Port + "\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+					Request: "GET " + Path + " HTTP/1.1\r\n" +
+						"Host: localhost:" + Port + "\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: 200,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
 					ExpectBody: []byte(
 						`###########################
 name=

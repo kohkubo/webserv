@@ -17,14 +17,14 @@ func Generate() T {
 	s := testCategories{
 		testGET,
 		testDELETE,
-		testIOMulti,
-		testCgi,
-		testAutoindex,
-		testBadRequest,
-		testLimitExpect,
-		testLocation,
-		testServerName,
-		testReturn,
+		//testIOMulti,
+		//testCgi,
+		//testAutoindex,
+		//testBadRequest,
+		//testLimitExpect,
+		//testLocation,
+		//testServerName,
+		//testReturn,
 	}
 	return s
 }

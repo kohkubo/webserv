@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"integration_test/tester"
+	"integration_test/httptest"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -13,15 +14,20 @@ var testBadRequest = testCatergory{
 		{
 			caseName: "too long request line",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				longline := strings.Repeat("a", 8192)
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						longline,
-					},
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port:             "55000",
+					Request:          longline,
 					ExpectStatusCode: 400,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -30,16 +36,22 @@ var testBadRequest = testCatergory{
 		{
 			caseName: "too long header",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				longline := strings.Repeat("a", 8192)
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"GET / HTTP/1.1\r\n",
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET / HTTP/1.1\r\n" +
 						longline,
-					},
 					ExpectStatusCode: http.StatusBadRequest,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -48,19 +60,25 @@ var testBadRequest = testCatergory{
 		{
 			caseName: "too long content length",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				longline := strings.Repeat("a", 1025)
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"GET / HTTP/1.1\r\n",
-						"Host: localhost:55000\r\n",
-						"Content-Length: 1025\r\n",
-						"\r\n",
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: localhost:55000\r\n" +
+						"Content-Length: 1025\r\n" +
+						"\r\n" +
 						longline,
-					},
 					ExpectStatusCode: 413,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -69,19 +87,25 @@ var testBadRequest = testCatergory{
 		{
 			caseName: "too long chunk size line",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				longline := strings.Repeat("a", 8192)
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"GET / HTTP/1.1\r\n",
-						"Host: localhost:55000\r\n",
-						"Transfer-Encoding: chunked\r\n",
-						"\r\n",
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: localhost:55000\r\n" +
+						"Transfer-Encoding: chunked\r\n" +
+						"\r\n" +
 						longline,
-					},
 					ExpectStatusCode: 400,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -90,21 +114,27 @@ var testBadRequest = testCatergory{
 		{
 			caseName: "too long chunked body",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				longline := strings.Repeat("a", 1025)
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"GET / HTTP/1.1\r\n",
-						"Host: localhost:55000\r\n",
-						"Transfer-Encoding: chunked\r\n",
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: localhost:55000\r\n" +
+						"Transfer-Encoding: chunked\r\n" +
+						"\r\n" +
+						"401\r\n" +
+						longline +
 						"\r\n",
-						"401\r\n",
-						longline,
-						"\r\n",
-					},
 					ExpectStatusCode: 413,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -113,20 +143,26 @@ var testBadRequest = testCatergory{
 		{
 			caseName: "invalid chunk size",
 			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"GET / HTTP/1.1\r\n",
-						"Host: localhost:55000\r\n",
-						"Transfer-Encoding: chunked\r\n",
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: localhost:55000\r\n" +
+						"Transfer-Encoding: chunked\r\n" +
+						"\r\n" +
+						"4\r\n" +
+						"Mozilla \r\n" +
 						"\r\n",
-						"4\r\n",
-						"Mozilla \r\n",
-						"\r\n",
-					},
 					ExpectStatusCode: http.StatusBadRequest,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},

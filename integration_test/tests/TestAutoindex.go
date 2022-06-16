@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"integration_test/tester"
+	"integration_test/httptest"
 	"net/http"
+	"strconv"
 )
 
 var testAutoindex = testCatergory{
@@ -13,18 +14,23 @@ var testAutoindex = testCatergory{
 			// 環境によってdirectoryのlistされる順番が違うみたいなのでレスポンスボディ自体を確認するのは保留
 			caseName: "simple",
 			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
-					Port: "50001",
-					ReqPayload: []string{
-						"GET /autoindex/ HTTP/1.1\r\n",
-						"Host: localhost:50001\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+				port := "50001"
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /autoindex/ HTTP/1.1\r\n" +
+						"Host: localhost:50001\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: 200,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -32,18 +38,23 @@ var testAutoindex = testCatergory{
 		{
 			caseName: "forbidden",
 			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
-					Port: "50001",
-					ReqPayload: []string{
-						"GET /autoindex/dir2/ HTTP/1.1\r\n",
-						"Host: localhost:50001\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+				port := "50001"
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /autoindex/dir2/ HTTP/1.1\r\n" +
+						"Host: localhost:50001\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
-					},
 					ExpectStatusCode: http.StatusForbidden,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: nil,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -52,18 +63,23 @@ var testAutoindex = testCatergory{
 
 			caseName: "index_priority",
 			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
-					Port: "50001",
-					ReqPayload: []string{
-						"GET /autoindex/dir1/ HTTP/1.1\r\n",
-						"Host: localhost:50001\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+				port := "50001"
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /autoindex/dir1/ HTTP/1.1\r\n" +
+						"Host: localhost:50001\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: 200,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       []byte("in test_autoindex/dir1"),
+					ExpectBody: []byte("in test_autoindex/dir1"),
 				})
 				return clientA.DoAndCheck()
 			},

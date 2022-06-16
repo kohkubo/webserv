@@ -11,7 +11,7 @@ import (
 
 type Client struct {
 	Port             string
-	ReqPayload       []string
+	Request          []string
 	ExpectStatusCode int
 	ExpectHeader     http.Header
 	ExpectBody       []byte
@@ -28,14 +28,14 @@ func NewClient(baseC Client) *Client {
 		webserv.ExitWithKill(fmt.Errorf("NewClient: fail to connect: %v", err))
 	}
 	newC.conn = conn
-	newC.method = resolveMethod(newC.ReqPayload)
+	newC.method = resolveMethod(newC.Request)
 	return &newC
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
-func resolveMethod(reqPayload []string) string {
+func resolveMethod(Request []string) string {
 	var buff string
-	for _, v := range reqPayload {
+	for _, v := range Request {
 		buff += v
 		if len("DELETE") < len(buff) {
 			break
@@ -53,20 +53,20 @@ func resolveMethod(reqPayload []string) string {
 
 // リクエスト送信
 func (c *Client) SendRequest() {
-	for _, r := range c.ReqPayload {
+	for _, r := range c.Request {
 		_, err := fmt.Fprintf(c.conn, r)
 		if err != nil {
 			webserv.ExitWithKill(fmt.Errorf("sendRequest: %v", err))
 		}
 	}
-	c.ReqPayload = nil
+	c.Request = nil
 }
 
-// 先頭のReqPayloadのみ送信
+// 先頭のRequestのみ送信
 func (c *Client) SendPartialRequest() {
-	if len(c.ReqPayload) != 0 {
-		r := c.ReqPayload[0]
-		c.ReqPayload = c.ReqPayload[1:] // 最初の要素を削除したものに更新
+	if len(c.Request) != 0 {
+		r := c.Request[0]
+		c.Request = c.Request[1:] // 最初の要素を削除したものに更新
 		_, err := fmt.Fprintf(c.conn, r)
 		time.Sleep(1 * time.Millisecond) // 連続で使用された場合にリクエストが分かれるように
 		if err != nil {
@@ -77,8 +77,8 @@ func (c *Client) SendPartialRequest() {
 
 // レスポンスを受ける
 func (c *Client) RecvResponse() {
-	if len(c.ReqPayload) != 0 {
-		webserv.ExitWithKill(fmt.Errorf("recvResponse: ReqPayload is not empty!"))
+	if len(c.Request) != 0 {
+		webserv.ExitWithKill(fmt.Errorf("recvResponse: Request is not empty!"))
 	}
 	resp, err := readParseResponse(c.conn, c.method)
 	if err != nil {

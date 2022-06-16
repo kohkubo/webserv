@@ -2,8 +2,9 @@ package tests
 
 import (
 	"integration_test/httpresp"
-	"integration_test/tester"
+	"integration_test/httptest"
 	"net/http"
+	"strconv"
 )
 
 var testLimitExpect = testCatergory{
@@ -13,20 +14,25 @@ var testLimitExpect = testCatergory{
 		{
 			caseName: "limit_expect ok",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				Port := "50003"
 				Path := "/"
-				clientA := tester.NewClient(tester.Client{
+				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
-					ReqPayload: []string{
-						"GET " + Path + " HTTP/1.1\r\n",
-						"Host: localhost:" + Port + "\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+					Request: "GET " + Path + " HTTP/1.1\r\n" +
+						"Host: localhost:" + Port + "\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: 200,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("../html/index.html"),
+					ExpectBody: fileToBytes("../html/index.html"),
 				})
 				return clientA.DoAndCheck()
 			},
@@ -35,23 +41,28 @@ var testLimitExpect = testCatergory{
 
 			caseName: "limit_expect NG 405",
 			test: func() bool {
+
+				expectBody := fileToBytes("../html/index.html")
+				contentLen := strconv.Itoa(len(expectBody))
 				Port := "50003"
 				Path := "/"
-				clientA := tester.NewClient(tester.Client{
+				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
-					ReqPayload: []string{
-						`POST ` + Path + ` HTTP/1.1` + "\r\n",
-						`Host: localhost:` + Port + "\r\n",
-						`User-Agent: curl/7.79.1` + "\r\n",
-						`Accept: */*` + "\r\n",
-						`Content-Length: 9` + "\r\n",
-						`Content-Type: application/x-www-form-urlencoded` + "\r\n",
-						"\r\n",
+					Request: `POST ` + Path + ` HTTP/1.1` + "\r\n" +
+						`Host: localhost:` + Port + "\r\n" +
+						`User-Agent: curl/7.79.1` + "\r\n" +
+						`Accept: */*` + "\r\n" +
+						`Content-Length: 9` + "\r\n" +
+						`Content-Type: application/x-www-form-urlencoded` + "\r\n" +
+						"\r\n" +
 						"name=hoge",
-					},
 					ExpectStatusCode: http.StatusMethodNotAllowed,
-					ExpectHeader:     nil,
-					ExpectBody:       httpresp.ErrorBody(405),
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {contentLen},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: httpresp.ErrorBody(405),
 				})
 				return clientA.DoAndCheck()
 			},

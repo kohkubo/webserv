@@ -67,7 +67,7 @@ func (c *Client) SendAllRequest() error {
 	return c.SendPartialRequest(len(c.Request))
 }
 
-// 先頭のReqPayloadのみ送信
+// 先頭のRequestのみ送信
 func (c *Client) SendPartialRequest(n int) (err error) {
 	len := len(c.Request)
 	if c.SendCnt < len {
