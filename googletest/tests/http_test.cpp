@@ -33,10 +33,11 @@ TEST(http_test, create_response_info_get_normal) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_  = "GET";
-  request_info.uri_     = "/";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_           = "GET";
+  request_info.uri_              = "/";
+  request_info.version_          = "HTTP/1.1";
+  request_info.host_             = "localhost";
+  request_info.connection_close_ = true;
 
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info), expect);
 }
@@ -88,12 +89,13 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
 
   config.error_pages_[403]            = "forbidden.html";
   RequestInfo request_info;
-  request_info.method_          = "GET";
-  request_info.uri_             = "/000.html";
-  request_info.version_         = "HTTP/1.1";
-  request_info.host_            = "localhost";
+  request_info.method_           = "GET";
+  request_info.uri_              = "/000.html";
+  request_info.version_          = "HTTP/1.1";
+  request_info.host_             = "localhost";
+  request_info.connection_close_ = true;
 
-  std::string expected_response = "\
+  std::string expected_response  = "\
 HTTP/1.1 403 Forbidden\r\n\
 Connection: close\r\n\
 Content-Length: 9\r\n\
@@ -119,10 +121,11 @@ TEST(http_test, create_response_info_delete_normal) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_  = "DELETE";
-  request_info.uri_     = "/delete_target.html";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_           = "DELETE";
+  request_info.uri_              = "/delete_target.html";
+  request_info.version_          = "HTTP/1.1";
+  request_info.host_             = "localhost";
+  request_info.connection_close_ = true;
 
   system("touch ../html/delete_target.html");
 
