@@ -68,12 +68,12 @@ static bool is_error_status_code(HttpStatusCode status_code) {
 // TODO: config.error_page validate
 static std::string error_page_body(const RequestInfo &request_info,
                                    HttpStatusCode     status_code) {
-  const Config   *config   = NULL;
-  const Location *location = NULL;
-  bool malloc_flg = false;
+  const Config   *config     = NULL;
+  const Location *location   = NULL;
+  bool            malloc_flg = false;
   if (request_info.config_ == NULL) {
-    config   = new Config();
-    location = new Location();
+    config     = new Config();
+    location   = new Location();
     malloc_flg = true;
   } else {
     config   = request_info.config_;
