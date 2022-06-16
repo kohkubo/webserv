@@ -3,6 +3,7 @@ package tests
 import (
 	"errors"
 	"fmt"
+	"integration_test/httpresp"
 	"integration_test/httptest"
 	"integration_test/webserv"
 	"net/http"
@@ -68,7 +69,7 @@ var testDELETE = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 404
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
@@ -80,7 +81,7 @@ var testDELETE = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,

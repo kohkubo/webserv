@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
 	"os"
@@ -16,7 +17,7 @@ var testGET = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("html/index.html")
+				expectBody := fileToBytes("html/index.html")
 				client := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
@@ -27,7 +28,7 @@ var testGET = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -40,7 +41,7 @@ var testGET = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("html/dir1/index2.html")
+				expectBody := fileToBytes("html/dir1/index2.html")
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /dir1/index2.html HTTP/1.1\r\n" +
@@ -51,7 +52,7 @@ var testGET = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -64,7 +65,7 @@ var testGET = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 404
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /no_such_file_404 HTTP/1.1\r\n" +
@@ -75,7 +76,7 @@ var testGET = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -91,7 +92,7 @@ var testGET = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 403
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
@@ -102,7 +103,7 @@ var testGET = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -118,7 +119,7 @@ var testGET = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 403
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /../ HTTP/1.1\r\n" +
@@ -129,7 +130,7 @@ var testGET = testCatergory{
 					ExpectStatusCode: http.StatusForbidden,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,

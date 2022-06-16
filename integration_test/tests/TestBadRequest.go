@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
 	"strings"
@@ -15,7 +16,7 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 400
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 
 				longline := strings.Repeat("a", 8192)
 				port := "55000"
@@ -25,7 +26,7 @@ var testBadRequest = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -41,7 +42,7 @@ var testBadRequest = testCatergory{
 				longline := strings.Repeat("a", 8192)
 				port := "55000"
 				expectStatusCode := 400
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
@@ -50,7 +51,7 @@ var testBadRequest = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -64,7 +65,7 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 413
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 
 				longline := strings.Repeat("a", 1025)
 				port := "55000"
@@ -78,7 +79,7 @@ var testBadRequest = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -92,7 +93,7 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 400
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 
 				longline := strings.Repeat("a", 8192)
 				port := "55000"
@@ -106,7 +107,7 @@ var testBadRequest = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -120,7 +121,7 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 413
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 
 				longline := strings.Repeat("a", 1025)
 				port := "55000"
@@ -136,7 +137,7 @@ var testBadRequest = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -150,7 +151,7 @@ var testBadRequest = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 400
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -165,7 +166,7 @@ var testBadRequest = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
 )
@@ -13,7 +14,7 @@ var testLimitExpect = testCatergory{
 			caseName: "limit_expect ok",
 			test: func() bool {
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("html/index.html")
+				expectBody := fileToBytes("html/index.html")
 				Port := "50003"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -26,7 +27,7 @@ var testLimitExpect = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -38,7 +39,7 @@ var testLimitExpect = testCatergory{
 			caseName: "limit_expect NG 405",
 			test: func() bool {
 				expectStatusCode := 405
-				expectBody, contentLen := errBytesAndLen(expectStatusCode)
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 				Port := "50003"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -54,7 +55,7 @@ var testLimitExpect = testCatergory{
 					ExpectStatusCode: http.StatusMethodNotAllowed,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
