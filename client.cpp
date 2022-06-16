@@ -10,7 +10,7 @@
 int main() {
   int         port = 55000;
   std::string ip   = "127.0.0.1";
-  int         sock;
+  int         sock = 0;
 
   if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     exit(1);
@@ -24,16 +24,23 @@ int main() {
     exit(1);
   sleep(1);
 
-  std::string req = "GET / HTTP/1.1\r\n";
-  // // "User-Agent: curl/7.68.0\r\n";
-  // //  "Host: 0.0.0.0:999\r\n";
+  std::string req = "GET / HTTP/1.1\r\n"
+                    "User-Agent: curl/7.68.0\r\n"
+                    "Host: 0.0.0.0:999\r\n"
+                    "Accept: */*\r\n"
+                    "\r\n"
+                    "GET / HTTP/1.1\r\n"
+                    "User-Agent: curl/7.68.0\r\n"
+                    "Host: 0.0.0.0:999\r\n"
+                    "Connection: Close\r\n"
+                    "Accept: */*\r\n\r\n";
   write(sock, req.c_str(), req.size());
 
-  int send_count = 100;
-  std::cout << "send_count: " << send_count << std::endl;
-  std::vector<char> str(50000, 'A');
-  write(sock, &str[0], send_count);
-
+  // int send_count = 100;
+  // std::cout << "send_count: " << send_count << std::endl;
+  // std::vector<char> str(50000, 'A');
+  // write(sock, &str[0], send_count);
+  sleep(1);
   char buf[5000];
   int  rc = read(sock, &buf, 5000);
   buf[rc] = '\0';

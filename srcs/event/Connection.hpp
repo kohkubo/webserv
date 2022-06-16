@@ -46,7 +46,10 @@ public:
   bool          is_timed_out() const {
     return std::difftime(__time_now(), __last_event_time_) >= TIMEOUT_SECONDS_;
   }
-  void close() const { ::close(__conn_fd_); }
+  void close() const {
+    LOG("[LOG] close connection fd: " << __conn_fd_);
+    ::close(__conn_fd_);
+  }
 };
 
 #endif /* SRCS_EVENT_CONNECTION_HPP */
