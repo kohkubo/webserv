@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 )
 
 var testServerName = testCatergory{
@@ -15,7 +14,7 @@ var testServerName = testCatergory{
 			test: func() bool {
 				port := "50001"
 				expectBody := []byte("index in dir1")
-				contentLen := strconv.Itoa(len(expectBody))
+
 				expectStatusCode := 200
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
@@ -27,7 +26,7 @@ var testServerName = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -40,7 +39,7 @@ var testServerName = testCatergory{
 			test: func() bool {
 				port := "50001"
 				expectBody := []byte("index in dir2")
-				contentLen := strconv.Itoa(len(expectBody))
+
 				expectStatusCode := 200
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
@@ -52,7 +51,7 @@ var testServerName = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -65,7 +64,7 @@ var testServerName = testCatergory{
 			test: func() bool {
 				port := "50001"
 				expectBody := []byte("index in server_name")
-				contentLen := strconv.Itoa(len(expectBody))
+
 				expectStatusCode := 200
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
@@ -77,7 +76,7 @@ var testServerName = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,

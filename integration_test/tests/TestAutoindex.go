@@ -1,9 +1,9 @@
 package tests
 
 import (
+	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 )
 
 // TODO: autoindex
@@ -17,7 +17,7 @@ var testAutoindex = testCatergory{
 		//	test: func() bool {
 		//		port := "50001"
 		//		expectStatusCode := 200
-		//		expectBody, contentLen := bytesAndLen("html/index.html")
+		//		expectBody := fileToBytes("html/index.html")
 		//		clientA := httptest.NewClient(httptest.TestSource{
 		//			Port: port,
 		//			Request: "GET /autoindex/ HTTP/1.1\r\n" +
@@ -28,7 +28,7 @@ var testAutoindex = testCatergory{
 		//			ExpectStatusCode: expectStatusCode,
 		//			ExpectHeader: http.Header{
 		//				"Connection":     {"close"},
-		//				"Content-Length": {contentLen},
+		//				"Content-Length": {lenStr(expectBody)},
 		//				"Content-Type":   {"text/html"},
 		//			},
 		//			ExpectBody: expectBody,
@@ -41,7 +41,7 @@ var testAutoindex = testCatergory{
 			test: func() bool {
 				port := "50001"
 				expectStatusCode := 403
-				expectBody, contentLen := errBytesAndLen(403)
+				expectBody := httpresp.ErrorBody(403)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /autoindex/dir2/ HTTP/1.1\r\n" +
@@ -52,7 +52,7 @@ var testAutoindex = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -66,7 +66,7 @@ var testAutoindex = testCatergory{
 				port := "50001"
 				expectStatusCode := 200
 				expectBody := []byte("in test_autoindex/dir1")
-				contentLen := strconv.Itoa(len(expectBody))
+
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /autoindex/dir1/ HTTP/1.1\r\n" +
@@ -77,7 +77,7 @@ var testAutoindex = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,

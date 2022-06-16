@@ -9,7 +9,7 @@ package tests
 //		caseName: "3client",
 //		test: func() bool {
 
-//expectBody, contentLen := bytesAndLen("html/index.html")
+//expectBody := fileToBytes("html/index.html")
 //
 //			clientA := httptest.NewClient(httptest.TestSource{
 //				port := "55000"
@@ -22,10 +22,10 @@ package tests
 //				ExpectStatusCode: expectStatusCode,
 //									ExpectHeader: http.Header{
 //	"Connection":     {"close"},
-//	"Content-Length": {contentLen},
+//	"Content-Length": {lenStr(expectBody)},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       bytesAndLen("html/index.html"),
+//				ExpectBody:       fileToBytes("html/index.html"),
 //			})
 
 //			clientB := httptest.NewClient(httptest.TestSource{
@@ -38,10 +38,10 @@ package tests
 //				ExpectStatusCode: 404,
 //									ExpectHeader: http.Header{
 //	"Connection":     {"close"},
-//	"Content-Length": {contentLen},
+//	"Content-Length": {lenStr(expectBody)},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       errBytesAndLen(404),
+//				ExpectBody:       httpresp.ErrorBody(404),
 //			})
 
 //			clientC := httptest.NewClient(httptest.TestSource{
@@ -54,10 +54,10 @@ package tests
 //				ExpectStatusCode: 404,
 //									ExpectHeader: http.Header{
 //	"Connection":     {"close"},
-//	"Content-Length": {contentLen},
+//	"Content-Length": {lenStr(expectBody)},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       errBytesAndLen(404),
+//				ExpectBody:       httpresp.ErrorBody(404),
 //			})
 
 //			clientA.SendPartialRequest()
@@ -91,7 +91,7 @@ package tests
 //		caseName: "multiclient",
 //		test: func() bool {
 
-//expectBody, contentLen := bytesAndLen("html/index.html")
+//expectBody := fileToBytes("html/index.html")
 //
 //			baseClient := httptest.TestSource{
 //				port := "55000"
@@ -104,10 +104,10 @@ package tests
 //				ExpectStatusCode: expectStatusCode,
 //									ExpectHeader: http.Header{
 //	"Connection":     {"close"},
-//	"Content-Length": {contentLen},
+//	"Content-Length": {lenStr(expectBody)},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       bytesAndLen("html/index.html"),
+//				ExpectBody:       fileToBytes("html/index.html"),
 //			}
 //			numOfClient := 10
 //			// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け

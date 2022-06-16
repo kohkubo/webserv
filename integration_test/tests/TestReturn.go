@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 )
 
 // テストの用意
@@ -17,7 +16,7 @@ var testReturn = testCatergory{
 				port := "50002"
 				expectStatusCode := 301
 				expectBody := []byte{}
-				contentLen := strconv.Itoa(len(expectBody))
+
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
@@ -28,7 +27,7 @@ var testReturn = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 						"Location":       {"http://location:50001/"},
 					},

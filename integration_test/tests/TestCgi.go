@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 )
 
 var testCgi = testCatergory{
@@ -18,7 +17,7 @@ var testCgi = testCatergory{
 						"blood= A\n" +
 						"text= string\n",
 				)
-				contentLen := strconv.Itoa(len(expectBody))
+
 				expectStatusCode := 200
 				port := "50000"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -31,7 +30,7 @@ var testCgi = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,

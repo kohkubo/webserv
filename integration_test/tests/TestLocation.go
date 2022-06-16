@@ -14,7 +14,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("html/dir1/index.html")
+				expectBody := fileToBytes("html/dir1/index.html")
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /dir1/ HTTP/1.1\r\n" +
@@ -25,7 +25,7 @@ var testLocation = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -37,7 +37,7 @@ var testLocation = testCatergory{
 			caseName: "rootディレクティブが反映されるか",
 			test: func() bool {
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("html/dir1/index.html")
+				expectBody := fileToBytes("html/dir1/index.html")
 				Port := "50001"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -50,7 +50,7 @@ var testLocation = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -64,7 +64,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("html/dir1/index2.html")
+				expectBody := fileToBytes("html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -77,7 +77,7 @@ var testLocation = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
@@ -90,7 +90,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("html/dir1/index2.html")
+				expectBody := fileToBytes("html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -103,7 +103,7 @@ var testLocation = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
-						"Content-Length": {contentLen},
+						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: expectBody,
