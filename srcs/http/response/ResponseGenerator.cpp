@@ -70,13 +70,13 @@ static std::string error_page_body(const RequestInfo &request_info,
                                    HttpStatusCode     status_code) {
   const Config   *config     = NULL;
   const Location *location   = NULL;
-  bool            malloc_flg = false;
+  // bool            malloc_flg = false;
   if (request_info.config_ == NULL) {
     // TODO: 現状この書き方になってしまう。いい書き方あったら、教えてほしいです
     // kohkubo
     config     = new Config();
     location   = new Location();
-    malloc_flg = true;
+    // malloc_flg = true;
   } else {
     config   = request_info.config_;
     location = request_info.location_;
@@ -93,10 +93,10 @@ static std::string error_page_body(const RequestInfo &request_info,
     LOG("###################");
     status_code = INTERNAL_SERVER_ERROR_500;
   }
-  if (malloc_flg) {
-    delete config;
-    delete location;
-  }
+  // if (malloc_flg) {
+  //   delete config;
+  //   delete location;
+  // }
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"

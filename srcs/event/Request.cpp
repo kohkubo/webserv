@@ -27,6 +27,8 @@ static std::string cutout_request_body(std::string &request_buffer,
 }
 
 // 最長マッチ
+// TODO: pairでの実装の方がいいのか、意見聞きたいです。 kohkubo
+// TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
 static const Location *
 select_proper_location(const std::string           &request_uri,
                        const std::vector<Location> &locations) {
@@ -83,6 +85,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
           }
           _request_info_.parse_request_header(_field_map_);
           // throws BadRequestException
+          // TODO: 1関数に切り出し予定です。 kohkubo
           if (_request_info_.config_ == NULL) {
             _request_info_.config_ =
                 select_proper_config(conf_group, _request_info_.host_);
@@ -138,15 +141,6 @@ RequestState Request::handle_request(std::string     &request_buffer,
       _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    // TODO: この初期化いらないかも kohkubo
-    // if (_request_info_.config_ == NULL) {
-    //   Config config;
-    //   _request_info_.config_ = &config;
-    // }
-    // if (_request_info_.location_ == NULL) {
-    //   Location location;
-    //   _request_info_.location_ = &location;
-    // }
     _response_ =
         ResponseGenerator::generate_error_response(_request_info_, e.status());
     _request_info_.connection_close_ = true;
