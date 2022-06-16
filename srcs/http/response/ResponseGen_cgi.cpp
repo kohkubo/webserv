@@ -52,7 +52,7 @@ ResponseGenerator::__read_file_tostring_cgi(const std::string &path,
     // TODO: execveの前にスクリプトのあるディレクトリに移動
     // TODO: timeout
     // error handling
-    execve("/usr/bin/python3", argv, cgi_environ.data());
+    execve("/usr/bin/python3", argv, cgi_environ.environ());
     exit(0);
   }
   // parent

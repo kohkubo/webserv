@@ -11,9 +11,11 @@ private:
   CgiEnviron() {}
 
 public:
-  char **data() { return __environ_; }
+  char **environ() { return __environ_; }
   CgiEnviron(const std::string &path, const RequestInfo &request_info);
   ~CgiEnviron();
 };
+
+typedef std::map<std::string, std::string> environMap;
 
 #endif /* SRCS_HTTP_RESPONSE_CGIENVIRON_HPP */
