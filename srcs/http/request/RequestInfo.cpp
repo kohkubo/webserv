@@ -5,8 +5,8 @@
 RequestInfo::BadRequestException::BadRequestException(HttpStatusCode     status,
                                                       const std::string &msg)
     : logic_error(msg)
-    , __status_(status) {}
+    , _status_(status) {}
 
 HttpStatusCode RequestInfo::BadRequestException::status() const {
-  return __status_;
+  return _status_;
 }
