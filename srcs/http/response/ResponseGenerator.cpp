@@ -72,9 +72,9 @@ static std::string error_page_body(const RequestInfo &request_info,
       request_info.config_->error_pages_.find(status_code);
   if (it != request_info.config_->error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
-    Result      ret_pair  = read_file_to_str(file_path);
-    if (!ret_pair.is_err_) {
-      return ret_pair.str_;
+    Result      result    = read_file_to_str(file_path);
+    if (!result.is_err_) {
+      return result.str_;
     }
     LOG("###################");
     LOG("error_page_body: read_file_to_str error");
@@ -99,21 +99,20 @@ static std::string error_page_body(const RequestInfo &request_info,
 
 std::string ResponseGenerator::_body(const RequestInfo &request_info) {
   if (has_suffix(request_info.file_path_, ".py")) {
-    return _read_file_to_str_cgi(request_info);
+    Result result = _read_file_to_str_cgi(request_info);
+    if (result.is_err_) {
+      return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
+    }
+    return result.str_;
   }
   if (has_suffix(request_info.file_path_, "/")) {
     return _create_autoindex_body(request_info);
   }
-  Result ret_pair = read_file_to_str(request_info.file_path_);
-  if (ret_pair.is_err_) {
-    // TODO:
-    // ロジックに整理が必要かも。requst_infoにlocationとconfigをもたせたほうがよい。
-    // kohkubo
-    exit(1);
-    // error_page_body(request_info.location_, request_info.config_,
-    // INTERNAL_SERVER_ERROR_500);
+  Result result = read_file_to_str(request_info.file_path_);
+  if (result.is_err_) {
+    return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
   }
-  return ret_pair.str_;
+  return result.str_;
 }
 
 static std::string start_line(const HttpStatusCode status_code) {

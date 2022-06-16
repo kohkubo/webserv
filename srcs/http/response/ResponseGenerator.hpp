@@ -7,6 +7,7 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 class ResponseGenerator {
@@ -18,7 +19,7 @@ public:
 private:
   ResponseGenerator();
   ~ResponseGenerator();
-  static std::string    _read_file_to_str_cgi(const RequestInfo &request_info);
+  static Result         _read_file_to_str_cgi(const RequestInfo &request_info);
   static std::string    _body(const RequestInfo &request_info);
   static std::string    _create_autoindex_body(const RequestInfo &request_info);
   static HttpStatusCode _handle_method(const RequestInfo &request_info);

@@ -16,6 +16,4 @@ public:
   ~CgiEnviron();
 };
 
-typedef std::map<std::string, std::string> environMap;
-
 #endif /* SRCS_HTTP_RESPONSE_CGIENVIRON_HPP */
