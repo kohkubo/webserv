@@ -20,5 +20,6 @@
 !Makefile
 test
 !pre-push
+!*.py
 
 googletest/includes/

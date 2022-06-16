@@ -23,19 +23,19 @@ public:
     std::string content_;
   };
   typedef std::map<std::string, Form> formMap;
-  typedef std::vector<std::string>    envValues;
 
   bool                                is_blank_first_line_;
   std::string                         method_;
-  std::string uri_; // TODO: 名前もっと適切なの考える nakamoto kohkubo
-  std::string version_;
-  std::string host_;
-  bool        connection_close_;
-  bool        is_chunked_;
-  std::size_t content_length_;
-  ContentInfo content_type_;
-  formMap     form_map_;
-  envValues   env_values_;
+  std::string                         request_target_;
+  std::string                         query_string_;
+  std::string                         version_;
+  std::string                         host_;
+  std::string                         body_;
+  bool                                connection_close_;
+  bool                                is_chunked_;
+  std::size_t                         content_length_;
+  ContentInfo                         content_type_;
+  formMap                             form_map_;
 
 private:
   static formMap     __parse_request_multi_part(const std::string &request_body,
@@ -63,6 +63,8 @@ public:
                         const std::string &msg    = "Illegal request.");
     HttpStatusCode status() const;
   };
+
+  bool        has_body() const { return content_length_ != 0 || is_chunked_; }
 
   static void store_request_header_field_map(
       const std::string                  &header_line,

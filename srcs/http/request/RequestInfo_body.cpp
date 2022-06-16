@@ -8,27 +8,15 @@
 #include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
-// rakiyama
-//  TODO: =があるかなどのバリデート必要か rakiyama
-//  TODO: 英数字以外は%エンコーディングされている(mdn POST), 考慮してない
-static RequestInfo::envValues
-parse_request_env_values(const std::string &request_body) {
-  RequestInfo::envValues res;
-  tokenVector            tokens = tokenize(request_body, "&", "&");
-  for (tokenIterator it = tokens.begin(); it != tokens.end(); ++it) {
-    res.push_back(*it);
-  }
-  return res;
-}
-
 void RequestInfo::parse_request_body(std::string       &request_body,
                                      const ContentInfo &content_type) {
-  if (content_type.type_ == "application/x-www-form-urlencoded") {
-    env_values_ = parse_request_env_values(request_body);
-  } else if (content_type.type_ == "multipart/form-data") {
+  if (content_type.type_ == "application/x-www-form-urlencoded" ||
+      content_type.type_ == "text/plain") {
+    body_ = request_body;
+    return;
+  }
+  if (content_type.type_ == "multipart/form-data") {
     form_map_ = __parse_request_multi_part(request_body, content_type);
-  } else if (content_type.type_ == "text/plain") {
-    env_values_.push_back(request_body); // tmp, gtestに関わるので変更後テスト
   } else {
     ERROR_LOG("unknown content-type:" + content_type.type_);
     throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
