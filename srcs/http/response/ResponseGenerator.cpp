@@ -115,9 +115,12 @@ std::string ResponseGenerator::_body(const std::string &file_path,
   }
   retPair ret_pair = read_file_to_str(file_path);
   if (ret_pair.is_err_) {
-    // TODO 500error
-    LOG("aaaaaaaaaaaaaaa");
+    // TODO:
+    // ロジックに整理が必要かも。requst_infoにlocationとconfigをもたせたほうがよい。
+    // kohkubo
     exit(1);
+    // error_page_body(request_info.location_, request_info.config_,
+    // INTERNAL_SERVER_ERROR_500);
   }
   return ret_pair.str_;
 }
