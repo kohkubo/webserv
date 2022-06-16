@@ -69,6 +69,6 @@ func (c Checker) Check(got *http.Response) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failt to read response: %v", err)
 	}
-	diff_checker("body", c.Body, body)
+	diff_checker("body", string(c.Body), string(body))
 	return diff_flag, nil
 }
