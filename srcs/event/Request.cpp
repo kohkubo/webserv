@@ -139,12 +139,12 @@ RequestState Request::handle_request(std::string     &request_buffer,
     }
   } catch (const RequestInfo::BadRequestException &e) {
     // TODO: この初期化いらないかも kohkubo
-    // if (_request_info_.config_ == NULL) {
-    //   _request_info_.config_ = new Config();
-    // }
-    // if (_request_info_.location_ == NULL) {
-    //   _request_info_.location_ = new Location();
-    // }
+    if (_request_info_.config_ == NULL) {
+      _request_info_.config_ = new Config();
+    }
+    if (_request_info_.location_ == NULL) {
+      _request_info_.location_ = new Location();
+    }
     _response_ =
         ResponseGenerator::generate_error_response(_request_info_, e.status());
     _request_info_.connection_close_ = true;
@@ -188,8 +188,9 @@ RequestState Request::_chunk_loop(std::string &request_buffer) {
       _next_chunk_ = CHUNK_SIZE;
     }
   }
-  if (_next_chunk_ == CHUNK_SIZE)
+  if (_next_chunk_ == CHUNK_SIZE) {
     _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+  }
   return RECEIVING_BODY;
 }
 
