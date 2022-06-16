@@ -14,14 +14,14 @@ var testReturn = testCatergory{
 		{
 			caseName: "return 301",
 			test: func() bool {
-
+				port := "50002"
 				expectStatusCode := 301
 				expectBody := []byte{}
 				contentLen := strconv.Itoa(len(expectBody))
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: "50002",
+					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
-						"Host: localhost:50002\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
