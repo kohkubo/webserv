@@ -20,16 +20,15 @@ public:
 private:
   ResponseGenerator();
   ~ResponseGenerator();
-  static std::string
-                        __read_file_tostring_cgi(const std::string              &path,
-                                                 const std::vector<std::string> &env);
-  static std::string    __body(const std::string &file_path,
-                               const RequestInfo &request_info);
-  static std::string    __create_autoindex_body(const std::string &file_path,
+  static std::string    _read_file_tostring_cgi(const std::string &path,
                                                 const RequestInfo &request_info);
-  static HttpStatusCode __handle_method(const Location    &location,
-                                        const RequestInfo &request_info,
-                                        const std::string &file_path);
+  static std::string    _body(const std::string &file_path,
+                              const RequestInfo &request_info);
+  static std::string    _create_autoindex_body(const std::string &file_path,
+                                               const RequestInfo &request_info);
+  static HttpStatusCode _handle_method(const Location    &location,
+                                       const RequestInfo &request_info,
+                                       const std::string &file_path);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

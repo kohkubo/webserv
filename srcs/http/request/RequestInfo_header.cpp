@@ -62,7 +62,7 @@ void RequestInfo::parse_request_header(
   }
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
-    content_type_ = __parse_content_info(itr->second);
+    content_type_ = _parse_content_info(itr->second);
   }
 }
 
@@ -126,7 +126,7 @@ static std::string cutout_parameter_value(std::string str) {
 // もし大小文字について考慮するなら,
 // 各valueの中身を参照する時にそれぞれの処理でやるべきかも
 RequestInfo::ContentInfo
-RequestInfo::__parse_content_info(const std::string &content) {
+RequestInfo::_parse_content_info(const std::string &content) {
   ContentInfo   res;
   tokenVector   tokens = tokenize(content, ";", ";");
   tokenIterator it     = tokens.begin();

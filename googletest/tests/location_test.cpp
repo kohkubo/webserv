@@ -24,11 +24,11 @@ int get_http_response_status_code(const std::string &response_string) {
 bool test_request_body(const Config *config, const std::string &uri,
                        const std::string &expected_body) {
   RequestInfo req_info;
-  req_info.uri_    = uri;
-  req_info.method_ = "GET";
+  req_info.request_target_ = uri;
+  req_info.method_         = "GET";
 
-  std::string body = get_http_response_body(
-      ResponseGenerator::generate_response(*config, req_info));
+  std::string body         = get_http_response_body(
+              ResponseGenerator::generate_response(*config, req_info));
   bool res = body == expected_body;
   if (!res) {
     std::cout << "expected: " << expected_body << std::endl;
@@ -40,10 +40,10 @@ bool test_request_body(const Config *config, const std::string &uri,
 bool test_request_status_code(const Config *config, const std::string &uri,
                               int expected_status_code) {
   RequestInfo req_info;
-  req_info.uri_    = uri;
-  req_info.method_ = "GET";
-  int status_code  = get_http_response_status_code(
-       ResponseGenerator::generate_response(*config, req_info));
+  req_info.request_target_ = uri;
+  req_info.method_         = "GET";
+  int status_code          = get_http_response_status_code(
+               ResponseGenerator::generate_response(*config, req_info));
   bool res = status_code == expected_status_code;
   if (!res) {
     std::cout << "expected: " << expected_status_code << std::endl;

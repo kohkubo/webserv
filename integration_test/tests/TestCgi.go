@@ -16,13 +16,13 @@ var testCgi = testCatergory{
 				expectBody, contentLen := bytesAndLen("../html/index.html")
 
 				Port := "50000"
-				Path := "/cgi.sh"
-				clientA := httptest.NewClient(httptest.TestSource{
+				clientA := tester.NewClient(tester.Client{
 					Port: Port,
-					Request: "GET " + Path + " HTTP/1.1\r\n" +
-						"Host: localhost:" + Port + "\r\n" +
-						"User-Agent: curl/7.79.1\r\n" +
-						`Accept: */*` + "\r\n" +
+					ReqPayload: []string{
+						"GET /cgi_test.py?name=taro&blood=A&text=string HTTP/1.1\r\n",
+						"Host: localhost:" + Port + "\r\n",
+						"User-Agent: curl/7.79.1\r\n",
+						`Accept: */*` + "\r\n",
 						"\r\n",
 					ExpectStatusCode: 200,
 					ExpectHeader: http.Header{
@@ -31,13 +31,11 @@ var testCgi = testCatergory{
 						"Content-Type":   {"text/html"},
 					},
 					ExpectBody: []byte(
-						`###########################
-name=
-blood=
-text=
-example=
-###########################
-`),
+						`name= taro
+blood= A
+text= string
+`,
+					),
 				})
 				return clientA.DoAndCheck()
 			},

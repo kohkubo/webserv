@@ -12,7 +12,13 @@ void RequestInfo::parse_request_start_line(const std::string &request_line) {
   std::size_t first_sp = request_line.find_first_of(' ');
   std::size_t last_sp  = request_line.find_last_of(' ');
   method_              = request_line.substr(0, first_sp);
-  uri_     = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
+  request_target_ = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
+  std::size_t query_pos = request_target_.find('?');
+  if (query_pos != std::string::npos) {
+    query_string_ = request_target_.substr(query_pos + 1);
+    // request_target_からquery_stringを削除しているので注意（いっしょに持った方がいいかも）
+    request_target_.erase(query_pos);
+  }
   version_ = request_line.substr(last_sp + 1);
 }
 

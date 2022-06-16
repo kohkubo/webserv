@@ -33,10 +33,10 @@ TEST(http_test, create_response_info_get_normal) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_  = "GET";
-  request_info.uri_     = "/";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_         = "GET";
+  request_info.request_target_ = "/";
+  request_info.version_        = "HTTP/1.1";
+  request_info.host_           = "localhost";
 
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info), expect);
 }
@@ -49,7 +49,7 @@ TEST(http_test, create_response_info_get_403) {
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_          = "GET";
-  request_info.uri_             = "/000.html";
+  request_info.request_target_  = "/000.html";
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
 
@@ -89,7 +89,7 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
   config.error_pages_[403]            = "forbidden.html";
   RequestInfo request_info;
   request_info.method_          = "GET";
-  request_info.uri_             = "/000.html";
+  request_info.request_target_  = "/000.html";
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
 
@@ -119,10 +119,10 @@ TEST(http_test, create_response_info_delete_normal) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_  = "DELETE";
-  request_info.uri_     = "/delete_target.html";
-  request_info.version_ = "HTTP/1.1";
-  request_info.host_    = "localhost";
+  request_info.method_         = "DELETE";
+  request_info.request_target_ = "/delete_target.html";
+  request_info.version_        = "HTTP/1.1";
+  request_info.host_           = "localhost";
 
   system("touch ../html/delete_target.html");
 
@@ -137,12 +137,12 @@ TEST(http_test, create_response_info_delete_404) {
   config.locations_[0].root_          = "../html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
-  request_info.method_        = "DELETE";
-  request_info.uri_           = "/delete_target.html";
-  request_info.version_       = "HTTP/1.1";
-  request_info.host_          = "localhost";
+  request_info.method_         = "DELETE";
+  request_info.request_target_ = "/delete_target.html";
+  request_info.version_        = "HTTP/1.1";
+  request_info.host_           = "localhost";
 
-  std::string expected_string = "\
+  std::string expected_string  = "\
 HTTP/1.1 404 Not Found\r\n\
 Connection: close\r\n\
 Content-Length: 145\r\n\
@@ -172,7 +172,7 @@ TEST(http_test, create_response_info_delete_403) {
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_          = "DELETE";
-  request_info.uri_             = "/000.html";
+  request_info.request_target_  = "/000.html";
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
 
@@ -210,7 +210,7 @@ TEST(http_test, create_response_info_delete_400) {
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_          = "DELETE";
-  request_info.uri_             = "/hogehoge.html";
+  request_info.request_target_  = "/hogehoge.html";
   request_info.version_         = "HTTP/1.1";
   request_info.host_            = "localhost";
   request_info.content_length_  = 8;
