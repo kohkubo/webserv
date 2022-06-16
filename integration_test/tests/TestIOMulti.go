@@ -9,7 +9,7 @@ package tests
 //		caseName: "3client",
 //		test: func() bool {
 
-//expectBody, contentLen := bytesAndLen("../html/index.html")
+//expectBody, contentLen := bytesAndLen("html/index.html")
 //
 //			clientA := httptest.NewClient(httptest.TestSource{
 //				port := "55000"
@@ -25,7 +25,7 @@ package tests
 //	"Content-Length": {contentLen},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       bytesAndLen("../html/index.html"),
+//				ExpectBody:       bytesAndLen("html/index.html"),
 //			})
 
 //			clientB := httptest.NewClient(httptest.TestSource{
@@ -91,7 +91,7 @@ package tests
 //		caseName: "multiclient",
 //		test: func() bool {
 
-//expectBody, contentLen := bytesAndLen("../html/index.html")
+//expectBody, contentLen := bytesAndLen("html/index.html")
 //
 //			baseClient := httptest.TestSource{
 //				port := "55000"
@@ -107,7 +107,7 @@ package tests
 //	"Content-Length": {contentLen},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       bytesAndLen("../html/index.html"),
+//				ExpectBody:       bytesAndLen("html/index.html"),
 //			}
 //			numOfClient := 10
 //			// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け

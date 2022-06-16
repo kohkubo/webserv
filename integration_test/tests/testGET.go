@@ -16,7 +16,7 @@ var testGET = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("../html/index.html")
+				expectBody, contentLen := bytesAndLen("html/index.html")
 				client := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
@@ -40,7 +40,7 @@ var testGET = testCatergory{
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("../html/dir1/index2.html")
+				expectBody, contentLen := bytesAndLen("html/dir1/index2.html")
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /dir1/index2.html HTTP/1.1\r\n" +
@@ -107,9 +107,9 @@ var testGET = testCatergory{
 					},
 					ExpectBody: expectBody,
 				})
-				os.Chmod("../html/index.html", 000)
+				os.Chmod("html/index.html", 000)
 				result := clientA.DoAndCheck()
-				os.Chmod("../html/index.html", 0755)
+				os.Chmod("html/index.html", 0755)
 				return result
 			},
 		},

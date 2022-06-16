@@ -14,7 +14,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("../html/dir1/index.html")
+				expectBody, contentLen := bytesAndLen("html/dir1/index.html")
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: "50000",
 					Request: "GET /dir1/ HTTP/1.1\r\n" +
@@ -37,7 +37,7 @@ var testLocation = testCatergory{
 			caseName: "rootディレクティブが反映されるか",
 			test: func() bool {
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("../html/dir1/index.html")
+				expectBody, contentLen := bytesAndLen("html/dir1/index.html")
 				Port := "50001"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -64,7 +64,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("../html/dir1/index2.html")
+				expectBody, contentLen := bytesAndLen("html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -90,7 +90,7 @@ var testLocation = testCatergory{
 			test: func() bool {
 
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("../html/dir1/index2.html")
+				expectBody, contentLen := bytesAndLen("html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{

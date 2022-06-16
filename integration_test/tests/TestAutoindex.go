@@ -17,7 +17,7 @@ var testAutoindex = testCatergory{
 		//	test: func() bool {
 		//		port := "50001"
 		//		expectStatusCode := 200
-		//		expectBody, contentLen := bytesAndLen("../html/index.html")
+		//		expectBody, contentLen := bytesAndLen("html/index.html")
 		//		clientA := httptest.NewClient(httptest.TestSource{
 		//			Port: port,
 		//			Request: "GET /autoindex/ HTTP/1.1\r\n" +

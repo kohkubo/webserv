@@ -13,7 +13,7 @@ var testLimitExpect = testCatergory{
 			caseName: "limit_expect ok",
 			test: func() bool {
 				expectStatusCode := 200
-				expectBody, contentLen := bytesAndLen("../html/index.html")
+				expectBody, contentLen := bytesAndLen("html/index.html")
 				Port := "50003"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
