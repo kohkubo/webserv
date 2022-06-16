@@ -1,10 +1,8 @@
 package tests
 
 import (
-	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 )
 
 var testLimitExpect = testCatergory{
@@ -14,9 +12,8 @@ var testLimitExpect = testCatergory{
 		{
 			caseName: "limit_expect ok",
 			test: func() bool {
-
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 200
+				expectBody, contentLen := bytesAndLen("../html/index.html")
 				Port := "50003"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -26,24 +23,22 @@ var testLimitExpect = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 200,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: fileToBytes("../html/index.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
 		},
 		{
-
 			caseName: "limit_expect NG 405",
 			test: func() bool {
-
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 405
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 				Port := "50003"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -62,7 +57,7 @@ var testLimitExpect = testCatergory{
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: httpresp.ErrorBody(405),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},

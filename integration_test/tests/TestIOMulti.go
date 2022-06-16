@@ -9,8 +9,8 @@ package tests
 //		caseName: "3client",
 //		test: func() bool {
 
-//expectBody := fileToBytes("../html/index.html")
-//contentLen := strconv.Itoa(len(expectBody))
+//expectBody, contentLen := bytesAndLen("../html/index.html")
+//
 //			clientA := httptest.NewClient(httptest.TestSource{
 //				port := "55000"
 //Port: port,
@@ -19,13 +19,13 @@ package tests
 //					" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
 //					"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"+
 //				},
-//				ExpectStatusCode: 200,
+//				ExpectStatusCode: expectStatusCode,
 //									ExpectHeader: http.Header{
 //	"Connection":     {"close"},
 //	"Content-Length": {contentLen},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       fileToBytes("../html/index.html"),
+//				ExpectBody:       bytesAndLen("../html/index.html"),
 //			})
 
 //			clientB := httptest.NewClient(httptest.TestSource{
@@ -41,7 +41,7 @@ package tests
 //	"Content-Length": {contentLen},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       httpresp.ErrorBody(404),
+//				ExpectBody:       errBytesAndLen(404),
 //			})
 
 //			clientC := httptest.NewClient(httptest.TestSource{
@@ -57,7 +57,7 @@ package tests
 //	"Content-Length": {contentLen},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       httpresp.ErrorBody(404),
+//				ExpectBody:       errBytesAndLen(404),
 //			})
 
 //			clientA.SendPartialRequest()
@@ -91,8 +91,8 @@ package tests
 //		caseName: "multiclient",
 //		test: func() bool {
 
-//expectBody := fileToBytes("../html/index.html")
-//contentLen := strconv.Itoa(len(expectBody))
+//expectBody, contentLen := bytesAndLen("../html/index.html")
+//
 //			baseClient := httptest.TestSource{
 //				port := "55000"
 //Port: port,
@@ -101,13 +101,13 @@ package tests
 //					" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
 //					"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"+
 //				},
-//				ExpectStatusCode: 200,
+//				ExpectStatusCode: expectStatusCode,
 //									ExpectHeader: http.Header{
 //	"Connection":     {"close"},
 //	"Content-Length": {contentLen},
 //	"Content-Type":   {"text/html"},
 //},
-//				ExpectBody:       fileToBytes("../html/index.html"),
+//				ExpectBody:       bytesAndLen("../html/index.html"),
 //			}
 //			numOfClient := 10
 //			// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け

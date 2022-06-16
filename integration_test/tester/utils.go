@@ -48,9 +48,9 @@ func readParseResponse(src io.Reader, method string) (*http.Response, error) {
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func compareResponse(resp *http.Response, expectStatusCode int, expectHeader http.Header, expectBody []byte) (int, error) {
+func compareResponse(resp *http.Response, statusCode int, expectHeader http.Header, expectBody []byte) (int, error) {
 	var diff_flag int
-	if diff := cmp.Diff(expectStatusCode, resp.StatusCode); diff != "" {
+	if diff := cmp.Diff(statusCode, resp.StatusCode); diff != "" {
 		fmt.Fprintf(os.Stderr, "status mismatch (-want +got):\n%s", diff)
 		diff_flag++
 	}

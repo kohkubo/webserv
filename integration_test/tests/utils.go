@@ -2,12 +2,14 @@ package tests
 
 import (
 	"fmt"
+	"integration_test/httpresp"
 	"integration_test/webserv"
 	"io/ioutil"
 	"os"
+	"strconv"
 )
 
-// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
+// bytesAndLen: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
 func fileToBytes(fileName string) []byte {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -21,7 +23,6 @@ func fileToBytes(fileName string) []byte {
 	return srcBytes
 }
 
-// FileToBytes: fileNameで指定されたパスのファイルの中身を[]byteに詰めて返します.
 func fileToString(fileName string) string {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -33,4 +34,14 @@ func fileToString(fileName string) string {
 		webserv.ExitWithKill(fmt.Errorf("FileBytes: %v", err))
 	}
 	return string(srcBytes)
+}
+
+func bytesAndLen(fileName string) ([]byte, string) {
+	bytes := fileToBytes(fileName)
+	return bytes, strconv.Itoa(len(bytes))
+}
+
+func errBytesAndLen(statusCode int) ([]byte, string) {
+	bytes := httpresp.ErrorBody(statusCode)
+	return bytes, strconv.Itoa(len(bytes))
 }

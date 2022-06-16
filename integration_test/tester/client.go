@@ -10,14 +10,14 @@ import (
 )
 
 type Client struct {
-	Port             string
-	Request          []string
-	ExpectStatusCode int
-	ExpectHeader     http.Header
-	ExpectBody       []byte
-	conn             net.Conn
-	method           string
-	resp             *http.Response
+	Port         string
+	Request      []string
+	statusCode   int
+	ExpectHeader http.Header
+	ExpectBody   []byte
+	conn         net.Conn
+	method       string
+	resp         *http.Response
 }
 
 // constructor
@@ -90,7 +90,7 @@ func (c *Client) RecvResponse() {
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() bool {
-	result, err := compareResponse(c.resp, c.ExpectStatusCode, c.ExpectHeader, c.ExpectBody)
+	result, err := compareResponse(c.resp, c.statusCode, c.ExpectHeader, c.ExpectBody)
 	if err != nil {
 		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: %v", err))
 	}

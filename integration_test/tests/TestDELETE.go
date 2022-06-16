@@ -3,15 +3,14 @@ package tests
 import (
 	"errors"
 	"fmt"
-	"integration_test/httpresp"
 	"integration_test/httptest"
 	"integration_test/webserv"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
+//TODO: DELET時はbodyなしでok?
 var testDELETE = testCatergory{
 	categoryName: "DELETE",
 	config:       "integration_test/conf/webserv.conf",
@@ -19,8 +18,6 @@ var testDELETE = testCatergory{
 		{
 			caseName: "simple",
 			test: func() bool {
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
 				// setup file to delete
 				deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
 				rootRelativePath := "../html"                               // configで指定されているrootへの(integration_testからの)相対パス
@@ -33,7 +30,9 @@ var testDELETE = testCatergory{
 				}
 				defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
+				expectStatusCode := 204
 				port := "55000"
+
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "DELETE " + deleteFilePath + " HTTP/1.1\r\n" +
@@ -41,13 +40,11 @@ var testDELETE = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 204,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
-						"Connection":     {"close"},
-						"Content-Length": {contentLen},
-						"Content-Type":   {"text/html"},
+						"Connection": {"close"},
 					},
-					ExpectBody: nil,
+					ExpectBody: []byte{},
 				})
 				if ok := clientA.DoAndCheck(); !ok {
 					return false
@@ -70,8 +67,8 @@ var testDELETE = testCatergory{
 			caseName: "no_such_file",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 404
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
@@ -80,13 +77,13 @@ var testDELETE = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 404,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: httpresp.ErrorBody(404),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},

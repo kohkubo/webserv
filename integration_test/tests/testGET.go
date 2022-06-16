@@ -1,11 +1,9 @@
 package tests
 
 import (
-	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 // テストの用意
@@ -17,8 +15,8 @@ var testGET = testCatergory{
 			caseName: "GET / ",
 			test: func() bool {
 				port := "50000"
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 200
+				expectBody, contentLen := bytesAndLen("../html/index.html")
 				client := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
@@ -26,7 +24,7 @@ var testGET = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 200,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -41,8 +39,8 @@ var testGET = testCatergory{
 			caseName: "GET /dir1/index2.html ",
 			test: func() bool {
 				port := "50000"
-				expectBody := fileToBytes("../html/dir1/index2.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 200
+				expectBody, contentLen := bytesAndLen("../html/dir1/index2.html")
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /dir1/index2.html HTTP/1.1\r\n" +
@@ -50,7 +48,7 @@ var testGET = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 200,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -65,8 +63,8 @@ var testGET = testCatergory{
 			caseName: "GET /no_such_file_404",
 			test: func() bool {
 				port := "50000"
-				expectBody := httpresp.ErrorBody(404)
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 404
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /no_such_file_404 HTTP/1.1\r\n" +
@@ -74,7 +72,7 @@ var testGET = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 404,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -92,8 +90,8 @@ var testGET = testCatergory{
 			caseName: "index解決後のアクセス権限確認test",
 			test: func() bool {
 				port := "50000"
-				expectBody := httpresp.ErrorBody(403)
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 403
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
@@ -101,7 +99,7 @@ var testGET = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 403,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
@@ -119,8 +117,8 @@ var testGET = testCatergory{
 			caseName: "minus_depth ",
 			test: func() bool {
 				port := "50000"
-				expectBody := httpresp.ErrorBody(403)
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 403
+				expectBody, contentLen := errBytesAndLen(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /../ HTTP/1.1\r\n" +

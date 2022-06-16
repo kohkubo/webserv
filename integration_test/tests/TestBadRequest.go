@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -15,8 +14,8 @@ var testBadRequest = testCatergory{
 			caseName: "too long request line",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectBody, contentLen := bytesAndLen("../html/index.html")
+
 				longline := strings.Repeat("a", 8192)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port:             "55000",
@@ -27,7 +26,7 @@ var testBadRequest = testCatergory{
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: nil,
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -37,8 +36,8 @@ var testBadRequest = testCatergory{
 			caseName: "too long header",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectBody, contentLen := bytesAndLen("../html/index.html")
+
 				longline := strings.Repeat("a", 8192)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -51,7 +50,7 @@ var testBadRequest = testCatergory{
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: nil,
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -61,8 +60,8 @@ var testBadRequest = testCatergory{
 			caseName: "too long content length",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectBody, contentLen := bytesAndLen("../html/index.html")
+
 				longline := strings.Repeat("a", 1025)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -78,7 +77,7 @@ var testBadRequest = testCatergory{
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: nil,
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -88,8 +87,8 @@ var testBadRequest = testCatergory{
 			caseName: "too long chunk size line",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectBody, contentLen := bytesAndLen("../html/index.html")
+
 				longline := strings.Repeat("a", 8192)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -105,7 +104,7 @@ var testBadRequest = testCatergory{
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: nil,
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -115,8 +114,8 @@ var testBadRequest = testCatergory{
 			caseName: "too long chunked body",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectBody, contentLen := bytesAndLen("../html/index.html")
+
 				longline := strings.Repeat("a", 1025)
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -134,7 +133,7 @@ var testBadRequest = testCatergory{
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: nil,
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -144,8 +143,8 @@ var testBadRequest = testCatergory{
 			caseName: "invalid chunk size",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectBody, contentLen := bytesAndLen("../html/index.html")
+
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
@@ -162,7 +161,7 @@ var testBadRequest = testCatergory{
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: nil,
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},

@@ -13,8 +13,8 @@ var testReturn = testCatergory{
 			caseName: "return 301",
 			test: func() bool {
 
-				//expectBody := fileToBytes("../html/index.html")
-				//contentLen := strconv.Itoa(len(expectBody))
+				//expectBody, contentLen := bytesAndLen("../html/index.html")
+				//
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: "50002",
 					Request: "GET / HTTP/1.1\r\n" +

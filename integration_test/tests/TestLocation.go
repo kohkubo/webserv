@@ -3,7 +3,6 @@ package tests
 import (
 	"integration_test/httptest"
 	"net/http"
-	"strconv"
 )
 
 var testLocation = testCatergory{
@@ -14,8 +13,8 @@ var testLocation = testCatergory{
 			caseName: "locationでdir1を指定できているか",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 200
+				expectBody, contentLen := bytesAndLen("../html/dir1/index.html")
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: "50000",
 					Request: "GET /dir1/ HTTP/1.1\r\n" +
@@ -23,13 +22,13 @@ var testLocation = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 200,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: fileToBytes("../html/dir1/index.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -37,9 +36,8 @@ var testLocation = testCatergory{
 		{
 			caseName: "rootディレクティブが反映されるか",
 			test: func() bool {
-
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 200
+				expectBody, contentLen := bytesAndLen("../html/dir1/index.html")
 				Port := "50001"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -49,13 +47,13 @@ var testLocation = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 200,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: fileToBytes("../html/dir1/index.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -65,8 +63,8 @@ var testLocation = testCatergory{
 			caseName: "index指定ができているか",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 200
+				expectBody, contentLen := bytesAndLen("../html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -76,13 +74,13 @@ var testLocation = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 200,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: fileToBytes("../html/dir1/index2.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -91,8 +89,8 @@ var testLocation = testCatergory{
 			caseName: "index指定ができているか",
 			test: func() bool {
 
-				expectBody := fileToBytes("../html/index.html")
-				contentLen := strconv.Itoa(len(expectBody))
+				expectStatusCode := 200
+				expectBody, contentLen := bytesAndLen("../html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
@@ -102,13 +100,13 @@ var testLocation = testCatergory{
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: 200,
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {contentLen},
 						"Content-Type":   {"text/html"},
 					},
-					ExpectBody: fileToBytes("../html/dir1/index2.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
