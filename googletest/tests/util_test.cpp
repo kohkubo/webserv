@@ -91,15 +91,20 @@ TEST(util_test, test_read_file_tostring) {
 }
 
 TEST(util_test, test_write_string_tofile) {
-  const std::string filepath = "tdata/utils_test/tmp.txt";
-  const std::string content  = "test_write_string_tofile";
-  bool              result   = write_string_tofile(filepath, content);
-  std::string       read     = read_file_tostring(filepath);
-  // TODO: 例外を投げられる実装に変更される可能性あり
-  const std::string syscmd   = "rm " + filepath;
-  system(syscmd.c_str());
-  EXPECT_EQ(result, true);
-  EXPECT_EQ(read, content);
+  {
+    // これでも行けたのが謎 rakiyama
+    // const std::string filepath = "tdata/utils_test/tmp/tmp.txt";
+    const std::string filepath = "tdata/utils_test/tmp.txt";
+    const std::string content  = "test_write_string_tofile";
+    bool              result   = write_string_tofile(filepath, content);
+    std::string       read     = read_file_tostring(filepath);
+    // TODO: 例外を投げられる実装に変更される可能性あり
+    const std::string syscmd   = "rm " + filepath;
+    system(syscmd.c_str());
+    EXPECT_TRUE(result);
+    EXPECT_EQ(read, content);
+  }
+  {}
 }
 
 TEST(util_test, test_is_file_exists) {
