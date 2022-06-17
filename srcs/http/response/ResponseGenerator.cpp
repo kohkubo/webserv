@@ -140,7 +140,7 @@ static std::string connection_header(const RequestInfo &request_info) {
   if (request_info.connection_close_) {
     return "Connection: close" + CRLF;
   }
-  return "Connection: keep-alive" + CRLF;
+  return "";
 }
 static std::string location_header(const Location &location,
                                    HttpStatusCode  status_code) {
