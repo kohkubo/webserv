@@ -70,6 +70,7 @@ static HttpStatusCode save_posted_file(const Location    &location,
   }
   if (!has_suffix(target_path, "/")) {
     // file_pathにindexがappendされていたらここで引っかかることに注意
+    // indexをつける作業はGETに移せば解決すると踏んでいる
     // rakiyama
     return INTERNAL_SERVER_ERROR_500;
   }
