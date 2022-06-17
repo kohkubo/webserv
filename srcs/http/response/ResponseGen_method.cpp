@@ -43,7 +43,7 @@ static bool save_files(const RequestInfo::formMap &form_map,
     paramMap::const_iterator it_filename = param_map.find("filename");
     if (it_filename != param_map.end()) {
       // ひとまずfilenameがある時のみ処理 rakiyama
-      // filenameが不正なパスである場合 rakiyama
+      // filenameが不正なパス(minusとか)である場合 rakiyama
       const std::string &filename       = it_filename->second;
       std::string        save_file_path = target_dir + filename;
       if (is_file_exists(save_file_path)) {

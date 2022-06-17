@@ -48,7 +48,7 @@ std::string read_file_tostring(const std::string &path) {
   return buffer.str();
 }
 
-// ファイルが既に存在する時の挙動まだわからない rakiyama
+// default open mode is out (overwrite)
 bool write_string_tofile(const std::string &file_path,
                          const std::string &content) {
   std::ofstream outfile(file_path.c_str());
