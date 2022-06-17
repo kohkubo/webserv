@@ -1,6 +1,8 @@
 #ifndef SRCS_UTILS_UTILS_HPP
 #define SRCS_UTILS_UTILS_HPP
 
+#include <stdlib.h>
+
 #include <cerrno>
 #include <cstring>
 #include <iostream>
