@@ -48,6 +48,7 @@ static bool save_files(const RequestInfo::formMap &form_map,
       if (is_file_exists(save_file_path)) {
         continue; // tmp
       }
+      LOG("create file: " << save_file_path);
       if (!write_string_tofile(save_file_path, form.content_)) {
         res = false;
       }
