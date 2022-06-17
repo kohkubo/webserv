@@ -92,7 +92,7 @@ TEST(util_test, test_read_file_tostring) {
 
 TEST(util_test, test_write_string_tofile) {
   {
-    // これでも行けたのが謎 rakiyama
+    // このパスでも(tmpディレクトリは存在しない)パスした rakiyama
     // const std::string filepath = "tdata/utils_test/tmp/tmp.txt";
     const std::string filepath = "tdata/utils_test/tmp.txt";
     const std::string content  = "test_write_string_tofile";
@@ -104,7 +104,6 @@ TEST(util_test, test_write_string_tofile) {
     EXPECT_TRUE(result);
     EXPECT_EQ(read, content);
   }
-  {}
 }
 
 TEST(util_test, test_is_file_exists) {
