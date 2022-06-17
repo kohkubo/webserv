@@ -31,6 +31,31 @@ static HttpStatusCode check_filepath_status(const Location    &location,
   return OK_200;
 }
 
+static bool save_files(const RequestInfo::formMap &form_map,
+                       const std::string          &target_dir) {
+  bool                                       res = true;
+  typedef std::map<std::string, std::string> paramMap;
+
+  RequestInfo::formMap::const_iterator       it = form_map.begin();
+  for (; it != form_map.end(); it++) {
+    const RequestInfo::Form &form        = it->second;
+    const paramMap          &param_map   = form.content_disposition_.parameter_;
+    paramMap::const_iterator it_filename = param_map.find("filename");
+    if (it_filename != param_map.end()) {
+      // ひとまずfilenameがある時のみ処理 rakiyama
+      const std::string &filename       = it_filename->second;
+      std::string        save_file_path = target_dir + filename;
+      if (is_file_exists(save_file_path)) {
+        continue; // tmp
+      }
+      if (!write_string_tofile(save_file_path, form.content_)) {
+        res = false;
+      }
+    }
+  }
+  return res;
+}
+
 // is_minus_depthは考慮してない rakiyama
 static HttpStatusCode save_posted_file(const Location    &location,
                                        const RequestInfo &request_info,
@@ -55,20 +80,8 @@ static HttpStatusCode save_posted_file(const Location    &location,
     // W_OKが適切かは調べてない rakiyama
     return FORBIDDEN_403;
   }
-  RequestInfo::formMap::const_iterator it = request_info.form_map_.begin();
-  for (; it != request_info.form_map_.end(); it++) {
-    std::map<std::string, std::string>::const_iterator itf =
-        it->second.content_disposition_.parameter_.find("filename");
-    if (itf != it->second.content_disposition_.parameter_.end()) {
-      // とりあえずfilenameがある時のみ処理 rakiyama
-      std::string save_file_path = target_path + itf->second;
-      if (!is_file_exists(save_file_path)) {
-        // とりあえず存在しない時だけ保存処理 rakiyama
-        if (!write_string_tofile(save_file_path, it->second.content_))
-          return INTERNAL_SERVER_ERROR_500;
-        // loopが全て終わったらこれ返す rakiyama
-      }
-    }
+  if (!save_files(request_info.form_map_, target_path)) {
+    return INTERNAL_SERVER_ERROR_500;
   }
   return Created_201;
 }
