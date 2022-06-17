@@ -33,7 +33,7 @@ private:
   void _connection_receive_handler(Connection &connection);
   void _connection_send_handler(connFd conn_fd);
   void _insert_connection_map(connFd conn_fd);
-  void _close_connection(Connection &connection);
+  void _terminate_connection(Connection &connection);
 
 public:
   Server(std::map<listenFd, confGroup> &conf_group_map)
