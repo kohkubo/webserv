@@ -20,6 +20,7 @@ var testServerName = testCatergory{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
 						"Host: hoge.com:" + port + "\r\n" +
+						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -45,6 +46,7 @@ var testServerName = testCatergory{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
 						"Host: fuga.com:" + port + "\r\n" +
+						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -70,6 +72,7 @@ var testServerName = testCatergory{
 					Port: port,
 					Request: "GET / HTTP/1.1\r\n" +
 						"Host: no_such_host.com:" + port + "\r\n" +
+						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
