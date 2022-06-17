@@ -200,6 +200,7 @@ ResponseGenerator::generate_response(const Config      &config,
   if (is_minus_depth(request_info.request_target_)) {
     return generate_error_response(*location, config, FORBIDDEN_403);
   }
+  // ここでindexの解決などしているがGET時の処理に回していい？ rakiyama
   std::string file_path =
       create_file_path(request_info.request_target_, *location);
   status_code = _handle_method(*location, request_info, file_path);

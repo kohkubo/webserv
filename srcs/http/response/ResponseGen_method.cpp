@@ -31,26 +31,27 @@ static HttpStatusCode check_filepath_status(const Location    &location,
   return OK_200;
 }
 
-// is_minus_depthは考慮してない
+// is_minus_depthは考慮してない rakiyama
 static HttpStatusCode save_posted_file(const Location    &location,
                                        const RequestInfo &request_info,
-                                       const std::string &file_path) {
+                                       const std::string &target_path) {
   if (!location.upload_file_) {
     return NOT_ALLOWED_405;
   }
   if (request_info.content_type_.type_ != "multipart/form-data") {
-    return INTERNAL_SERVER_ERROR_500;
-  }
-  if (!has_suffix(file_path, "/")) {
+    // text/plainでのPOSTに対応する場合は同じようなデータ構造で持ちたい
     // rakiyama
-    // indexがappendされていたらここで引っかかることに注意
-    // ディレクトリとして指定されているの判断方法はsuffixで統一
     return INTERNAL_SERVER_ERROR_500;
   }
-  if (!is_dir_exists(file_path)) {
+  if (!has_suffix(target_path, "/")) {
+    // file_pathにindexがappendされていたらここで引っかかることに注意
+    // rakiyama
+    return INTERNAL_SERVER_ERROR_500;
+  }
+  if (!is_dir_exists(target_path)) {
     return NOT_FOUND_404;
   }
-  if (!is_accessible(file_path, W_OK)) {
+  if (!is_accessible(target_path, W_OK)) {
     // W_OKが適切かは調べてない rakiyama
     return FORBIDDEN_403;
   }
@@ -60,7 +61,7 @@ static HttpStatusCode save_posted_file(const Location    &location,
         it->second.content_disposition_.parameter_.find("filename");
     if (itf != it->second.content_disposition_.parameter_.end()) {
       // とりあえずfilenameがある時のみ処理 rakiyama
-      std::string save_file_path = file_path + itf->second;
+      std::string save_file_path = target_path + itf->second;
       if (!is_file_exists(save_file_path)) {
         // とりあえず存在しない時だけ保存処理 rakiyama
         if (!write_string_tofile(save_file_path, it->second.content_))
