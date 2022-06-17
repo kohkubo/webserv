@@ -51,7 +51,7 @@ std::string read_file_tostring(const std::string &path) {
 // ファイルが既に存在する時の挙動まだわからない rakiyama
 bool write_string_tofile(const std::string &file_path,
                          const std::string &content) {
-  std::ofstream outfile(file_path);
+  std::ofstream outfile(file_path.c_str());
   if (outfile.fail()) {
     ERROR_EXIT_WITH_ERRNO("write_string_tofile");
     return false;
