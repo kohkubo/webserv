@@ -6,10 +6,10 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-#define TEST_FILE          "../html/test.txt"
+#define TEST_FILE          "html/test.txt"
 #define TEST_CONTENT       "test"
-#define EMPTY_FILE         "../html/empty.txt"
-#define NO_PERMISSION_FILE "../html/no_permission.txt"
+#define EMPTY_FILE         "html/empty.txt"
+#define NO_PERMISSION_FILE "html/no_permission.txt"
 #define NO_SUCH_FILE       "no such file"
 
 TEST(util_test, test_has_suffix) {
@@ -113,8 +113,8 @@ TEST(util_test, test_is_file_exists) {
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 
-#define TEST_DIR  "../html/test_dir"
-#define EMPTY_DIR "../html/empty_dir"
+#define TEST_DIR  "html/test_dir"
+#define EMPTY_DIR "html/empty_dir"
 
 TEST(util_test, is_dir) {
   EXPECT_TRUE(is_dir(TEST_DIR));

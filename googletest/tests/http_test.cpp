@@ -12,7 +12,7 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-TEST(http_test, create_response_info_get_normal) {
+TEST(http_test, generate_response_get_normal) {
   std::string expect = "HTTP/1.1 200 OK\r\n"
                        "Connection: close\r\n"
                        "Content-Length: 127\r\n"
@@ -30,7 +30,7 @@ TEST(http_test, create_response_info_get_normal) {
   Config      config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "../html/";
+  config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_         = "GET";
@@ -41,11 +41,11 @@ TEST(http_test, create_response_info_get_normal) {
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info), expect);
 }
 
-TEST(http_test, create_response_info_get_403) {
+TEST(http_test, generate_response_get_403) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "../html/";
+  config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_          = "GET";
@@ -71,19 +71,19 @@ default error page\n\
 </html>\
 ";
 
-  system("chmod 000 ../html/000.html");
+  system("chmod 000 html/000.html");
 
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 
-  system("chmod 644 ../html/000.html");
+  system("chmod 644 html/000.html");
 }
 
-TEST(http_test, create_response_info_get_403_config_error_pages) {
+TEST(http_test, generate_response_get_403_config_error_pages) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "../html/";
+  config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
 
   config.error_pages_[403]            = "forbidden.html";
@@ -102,21 +102,21 @@ Content-Type: text/html\r\n\
 forbidden\
 ";
 
-  system("chmod 000 ../html/000.html");
+  system("chmod 000 html/000.html");
 
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 
-  system("chmod 644 ../html/000.html");
+  system("chmod 644 html/000.html");
 }
 
-TEST(http_test, create_response_info_delete_normal) {
+TEST(http_test, generate_response_delete_normal) {
   std::string expected_response = "HTTP/1.1 204 No Content\r\n"
                                   "Connection: close\r\n\r\n";
   Config      config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "../html/";
+  config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_         = "DELETE";
@@ -124,17 +124,17 @@ TEST(http_test, create_response_info_delete_normal) {
   request_info.version_        = "HTTP/1.1";
   request_info.host_           = "localhost";
 
-  system("touch ../html/delete_target.html");
+  system("touch html/delete_target.html");
 
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 }
 
-TEST(http_test, create_response_info_delete_404) {
+TEST(http_test, generate_response_delete_404) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "../html/";
+  config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_         = "DELETE";
@@ -164,11 +164,11 @@ default error page\n\
             expected_string);
 }
 
-TEST(http_test, create_response_info_delete_403) {
+TEST(http_test, generate_response_delete_403) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "../html/";
+  config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_          = "DELETE";
@@ -194,19 +194,19 @@ default error page\n\
 </html>\
 ";
 
-  system("chmod 000 ../html/000.html");
+  system("chmod 000 html/000.html");
 
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 
-  system("chmod 644 ../html/000.html");
+  system("chmod 644 html/000.html");
 }
 
-TEST(http_test, create_response_info_delete_400) {
+TEST(http_test, generate_response_delete_400) {
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
-  config.locations_[0].root_          = "../html/";
+  config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
   RequestInfo request_info;
   request_info.method_          = "DELETE";
