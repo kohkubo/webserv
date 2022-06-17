@@ -33,12 +33,12 @@ func (c testCatergory) runTests() {
 		return
 	}
 	for _, t := range c.testCases {
-		fmt.Println("[" + t.caseName + "]")
+		fmt.Println("[ RUN ] " + t.caseName)
 		switch ok := t.test(); {
 		case ok:
-			colorprint.Stdout("ok")
+			colorprint.Stdout("[ OK  ] " + t.caseName)
 		default:
-			colorprint.Stderr("ko")
+			colorprint.Stderr("[ KO  ] " + t.caseName)
 			countTestFail++
 		}
 	}
