@@ -79,6 +79,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
         _state_ = SUCCESS;
       }
       if (_state_ == SUCCESS) {
+        LOG("request:\n" << _request_body_);
         _request_info_.parse_request_body(_request_body_,
                                           _request_info_.content_type_);
       }
