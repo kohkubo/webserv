@@ -75,6 +75,7 @@ static std::string create_file_path(const std::string &request_uri,
   return file_path;
 }
 
+// POSTの場合のbodyは未定
 std::string ResponseGenerator::_body(const std::string &file_path,
                                      const RequestInfo &request_info) {
   if (has_suffix(file_path, ".py")) {
