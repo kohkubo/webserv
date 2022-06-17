@@ -90,6 +90,18 @@ TEST(util_test, test_read_file_tostring) {
   //ファイルに読み込み権限がないとNO_SUCH_FILEと同じ挙動です。
 }
 
+TEST(util_test, test_write_string_tofile) {
+  const std::string filepath = "tdata/utils_test/tmp.txt";
+  const std::string content  = "test_write_string_tofile";
+  bool              result   = write_string_tofile(filepath, content);
+  std::string       read     = read_file_tostring(filepath);
+  // TODO: 例外を投げられる実装に変更される可能性あり
+  const std::string syscmd   = "rm " + filepath;
+  system(syscmd.c_str());
+  EXPECT_EQ(result, true);
+  EXPECT_EQ(read, content);
+}
+
 TEST(util_test, test_is_file_exists) {
   EXPECT_TRUE(is_file_exists(TEST_FILE));
   EXPECT_TRUE(is_file_exists(EMPTY_FILE));
@@ -97,7 +109,7 @@ TEST(util_test, test_is_file_exists) {
   //ファイルに読み込み権限がないとtrueが返ります。
 }
 
-#define TEST_DIR "../html/test_dir"
+#define TEST_DIR  "../html/test_dir"
 #define EMPTY_DIR "../html/empty_dir"
 
 TEST(util_test, is_dir) {
