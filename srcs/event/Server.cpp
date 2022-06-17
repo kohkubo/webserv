@@ -42,11 +42,15 @@ void Server::_connection_receive_handler(Connection &connection) {
   bool is_socket_closed_from_client = connection.append_receive_buffer();
   if (is_socket_closed_from_client) {
     LOG("[LOG] got FIN from connection");
-    connection.close();
-    _connection_map_.erase(connection.conn_fd());
+    _close_connection(connection);
     return;
   }
   connection.create_sequential_transaction();
+}
+
+void Server::_close_connection(Connection &connection) {
+  connection.close();
+  _connection_map_.erase(connection.conn_fd());
 }
 
 void Server::_insert_connection_map(listenFd listen_fd) {
@@ -72,6 +76,11 @@ void Server::run_loop() {
       bool is_listen_socket = static_cast<bool>(_conf_group_map_.count(it->fd));
       if (is_listen_socket) {
         _insert_connection_map(it->fd);
+        continue;
+      }
+      if ((it->revents & POLLHUP) != 0 || (it->revents & POLLERR) != 0) {
+        LOG("[LOG] connection (or write end of connection) was closed.");
+        _close_connection(_connection_map_.find(it->fd)->second);
         continue;
       }
       if ((it->revents & POLLIN) != 0) {

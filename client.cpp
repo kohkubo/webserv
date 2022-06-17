@@ -32,7 +32,7 @@ int main() {
                     "GET / HTTP/1.1\r\n"
                     "User-Agent: curl/7.68.0\r\n"
                     "Host: 0.0.0.0:999\r\n"
-                    "Connection: Close\r\n"
+                    // "Connection: Close\r\n"
                     "Accept: */*\r\n\r\n";
   write(sock, req.c_str(), req.size());
 
@@ -40,7 +40,6 @@ int main() {
   // std::cout << "send_count: " << send_count << std::endl;
   // std::vector<char> str(50000, 'A');
   // write(sock, &str[0], send_count);
-  sleep(1);
   char buf[5000];
   int  rc = read(sock, &buf, 5000);
   buf[rc] = '\0';
