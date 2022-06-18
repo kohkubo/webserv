@@ -22,7 +22,10 @@ Config::Config()
     , server_name_("")
     , addrinfo_(NULL) {}
 
-Config::Config(const Config &other) { *this = other; }
+Config::Config(const Config &other)
+    : addrinfo_(NULL) {
+  *this = other;
+}
 
 Config &Config::operator=(const Config &other) {
   if (this == &other) {
@@ -34,6 +37,9 @@ Config &Config::operator=(const Config &other) {
   server_name_          = other.server_name_;
   error_pages_          = other.error_pages_;
   locations_            = other.locations_;
+  if (addrinfo_ != NULL) {
+    freeaddrinfo(addrinfo_);
+  }
   _set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return *this;
 }
