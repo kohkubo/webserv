@@ -5,6 +5,6 @@ AlignAfterOpenBracket: Align
 AlwaysBreakTemplateDeclarations: Yes
 AlignConsecutiveAssignments: AcrossEmptyLinesAndComments
 AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
-AlignConsecutiveDeclarations: AcrossEmptyLinesAndComments
+AlignConsecutiveDeclarations: Consecutive
 AlignConsecutiveMacros: AcrossEmptyLinesAndComments
 BreakConstructorInitializersBeforeComma: True

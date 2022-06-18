@@ -10,10 +10,10 @@ TEST(request_header_contenttype_parse_test, parameter) {
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "text/html  ;     charset=utf-8";
 
-  RequestInfo info;
-  info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.type_, "text/html");
-  EXPECT_EQ(info.content_type_.parameter_["charset"], "utf-8");
+  RequestInfo request_info;
+  request_info.parse_request_header(header_field_map);
+  EXPECT_EQ(request_info.content_type_.type_, "text/html");
+  EXPECT_EQ(request_info.content_type_.parameter_["charset"], "utf-8");
 }
 
 TEST(request_header_contenttype_parse_test, quoted_parameter) {
@@ -22,10 +22,10 @@ TEST(request_header_contenttype_parse_test, quoted_parameter) {
   header_field_map["Content-Type"] =
       "mulTIPARt/form-data;boUNDAry=\"boundary\"";
 
-  RequestInfo info;
-  info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
-  EXPECT_EQ(info.content_type_.parameter_["boundary"], "boundary");
+  RequestInfo request_info;
+  request_info.parse_request_header(header_field_map);
+  EXPECT_EQ(request_info.content_type_.type_, "multipart/form-data");
+  EXPECT_EQ(request_info.content_type_.parameter_["boundary"], "boundary");
 }
 
 TEST(request_header_contenttype_parse_test, quoted_parameter_onechar) {
@@ -33,10 +33,10 @@ TEST(request_header_contenttype_parse_test, quoted_parameter_onechar) {
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary=\"_\"";
 
-  RequestInfo info;
-  info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
-  EXPECT_EQ(info.content_type_.parameter_["boundary"], "_");
+  RequestInfo request_info;
+  request_info.parse_request_header(header_field_map);
+  EXPECT_EQ(request_info.content_type_.type_, "multipart/form-data");
+  EXPECT_EQ(request_info.content_type_.parameter_["boundary"], "_");
 }
 
 TEST(request_header_contenttype_parse_test, parameter_empty_value) {
@@ -44,10 +44,10 @@ TEST(request_header_contenttype_parse_test, parameter_empty_value) {
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary=";
 
-  RequestInfo info;
-  info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
-  EXPECT_EQ(info.content_type_.parameter_["boundary"], "");
+  RequestInfo request_info;
+  request_info.parse_request_header(header_field_map);
+  EXPECT_EQ(request_info.content_type_.type_, "multipart/form-data");
+  EXPECT_EQ(request_info.content_type_.parameter_["boundary"], "");
 }
 
 TEST(request_header_contenttype_parse_test, parameter_empty_key) {
@@ -55,9 +55,9 @@ TEST(request_header_contenttype_parse_test, parameter_empty_key) {
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;=value";
 
-  RequestInfo info;
-  info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
+  RequestInfo request_info;
+  request_info.parse_request_header(header_field_map);
+  EXPECT_EQ(request_info.content_type_.type_, "multipart/form-data");
 }
 
 TEST(request_header_contenttype_parse_test, quoted_parameter_empty_value) {
@@ -65,10 +65,10 @@ TEST(request_header_contenttype_parse_test, quoted_parameter_empty_value) {
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary=\"\"";
 
-  RequestInfo info;
-  info.parse_request_header(header_field_map);
-  EXPECT_EQ(info.content_type_.type_, "multipart/form-data");
-  EXPECT_EQ(info.content_type_.parameter_["boundary"], "");
+  RequestInfo request_info;
+  request_info.parse_request_header(header_field_map);
+  EXPECT_EQ(request_info.content_type_.type_, "multipart/form-data");
+  EXPECT_EQ(request_info.content_type_.parameter_["boundary"], "");
 }
 
 TEST(request_header_contenttype_parse_test,
@@ -77,9 +77,9 @@ TEST(request_header_contenttype_parse_test,
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary\"boundary\"";
 
-  RequestInfo info;
+  RequestInfo request_info;
 
-  EXPECT_THROW(info.parse_request_header(header_field_map),
+  EXPECT_THROW(request_info.parse_request_header(header_field_map),
                RequestInfo::BadRequestException);
 }
 
@@ -88,9 +88,9 @@ TEST(request_header_contenttype_parse_test, exception_contenttype_onequote) {
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary=\"";
 
-  RequestInfo info;
+  RequestInfo request_info;
 
-  EXPECT_THROW(info.parse_request_header(header_field_map),
+  EXPECT_THROW(request_info.parse_request_header(header_field_map),
                RequestInfo::BadRequestException);
 }
 
@@ -100,9 +100,9 @@ TEST(request_header_contenttype_parse_test,
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary=\"aaa";
 
-  RequestInfo info;
+  RequestInfo request_info;
 
-  EXPECT_THROW(info.parse_request_header(header_field_map),
+  EXPECT_THROW(request_info.parse_request_header(header_field_map),
                RequestInfo::BadRequestException);
 }
 
@@ -112,8 +112,8 @@ TEST(request_header_contenttype_parse_test,
   header_field_map["Host"]         = "127.0.0.1:5001";
   header_field_map["Content-Type"] = "multipart/form-data;boundary=aaa\"";
 
-  RequestInfo info;
+  RequestInfo request_info;
 
-  EXPECT_THROW(info.parse_request_header(header_field_map),
+  EXPECT_THROW(request_info.parse_request_header(header_field_map),
                RequestInfo::BadRequestException);
 }
