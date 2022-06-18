@@ -7,28 +7,22 @@
 #include "http/const/const_delimiter.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 class ResponseGenerator {
 public:
-  static std::string generate_response(const Config      &config,
-                                       const RequestInfo &request_info);
-  static std::string generate_error_response(const Location &location,
-                                             const Config   &config,
-                                             HttpStatusCode  status_code);
+  static std::string generate_response(const RequestInfo &request_info);
+  static std::string generate_error_response(const RequestInfo &request_info,
+                                             HttpStatusCode     status_code);
 
 private:
   ResponseGenerator();
   ~ResponseGenerator();
-  static std::string    _read_file_tostring_cgi(const std::string &path,
-                                                const RequestInfo &request_info);
-  static std::string    _body(const std::string &file_path,
-                              const RequestInfo &request_info);
-  static std::string    _create_autoindex_body(const std::string &file_path,
-                                               const RequestInfo &request_info);
-  static HttpStatusCode _handle_method(const Location    &location,
-                                       const RequestInfo &request_info,
-                                       const std::string &file_path);
+  static Result         _read_file_to_str_cgi(const RequestInfo &request_info);
+  static std::string    _body(const RequestInfo &request_info);
+  static std::string    _create_autoindex_body(const RequestInfo &request_info);
+  static HttpStatusCode _handle_method(const RequestInfo &request_info);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

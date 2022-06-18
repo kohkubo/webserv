@@ -5,15 +5,17 @@
 #include <string>
 #include <vector>
 
+typedef std::map<int, std::string> returnMap;
+
 struct Location {
-  std::string                location_path_;
-  std::string                root_;
-  std::string                index_;
-  bool                       autoindex_;
-  bool                       cgi_extension_;
-  bool                       upload_file_;
-  std::map<int, std::string> return_;
-  std::vector<std::string>   limit_except_;
+  std::string              location_path_;
+  std::string              root_;
+  std::string              index_;
+  bool                     autoindex_;
+  bool                     cgi_extension_;
+  bool                     upload_file_;
+  returnMap                return_map_;
+  std::vector<std::string> limit_except_;
 
   Location()
       : root_("html/")

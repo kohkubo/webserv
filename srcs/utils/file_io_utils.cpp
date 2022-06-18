@@ -17,7 +17,7 @@ bool is_file_exists(const std::string &path) {
   struct stat file_info = {};
 
   if (stat(path.c_str(), &file_info) == -1) {
-    ERROR_LOG("error: is_file_exists: " << path);
+    ERROR_LOG("file not exists: " << path);
     return false;
   }
   return ((file_info.st_mode & S_IFMT) == S_IFREG);
@@ -34,19 +34,20 @@ bool is_dir_exists(const std::string &path) {
   return ((file_info.st_mode & S_IFMT) == S_IFDIR);
 }
 
-std::string read_file_tostring(const std::string &path) {
+Result read_file_to_str(const std::string &path) {
+  Result        result = {};
   std::ifstream file(path.c_str());
   if (file.fail()) {
-    ERROR_LOG(path << " is not found.");
-    ERROR_LOG("error: read_file_tostring");
-    return ""; // TODO: エラーを呼び出し元に通知
+    result.is_err_ = true;
+    return result;
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
   // 空ファイルの時: buffer.fail() -> true, buffer.str() = "": 問題なし.
   // その他のエラーケースに関しても再現が困難なので現状エラー確認なし.
   file.close();
-  return buffer.str();
+  result.str_ = buffer.str();
+  return result;
 }
 
 bool remove_file(const std::string &file_path) {

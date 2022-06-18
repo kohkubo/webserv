@@ -19,9 +19,13 @@ ConfGroupMapGenerator::ConfGroupMapGenerator(const char *config_file_path) {
 }
 
 void ConfGroupMapGenerator::_read_config(const char *config_file_path) {
-  std::string contents     = read_file_tostring(config_file_path);
-  tokenVector token_vector = tokenize(contents, CONFIG_DELIMITER, CONFIG_SKIP);
-  tokenIterator it         = token_vector.begin();
+  Result result = read_file_to_str(config_file_path);
+  if (result.is_err_) {
+    ERROR_EXIT(config_file_path << " is not found or can't read.");
+  }
+  tokenVector token_vector =
+      tokenize(result.str_, CONFIG_DELIMITER, CONFIG_SKIP);
+  tokenIterator it = token_vector.begin();
   while (it != token_vector.end()) {
     if (*it == "server") {
       Config config(it, token_vector.end());

@@ -4,8 +4,8 @@
 #include <dirent.h>
 #include <poll.h>
 
-typedef int    listenFd;
-typedef int    connFd;
+typedef int listenFd;
+typedef int connFd;
 
 connFd         xaccept(listenFd listen_fd);
 int            xpoll(struct pollfd *fds, nfds_t nfds, int timeout);

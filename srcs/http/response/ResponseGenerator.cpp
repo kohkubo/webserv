@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 #include "config/Config.hpp"
+#include "config/Location.hpp"
 #include "http/const/const_http_enums.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
@@ -64,57 +65,23 @@ static bool is_error_status_code(HttpStatusCode status_code) {
   return status_code > 299 && status_code < 600;
 }
 
-static std::string create_file_path(const std::string &request_uri,
-                                    const Location    &location) {
-  std::string file_path;
-  file_path = location.root_ + request_uri;
-  if (has_suffix(file_path, "/") &&
-      is_file_exists(file_path + location.index_)) {
-    file_path += location.index_;
-  }
-  return file_path;
-}
-
-std::string ResponseGenerator::_body(const std::string &file_path,
-                                     const RequestInfo &request_info) {
-  if (has_suffix(file_path, ".py")) {
-    return _read_file_tostring_cgi(file_path, request_info);
-  }
-  if (has_suffix(file_path, "/")) {
-    return _create_autoindex_body(file_path, request_info);
-  }
-  return read_file_tostring(file_path);
-}
-
-// 最長マッチ
-static const Location *
-select_proper_location(const std::string           &request_uri,
-                       const std::vector<Location> &locations) {
-  // clang-format off
-  std::string     path;
-  const Location *ret_location = NULL;
-  // clang-format on
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); ++it) {
-    if (request_uri.find(it->location_path_) == 0) {
-      if (path.size() < it->location_path_.size()) {
-        path         = it->location_path_;
-        ret_location = &(*it);
-      }
-    }
-  }
-  return ret_location;
-}
-
 // TODO: config.error_page validate
-static std::string error_page_body(const Location      &location,
-                                   const Config        &config,
-                                   const HttpStatusCode status_code) {
-  std::map<int, std::string>::const_iterator it =
-      config.error_pages_.find(status_code);
-  if (it != config.error_pages_.end()) {
-    std::string file_path = location.root_ + it->second;
-    return read_file_tostring(file_path);
+static std::string error_page_body(const RequestInfo &request_info,
+                                   HttpStatusCode     status_code) {
+  errorPageMap::const_iterator it =
+      request_info.config_.error_pages_.find(status_code);
+  if (it != request_info.config_.error_pages_.end()) {
+    std::string file_path = request_info.location_.root_ + it->second;
+    // TODO:
+    // 無いエラーページを指定した場合、nginxではどのような挙動になるのかチェックが必要
+    Result result         = read_file_to_str(file_path);
+    if (!result.is_err_) {
+      return result.str_;
+    }
+    LOG("###################");
+    LOG("error_page_body: read_file_to_str error");
+    LOG("###################");
+    status_code = INTERNAL_SERVER_ERROR_500;
   }
   return "<!DOCTYPE html>\n"
          "<html>\n"
@@ -132,15 +99,32 @@ static std::string error_page_body(const Location      &location,
          "</html>";
 }
 
+std::string ResponseGenerator::_body(const RequestInfo &request_info) {
+  if (has_suffix(request_info.file_path_, ".py")) {
+    Result result = _read_file_to_str_cgi(request_info);
+    if (result.is_err_) {
+      return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
+    }
+    return result.str_;
+  }
+  if (has_suffix(request_info.file_path_, "/")) {
+    return _create_autoindex_body(request_info);
+  }
+  Result result = read_file_to_str(request_info.file_path_);
+  if (result.is_err_) {
+    return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
+  }
+  return result.str_;
+}
+
 static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
 static std::string connection_header() { return "Connection: close" + CRLF; }
-static std::string location_header(const Location &location,
-                                   HttpStatusCode  status_code) {
-  std::map<int, std::string>::const_iterator it =
-      location.return_.find(status_code);
+static std::string location_header(const returnMap &return_map,
+                                   HttpStatusCode   status_code) {
+  returnMap::const_iterator it = return_map.find(status_code);
   return "Location: " + it->second + CRLF;
 }
 
@@ -150,13 +134,13 @@ static std::string entity_header_and_body(const std::string &body) {
 }
 
 std::string
-ResponseGenerator::generate_error_response(const Location &location,
-                                           const Config   &config,
-                                           HttpStatusCode  status_code) {
+ResponseGenerator::generate_error_response(const RequestInfo &request_info,
+                                           HttpStatusCode     status_code) {
+  LOG("generate_error_response()");
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   response += connection_header();
-  std::string body = error_page_body(location, config, status_code);
+  std::string body = error_page_body(request_info, status_code);
   response += entity_header_and_body(body);
   LOG(response);
   return response;
@@ -164,7 +148,6 @@ ResponseGenerator::generate_error_response(const Location &location,
 
 static std::string response_message(HttpStatusCode     status_code,
                                     const std::string &body,
-                                    const Location    &location,
                                     const RequestInfo &request_info) {
   std::string response = start_line(status_code);
   if (request_info.connection_close_) {
@@ -174,42 +157,40 @@ static std::string response_message(HttpStatusCode     status_code,
     return response + CRLF;
   }
   if (MOVED_PERMANENTLY_301 == status_code) {
-    response += location_header(location, status_code);
+    response +=
+        location_header(request_info.location_.return_map_, status_code);
   }
   response += entity_header_and_body(body);
   return response;
 };
 
 std::string
-ResponseGenerator::generate_response(const Config      &config,
-                                     const RequestInfo &request_info) {
-  HttpStatusCode  status_code = NONE;
+ResponseGenerator::generate_response(const RequestInfo &request_info) {
+  HttpStatusCode status_code = NONE;
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
-  const Location *location =
-      select_proper_location(request_info.request_target_, config.locations_);
-  if (location == NULL) {
-    // TODO: ここ処理どうするかまとまってないのでとりあえずの処理
-    return generate_error_response(Location(), config, NOT_FOUND_404);
-  }
   // return がセットされていたら
-  if (location->return_.size() != 0) {
+  if (request_info.location_.return_map_.size() != 0) {
     // intをHttpStatusCodeに変換する
-    status_code = static_cast<HttpStatusCode>(location->return_.begin()->first);
-    return response_message(status_code, "", *location, request_info);
+    status_code = static_cast<HttpStatusCode>(
+        request_info.location_.return_map_.begin()->first);
+    return response_message(status_code, "", request_info);
   }
-  if (is_minus_depth(request_info.request_target_)) {
-    return generate_error_response(*location, config, FORBIDDEN_403);
-  }
-  std::string file_path =
-      create_file_path(request_info.request_target_, *location);
-  status_code = _handle_method(*location, request_info, file_path);
+  status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
+    LOG("########################");
+    LOG("generate_response: error status code");
+    LOG("########################");
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
-    return generate_error_response(*location, config, status_code);
+    return generate_error_response(request_info, status_code);
   }
-  return response_message(status_code, _body(file_path, request_info),
-                          *location, request_info);
+  if (status_code == NO_CONTENT_204) {
+    // TODO:
+    // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
+    // kohkubo
+    return response_message(status_code, "", request_info);
+  }
+  return response_message(status_code, _body(request_info), request_info);
 }

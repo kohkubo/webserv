@@ -23,18 +23,18 @@
 
 #define ERROR_LOG(msg)                                                         \
   do {                                                                         \
-    std::cerr << RED "[ERROR_LOG]: " << RESET << msg << std::endl;             \
+    std::cerr << MAGENTA "[ERROR_LOG ] " << RESET << msg << std::endl;         \
   } while (0)
 
 #define ERROR_LOG_WITH_ERRNO(msg)                                              \
   do {                                                                         \
-    std::cerr << RED "[ERROR_LOG]: " << RESET << msg << ": "                   \
+    std::cerr << MAGENTA "[ERROR_LOG ] " << RESET << msg << ": "               \
               << strerror(errno) << std::endl;                                 \
   } while (0)
 
 #define LOG(msg)                                                               \
   do {                                                                         \
-    std::cout << BLUE "[LOG]: " << RESET << msg << std::endl;                  \
+    std::cout << BLUE "[ LOG      ] " << RESET << msg << std::endl;            \
   } while (0)
 
 #define ERROR_EXIT(msg)                                                        \
@@ -62,9 +62,9 @@ std::string to_string(T val) {
   return ss.str();
 }
 
-bool        is_uint8(const std::string &str);
-bool        is_ip(const std::string &str);
-bool        is_digits(const std::string &str);
+bool is_uint8(const std::string &str);
+bool is_ip(const std::string &str);
+bool is_digits(const std::string &str);
 
 std::size_t hexstr_to_size(const std::string &str);
 bool        is_dir(const std::string &filepath);
