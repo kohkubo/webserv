@@ -46,6 +46,17 @@ func NewClient(info TestSource) *Client {
 	return c
 }
 
+// Connectionを引き継ぐコンストラクタ
+func NewClientWithConn(prev_conn net.Conn, info TestSource) *Client {
+	c := &Client{}
+	c.Port = info.Port
+	c.Request = info.Request
+	c.Conn = prev_conn
+	c.Close = true
+	c.ReponseChecker = NewResponseChecker(info.ExpectStatusCode, info.ExpectHeader, info.ExpectBody)
+	return c
+}
+
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
 func (c *Client) DoAndCheck() bool {

@@ -55,8 +55,6 @@ public:
   RequestState       handle_request(std::string     &request_buffer,
                                     const confGroup &conf_group);
   Response           create_response() {
-    // TODO: is_close判定
-    // エラー || Connection: close -> true
     return Response(_response_, _request_info_.connection_close_);
   }
 };

@@ -19,6 +19,7 @@ var testLocation = testCatergory{
 					Port: port,
 					Request: "GET /dir1/ HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -44,6 +45,7 @@ var testLocation = testCatergory{
 					Port: Port,
 					Request: "GET " + Path + " HTTP/1.1\r\n" +
 						"Host: localhost:" + Port + "\r\n" +
+						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -71,6 +73,7 @@ var testLocation = testCatergory{
 					Port: Port,
 					Request: "GET " + Path + " HTTP/1.1\r\n" +
 						"Host: localhost:" + Port + "\r\n" +
+						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -97,6 +100,7 @@ var testLocation = testCatergory{
 					Port: Port,
 					Request: "GET " + Path + " HTTP/1.1\r\n" +
 						"Host: localhost:" + Port + "\r\n" +
+						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
