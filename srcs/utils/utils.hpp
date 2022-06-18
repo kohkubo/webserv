@@ -34,7 +34,7 @@
 
 #define LOG(msg)                                                               \
   do {                                                                         \
-    std::cout << BLUE"[LOG]: " << RESET << msg << std::endl;                                \
+    std::cout << BLUE "[LOG]: " << RESET << msg << std::endl;                  \
   } while (0)
 
 #define ERROR_EXIT(msg)                                                        \
