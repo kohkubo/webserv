@@ -136,12 +136,7 @@ static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
-static std::string connection_header(const RequestInfo &request_info) {
-  if (request_info.connection_close_) {
-    return "Connection: close" + CRLF;
-  }
-  return "";
-}
+static std::string connection_header() { return "Connection: close" + CRLF; }
 static std::string location_header(const Location &location,
                                    HttpStatusCode  status_code) {
   std::map<int, std::string>::const_iterator it =
@@ -160,7 +155,7 @@ ResponseGenerator::generate_error_response(const Location &location,
                                            HttpStatusCode  status_code) {
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
-  response += "Connection: close" + CRLF;
+  response += connection_header();
   std::string body = error_page_body(location, config, status_code);
   response += entity_header_and_body(body);
   LOG(response);
@@ -172,7 +167,9 @@ static std::string response_message(HttpStatusCode     status_code,
                                     const Location    &location,
                                     const RequestInfo &request_info) {
   std::string response = start_line(status_code);
-  response += connection_header(request_info);
+  if (request_info.connection_close_) {
+    response += connection_header();
+  }
   if (status_code == NO_CONTENT_204) {
     return response + CRLF;
   }

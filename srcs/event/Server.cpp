@@ -41,7 +41,7 @@ void Server::_add_connfd_to_pollfds(
 void Server::_connection_receive_handler(Connection &connection) {
   bool is_socket_closed_from_client = connection.append_receive_buffer();
   if (is_socket_closed_from_client) {
-    LOG("[LOG] got FIN from connection");
+    LOG("got FIN from connection");
     _terminate_connection(connection);
     return;
   }
@@ -55,13 +55,13 @@ void Server::_terminate_connection(Connection &connection) {
 
 void Server::_insert_connection_map(listenFd listen_fd) {
   connFd conn_fd = xaccept(listen_fd);
-  LOG("[LOG] insert " << conn_fd << " to connection");
+  LOG("insert " << conn_fd << " to connection");
   _connection_map_.insert(std::make_pair(
       conn_fd, Connection(conn_fd, _conf_group_map_[listen_fd])));
 }
 
 void Server::run_loop() {
-  ERROR_LOG("start server process");
+  std::cerr << "start server process" << std::endl;
   for (;;) {
     _close_timedout_connection(_connection_map_);
     _reset_pollfds();
@@ -84,11 +84,11 @@ void Server::run_loop() {
         continue;
       }
       if ((it->revents & POLLIN) != 0) {
-        LOG("[LOG] got POLLIN  event of fd " << it->fd);
+        LOG("got POLLIN  event of fd " << it->fd);
         _connection_receive_handler(_connection_map_.find(it->fd)->second);
       }
       if ((it->revents & POLLOUT) != 0) {
-        LOG("[LOG] got POLLOUT event of fd " << it->fd);
+        LOG("got POLLOUT event of fd " << it->fd);
         _connection_map_.find(it->fd)->second.send_front_response();
       }
     }
