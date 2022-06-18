@@ -78,7 +78,7 @@ void Server::run_loop() {
         _insert_connection_map(it->fd);
         continue;
       }
-      if ((it->revents & POLLHUP) != 0 || (it->revents & POLLERR) != 0) {
+      if ((it->revents & (POLLHUP | POLLERR)) != 0) {
         LOG("[LOG] connection (or write end of connection) was closed.");
         _terminate_connection(_connection_map_.find(it->fd)->second);
         continue;
