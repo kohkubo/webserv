@@ -95,8 +95,6 @@ RequestState Request::handle_request(std::string     &request_buffer,
           _request_info_.location_ =
               select_proper_location(_request_info_.request_target_,
                                      _request_info_.config_.locations_);
-          std::cout << "---->" << std::boolalpha
-                    << _request_info_.location_.autoindex_ << std::endl;
           _request_info_.file_path_ = create_file_path(
               _request_info_.request_target_, _request_info_.location_);
           // TODO: validate request_header
