@@ -47,7 +47,7 @@ public:
     return std::difftime(_time_now(), _last_event_time_) >= TIMEOUT_SECONDS_;
   }
   void close() const {
-    LOG("[LOG] close connection fd: " << _conn_fd_);
+    LOG("close connection fd: " << _conn_fd_);
     ::close(_conn_fd_);
   }
 };
