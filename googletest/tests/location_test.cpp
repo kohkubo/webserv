@@ -37,9 +37,7 @@ static Location select_proper_location(const std::string           &request_uri,
       }
     }
   }
-  LOG("########################");
   LOG("location is null");
-  LOG("########################");
   throw RequestInfo::BadRequestException(NOT_FOUND_404);
 }
 
