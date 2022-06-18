@@ -57,7 +57,7 @@ void Server::_insert_connection_map(listenFd listen_fd) {
 }
 
 void Server::run_loop() {
-  ERROR_LOG("start server process");
+  std::cerr << "start server process" << std::endl;
   for (;;) {
     _close_timedout_connection(_connection_map_);
     _reset_pollfds();
