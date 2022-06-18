@@ -60,9 +60,6 @@ static std::string create_file_path(const std::string &request_target,
   return file_path;
 }
 
-
-
-
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState Request::handle_request(std::string     &request_buffer,
                                      const confGroup &conf_group) {
