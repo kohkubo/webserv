@@ -85,9 +85,9 @@ TEST(util_test, test_is_digits) {
 
 static void read_file_to_str_test(const std::string &path, bool is_err,
                                   const std::string &str) {
-  RetPair ret_pair = read_file_to_str(path);
-  EXPECT_EQ(ret_pair.is_err_, is_err);
-  EXPECT_EQ(ret_pair.str_, str);
+  Result result = read_file_to_str(path);
+  EXPECT_EQ(result.is_err_, is_err);
+  EXPECT_EQ(result.str_, str);
 }
 
 TEST(util_test, test_read_file_to_str) {

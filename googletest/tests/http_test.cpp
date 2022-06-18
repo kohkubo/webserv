@@ -12,24 +12,68 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-TEST(http_test, create_response_info_get_403_config_error_pages) {
-  RequestInfo request_info;
-  request_info.method_         = "GET";
-  request_info.request_target_ = "/000.html";
-  request_info.version_        = "HTTP/1.1";
-  request_info.host_           = "localhost";
+TEST(http_test, create_response_info_get_403) {
   Config config;
-  config.error_pages_[403] = "forbidden.html";
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  RequestInfo request_info;
+  request_info.config_   = config;
+  request_info.location_ = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
+  request_info.method_           = "GET";
+  request_info.request_target_   = "/000.html";
+  request_info.version_          = "HTTP/1.1";
+  request_info.host_             = "localhost";
+  request_info.connection_close_ = true;
 
-  std::string expected_response = "\
+  std::string expected_response  = "\
+HTTP/1.1 403 Forbidden\r\n\
+Connection: close\r\n\
+Content-Length: 145\r\n\
+Content-Type: text/html\r\n\
+\r\n\
+<!DOCTYPE html>\n\
+<html>\n\
+    <head>\n\
+        <title>403</title>\n\
+    </head>\n\
+    <body>\n\
+<h2>403 Forbidden</h2>\n\
+default error page\n\
+    </body>\n\
+</html>\
+";
+
+  system("chmod 000 ../html/000.html");
+
+  EXPECT_EQ(ResponseGenerator::generate_response(request_info),
+            expected_response);
+
+  system("chmod 644 ../html/000.html");
+}
+
+TEST(http_test, create_response_info_get_403_config_error_pages) {
+  Config config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "html/";
+  config.locations_[0].index_         = "index.html";
+  config.error_pages_[403]            = "forbidden.html";
+  RequestInfo request_info;
+  request_info.config_           = config;
+  request_info.location_         = config.locations_[0];
+  request_info.method_           = "GET";
+  request_info.request_target_   = "/000.html";
+  request_info.file_path_        =
+      config.locations_[0].root_ + request_info.request_target_;
+  request_info.version_          = "HTTP/1.1";
+  request_info.host_             = "localhost";
+  request_info.connection_close_ = true;
+
+  std::string expected_response  = "\
 HTTP/1.1 403 Forbidden\r\n\
 Connection: close\r\n\
 Content-Length: 9\r\n\
@@ -50,17 +94,18 @@ TEST(http_test, create_response_info_delete_normal) {
   std::string expected_response = "HTTP/1.1 204 No Content\r\n"
                                   "Connection: close\r\n\r\n";
   RequestInfo request_info;
-  request_info.method_         = "DELETE";
-  request_info.request_target_ = "/delete_target.html";
-  request_info.version_        = "HTTP/1.1";
-  request_info.host_           = "localhost";
+  request_info.method_           = "DELETE";
+  request_info.request_target_   = "/delete_target.html";
+  request_info.version_          = "HTTP/1.1";
+  request_info.host_             = "localhost";
+  request_info.connection_close_ = true;
   Config config;
   config.locations_.push_back(Location());
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
@@ -81,8 +126,8 @@ TEST(http_test, create_response_info_delete_404) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
@@ -119,8 +164,8 @@ TEST(http_test, create_response_info_delete_403) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
@@ -162,8 +207,8 @@ TEST(http_test, create_response_info_delete_400) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 

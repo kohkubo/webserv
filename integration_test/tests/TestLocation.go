@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"integration_test/tester"
+	"integration_test/httptest"
 	"net/http"
 )
 
@@ -12,18 +12,24 @@ var testLocation = testCatergory{
 		{
 			caseName: "locationでdir1を指定できているか",
 			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
-					Port: "50000",
-					ReqPayload: []string{
-						"GET /dir1/ HTTP/1.1\r\n",
-						"Host: localhost:50000\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+				port := "50000"
+				expectStatusCode := 200
+				expectBody := fileToBytes("html/dir1/index.html")
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /dir1/ HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("html/dir1/index.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -31,20 +37,25 @@ var testLocation = testCatergory{
 		{
 			caseName: "rootディレクティブが反映されるか",
 			test: func() bool {
+				expectStatusCode := 200
+				expectBody := fileToBytes("html/dir1/index.html")
 				Port := "50001"
 				Path := "/"
-				clientA := tester.NewClient(tester.Client{
+				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
-					ReqPayload: []string{
-						"GET " + Path + " HTTP/1.1\r\n",
-						"Host: localhost:" + Port + "\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+					Request: "GET " + Path + " HTTP/1.1\r\n" +
+						"Host: localhost:" + Port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("html/dir1/index.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -53,20 +64,26 @@ var testLocation = testCatergory{
 
 			caseName: "index指定ができているか",
 			test: func() bool {
+
+				expectStatusCode := 200
+				expectBody := fileToBytes("html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
-				clientA := tester.NewClient(tester.Client{
+				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
-					ReqPayload: []string{
-						"GET " + Path + " HTTP/1.1\r\n",
-						"Host: localhost:" + Port + "\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+					Request: "GET " + Path + " HTTP/1.1\r\n" +
+						"Host: localhost:" + Port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("html/dir1/index2.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},
@@ -74,20 +91,26 @@ var testLocation = testCatergory{
 		{
 			caseName: "index指定ができているか",
 			test: func() bool {
+
+				expectStatusCode := 200
+				expectBody := fileToBytes("html/dir1/index2.html")
 				Port := "50002"
 				Path := "/"
-				clientA := tester.NewClient(tester.Client{
+				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
-					ReqPayload: []string{
-						"GET " + Path + " HTTP/1.1\r\n",
-						"Host: localhost:" + Port + "\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+					Request: "GET " + Path + " HTTP/1.1\r\n" +
+						"Host: localhost:" + Port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("html/dir1/index2.html"),
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},

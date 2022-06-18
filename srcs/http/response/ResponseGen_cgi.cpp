@@ -8,6 +8,7 @@
 #include <string>
 
 #include "http/response/CgiEnviron.hpp"
+#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 #define READ_FD  0
@@ -27,17 +28,20 @@ static std::string read_fd_to_str(int fd) {
 }
 
 // TODO: error処理
-std::string
+Result
 ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
-  int pipefd[2] = {0, 0};
+  Result result    = {};
+  int    pipefd[2] = {0, 0};
   if (pipe(pipefd) == -1) {
     ERROR_LOG("error: pipe in read_file_to_str_cgi");
-    return "";
+    result.is_err_ = true;
+    return result;
   }
   pid_t pid = fork();
   if (pid == -1) {
     ERROR_LOG("error: fork in read_file_to_str_cgi");
-    return "";
+    result.is_err_ = true;
+    return result;
   }
   // child
   if (pid == 0) {
@@ -58,11 +62,13 @@ ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
   close(pipefd[WRITE_FD]);
   // TODO: cgiからのレスポンスは、ヘッダー＋レスポンスbody、要パース
   // local redirectどうするか
-  std::string s = read_fd_to_str(pipefd[READ_FD]);
+  std::string str = read_fd_to_str(pipefd[READ_FD]);
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {
     ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-    return "";
+    result.is_err_ = true;
+    return result;
   }
-  return s;
+  result.str_ = str;
+  return result;
 }

@@ -17,7 +17,7 @@ func Generate() T {
 	s := testCategories{
 		testGET,
 		testDELETE,
-		testIOMulti,
+		//testIOMulti,
 		testCgi,
 		testAutoindex,
 		testBadRequest,
@@ -25,6 +25,7 @@ func Generate() T {
 		testLocation,
 		testServerName,
 		testReturn,
+		testKeepAlive,
 	}
 	return s
 }

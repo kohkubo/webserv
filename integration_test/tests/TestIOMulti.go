@@ -1,114 +1,134 @@
 package tests
 
-import (
-	"integration_test/response"
-	"integration_test/tester"
-	"net/http"
-)
-
 // 複数クライアント(A, B, C)にコネクションと3分割したメッセージを用意して, ランダムに送信する
-var testIOMulti = testCatergory{
-	categoryName: "IOmulti",
-	config:       "integration_test/conf/webserv.conf",
-	testCases: []testCase{
-		{
-			caseName: "3client",
-			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"GET /",
-						" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
-						"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
-					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("html/index.html"),
-				})
+//var testIOMulti = testCatergory{
+//categoryName: "IOmulti",
+//config:       "integration_test/conf/webserv.conf",
+//testCases: []testCase{
+//	{
+//		caseName: "3client",
+//		test: func() bool {
 
-				clientB := tester.NewClient(tester.Client{
-					Port: "50001",
-					ReqPayload: []string{
-						"GET /nosuch HT",
-						"TP/1.1\r\nHost: localhost:55",
-						"00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
-					},
-					ExpectStatusCode: http.StatusNotFound,
-					ExpectHeader:     nil,
-					ExpectBody:       response.Content_404,
-				})
+//expectBody := fileToBytes("html/index.html")
+//
+//			clientA := httptest.NewClient(httptest.TestSource{
+//				port := "55000"
+//Port: port,
+//				Request:
+//					"GET /",
+//					" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
+//					"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"+
+//				},
+//				ExpectStatusCode: expectStatusCode,
+//									ExpectHeader: http.Header{
+//	"Connection":     {"close"},
+//	"Content-Length": {lenStr(expectBody)},
+//	"Content-Type":   {"text/html"},
+//},
+//				ExpectBody:       fileToBytes("html/index.html"),
+//			})
 
-				clientC := tester.NewClient(tester.Client{
-					Port: "50001",
-					ReqPayload: []string{
-						"DELETE /nosuch HTTP/1.1\r",
-						"\nHost: localhost:55000\r\nUser-Agent: Go-http-c",
-						"lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
-					},
-					ExpectStatusCode: http.StatusNotFound,
-					ExpectHeader:     nil,
-					ExpectBody:       response.Content_404,
-				})
+//			clientB := httptest.NewClient(httptest.TestSource{
+//				Port: "50001",
+//				Request:
+//					"GET /nosuch HT",
+//					"TP/1.1\r\nHost: localhost:55",
+//					"00\r\nUser-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"+
+//				},
+//				ExpectStatusCode: 404,
+//									ExpectHeader: http.Header{
+//	"Connection":     {"close"},
+//	"Content-Length": {lenStr(expectBody)},
+//	"Content-Type":   {"text/html"},
+//},
+//				ExpectBody:       httpresp.ErrorBody(404),
+//			})
 
-				clientA.SendPartialRequest()
-				clientB.SendPartialRequest()
-				clientC.SendPartialRequest()
-				clientB.SendPartialRequest()
-				clientA.SendPartialRequest()
-				clientC.SendPartialRequest()
-				clientB.SendPartialRequest()
+//			clientC := httptest.NewClient(httptest.TestSource{
+//				Port: "50001",
+//				Request:
+//					"DELETE /nosuch HTTP/1.1\r",
+//					"\nHost: localhost:55000\r\nUser-Agent: Go-http-c",
+//					"lient/1.1\r\nAccept-Encoding: gzip\r\n\r\n"+
+//				},
+//				ExpectStatusCode: 404,
+//									ExpectHeader: http.Header{
+//	"Connection":     {"close"},
+//	"Content-Length": {lenStr(expectBody)},
+//	"Content-Type":   {"text/html"},
+//},
+//				ExpectBody:       httpresp.ErrorBody(404),
+//			})
 
-				clientB.RecvResponse()
-				if ok := clientB.IsExpectedResponse(); !ok {
-					return false
-				}
+//			clientA.SendPartialRequest()
+//			clientB.SendPartialRequest()
+//			clientC.SendPartialRequest()
+//			clientB.SendPartialRequest()
+//			clientA.SendPartialRequest()
+//			clientC.SendPartialRequest()
+//			clientB.SendPartialRequest()
 
-				clientC.SendPartialRequest()
-				clientC.RecvResponse()
-				if ok := clientC.IsExpectedResponse(); !ok {
-					return false
-				}
+//			clientB.RecvResponse()
+//			if ok := clientB.IsExpectedResponse(); !ok {
+//				return false
+//			}
 
-				clientA.SendPartialRequest()
-				clientA.RecvResponse()
-				if ok := clientA.IsExpectedResponse(); !ok {
-					return false
-				}
-				return true
-			},
-		},
-		{
-			caseName: "multiclient",
-			test: func() bool {
-				baseClient := tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"GET /",
-						" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
-						"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n",
-					},
-					ExpectStatusCode: http.StatusOK,
-					ExpectHeader:     nil,
-					ExpectBody:       fileToBytes("html/index.html"),
-				}
-				numOfClient := 10 // 時間がかかるので一旦10, 5000とかでもいけたけど。。。いけて良いのか?
-				var clients []*tester.Client
-				for i := 0; i < numOfClient; i++ {
-					clients = append(clients, tester.NewClient(baseClient))
-				}
-				for cnt := 0; cnt < 3; cnt++ {
-					for i := 0; i < numOfClient; i++ {
-						clients[i].SendPartialRequest()
-					}
-				}
-				for i := 0; i < numOfClient; i++ {
-					clients[i].RecvResponse()
-					if ok := clients[i].IsExpectedResponse(); !ok {
-						return false
-					}
-				}
-				return true
-			},
-		},
-	},
-}
+//			clientC.SendPartialRequest()
+//			clientC.RecvResponse()
+//			if ok := clientC.IsExpectedResponse(); !ok {
+//				return false
+//			}
+
+//			clientA.SendPartialRequest()
+//			clientA.RecvResponse()
+//			if ok := clientA.IsExpectedResponse(); !ok {
+//				return false
+//			}
+//			return true
+//		},
+//	},
+//	{
+//		caseName: "multiclient",
+//		test: func() bool {
+
+//expectBody := fileToBytes("html/index.html")
+//
+//			baseClient := httptest.TestSource{
+//				port := "55000"
+//Port: port,
+//				Request:
+//					"GET /",
+//					" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
+//					"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"+
+//				},
+//				ExpectStatusCode: expectStatusCode,
+//									ExpectHeader: http.Header{
+//	"Connection":     {"close"},
+//	"Content-Length": {lenStr(expectBody)},
+//	"Content-Type":   {"text/html"},
+//},
+//				ExpectBody:       fileToBytes("html/index.html"),
+//			}
+//			numOfClient := 10
+//			// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け
+//			// 現状だとエラーが返ってくるのでテストとして修正すべき
+//			var clients []*httptest.TestSource
+//			for i := 0; i < numOfClient; i++ {
+//				clients = append(clients, httptest.NewClient(baseClient))
+//			}
+//			for cnt := 0; cnt < 3; cnt++ {
+//				for i := 0; i < numOfClient; i++ {
+//					clients[i].SendPartialRequest()
+//				}
+//			}
+//			for i := 0; i < numOfClient; i++ {
+//				clients[i].RecvResponse()
+//				if ok := clients[i].IsExpectedResponse(); !ok {
+//					return false
+//				}
+//			}
+//			return true
+//		},
+//	},
+//},
+//}

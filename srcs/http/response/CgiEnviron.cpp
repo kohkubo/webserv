@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <cstring>
+#include <map>
 
 #include "utils/utils.hpp"
 
@@ -20,7 +21,7 @@ static std::string get_realpath(const std::string &file_path) {
 }
 
 static std::map<std::string, std::string>
-create_environ_map(const std::string &path, const RequestInfo &request_info) {
+create_environ_map(const RequestInfo &request_info) {
   std::map<std::string, std::string> environ_map;
 
   if (request_info.has_body()) {
@@ -66,10 +67,9 @@ create_cgi_environ(const std::map<std::string, std::string> &environ_map) {
   return cgi_environ;
 }
 
-CgiEnviron::CgiEnviron(const std::string &path,
-                       const RequestInfo &request_info) {
+CgiEnviron::CgiEnviron(const RequestInfo &request_info) {
   std::map<std::string, std::string> environ_map =
-      create_environ_map(path, request_info);
+      create_environ_map(request_info);
   _environ_ = create_cgi_environ(environ_map);
 }
 

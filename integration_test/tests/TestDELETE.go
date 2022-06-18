@@ -3,14 +3,15 @@ package tests
 import (
 	"errors"
 	"fmt"
-	"integration_test/response"
-	"integration_test/tester"
+	"integration_test/httpresp"
+	"integration_test/httptest"
 	"integration_test/webserv"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
+//TODO: DELET時はbodyなしでok?
 var testDELETE = testCatergory{
 	categoryName: "DELETE",
 	config:       "integration_test/conf/webserv.conf",
@@ -30,18 +31,22 @@ var testDELETE = testCatergory{
 				}
 				defer os.RemoveAll(filepath.Dir(deleteFileRelativePath))
 
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"DELETE " + deleteFilePath + " HTTP/1.1\r\n",
-						"Host: localhost:55000\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+				expectStatusCode := 204
+				port := "55000"
+
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "DELETE " + deleteFilePath + " HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection": {"close"},
 					},
-					ExpectStatusCode: http.StatusNoContent,
-					ExpectHeader:     nil,
-					ExpectBody:       nil,
+					ExpectBody: []byte{},
 				})
 				if ok := clientA.DoAndCheck(); !ok {
 					return false
@@ -63,18 +68,25 @@ var testDELETE = testCatergory{
 		{
 			caseName: "no_such_file",
 			test: func() bool {
-				clientA := tester.NewClient(tester.Client{
-					Port: "55000",
-					ReqPayload: []string{
-						"DELETE /no_such_file HTTP/1.1\r\n",
-						"Host: localhost:55000\r\n",
-						"User-Agent: curl/7.79.1\r\n",
-						`Accept: */*` + "\r\n",
+
+				expectStatusCode := 404
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "DELETE /no_such_file HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
 						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
 					},
-					ExpectStatusCode: http.StatusNotFound,
-					ExpectHeader:     nil,
-					ExpectBody:       response.Content_404,
+					ExpectBody: expectBody,
 				})
 				return clientA.DoAndCheck()
 			},

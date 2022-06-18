@@ -68,13 +68,15 @@ static bool is_error_status_code(HttpStatusCode status_code) {
 // TODO: config.error_page validate
 static std::string error_page_body(const RequestInfo &request_info,
                                    HttpStatusCode     status_code) {
-  std::map<int, std::string>::const_iterator it =
-      request_info.config_->error_pages_.find(status_code);
-  if (it != request_info.config_->error_pages_.end()) {
-    std::string file_path = request_info.location_->root_ + it->second;
-    RetPair     ret_pair  = read_file_to_str(file_path);
-    if (!ret_pair.is_err_) {
-      return ret_pair.str_;
+  errorPageMap::const_iterator it =
+      request_info.config_.error_pages_.find(status_code);
+  if (it != request_info.config_.error_pages_.end()) {
+    std::string file_path = request_info.location_.root_ + it->second;
+    // TODO:
+    // 無いエラーページを指定した場合、nginxではどのような挙動になるのかチェックが必要
+    Result      result    = read_file_to_str(file_path);
+    if (!result.is_err_) {
+      return result.str_;
     }
     LOG("###################");
     LOG("error_page_body: read_file_to_str error");
@@ -99,32 +101,30 @@ static std::string error_page_body(const RequestInfo &request_info,
 
 std::string ResponseGenerator::_body(const RequestInfo &request_info) {
   if (has_suffix(request_info.file_path_, ".py")) {
-    return _read_file_to_str_cgi(request_info);
+    Result result = _read_file_to_str_cgi(request_info);
+    if (result.is_err_) {
+      return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
+    }
+    return result.str_;
   }
   if (has_suffix(request_info.file_path_, "/")) {
     return _create_autoindex_body(request_info);
   }
-  RetPair ret_pair = read_file_to_str(request_info.file_path_);
-  if (ret_pair.is_err_) {
-    // TODO:
-    // ロジックに整理が必要かも。requst_infoにlocationとconfigをもたせたほうがよい。
-    // kohkubo
-    exit(1);
-    // error_page_body(request_info.location_, request_info.config_,
-    // INTERNAL_SERVER_ERROR_500);
+  Result result = read_file_to_str(request_info.file_path_);
+  if (result.is_err_) {
+    return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
   }
-  return ret_pair.str_;
+  return result.str_;
 }
 
 static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
-static std::string general_header() { return "Connection: close" + CRLF; }
-static std::string location_header(const Location &location,
-                                   HttpStatusCode  status_code) {
-  std::map<int, std::string>::const_iterator it =
-      location.return_.find(status_code);
+static std::string connection_header() { return "Connection: close" + CRLF; }
+static std::string location_header(const returnMap &return_map,
+                                   HttpStatusCode   status_code) {
+  returnMap::const_iterator it = return_map.find(status_code);
   return "Location: " + it->second + CRLF;
 }
 
@@ -139,7 +139,7 @@ ResponseGenerator::generate_error_response(const RequestInfo &request_info,
   LOG("generate_error_response()");
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
-  response += general_header();
+  response += connection_header();
   std::string body = error_page_body(request_info, status_code);
   response += entity_header_and_body(body);
   LOG(response);
@@ -148,14 +148,17 @@ ResponseGenerator::generate_error_response(const RequestInfo &request_info,
 
 static std::string response_message(HttpStatusCode     status_code,
                                     const std::string &body,
-                                    const Location    &location) {
+                                    const RequestInfo &request_info) {
   std::string response = start_line(status_code);
-  response += general_header();
+  if (request_info.connection_close_) {
+    response += connection_header();
+  }
   if (status_code == NO_CONTENT_204) {
     return response + CRLF;
   }
   if (MOVED_PERMANENTLY_301 == status_code) {
-    response += location_header(location, status_code);
+    response +=
+        location_header(request_info.location_.return_map_, status_code);
   }
   response += entity_header_and_body(body);
   return response;
@@ -169,17 +172,17 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   // return がセットされていたら
-  if (request_info.location_->return_.size() != 0) {
+  if (request_info.location_.return_map_.size() != 0) {
     // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode>(
-        request_info.location_->return_.begin()->first);
-    return response_message(status_code, "", *request_info.location_);
+        request_info.location_.return_map_.begin()->first);
+    return response_message(status_code, "", request_info);
   }
-  // if (is_minus_depth(request_info.request_target_)) {
-  //   return generate_error_response(*location, config, FORBIDDEN_403);
-  // }
   status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
+    LOG("########################");
+    LOG("generate_response: error status code");
+    LOG("########################");
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(request_info, status_code);
   }
@@ -187,8 +190,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     // TODO:
     // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
     // kohkubo
-    return response_message(status_code, "", *request_info.location_);
+    return response_message(status_code, "", request_info);
   }
-  return response_message(status_code, _body(request_info),
-                          *request_info.location_);
+  return response_message(status_code, _body(request_info), request_info);
 }
