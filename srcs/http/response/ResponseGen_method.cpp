@@ -68,12 +68,14 @@ static HttpStatusCode save_posted_file(const Location    &location,
   if (request_info.content_type_.type_ != "multipart/form-data") {
     // text/plainでのPOSTに対応する場合は同じようなデータ構造で持ちたい
     // rakiyama
+    ERROR_LOG("POST not support: " << request_info.content_type_.type_);
     return INTERNAL_SERVER_ERROR_500;
   }
   if (!has_suffix(target_path, "/")) {
     // file_pathにindexがappendされていたらここで引っかかることに注意
     // indexをつける作業はGETに移せば解決すると踏んでいる
     // rakiyama
+    ERROR_LOG("path is not dir: " << target_path);
     return INTERNAL_SERVER_ERROR_500;
   }
   if (!is_dir_exists(target_path)) {
