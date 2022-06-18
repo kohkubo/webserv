@@ -121,11 +121,10 @@ static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
-static std::string general_header() { return "Connection: close" + CRLF; }
-static std::string location_header(const Location &location,
-                                   HttpStatusCode  status_code) {
-  std::map<int, std::string>::const_iterator it =
-      location.return_.find(status_code);
+static std::string connection_header() { return "Connection: close" + CRLF; }
+static std::string location_header(const returnMap &return_map,
+                                   HttpStatusCode   status_code) {
+  returnMap::const_iterator it = return_map.find(status_code);
   return "Location: " + it->second + CRLF;
 }
 
@@ -140,7 +139,7 @@ ResponseGenerator::generate_error_response(const RequestInfo &request_info,
   LOG("generate_error_response()");
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
-  response += general_header();
+  response += connection_header();
   std::string body = error_page_body(request_info, status_code);
   response += entity_header_and_body(body);
   LOG(response);
@@ -149,14 +148,17 @@ ResponseGenerator::generate_error_response(const RequestInfo &request_info,
 
 static std::string response_message(HttpStatusCode     status_code,
                                     const std::string &body,
-                                    const Location    &location) {
+                                    const RequestInfo &request_info) {
   std::string response = start_line(status_code);
-  response += general_header();
+  if (request_info.connection_close_) {
+    response += connection_header();
+  }
   if (status_code == NO_CONTENT_204) {
     return response + CRLF;
   }
   if (MOVED_PERMANENTLY_301 == status_code) {
-    response += location_header(location, status_code);
+    response +=
+        location_header(request_info.location_.return_map_, status_code);
   }
   response += entity_header_and_body(body);
   return response;
@@ -170,11 +172,11 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   // return がセットされていたら
-  if (request_info.location_.return_.size() != 0) {
+  if (request_info.location_.return_map_.size() != 0) {
     // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode>(
-        request_info.location_.return_.begin()->first);
-    return response_message(status_code, "", request_info.location_);
+        request_info.location_.return_map_.begin()->first);
+    return response_message(status_code, "", request_info);
   }
   status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
@@ -188,8 +190,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     // TODO:
     // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
     // kohkubo
-    return response_message(status_code, "", request_info.location_);
+    return response_message(status_code, "", request_info);
   }
-  return response_message(status_code, _body(request_info),
-                          request_info.location_);
+  return response_message(status_code, _body(request_info), request_info);
 }

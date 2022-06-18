@@ -3,7 +3,6 @@ package httptest
 import (
 	"fmt"
 	"integration_test/httpresp"
-	"integration_test/webserv"
 	"io"
 	"net/http"
 	"os"
@@ -25,18 +24,14 @@ func NewResponseChecker(statusCode int, header http.Header, body []byte) Reponse
 	return c
 }
 
+// if expect conneciton_close: close=true, rm close field
+// else: nothing to do
 func resolveClose(header http.Header) bool {
 	close := false
-	if v, exist := header["Connection"]; !exist {
-		webserv.ExitWithKill(fmt.Errorf("Connection field not specified"))
-	} else if v[0] == "close" {
+	if v, exist := header["Connection"]; exist && v[0] == "close" {
 		close = true
-	} else if v[0] == "keep-alive" {
-		close = false
-	} else {
-		webserv.ExitWithKill(fmt.Errorf("unknown Connection field: %v", v))
+		delete(header, "Connection")
 	}
-	delete(header, "Connection")
 	return close
 }
 

@@ -25,6 +25,7 @@ func Generate() T {
 		testLocation,
 		testServerName,
 		testReturn,
+		testKeepAlive,
 	}
 	return s
 }
