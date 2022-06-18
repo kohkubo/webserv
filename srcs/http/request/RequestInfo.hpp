@@ -26,21 +26,21 @@ public:
   };
   typedef std::map<std::string, Form> formMap;
 
-  bool                                is_blank_first_line_;
-  std::string                         method_;
-  std::string                         request_target_;
-  std::string                         query_string_;
-  std::string                         version_;
-  std::string                         host_;
-  std::string                         body_;
-  bool                                connection_close_;
-  bool                                is_chunked_;
-  std::size_t                         content_length_;
-  std::string                         file_path_;
-  const Config                       *config_;
-  const Location                     *location_;
-  ContentInfo                         content_type_;
-  formMap                             form_map_;
+  bool            is_blank_first_line_;
+  std::string     method_;
+  std::string     request_target_;
+  std::string     query_string_;
+  std::string     version_;
+  std::string     host_;
+  std::string     body_;
+  bool            connection_close_;
+  bool            is_chunked_;
+  std::size_t     content_length_;
+  std::string     file_path_;
+  const Config   *config_;
+  const Location *location_;
+  ContentInfo     content_type_;
+  formMap         form_map_;
 
 private:
   static formMap     _parse_request_multi_part(const std::string &request_body,
@@ -71,7 +71,7 @@ public:
     HttpStatusCode status() const;
   };
 
-  bool        has_body() const { return content_length_ != 0 || is_chunked_; }
+  bool has_body() const { return content_length_ != 0 || is_chunked_; }
 
   static void store_request_header_field_map(
       const std::string                  &header_line,
