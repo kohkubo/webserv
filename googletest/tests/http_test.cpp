@@ -236,3 +236,41 @@ default error page\n\
   EXPECT_EQ(ResponseGenerator::generate_response(config, request_info),
             expected_response);
 }
+
+static void add_form(RequestInfo::formMap &fmap, const std::string name,
+                     const std::string filename, const std::string content) {
+  RequestInfo::Form f;
+  f.content_disposition_.type_              = "form-data";
+  f.content_disposition_.parameter_["name"] = name;
+  if (filename != "") {
+    f.content_disposition_.parameter_["filename"] = filename;
+  }
+  f.content_ = content;
+  fmap[name] = f;
+}
+
+TEST(http_test, generate_response_post_normal) {
+  Config config;
+  config.locations_.push_back(Location());
+  config.locations_[0].location_path_ = "/";
+  config.locations_[0].root_          = "tdata/utils_test/";
+  config.locations_[0].upload_file_   = true;
+  RequestInfo request_info;
+  request_info.method_             = "POST";
+  request_info.request_target_     = "/";
+  request_info.version_            = "HTTP/1.1";
+  request_info.host_               = "localhost";
+  request_info.content_type_.type_ = "multipart/form-data";
+  add_form(request_info.form_map_, "test0", "", "notfile");
+  add_form(request_info.form_map_, "test1", "test1.txt", "test1_content\r\n");
+  add_form(request_info.form_map_, "test2", "test2.txt", "test2_content\r\n");
+
+  std::string expect = "HTTP/1.1 201 Created\r\n"
+                       "Connection: close\r\n"
+                       "Content-Length: 127\r\n"
+                       "Content-Type: text/html\r\n"
+                       "\r\n"
+                       "created";
+
+  EXPECT_EQ(ResponseGenerator::generate_response(config, request_info), expect);
+}
