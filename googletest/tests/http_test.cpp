@@ -24,8 +24,8 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
@@ -59,8 +59,8 @@ TEST(http_test, create_response_info_delete_normal) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
@@ -81,8 +81,8 @@ TEST(http_test, create_response_info_delete_404) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
@@ -119,8 +119,8 @@ TEST(http_test, create_response_info_delete_403) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
@@ -162,8 +162,8 @@ TEST(http_test, create_response_info_delete_400) {
   config.locations_[0].location_path_ = "/";
   config.locations_[0].root_          = "html/";
   config.locations_[0].index_         = "index.html";
-  request_info.config_                = &config;
-  request_info.location_              = &config.locations_[0];
+  request_info.config_                = config;
+  request_info.location_              = config.locations_[0];
   request_info.file_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 

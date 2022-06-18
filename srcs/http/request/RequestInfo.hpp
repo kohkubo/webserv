@@ -24,23 +24,24 @@ public:
     ContentInfo content_type_;
     std::string content_;
   };
+  // clang-format off
   typedef std::map<std::string, Form> formMap;
-
-  bool                                is_blank_first_line_;
-  std::string                         method_;
-  std::string                         request_target_;
-  std::string                         query_string_;
-  std::string                         version_;
-  std::string                         host_;
-  std::string                         body_;
-  bool                                connection_close_;
-  bool                                is_chunked_;
-  std::size_t                         content_length_;
-  std::string                         file_path_;
-  const Config                       *config_;
-  const Location                     *location_;
-  ContentInfo                         content_type_;
-  formMap                             form_map_;
+  // clang-format on
+  bool        is_blank_first_line_;
+  std::string method_;
+  std::string request_target_;
+  std::string query_string_;
+  std::string version_;
+  std::string host_;
+  std::string body_;
+  bool        connection_close_;
+  bool        is_chunked_;
+  std::size_t content_length_;
+  std::string file_path_;
+  Config      config_;
+  Location    location_;
+  ContentInfo content_type_;
+  formMap     form_map_;
 
 private:
   static formMap     _parse_request_multi_part(const std::string &request_body,
@@ -57,9 +58,7 @@ public:
       , method_("")
       , connection_close_(false)
       , is_chunked_(false)
-      , content_length_(0)
-      , config_(NULL)
-      , location_(NULL) {}
+      , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
   private:

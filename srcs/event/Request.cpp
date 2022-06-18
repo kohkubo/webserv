@@ -29,28 +29,30 @@ static std::string cutout_request_body(std::string &request_buffer,
 // 最長マッチ
 // TODO: pairでの実装の方がいいのか、意見聞きたいです。 kohkubo
 // TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
-static const Location *
-select_proper_location(const std::string           &request_uri,
-                       const std::vector<Location> &locations) {
+static Location select_proper_location(const std::string           &request_uri,
+                                       const std::vector<Location> &locations) {
   // clang-format off
-  std::string     path;
-  const Location *location = NULL;
+  std::string path;
   // clang-format on
   std::vector<Location>::const_iterator it = locations.begin();
   for (; it != locations.end(); ++it) {
     if (request_uri.find(it->location_path_) == 0) {
       if (path.size() < it->location_path_.size()) {
-        path     = it->location_path_;
-        location = &(*it);
+        path = it->location_path_;
+        return *it;
       }
     }
   }
-  return location;
+  LOG("########################");
+  LOG("location is null");
+  LOG("########################");
+  throw RequestInfo::BadRequestException(NOT_FOUND_404);
 }
 
 static std::string create_file_path(const std::string &request_target,
                                     const Location    &location) {
   std::string file_path = location.root_ + request_target;
+  LOG("create_file_path: " << file_path);
   if (has_suffix(file_path, "/") &&
       is_file_exists(file_path + location.index_)) {
     file_path += location.index_;
@@ -86,28 +88,20 @@ RequestState Request::handle_request(std::string     &request_buffer,
           _request_info_.parse_request_header(_field_map_);
           // throws BadRequestException
           // TODO: 1関数に切り出し予定です。 kohkubo
-          if (_request_info_.config_ == NULL) {
-            _request_info_.config_ =
-                select_proper_config(conf_group, _request_info_.host_);
-            _request_info_.location_ =
-                select_proper_location(_request_info_.request_target_,
-                                       _request_info_.config_->locations_);
-            if (_request_info_.location_ == NULL) {
-              LOG("########################");
-              LOG("location is null");
-              LOG("########################");
-              throw RequestInfo::BadRequestException(NOT_FOUND_404);
-            }
-            _request_info_.file_path_ = create_file_path(
-                _request_info_.request_target_, *_request_info_.location_);
-          }
+          _request_info_.config_ =
+              *select_proper_config(conf_group, _request_info_.host_);
+          _request_info_.location_ =
+              select_proper_location(_request_info_.request_target_,
+                                     _request_info_.config_.locations_);
+          _request_info_.file_path_ = create_file_path(
+              _request_info_.request_target_, _request_info_.location_);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
           // content-length and transfer-encoding -> delete content-length
           _check_max_client_body_size_exception(
               _request_info_.content_length_,
-              _request_info_.config_->client_max_body_size_);
+              _request_info_.config_.client_max_body_size_);
           if (_request_info_.has_body()) {
             _state_ = RECEIVING_BODY;
             break;
@@ -123,7 +117,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
         // throws BadRequestException
         _check_max_client_body_size_exception(
             _request_body_.size(),
-            _request_info_.config_->client_max_body_size_);
+            _request_info_.config_.client_max_body_size_);
         // throws BadRequestException
       } else if (request_buffer.size() >= _request_info_.content_length_) {
         _request_body_ =

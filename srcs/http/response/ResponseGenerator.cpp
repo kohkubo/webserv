@@ -68,23 +68,12 @@ static bool is_error_status_code(HttpStatusCode status_code) {
 // TODO: config.error_page validate
 static std::string error_page_body(const RequestInfo &request_info,
                                    HttpStatusCode     status_code) {
-  const Config   *config     = NULL;
-  const Location *location   = NULL;
-  // bool            malloc_flg = false;
-  if (request_info.config_ == NULL) {
-    // TODO: 現状この書き方になってしまう。いい書き方あったら、教えてほしいです
-    // kohkubo
-    config     = new Config();
-    location   = new Location();
-    // malloc_flg = true;
-  } else {
-    config   = request_info.config_;
-    location = request_info.location_;
-  }
-  errorPageMap::const_iterator it = config->error_pages_.find(status_code);
-  if (it != config->error_pages_.end()) {
-    std::string file_path = location->root_ + it->second;
-    // TODO: 無いエラーページを指定した場合、nginxではどのような挙動になるのかチェックが必要
+  errorPageMap::const_iterator it =
+      request_info.config_.error_pages_.find(status_code);
+  if (it != request_info.config_.error_pages_.end()) {
+    std::string file_path = request_info.location_.root_ + it->second;
+    // TODO:
+    // 無いエラーページを指定した場合、nginxではどのような挙動になるのかチェックが必要
     Result      result    = read_file_to_str(file_path);
     if (!result.is_err_) {
       return result.str_;
@@ -94,10 +83,6 @@ static std::string error_page_body(const RequestInfo &request_info,
     LOG("###################");
     status_code = INTERNAL_SERVER_ERROR_500;
   }
-  // if (malloc_flg) {
-  //   delete config;
-  //   delete location;
-  // }
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"
@@ -185,17 +170,17 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
   // TODO:locationを決定する処理をResponseの前に挟むと、
   // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   // return がセットされていたら
-  if (request_info.location_->return_.size() != 0) {
+  if (request_info.location_.return_.size() != 0) {
     // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode>(
-        request_info.location_->return_.begin()->first);
-    return response_message(status_code, "", *request_info.location_);
+        request_info.location_.return_.begin()->first);
+    return response_message(status_code, "", request_info.location_);
   }
-  // if (is_minus_depth(request_info.request_target_)) {
-  //   return generate_error_response(*location, config, FORBIDDEN_403);
-  // }
   status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
+    LOG("########################");
+    LOG("generate_response: error status code");
+    LOG("########################");
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(request_info, status_code);
   }
@@ -203,8 +188,8 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     // TODO:
     // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
     // kohkubo
-    return response_message(status_code, "", *request_info.location_);
+    return response_message(status_code, "", request_info.location_);
   }
   return response_message(status_code, _body(request_info),
-                          *request_info.location_);
+                          request_info.location_);
 }

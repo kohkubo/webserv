@@ -23,24 +23,24 @@ int get_http_response_status_code(const std::string &response_string) {
   return std::stoi(code_str);
 }
 
-// 最長マッチ
-static const Location *
-select_proper_location(const std::string           &request_uri,
-                       const std::vector<Location> &locations) {
+static Location select_proper_location(const std::string           &request_uri,
+                                       const std::vector<Location> &locations) {
   // clang-format off
-  std::string     path;
-  const Location *location = NULL;
+  std::string path;
   // clang-format on
   std::vector<Location>::const_iterator it = locations.begin();
   for (; it != locations.end(); ++it) {
     if (request_uri.find(it->location_path_) == 0) {
       if (path.size() < it->location_path_.size()) {
-        path     = it->location_path_;
-        location = &(*it);
+        path = it->location_path_;
+        return *it;
       }
     }
   }
-  return location;
+  LOG("########################");
+  LOG("location is null");
+  LOG("########################");
+  throw RequestInfo::BadRequestException(NOT_FOUND_404);
 }
 
 static std::string create_file_path(const std::string &request_target,
@@ -56,16 +56,16 @@ static std::string create_file_path(const std::string &request_target,
 bool test_request_body(const Config *config, const std::string &request_target,
                        const std::string &expected_body) {
   RequestInfo request_info;
-  request_info.config_         = config;
+  request_info.config_         = *config;
   request_info.request_target_ = request_target;
   request_info.location_ =
       select_proper_location(request_target, config->locations_);
-  request_info.method_    = "GET";
-  request_info.file_path_ = create_file_path(request_target,
-                                              *request_info.location_);
+  request_info.method_ = "GET";
+  request_info.file_path_ =
+      create_file_path(request_target, request_info.location_);
 
-  std::string body        = get_http_response_body(
-             ResponseGenerator::generate_response(request_info));
+  std::string body = get_http_response_body(
+      ResponseGenerator::generate_response(request_info));
   bool res = body == expected_body;
   if (!res) {
     std::cout << "expected: " << expected_body << std::endl;
@@ -78,15 +78,15 @@ bool test_request_status_code(const Config      *config,
                               const std::string &request_target,
                               int                expected_status_code) {
   RequestInfo request_info;
-  request_info.config_ = config;
+  request_info.config_ = *config;
   request_info.location_ =
       select_proper_location(request_target, config->locations_);
   request_info.request_target_ = request_target;
   request_info.method_         = "GET";
-  request_info.file_path_      = create_file_path(request_target,
-                                                  *request_info.location_);
-  int status_code              = get_http_response_status_code(
-                   ResponseGenerator::generate_response(request_info));
+  request_info.file_path_ =
+      create_file_path(request_target, request_info.location_);
+  int status_code = get_http_response_status_code(
+      ResponseGenerator::generate_response(request_info));
   bool res = status_code == expected_status_code;
   if (!res) {
     std::cout << "expected: " << expected_status_code << std::endl;

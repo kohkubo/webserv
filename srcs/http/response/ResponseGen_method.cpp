@@ -13,7 +13,7 @@
 static HttpStatusCode check_filepath_status(const RequestInfo &request_info) {
   if (has_suffix(request_info.file_path_, "/")) {
     if (is_dir_exists(request_info.file_path_)) {
-      if (!request_info.location_->autoindex_) {
+      if (!request_info.location_.autoindex_) {
         return FORBIDDEN_403; // nginxに合わせた
       }
       return OK_200;
@@ -21,6 +21,7 @@ static HttpStatusCode check_filepath_status(const RequestInfo &request_info) {
     return NOT_FOUND_404;
   }
   if (!is_file_exists(request_info.file_path_)) {
+    LOG("check_filepath_status: file not found");
     return NOT_FOUND_404;
   }
   if (!is_accessible(request_info.file_path_, R_OK)) {
@@ -32,9 +33,9 @@ static HttpStatusCode check_filepath_status(const RequestInfo &request_info) {
 
 static HttpStatusCode handle_post_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_->limit_except_.begin(),
-                request_info.location_->limit_except_.end(),
-                "POST") == request_info.location_->limit_except_.end()) {
+  if (std::find(request_info.location_.limit_except_.begin(),
+                request_info.location_.limit_except_.end(),
+                "POST") == request_info.location_.limit_except_.end()) {
     return NOT_ALLOWED_405;
   }
   return check_filepath_status(request_info);
@@ -42,9 +43,9 @@ static HttpStatusCode handle_post_method(const RequestInfo &request_info) {
 
 static HttpStatusCode handle_get_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_->limit_except_.begin(),
-                request_info.location_->limit_except_.end(),
-                "GET") == request_info.location_->limit_except_.end()) {
+  if (std::find(request_info.location_.limit_except_.begin(),
+                request_info.location_.limit_except_.end(),
+                "GET") == request_info.location_.limit_except_.end()) {
     return NOT_ALLOWED_405;
   }
   return check_filepath_status(request_info);
@@ -73,9 +74,9 @@ static HttpStatusCode delete_target_file(const RequestInfo &request_info) {
 
 static HttpStatusCode handle_delete_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_->limit_except_.begin(),
-                request_info.location_->limit_except_.end(),
-                "DELETE") == request_info.location_->limit_except_.end()) {
+  if (std::find(request_info.location_.limit_except_.begin(),
+                request_info.location_.limit_except_.end(),
+                "DELETE") == request_info.location_.limit_except_.end()) {
     return NOT_ALLOWED_405;
   }
   return delete_target_file(request_info);

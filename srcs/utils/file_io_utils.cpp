@@ -17,7 +17,7 @@ bool is_file_exists(const std::string &path) {
   struct stat file_info = {};
 
   if (stat(path.c_str(), &file_info) == -1) {
-    ERROR_LOG("error: is_file_exists: " << path);
+    ERROR_LOG("file not exists: " << path);
     return false;
   }
   return ((file_info.st_mode & S_IFMT) == S_IFREG);
