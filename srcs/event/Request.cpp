@@ -31,17 +31,19 @@ static std::string cutout_request_body(std::string &request_buffer,
 // TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
 static Location select_proper_location(const std::string           &request_uri,
                                        const std::vector<Location> &locations) {
-  // clang-format off
-  std::string path;
-  // clang-format on
-  std::vector<Location>::const_iterator it = locations.begin();
+  std::string                           path;
+  const Location                       *ret_location = NULL;
+  std::vector<Location>::const_iterator it           = locations.begin();
   for (; it != locations.end(); ++it) {
     if (request_uri.find(it->location_path_) == 0) {
       if (path.size() < it->location_path_.size()) {
-        path = it->location_path_;
-        return *it;
+        path         = it->location_path_;
+        ret_location = &(*it);
       }
     }
+  }
+  if (ret_location != NULL) {
+    return *ret_location;
   }
   LOG("########################");
   LOG("location is null");
@@ -93,6 +95,8 @@ RequestState Request::handle_request(std::string     &request_buffer,
           _request_info_.location_ =
               select_proper_location(_request_info_.request_target_,
                                      _request_info_.config_.locations_);
+          std::cout << "---->" << std::boolalpha
+                    << _request_info_.location_.autoindex_ << std::endl;
           _request_info_.file_path_ = create_file_path(
               _request_info_.request_target_, _request_info_.location_);
           // TODO: validate request_header
