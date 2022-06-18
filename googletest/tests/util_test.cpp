@@ -92,8 +92,6 @@ TEST(util_test, test_read_file_tostring) {
 
 TEST(util_test, test_write_string_tofile) {
   {
-    // このパスでも(tmpディレクトリは存在しない)パスした rakiyama
-    // const std::string filepath = "tdata/utils_test/tmp/tmp.txt";
     const std::string filepath = "tdata/utils_test/tmp.txt";
     const std::string content  = "test_write_string_tofile";
     bool              result   = write_string_tofile(filepath, content);
@@ -103,6 +101,10 @@ TEST(util_test, test_write_string_tofile) {
     system(syscmd.c_str());
     EXPECT_TRUE(result);
     EXPECT_EQ(read, content);
+  }
+  {
+    const std::string filepath = "tdata/utils_test/nosuchdir/tmp.txt";
+    EXPECT_FALSE(write_string_tofile(filepath, "nosushdir"));
   }
 }
 
