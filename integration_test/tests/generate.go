@@ -15,17 +15,17 @@ func (tc testCategories) Test() bool {
 
 func Generate() T {
 	s := testCategories{
-		testGET,
-		testDELETE,
+		//testGET,
+		//testDELETE,
 		//testIOMulti,
-		testCgi,
+		//testCgi,
 		testAutoindex,
-		testBadRequest,
-		testLimitExpect,
-		testLocation,
-		testServerName,
-		testReturn,
-		testKeepAlive,
+		//testBadRequest,
+		//testLimitExpect,
+		//testLocation,
+		//testServerName,
+		//testReturn,
+		//testKeepAlive,
 	}
 	return s
 }
