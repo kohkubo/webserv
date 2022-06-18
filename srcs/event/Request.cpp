@@ -60,6 +60,9 @@ static std::string create_file_path(const std::string &request_target,
   return file_path;
 }
 
+
+
+
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState Request::handle_request(std::string     &request_buffer,
                                      const confGroup &conf_group) {
@@ -87,7 +90,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
           }
           _request_info_.parse_request_header(_field_map_);
           // throws BadRequestException
-          // TODO: 1関数に切り出し予定です。 kohkubo
+          // TODO: 例外の処理を整理したあと、1関数に切り出し予定です。 kohkubo
           _request_info_.config_ =
               *select_proper_config(conf_group, _request_info_.host_);
           _request_info_.location_ =
