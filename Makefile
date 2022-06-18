@@ -1,6 +1,6 @@
 NAME = webserv
 CXX = clang++
-CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g -fsanitize=address -fsanitize=leak
+CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g -fsanitize=address
 
 includes = srcs
 srcsdir = srcs
