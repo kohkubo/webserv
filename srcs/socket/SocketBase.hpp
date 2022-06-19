@@ -3,6 +3,8 @@
 
 #include <poll.h>
 
+#include "socket/SocketMapOp.hpp"
+
 class SocketBase {
 protected:
   int _socket_fd_;
@@ -14,7 +16,7 @@ public:
       : _socket_fd_(socket_fd) {}
   virtual ~SocketBase() {}
   virtual struct pollfd pollfd()                        = 0;
-  virtual void          handle_event(short int revents) = 0;
+  virtual SocketMapOp   handle_event(short int revents) = 0;
 };
 
 #endif /* SRCS_SOCKET_SOCKETBASE_HPP */
