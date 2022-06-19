@@ -27,6 +27,7 @@ public:
   std::vector<struct pollfd> &pollfds();
   SocketMapOp handle_socket_event(int socket_fd, short int revents);
   void        do_map_operation(const SocketMapOp &socket_map_op);
+  void        close_timedout_socket();
 };
 
 #endif /* SRCS_SOCKET_SOCKETMAP_HPP */

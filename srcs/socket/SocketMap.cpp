@@ -9,6 +9,7 @@
 #include <string>
 
 #include "config/Config.hpp"
+#include "socket/ClientSocket.hpp"
 #include "socket/ListenSocket.hpp"
 #include "socket/SocketOpener.hpp"
 #include "utils/file_io_utils.hpp"
@@ -119,5 +120,22 @@ void SocketMap::do_map_operation(const SocketMapOp &socket_map_op) {
     break;
   default:
     break;
+  }
+}
+
+void SocketMap::close_timedout_socket() {
+  std::map<int, SocketBase *>::const_iterator it = _socket_map_.begin();
+  while (it != _socket_map_.end()) {
+    if (it->second->is_timed_out()) {
+      int         socket_fd = it->first;
+      SocketBase *socket    = it->second;
+      // 現状、clientSocketしかこの条件に入らないためdynamic_castでclose
+      // CGI追加時に仮想関数に
+      dynamic_cast<ClientSocket *>(socket)->close();
+      it++;
+      do_map_operation(SocketMapOp(DELETE, socket_fd, socket));
+    } else {
+      it++;
+    }
   }
 }

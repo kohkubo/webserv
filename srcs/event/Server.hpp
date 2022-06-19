@@ -12,13 +12,9 @@ typedef int connFd;
 
 class Server {
 private:
-  SocketMap                    _socket_map_;
-  std::map<connFd, Connection> _connection_map_;
+  SocketMap _socket_map_;
 
 private:
-  static void
-  _close_timedout_connection(std::map<connFd, Connection> &connection_map);
-
   Server();
   Server(Server const &other);
   Server &operator=(Server const &other);
