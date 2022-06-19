@@ -32,16 +32,20 @@ static std::string cutout_request_body(std::string &request_buffer,
 static Location select_proper_location(const std::string           &request_uri,
                                        const std::vector<Location> &locations) {
   // clang-format off
-  std::string path;
-  // clang-format on
+  std::string    path;
+  const Location *ret_location = NULL;
   std::vector<Location>::const_iterator it = locations.begin();
+  // clang-format on
   for (; it != locations.end(); ++it) {
     if (request_uri.find(it->location_path_) == 0) {
       if (path.size() < it->location_path_.size()) {
-        path = it->location_path_;
-        return *it;
+        path         = it->location_path_;
+        ret_location = &(*it);
       }
     }
+  }
+  if (ret_location != NULL) {
+    return *ret_location;
   }
   LOG("location is null");
   throw RequestInfo::BadRequestException(NOT_FOUND_404);
