@@ -97,48 +97,5 @@ var testIOMulti = testCatergory{
 				return true
 			},
 		},
-		//	{
-		//		caseName: "multiclient",
-		//		test: func() bool {
-
-		//expectBody := fileToBytes("html/index.html")
-		//
-		//			baseClient := httptest.TestSource{
-		//				port := "55000"
-		//Port: port,
-		//				Request:
-		//					"GET /",
-		//					" HTTP/1.1\r\nHost: localhost:55000\r\nUse",
-		//					"r-Agent: Go-http-client/1.1\r\nAccept-Encoding: gzip\r\n\r\n"+
-		//				},
-		//				ExpectStatusCode: expectStatusCode,
-		//									ExpectHeader: http.Header{
-		//	"Connection":     {"close"},
-		//	"Content-Length": {lenStr(expectBody)},
-		//	"Content-Type":   {"text/html"},
-		//},
-		//				ExpectBody:       fileToBytes("html/index.html"),
-		//			}
-		//			numOfClient := 10
-		//			// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け
-		//			// 現状だとエラーが返ってくるのでテストとして修正すべき
-		//			var clients []*httptest.TestSource
-		//			for i := 0; i < numOfClient; i++ {
-		//				clients = append(clients, httptest.NewClient(baseClient))
-		//			}
-		//			for cnt := 0; cnt < 3; cnt++ {
-		//				for i := 0; i < numOfClient; i++ {
-		//if err := 					clients[i].SendRequestRandom(); err != nil
-		//				}
-		//			}
-		//			for i := 0; i < numOfClient; i++ {
-		//				clients[i].RecvResponse()
-		//				if ok := clients[i].IsExpectedResponse(); !ok {
-		//					return false
-		//				}
-		//			}
-		//			return true
-		//		},
-		//	},
 	},
 }
