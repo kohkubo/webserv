@@ -7,17 +7,17 @@ import (
 
 var testLocation = testCatergory{
 	categoryName: "location",
-	config:       "integration_test/conf/test.conf",
+	config:       "integration_test/conf/location.conf",
 	testCases: []testCase{
 		{
-			caseName: "locationでdir1を指定できているか",
+			caseName: "最長マッチチェック 0",
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 200
-				expectBody := fileToBytes("html/dir1/index.html")
+				expectBody := fileToBytes("html/test_location/dummy_root/index.html")
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET /dir1/ HTTP/1.1\r\n" +
+					Request: "GET / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
@@ -35,16 +35,15 @@ var testLocation = testCatergory{
 			},
 		},
 		{
-			caseName: "rootディレクティブが反映されるか",
+			caseName: "最長マッチチェック 1",
 			test: func() bool {
+				port := "50000"
 				expectStatusCode := 200
-				expectBody := fileToBytes("html/dir1/index.html")
-				Port := "50001"
-				Path := "/"
+				expectBody := fileToBytes("html/test_location/location/location1/index.html")
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: Port,
-					Request: "GET " + Path + " HTTP/1.1\r\n" +
-						"Host: localhost:" + Port + "\r\n" +
+					Port: port,
+					Request: "GET /location1/ HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
@@ -61,18 +60,15 @@ var testLocation = testCatergory{
 			},
 		},
 		{
-
-			caseName: "index指定ができているか",
+			caseName: "最長マッチチェック 2",
 			test: func() bool {
-
+				port := "50000"
 				expectStatusCode := 200
-				expectBody := fileToBytes("html/dir1/index2.html")
-				Port := "50002"
-				Path := "/"
+				expectBody := fileToBytes("html/test_location/location/location2/index.html")
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: Port,
-					Request: "GET " + Path + " HTTP/1.1\r\n" +
-						"Host: localhost:" + Port + "\r\n" +
+					Port: port,
+					Request: "GET /location/location2/ HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
@@ -89,17 +85,15 @@ var testLocation = testCatergory{
 			},
 		},
 		{
-			caseName: "index指定ができているか",
+			caseName: "最長マッチチェック 2",
 			test: func() bool {
-
+				port := "50000"
 				expectStatusCode := 200
-				expectBody := fileToBytes("html/dir1/index2.html")
-				Port := "50002"
-				Path := "/"
+				expectBody := fileToBytes("html/test_location/another_location/location1/dir1/hoge.html")
 				clientA := httptest.NewClient(httptest.TestSource{
-					Port: Port,
-					Request: "GET " + Path + " HTTP/1.1\r\n" +
-						"Host: localhost:" + Port + "\r\n" +
+					Port: port,
+					Request: "GET /location1/dir1/ HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
