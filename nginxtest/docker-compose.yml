@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  web:
+    image: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - "./:/data/"
+      - "${confpath}:/etc/nginx/nginx.conf"
