@@ -12,7 +12,7 @@ var optionalTest bool
 
 func main() {
 	if len(os.Args) != 1 {
-		if os.Args[1] == "-o" {
+		if os.Args[1] == "-all" {
 			optionalTest = true
 		}
 	}
