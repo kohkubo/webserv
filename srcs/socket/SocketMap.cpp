@@ -15,11 +15,12 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-SocketMapGenerator::SocketMapGenerator(const char *config_file_path) {
+SocketMap::SocketMap(const char *config_file_path) {
   _read_config(config_file_path);
+  _socket_map_ = _generate();
 }
 
-void SocketMapGenerator::_read_config(const char *config_file_path) {
+void SocketMap::_read_config(const char *config_file_path) {
   Result result = read_file_to_str(config_file_path);
   if (result.is_err_) {
     ERROR_EXIT(config_file_path << " is not found or can't read.");
@@ -69,7 +70,7 @@ static bool is_include_same_server_name(const Config &conf,
   return false;
 }
 
-std::map<int, SocketBase *> SocketMapGenerator::generate() {
+std::map<int, SocketBase *> SocketMap::_generate() {
   std::map<int, SocketBase *> socket_map;
   serverList::const_iterator  sl_it = _server_list_.begin();
   for (; sl_it != _server_list_.end(); sl_it++) {
@@ -91,4 +92,28 @@ std::map<int, SocketBase *> SocketMapGenerator::generate() {
     }
   }
   return socket_map;
+}
+
+struct pollfd *SocketMap::pollfds() {
+  _pollfds_.clear();
+  std::map<int, SocketBase *>::const_iterator it = _socket_map_.begin();
+  for (; it != _socket_map_.end(); it++) {
+    _pollfds_.push_back(it->second->pollfd());
+  }
+  return &_pollfds_[0];
+}
+
+void SocketMap::do_map_operation(const SocketMapOp &socket_map_op) {
+  switch (socket_map_op.type_) {
+  case INSERT:
+    _socket_map_.insert(
+        std::make_pair(socket_map_op.socket_fd_, socket_map_op.target_));
+    break;
+  case DELETE:
+    delete socket_map_op.target_;
+    _socket_map_.erase(socket_map_op.socket_fd_);
+    break;
+  default:
+    break;
+  }
 }
