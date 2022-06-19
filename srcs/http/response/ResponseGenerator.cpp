@@ -78,9 +78,7 @@ static std::string error_page_body(const RequestInfo &request_info,
     if (!result.is_err_) {
       return result.str_;
     }
-    LOG("###################");
     LOG("error_page_body: read_file_to_str error");
-    LOG("###################");
     status_code = INTERNAL_SERVER_ERROR_500;
   }
   return "<!DOCTYPE html>\n"
@@ -180,9 +178,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
   }
   status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
-    LOG("########################");
     LOG("generate_response: error status code");
-    LOG("########################");
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(request_info, status_code);
   }
