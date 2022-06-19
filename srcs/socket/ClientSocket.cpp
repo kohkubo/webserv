@@ -34,6 +34,9 @@ void ClientSocket::handle_receive_event() {
   if (is_socket_closed_from_client) {
     LOG("got FIN from connection");
     close();
+    // これできるか分からないのでとりあえず。
+    // socket_mapへの要素の変更を指示する構造体をhandle_eventが返すほうが良さそう。
+    delete this;
     _socket_map_.erase(_socket_fd_);
     return;
   }
