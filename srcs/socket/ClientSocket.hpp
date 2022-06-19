@@ -27,7 +27,7 @@ private:
 
 public:
   ClientSocket(int client_fd, const confGroup &conf_group);
-  virtual ~ClientSocket();
+  virtual ~ClientSocket() {}
   virtual struct pollfd pollfd();
   virtual SocketMapOp   handle_event(short int revents);
 

@@ -14,7 +14,7 @@ private:
 
 public:
   ListenSocket(int passive_socket);
-  virtual ~ListenSocket();
+  virtual ~ListenSocket() {}
   virtual struct pollfd pollfd();
   virtual SocketMapOp   handle_event(short int revents);
 };
