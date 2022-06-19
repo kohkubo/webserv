@@ -21,11 +21,12 @@ type TestSource struct {
 type Client struct {
 	Port           string
 	Request        string
-	SendCnt        int
 	Conn           net.Conn
 	Close          bool
 	GotResponse    *http.Response
 	ReponseChecker ReponseChecker
+	sendCnt        int
+	sendLog        []string
 }
 
 type ReponseChecker interface {
@@ -76,7 +77,7 @@ func (c *Client) DoAndCheck() bool {
 
 // リクエスト送信
 func (c *Client) SendRequestAll() error {
-	for c.SendCnt < len(c.Request) {
+	for c.sendCnt < len(c.Request) {
 		if err := c.SendRequestRandom(); err != nil {
 			return err
 		}
@@ -97,23 +98,25 @@ func (c *Client) SendRequestRandom() error {
 
 // 指定文字数のみリクエスト送信
 func (c *Client) SendRequestN(n int) (err error) {
-	limit := c.SendCnt + n
+	limit := c.sendCnt + n
 	if len(c.Request) < limit {
 		limit = len(c.Request)
 	}
-	sendN, err := fmt.Fprintf(c.Conn, c.Request[c.SendCnt:limit])
+	sendContent := c.Request[c.sendCnt:limit]
+	sendN, err := fmt.Fprintf(c.Conn, sendContent)
+	c.sendLog = append(c.sendLog, sendContent)
 	// 連続で使用された場合にリクエストが分かれるようにsleep
 	if err != nil {
 		return fmt.Errorf("sendPartialRequest: %v", err)
 	}
 	time.Sleep(1 * time.Millisecond)
-	c.SendCnt += sendN
+	c.sendCnt += sendN
 	return err
 }
 
 // レスポンスを受ける
 func (c *Client) RecvResponse() error {
-	if c.SendCnt != len(c.Request) {
+	if c.sendCnt != len(c.Request) {
 		return fmt.Errorf("recvResponse: all request is not send!")
 	}
 	resp, err := readParseResponse(c.Conn, resolveMethod(c.Request))
@@ -146,5 +149,13 @@ func (c *Client) IsExpectedResponse() (bool, error) {
 		return false, fmt.Errorf("isExpectedResult: %v", err)
 	}
 	c.GotResponse.Body.Close()
-	return result == 0, err
+	testOK := result == 0
+	if !testOK {
+		fmt.Println("===Request log===")
+		for _, r := range c.sendLog {
+			fmt.Printf("[%s]%d\n", r, len(r))
+		}
+		fmt.Println("=================")
+	}
+	return testOK, err
 }
