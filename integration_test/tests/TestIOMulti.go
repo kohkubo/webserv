@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/httptest"
 	"net/http"
 )
@@ -74,32 +73,18 @@ var testIOMulti = testCatergory{
 					ExpectBody: expectBody,
 				}))
 
-				// 5回ほどランダムにリクエスト送信
 				for i, count := 0, 5; i < count; i++ {
 					for _, c := range clients {
-						var err error
 						switch i {
 						case count - 1:
-							err = c.SendRequestAll()
+							c.SendRequestAll()
+							c.RecvResponse()
+							if ok := c.IsExpectedResponse(); !ok {
+								return false
+							}
 						default:
-							err = c.SendRequestRandom()
+							c.SendRequestRandom()
 						}
-						if err != nil {
-							fmt.Println(err)
-							return false
-						}
-					}
-				}
-				// レスポンス確認
-				for _, c := range clients {
-					if err := c.RecvResponse(); err != nil {
-						fmt.Println(err)
-						return false
-					}
-					ok, err := c.IsExpectedResponse()
-					if err != nil || !ok {
-						fmt.Println(err)
-						return false
 					}
 				}
 				return true
