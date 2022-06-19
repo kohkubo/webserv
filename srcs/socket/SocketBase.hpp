@@ -10,6 +10,8 @@ protected:
 public:
   SocketBase()
       : _socket_fd_(-1) {}
+  SocketBase(int socket_fd)
+      : _socket_fd_(socket_fd) {}
   virtual ~SocketBase();
   virtual struct pollfd pollfd()                        = 0;
   virtual void          handle_event(short int revents) = 0;
