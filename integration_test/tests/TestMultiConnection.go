@@ -37,10 +37,11 @@ var testMultiConnection = testCatergory{
 					},
 					ExpectBody: expectBody,
 				}
-				// 以前はcount=10247で落ちた
-				// connection確立時にエラーを拾うなら直でconnection関数使う
+				// loopでconnectしていたときはcount=10247で落ちた
+				// goroutineで並行connectするとcount=150くらいで落ちる
+				// connection確立時のエラーを拾うなら直でconnection関数使う
 				eg, ctx := errgroup.WithContext(context.Background())
-				for i, count := 0, 10; i < count; i++ {
+				for i, count := 0, 100; i < count; i++ {
 					i := i
 					eg.Go(func() error {
 						select {
