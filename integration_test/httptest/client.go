@@ -3,6 +3,7 @@ package httptest
 import (
 	"fmt"
 	"integration_test/webserv"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -75,25 +76,29 @@ func (c *Client) DoAndCheck() bool {
 
 // リクエスト送信
 func (c *Client) SendAllRequest() error {
-	return c.SendPartialRequest(len(c.Request))
+	for c.SendCnt < len(c.Request) {
+		rand.Seed(time.Now().UnixNano())
+		r := rand.Intn(len(c.Request))
+		if err := c.SendPartialRequest(r); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-// 先頭のRequestのみ送信
+// 指定文字数のみリクエスト送信
 func (c *Client) SendPartialRequest(n int) (err error) {
-	len := len(c.Request)
-	if c.SendCnt < len {
-		limit := c.SendCnt + n
-		if len < limit {
-			limit = len
-		}
-		sendN, err := fmt.Fprintf(c.Conn, c.Request[c.SendCnt:limit])
-		// 連続で使用された場合にリクエストが分かれるようにsleep
-		time.Sleep(1 * time.Millisecond)
-		if err != nil {
-			return fmt.Errorf("sendPartialRequest: %v", err)
-		}
-		c.SendCnt += sendN
+	limit := c.SendCnt + n
+	if len(c.Request) < limit {
+		limit = len(c.Request)
 	}
+	sendN, err := fmt.Fprintf(c.Conn, c.Request[c.SendCnt:limit])
+	// 連続で使用された場合にリクエストが分かれるようにsleep
+	if err != nil {
+		return fmt.Errorf("sendPartialRequest: %v", err)
+	}
+	time.Sleep(1 * time.Millisecond)
+	c.SendCnt += sendN
 	return err
 }
 
