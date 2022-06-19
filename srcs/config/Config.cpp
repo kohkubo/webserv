@@ -131,9 +131,11 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
     location.limit_except_.push_back("DELETE");
   }
   if (has_suffix(location.index_, "/"))
-    throw UnexpectedTokenException("index directive failed.");
+    throw UnexpectedTokenException(
+        "index directive failed. don't add \"/\" to file path.");
   if (!has_suffix(location.root_, "/"))
-    throw UnexpectedTokenException("root directive failed.");
+    throw UnexpectedTokenException(
+        "root directive failed. please add \"/\" to end of root dir");
   if (is_location_path_duplication(location.location_path_, locations_))
     throw UnexpectedTokenException("location path duplication.");
   if (is_minus_depth(location.location_path_) ||
