@@ -12,8 +12,8 @@ TEST(request_parse_test, normal) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config    config;
-  confGroup conf_group;
+  Config      config;
+  confGroup   conf_group;
   conf_group.push_back(&config);
   Request request;
 
@@ -34,8 +34,8 @@ TEST(request_parse_test, normal_delete) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config    config;
-  confGroup conf_group;
+  Config      config;
+  confGroup   conf_group;
   conf_group.push_back(&config);
   Request request;
 
@@ -84,8 +84,8 @@ TEST(request_parse_test, query_string) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config    config;
-  confGroup conf_group;
+  Config      config;
+  confGroup   conf_group;
   conf_group.push_back(&config);
   Request request;
 
