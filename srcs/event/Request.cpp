@@ -31,9 +31,11 @@ static std::string cutout_request_body(std::string &request_buffer,
 // TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
 static Location select_proper_location(const std::string           &request_uri,
                                        const std::vector<Location> &locations) {
-  std::string                           path;
-  const Location                       *ret_location = NULL;
-  std::vector<Location>::const_iterator it           = locations.begin();
+  // clang-format off
+  std::string    path;
+  const Location *ret_location = NULL;
+  std::vector<Location>::const_iterator it = locations.begin();
+  // clang-format on
   for (; it != locations.end(); ++it) {
     if (request_uri.find(it->location_path_) == 0) {
       if (path.size() < it->location_path_.size()) {
