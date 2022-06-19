@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "config/Config.hpp"
-#include "socket/SocketMap.hpp"
+#include "event/Server.hpp"
 #include "utils/tokenize.hpp"
 
 #define SAMPLE_CONF "../googletest/tdata/sample.conf"
@@ -261,7 +261,7 @@ TEST(server_config_test, parse_location_directive) {
 }
 
 TEST(server_config_test, socket_list_test) {
-  SocketMap                     config_map_generator(SAMPLE_CONF);
+  Server                        config_map_generator(SAMPLE_CONF);
   std::map<listenFd, confGroup> conf_group_map =
       config_map_generator._generate();
 

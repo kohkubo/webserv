@@ -2,9 +2,9 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
+#include "event/Server.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
-#include "socket/SocketMap.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
@@ -95,7 +95,7 @@ bool test_request_status_code(const Config      *config,
 
 TEST(location_test, multi_location) {
   {
-    SocketMap                     config_map_generator(SAMPLE_CONF);
+    Server                        config_map_generator(SAMPLE_CONF);
     std::map<listenFd, confGroup> conf_group_map =
         config_map_generator._generate();
     EXPECT_EQ(static_cast<std::size_t>(5), conf_group_map.size());
