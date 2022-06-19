@@ -1,5 +1,5 @@
-#ifndef SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP
-#define SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP
+#ifndef SRCS_SOCKET_SOCKETMAP_HPP
+#define SRCS_SOCKET_SOCKETMAP_HPP
 
 #include "config/Config.hpp"
 #include "socket/SocketBase.hpp"
@@ -20,4 +20,4 @@ private:
   void                _read_config(const char *config_file_path);
 };
 
-#endif /* SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP */
+#endif /* SRCS_SOCKET_SOCKETMAP_HPP */

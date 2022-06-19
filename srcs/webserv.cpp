@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "config/Config.hpp"
-#include "config/SocketMapGenerator.hpp"
 #include "event/Server.hpp"
+#include "socket/SocketMap.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 

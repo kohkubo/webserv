@@ -1,4 +1,4 @@
-#include "config/SocketMapGenerator.hpp"
+#include "socket/SocketMap.hpp"
 
 #include <netdb.h>
 #include <sys/socket.h>

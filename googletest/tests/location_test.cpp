@@ -2,9 +2,9 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "config/SocketMapGenerator.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "socket/SocketMap.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
