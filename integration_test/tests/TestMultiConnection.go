@@ -1,11 +1,11 @@
 package tests
 
 import (
-	"fmt"
 	"integration_test/httptest"
 	"net/http"
 )
 
+// connection確立時にエラーを拾うなら直でconnection関数使う
 var testMultiConnection = testCatergory{
 	categoryName: "MultiConnection",
 	config:       "integration_test/conf/iomulti.conf",
@@ -33,13 +33,11 @@ var testMultiConnection = testCatergory{
 					},
 					ExpectBody: expectBody,
 				}
-				numOfClient := 2
+				numOfClient := 10
 				// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け
 				// 現状だとエラーが返ってくるのでテストとして修正すべき
-				// mapをdeepcopyにする？clientをcopyする？
 				var clients []*httptest.Client
 				for i := 0; i < numOfClient; i++ {
-					fmt.Println("------->", baseSource.ExpectHeader)
 					clients = append(clients, httptest.NewClient(baseSource))
 				}
 				for _, c := range clients {
