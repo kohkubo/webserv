@@ -33,12 +33,12 @@ ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
   int pipefd[2] = {0, 0};
   if (pipe(pipefd) == -1) {
     ERROR_LOG("error: pipe in read_file_to_str_cgi");
-    return Result(true, "");
+    return Error();
   }
   pid_t pid = fork();
   if (pid == -1) {
     ERROR_LOG("error: fork in read_file_to_str_cgi");
-    return Result(true, "");
+    return Error();
   }
   // child
   if (pid == 0) {
@@ -63,7 +63,7 @@ ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {
     ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-    return Result(true, "");
+    return Error();
   }
-  return Result(false, str);
+  return Ok(str);
 }

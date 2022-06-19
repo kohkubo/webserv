@@ -37,14 +37,14 @@ bool is_dir_exists(const std::string &path) {
 Result read_file_to_str(const std::string &path) {
   std::ifstream file(path.c_str());
   if (file.fail()) {
-    return Result(true, "");
+    return Error();
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
   // 空ファイルの時: buffer.fail() -> true, buffer.str() = "": 問題なし.
   // その他のエラーケースに関しても再現が困難なので現状エラー確認なし.
   file.close();
-  return Result(false, buffer.str());
+  return Ok(buffer.str());
 }
 
 bool remove_file(const std::string &file_path) {
