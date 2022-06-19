@@ -19,6 +19,7 @@ void ListenSocket::handle_event(short int revents) {
   connFd conn_fd = xaccept(_socket_fd_);
   LOG("insert " << conn_fd << " to connection");
   // insert new connection to socket map
-  SocketBase *new_client = new ClientSocket(conn_fd, _conf_group_);
+  SocketBase *new_client =
+      new ClientSocket(conn_fd, _conf_group_, _socket_map_);
   _socket_map_.insert(std::make_pair(conn_fd, new_client));
 }
