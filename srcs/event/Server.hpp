@@ -5,14 +5,15 @@
 
 #include "config/Config.hpp"
 #include "event/Connection.hpp"
+#include "socket/SocketBase.hpp"
 
 typedef int connFd;
 
 class Server {
 private:
-  std::map<listenFd, confGroup> _conf_group_map_;
-  std::map<connFd, Connection>  _connection_map_;
-  std::vector<struct pollfd>    _pollfds_;
+  std::map<int, SocketBase *>  _socket_map_;
+  std::map<connFd, Connection> _connection_map_;
+  std::vector<struct pollfd>   _pollfds_;
 
 private:
   static void
@@ -23,11 +24,11 @@ private:
   Server &operator=(Server const &other);
   void    _reset_pollfds() {
     _pollfds_.clear();
-    _add_listenfd_to_pollfds(_conf_group_map_);
+    _add_listenfd_to_pollfds(_socket_map_);
     _add_connfd_to_pollfds(_connection_map_);
   }
   void
-  _add_listenfd_to_pollfds(const std::map<listenFd, confGroup> &conf_group_map);
+  _add_listenfd_to_pollfds(const std::map<int, SocketBase *> &conf_group_map);
   void
   _add_connfd_to_pollfds(const std::map<connFd, Connection> &connection_map);
   void _connection_receive_handler(Connection &connection);
@@ -35,8 +36,8 @@ private:
   void _insert_connection_map(connFd conn_fd);
 
 public:
-  Server(std::map<listenFd, confGroup> &conf_group_map)
-      : _conf_group_map_(conf_group_map) {}
+  Server(std::map<int, SocketBase *> &socket_map)
+      : _socket_map_(socket_map) {}
   ~Server() {}
   void run_loop();
 };

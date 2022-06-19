@@ -2,6 +2,7 @@
 #define SRCS_CONFIG_CONFGROUPMAPGENERATOR_HPP
 
 #include "config/Config.hpp"
+#include "socket/SocketBase.hpp"
 
 class ConfGroupMapGenerator {
 private:
@@ -10,7 +11,7 @@ private:
 public:
   ConfGroupMapGenerator(const char *config_file_path);
   ~ConfGroupMapGenerator(){};
-  std::map<listenFd, confGroup> generate();
+  std::map<int, SocketBase *> generate();
 
 private:
   ConfGroupMapGenerator();

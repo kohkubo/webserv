@@ -1,6 +1,7 @@
 #include "event/Server.hpp"
 
 #include "event/Connection.hpp"
+#include "socket/ListenSocket.hpp"
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
@@ -20,11 +21,10 @@ void Server::_close_timedout_connection(
 }
 
 void Server::_add_listenfd_to_pollfds(
-    const std::map<listenFd, confGroup> &conf_group_map) {
-  std::map<listenFd, confGroup>::const_iterator it = conf_group_map.begin();
+    const std::map<int, SocketBase *> &conf_group_map) {
+  std::map<int, SocketBase *>::const_iterator it = conf_group_map.begin();
   for (; it != conf_group_map.end(); it++) {
-    struct pollfd new_pfd = {it->first, POLLIN, 5000};
-    _pollfds_.push_back(new_pfd);
+    _pollfds_.push_back(it->second->pollfd());
   }
 }
 
@@ -52,8 +52,10 @@ void Server::_connection_receive_handler(Connection &connection) {
 void Server::_insert_connection_map(listenFd listen_fd) {
   connFd conn_fd = xaccept(listen_fd);
   LOG("insert " << conn_fd << " to connection");
-  _connection_map_.insert(std::make_pair(
-      conn_fd, Connection(conn_fd, _conf_group_map_[listen_fd])));
+  confGroup conf_group =
+      dynamic_cast<ListenSocket *>(_socket_map_[listen_fd])->conf_group_;
+  _connection_map_.insert(
+      std::make_pair(conn_fd, Connection(conn_fd, conf_group)));
 }
 
 void Server::run_loop() {
@@ -69,7 +71,7 @@ void Server::run_loop() {
         continue;
       }
       nready--;
-      bool is_listen_socket = static_cast<bool>(_conf_group_map_.count(it->fd));
+      bool is_listen_socket = static_cast<bool>(_socket_map_.count(it->fd));
       if (is_listen_socket) {
         _insert_connection_map(it->fd);
         continue;

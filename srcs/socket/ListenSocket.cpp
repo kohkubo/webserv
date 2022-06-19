@@ -5,8 +5,10 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-ListenSocket::ListenSocket(int passive_socket)
-    : SocketBase(passive_socket) {}
+ListenSocket::ListenSocket(int passive_socket, const Config *config)
+    : SocketBase(passive_socket) {
+  conf_group_.push_back(config);
+}
 
 struct pollfd ListenSocket::pollfd() {
   return (struct pollfd){_socket_fd_, POLLIN, 0};
@@ -18,6 +20,6 @@ SocketMapOp ListenSocket::handle_event(short int revents) {
   connFd conn_fd = xaccept(_socket_fd_);
   LOG("insert " << conn_fd << " to connection");
   // insert new connection to socket map
-  SocketBase *new_client = new ClientSocket(conn_fd, _conf_group_);
+  SocketBase *new_client = new ClientSocket(conn_fd, conf_group_);
   return SocketMapOp(INSERT, new_client);
 }

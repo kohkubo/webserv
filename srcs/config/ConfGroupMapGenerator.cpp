@@ -10,6 +10,7 @@
 
 #include "config/Config.hpp"
 #include "config/SocketOpener.hpp"
+#include "socket/ListenSocket.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
@@ -46,12 +47,13 @@ static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
          (x->sin_port == y->sin_port);
 }
 
-static std::map<listenFd, confGroup>::iterator
-find_same_socket(const Config                  &conf,
-                 std::map<listenFd, confGroup> &confgroup_map) {
-  std::map<listenFd, confGroup>::iterator it = confgroup_map.begin();
+static std::map<int, SocketBase *>::iterator
+find_same_socket(const Config                &conf,
+                 std::map<int, SocketBase *> &confgroup_map) {
+  std::map<int, SocketBase *>::iterator it = confgroup_map.begin();
   for (; it != confgroup_map.end(); it++) {
-    if (is_same_socket(conf, *(it->second[0])))
+    if (is_same_socket(
+            conf, *(dynamic_cast<ListenSocket *>(it->second))->conf_group_[0]))
       break;
   }
   return it;
@@ -67,23 +69,26 @@ static bool is_include_same_server_name(const Config &conf,
   return false;
 }
 
-std::map<listenFd, confGroup> ConfGroupMapGenerator::generate() {
-  std::map<listenFd, confGroup> confgroup_map;
-  serverList::const_iterator    sl_it = _server_list_.begin();
+std::map<int, SocketBase *> ConfGroupMapGenerator::generate() {
+  std::map<int, SocketBase *> socket_map;
+  serverList::const_iterator  sl_it = _server_list_.begin();
   for (; sl_it != _server_list_.end(); sl_it++) {
-    std::map<listenFd, confGroup>::iterator it =
-        find_same_socket(*sl_it, confgroup_map);
-    if (it != confgroup_map.end()) {
-      if (is_include_same_server_name(*sl_it, it->second)) {
+    std::map<int, SocketBase *>::iterator it =
+        find_same_socket(*sl_it, socket_map);
+    if (it != socket_map.end()) {
+      if (is_include_same_server_name(
+              *sl_it,
+              (dynamic_cast<ListenSocket *>(it->second))->conf_group_)) {
         LOG("server_name conflicts.");
         continue;
       }
-      it->second.push_back(&(*sl_it));
+      (dynamic_cast<ListenSocket *>(it->second))
+          ->conf_group_.push_back(&(*sl_it));
     } else {
-      listenFd listen_fd = SocketOpener::open_new_socket(sl_it->addrinfo_);
-      confgroup_map.insert(std::make_pair(listen_fd, confGroup()));
-      confgroup_map[listen_fd].push_back(&(*sl_it));
+      listenFd    listen_fd = SocketOpener::open_new_socket(sl_it->addrinfo_);
+      SocketBase *new_listen_socket = new ListenSocket(listen_fd, &(*sl_it));
+      socket_map.insert(std::make_pair(listen_fd, new_listen_socket));
     }
   }
-  return confgroup_map;
+  return socket_map;
 }

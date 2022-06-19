@@ -9,11 +9,11 @@
 #include "socket/SocketBase.hpp"
 
 class ListenSocket : public SocketBase {
-private:
-  confGroup _conf_group_;
+public:
+  confGroup conf_group_;
 
 public:
-  ListenSocket(int passive_socket);
+  ListenSocket(int passive_socket, const Config *config);
   virtual ~ListenSocket() {}
   virtual struct pollfd pollfd();
   virtual SocketMapOp   handle_event(short int revents);
