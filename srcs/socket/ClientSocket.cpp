@@ -15,6 +15,10 @@ struct pollfd ClientSocket::pollfd() {
   return pfd;
 }
 
+bool ClientSocket::is_timed_out() {
+  return std::difftime(_time_now(), _last_event_time_) >= TIMEOUT_SECONDS_;
+}
+
 SocketMapOp ClientSocket::handle_event(short int revents) {
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of fd " << _socket_fd_);

@@ -15,6 +15,7 @@ public:
   SocketBase(int socket_fd)
       : _socket_fd_(socket_fd) {}
   virtual ~SocketBase() {}
+  virtual bool          is_timed_out()                  = 0;
   virtual struct pollfd pollfd()                        = 0;
   virtual SocketMapOp   handle_event(short int revents) = 0;
 };

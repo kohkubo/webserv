@@ -24,3 +24,5 @@ SocketMapOp ListenSocket::handle_event(short int revents) {
   }
   return SocketMapOp();
 }
+
+bool ListenSocket::is_timed_out() { return false; }

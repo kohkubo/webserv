@@ -17,6 +17,7 @@ public:
   virtual ~ListenSocket() {}
   virtual struct pollfd pollfd();
   virtual SocketMapOp   handle_event(short int revents);
+  virtual bool          is_timed_out();
 };
 
 #endif /* SRCS_SOCKET_LISTENSOCKET_HPP */

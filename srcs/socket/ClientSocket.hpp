@@ -30,16 +30,13 @@ public:
   virtual ~ClientSocket() {}
   virtual struct pollfd pollfd();
   virtual SocketMapOp   handle_event(short int revents);
+  virtual bool          is_timed_out();
 
   SocketMapOp handle_receive_event();
   void        handle_send_event();
 
   void parse_buffer();
   bool append_receive_buffer();
-
-  bool is_timed_out() const {
-    return std::difftime(_time_now(), _last_event_time_) >= TIMEOUT_SECONDS_;
-  }
 
   void close() const {
     LOG("close connection fd: " << _socket_fd_);
