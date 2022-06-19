@@ -1,4 +1,4 @@
-#include "config/ConfGroupMapGenerator.hpp"
+#include "config/SocketMapGenerator.hpp"
 
 #include <netdb.h>
 #include <sys/socket.h>
@@ -15,11 +15,11 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-ConfGroupMapGenerator::ConfGroupMapGenerator(const char *config_file_path) {
+SocketMapGenerator::SocketMapGenerator(const char *config_file_path) {
   _read_config(config_file_path);
 }
 
-void ConfGroupMapGenerator::_read_config(const char *config_file_path) {
+void SocketMapGenerator::_read_config(const char *config_file_path) {
   Result result = read_file_to_str(config_file_path);
   if (result.is_err_) {
     ERROR_EXIT(config_file_path << " is not found or can't read.");
@@ -69,7 +69,7 @@ static bool is_include_same_server_name(const Config &conf,
   return false;
 }
 
-std::map<int, SocketBase *> ConfGroupMapGenerator::generate() {
+std::map<int, SocketBase *> SocketMapGenerator::generate() {
   std::map<int, SocketBase *> socket_map;
   serverList::const_iterator  sl_it = _server_list_.begin();
   for (; sl_it != _server_list_.end(); sl_it++) {

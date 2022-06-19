@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
 
-#include "config/ConfGroupMapGenerator.hpp"
 #include "config/Config.hpp"
 #include "config/Location.hpp"
+#include "config/SocketMapGenerator.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "utils/file_io_utils.hpp"
@@ -95,7 +95,7 @@ bool test_request_status_code(const Config      *config,
 
 TEST(location_test, multi_location) {
   {
-    ConfGroupMapGenerator         config_map_generator(SAMPLE_CONF);
+    SocketMapGenerator            config_map_generator(SAMPLE_CONF);
     std::map<listenFd, confGroup> conf_group_map =
         config_map_generator.generate();
     EXPECT_EQ(static_cast<std::size_t>(5), conf_group_map.size());

@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "config/ConfGroupMapGenerator.hpp"
 #include "config/Config.hpp"
+#include "config/SocketMapGenerator.hpp"
 #include "event/Server.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
@@ -20,8 +20,8 @@ static const char *resolve_config_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char           *config_file_path = resolve_config_file(argc, argv);
-  ConfGroupMapGenerator socket_map_generator(config_file_path);
+  const char        *config_file_path = resolve_config_file(argc, argv);
+  SocketMapGenerator socket_map_generator(config_file_path);
   std::map<int, SocketBase *> socket_map = socket_map_generator.generate();
   Server                      server(socket_map);
   server.run_loop();
