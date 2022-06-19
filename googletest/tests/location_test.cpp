@@ -95,9 +95,9 @@ bool test_request_status_code(const Config      *config,
 
 TEST(location_test, multi_location) {
   {
-    SocketMapGenerator            config_map_generator(SAMPLE_CONF);
+    SocketMap                     config_map_generator(SAMPLE_CONF);
     std::map<listenFd, confGroup> conf_group_map =
-        config_map_generator.generate();
+        config_map_generator._generate();
     EXPECT_EQ(static_cast<std::size_t>(5), conf_group_map.size());
     const Config *config = conf_group_map.begin()->second[0];
     EXPECT_EQ(static_cast<std::size_t>(5), config->locations_.size());

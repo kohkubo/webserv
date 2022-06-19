@@ -15,11 +15,12 @@ struct pollfd ListenSocket::pollfd() {
 }
 
 SocketMapOp ListenSocket::handle_event(short int revents) {
-  if ((revents & POLLIN) == 0)
-    return SocketMapOp();
-  connFd conn_fd = xaccept(_socket_fd_);
-  LOG("insert " << conn_fd << " to connection");
-  // insert new connection to socket map
-  SocketBase *new_client = new ClientSocket(conn_fd, conf_group_);
-  return SocketMapOp(INSERT, conn_fd, new_client);
+  if ((revents & POLLIN) != 0) {
+    connFd conn_fd = xaccept(_socket_fd_);
+    LOG("add new connection fd: " << conn_fd);
+    // insert new connection to socket map
+    SocketBase *new_client = new ClientSocket(conn_fd, conf_group_);
+    return SocketMapOp(INSERT, conn_fd, new_client);
+  }
+  return SocketMapOp();
 }

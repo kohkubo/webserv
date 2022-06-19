@@ -261,9 +261,9 @@ TEST(server_config_test, parse_location_directive) {
 }
 
 TEST(server_config_test, socket_list_test) {
-  SocketMapGenerator            config_map_generator(SAMPLE_CONF);
+  SocketMap                     config_map_generator(SAMPLE_CONF);
   std::map<listenFd, confGroup> conf_group_map =
-      config_map_generator.generate();
+      config_map_generator._generate();
 
   EXPECT_EQ(conf_group_map.size(), 2);
 

@@ -23,9 +23,10 @@ private:
 public:
   SocketMap(const char *config_file_path);
   ~SocketMap(){};
-  std::size_t    pollfd_size() { return _pollfds_.size(); }
-  struct pollfd *pollfds();
-  void           do_map_operation(const SocketMapOp &socket_map_op);
+  std::size_t                 pollfd_size() { return _pollfds_.size(); }
+  std::vector<struct pollfd> &pollfds();
+  SocketMapOp handle_socket_event(int socket_fd, short int revents);
+  void        do_map_operation(const SocketMapOp &socket_map_op);
 };
 
 #endif /* SRCS_SOCKET_SOCKETMAP_HPP */
