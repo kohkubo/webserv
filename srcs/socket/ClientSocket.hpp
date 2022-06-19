@@ -29,7 +29,7 @@ private:
 public:
   ClientSocket(int client_fd, const confGroup &conf_group,
                std::map<int, SocketBase *> &socket_map);
-  ~ClientSocket();
+  virtual ~ClientSocket();
   virtual struct pollfd pollfd();
   virtual void          handle_event(short int revents);
 
