@@ -3,8 +3,10 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-ListenSocket::ListenSocket(const std::map<int, SocketBase *> &parent)
-    : _parent_(parent) {}
+ListenSocket::ListenSocket(int                                passive_socket,
+                           const std::map<int, SocketBase *> &parent)
+    : SocketBase(passive_socket)
+    , _parent_(parent) {}
 
 struct pollfd ListenSocket::pollfd() {
   return (struct pollfd){_socket_fd_, POLLIN, 0};

@@ -14,7 +14,7 @@ private:
   const std::map<int, SocketBase *> &_parent_;
 
 public:
-  ListenSocket(const std::map<int, SocketBase *> &parent);
+  ListenSocket(int passive_socket, const std::map<int, SocketBase *> &parent);
   virtual ~ListenSocket();
   virtual struct pollfd pollfd();
   virtual void          handle_event(short int revents);
