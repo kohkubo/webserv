@@ -4,6 +4,7 @@ import (
 	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
+	"runtime"
 )
 
 // TODO: autoindex
@@ -17,6 +18,19 @@ var testAutoindex = testCatergory{
 			test: func() bool {
 				port := "50001"
 				expectStatusCode := 200
+				var dirList string
+				switch runtime.GOOS {
+				case "darwin":
+					dirList = "        <li><a href=\"../\">../ </a></li>\n" +
+						"        <li><a href=\"dir2/\">dir2/ </a></li>\n" +
+						"        <li><a href=\"test.html\">test.html </a></li>\n" +
+						"        <li><a href=\"dir1/\">dir1/ </a></li>\n"
+				case "linux":
+					dirList = "        <li><a href=\"dir1/\">dir1/ </a></li>\n" +
+						"        <li><a href=\"test.html\">test.html </a></li>\n" +
+						"        <li><a href=\"dir2/\">dir2/ </a></li>\n" +
+						"        <li><a href=\"../\">../ </a></li>\n"
+				}
 				expectBody := []byte(
 					"<!DOCTYPE html>\n" +
 						"<html>\n" +
@@ -26,10 +40,7 @@ var testAutoindex = testCatergory{
 						"   <body>\n" +
 						"      <h1>Index of /autoindex/</h1>\n" +
 						"      <ul style=\"list-style:none\">\n" +
-						"        <li><a href=\"../\">../ </a></li>\n" +
-						"        <li><a href=\"dir2/\">dir2/ </a></li>\n" +
-						"        <li><a href=\"test.html\">test.html </a></li>\n" +
-						"        <li><a href=\"dir1/\">dir1/ </a></li>\n" +
+						dirList +
 						"    </ul>\n" +
 						"   </body>\n" +
 						"</html>")
