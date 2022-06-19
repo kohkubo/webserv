@@ -1,11 +1,15 @@
 package tests
 
 import (
+	"context"
+	"fmt"
 	"integration_test/httptest"
 	"net/http"
+	"os"
+
+	"golang.org/x/sync/errgroup"
 )
 
-// connection確立時にエラーを拾うなら直でconnection関数使う
 var testMultiConnection = testCatergory{
 	categoryName: "MultiConnection",
 	config:       "integration_test/conf/iomulti.conf",
@@ -33,19 +37,28 @@ var testMultiConnection = testCatergory{
 					},
 					ExpectBody: expectBody,
 				}
-				numOfClient := 10
-				// 10247で落ちた テストケース追加 goroutine 長いやつ用にフラグ使い分け
-				// 現状だとエラーが返ってくるのでテストとして修正すべき
-				var clients []*httptest.Client
-				for i := 0; i < numOfClient; i++ {
-					clients = append(clients, httptest.NewClient(baseSource))
+				// 以前はcount=10247で落ちた
+				// connection確立時にエラーを拾うなら直でconnection関数使う
+				eg, ctx := errgroup.WithContext(context.Background())
+				for i, count := 0, 10; i < count; i++ {
+					i := i
+					eg.Go(func() error {
+						select {
+						case <-ctx.Done():
+						default:
+							c := httptest.NewClient(baseSource)
+							c.SendRequestAll()
+							c.RecvResponse()
+							if ok := c.IsExpectedResponse(); !ok {
+								return fmt.Errorf("goroutine number %v: unexpected response", i)
+							}
+						}
+						return nil
+					})
 				}
-				for _, c := range clients {
-					c.SendRequestAll()
-					c.RecvResponse()
-					if ok := c.IsExpectedResponse(); !ok {
-						return false
-					}
+				if err := eg.Wait(); err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					return false
 				}
 				return true
 			},
