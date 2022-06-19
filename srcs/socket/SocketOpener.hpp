@@ -1,5 +1,5 @@
-#ifndef SRCS_CONFIG_SOCKETOPENER_HPP
-#define SRCS_CONFIG_SOCKETOPENER_HPP
+#ifndef SRCS_SOCKET_SOCKETOPENER_HPP
+#define SRCS_SOCKET_SOCKETOPENER_HPP
 
 #include "config/Config.hpp"
 
@@ -20,4 +20,4 @@ public:
   }
 };
 
-#endif /* SRCS_CONFIG_SOCKETOPENER_HPP */
+#endif /* SRCS_SOCKET_SOCKETOPENER_HPP */

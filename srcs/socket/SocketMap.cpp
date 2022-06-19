@@ -9,8 +9,8 @@
 #include <string>
 
 #include "config/Config.hpp"
-#include "config/SocketOpener.hpp"
 #include "socket/ListenSocket.hpp"
+#include "socket/SocketOpener.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"

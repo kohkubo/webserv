@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-typedef class SocketBase SocketBase;
+class SocketBase;
 
 enum OperationType {
   NO_OP,

@@ -1,4 +1,4 @@
-#include "config/SocketOpener.hpp"
+#include "socket/SocketOpener.hpp"
 
 #include <fcntl.h>
 #include <netdb.h>
