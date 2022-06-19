@@ -18,9 +18,12 @@ func NewResponseChecker(statusCode int, header http.Header, body []byte) Reponse
 	c.Status = httpresp.Status(statusCode)
 	c.StatusCode = statusCode
 	c.Proto = "HTTP/1.1"
-	c.Header = header
+	c.Header = make(http.Header)
+	for k, v := range header {
+		c.Header[k] = v
+	}
 	c.Body = body
-	c.Close = resolveClose(header)
+	c.Close = resolveClose(c.Header)
 	return c
 }
 
