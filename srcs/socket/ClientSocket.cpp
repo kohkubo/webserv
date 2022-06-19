@@ -36,7 +36,7 @@ SocketMapOp ClientSocket::handle_receive_event() {
     close();
     return SocketMapOp(DELETE, _socket_fd_, this);
   }
-  create_sequential_transaction();
+  parse_buffer();
   _last_event_time_ = _time_now();
   return SocketMapOp();
 }
@@ -49,7 +49,7 @@ void ClientSocket::handle_send_event() {
   _last_event_time_ = _time_now();
 }
 
-void ClientSocket::create_sequential_transaction() {
+void ClientSocket::parse_buffer() {
   for (;;) {
     RequestState request_state =
         _request_.handle_request(_buffer_, _conf_group_);

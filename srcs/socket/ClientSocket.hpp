@@ -34,7 +34,7 @@ public:
   SocketMapOp handle_receive_event();
   void        handle_send_event();
 
-  void create_sequential_transaction();
+  void parse_buffer();
   bool append_receive_buffer();
 
   bool is_timed_out() const {
