@@ -144,6 +144,9 @@ func resolveMethod(req string) string {
 
 // レスポンスが期待するものか確認する
 func (c *Client) IsExpectedResponse() (bool, error) {
+	if c.GotResponse == nil {
+		return false, fmt.Errorf("isExpectedResult: GotResponse is nil")
+	}
 	result, err := c.ReponseChecker.Check(c.GotResponse)
 	if err != nil {
 		return false, fmt.Errorf("isExpectedResult: %v", err)
