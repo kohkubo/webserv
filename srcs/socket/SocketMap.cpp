@@ -95,13 +95,14 @@ std::map<int, SocketBase *> SocketMap::_generate() {
   return socket_map;
 }
 
-std::vector<struct pollfd> &SocketMap::pollfds() {
-  _pollfds_.clear();
+std::vector<struct pollfd> SocketMap::pollfds() {
+  std::vector<struct pollfd> pollfds;
+  pollfds.clear();
   std::map<int, SocketBase *>::const_iterator it = _socket_map_.begin();
   for (; it != _socket_map_.end(); it++) {
-    _pollfds_.push_back(it->second->pollfd());
+    pollfds.push_back(it->second->pollfd());
   }
-  return _pollfds_;
+  return pollfds;
 }
 
 SocketMapOp SocketMap::handle_socket_event(int socket_fd, short int revents) {

@@ -11,7 +11,6 @@ class SocketMap {
 private:
   serverList                  _server_list_;
   std::map<int, SocketBase *> _socket_map_;
-  std::vector<struct pollfd>  _pollfds_;
 
 private:
   SocketMap();
@@ -23,8 +22,7 @@ private:
 public:
   SocketMap(const char *config_file_path);
   ~SocketMap(){};
-  std::size_t                 pollfd_size() { return _pollfds_.size(); }
-  std::vector<struct pollfd> &pollfds();
+  std::vector<struct pollfd> pollfds();
   SocketMapOp handle_socket_event(int socket_fd, short int revents);
   void        do_map_operation(const SocketMapOp &socket_map_op);
   void        close_timedout_socket();
