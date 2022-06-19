@@ -10,14 +10,13 @@
 
 class ListenSocket : public SocketBase {
 private:
-  confGroup                    _conf_group_;
-  std::map<int, SocketBase *> &_socket_map_;
+  confGroup _conf_group_;
 
 public:
-  ListenSocket(int passive_socket, std::map<int, SocketBase *> &socket_map);
+  ListenSocket(int passive_socket);
   virtual ~ListenSocket();
   virtual struct pollfd pollfd();
-  virtual void          handle_event(short int revents);
+  virtual SocketMapOp   handle_event(short int revents);
 };
 
 #endif /* SRCS_SOCKET_LISTENSOCKET_HPP */

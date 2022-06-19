@@ -2,11 +2,9 @@
 
 #include <poll.h>
 
-ClientSocket::ClientSocket(int client_fd, const confGroup &conf_group,
-                           std::map<int, SocketBase *> &socket_map)
+ClientSocket::ClientSocket(int client_fd, const confGroup &conf_group)
     : SocketBase(client_fd)
     , _conf_group_(conf_group)
-    , _socket_map_(socket_map)
     , _last_event_time_(_time_now()) {}
 
 struct pollfd ClientSocket::pollfd() {
@@ -17,31 +15,30 @@ struct pollfd ClientSocket::pollfd() {
   return pfd;
 }
 
-void ClientSocket::handle_event(short int revents) {
+SocketMapOp ClientSocket::handle_event(short int revents) {
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of fd " << _socket_fd_);
-    // recv buffer
-    handle_receive_event();
+    SocketMapOp socket_map_op = handle_receive_event();
+    if (socket_map_op.type_ == DELETE)
+      return socket_map_op;
   }
   if ((revents & POLLOUT) != 0) {
     LOG("got POLLOUT event of fd " << _socket_fd_);
     handle_send_event();
   }
+  return SocketMapOp();
 }
 
-void ClientSocket::handle_receive_event() {
+SocketMapOp ClientSocket::handle_receive_event() {
   bool is_socket_closed_from_client = append_receive_buffer();
   if (is_socket_closed_from_client) {
     LOG("got FIN from connection");
     close();
-    // これできるか分からないのでとりあえず。
-    // socket_mapへの要素の変更を指示する構造体をhandle_eventが返すほうが良さそう。
-    delete this;
-    _socket_map_.erase(_socket_fd_);
-    return;
+    return SocketMapOp(DELETE, this);
   }
   create_sequential_transaction();
   _last_event_time_ = _time_now();
+  return SocketMapOp();
 }
 
 void ClientSocket::handle_send_event() {

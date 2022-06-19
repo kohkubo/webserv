@@ -3,20 +3,21 @@
 
 #include <cstddef>
 
-#include "socket/SocketBase.hpp"
+typedef class SocketBase SocketBase;
+
+enum OperationType {
+  NO_OP,
+  INSERT,
+  DELETE,
+};
 
 struct SocketMapOp {
-  enum OperationType {
-    NONE,
-    INSERT,
-    DELETE,
-  };
 
   OperationType type_;
   SocketBase   *target_;
 
   SocketMapOp()
-      : type_(NONE)
+      : type_(NO_OP)
       , target_(NULL) {}
 
   SocketMapOp(OperationType type, SocketBase *target)

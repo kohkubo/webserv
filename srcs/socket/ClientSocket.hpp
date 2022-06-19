@@ -15,26 +15,24 @@
 
 class ClientSocket : public SocketBase {
 private:
-  const confGroup             &_conf_group_;
-  std::map<int, SocketBase *> &_socket_map_;
-  Request                      _request_;
-  std::deque<Response>         _response_queue_;
-  std::string                  _buffer_;
-  std::time_t                  _last_event_time_;
-  static const std::time_t     TIMEOUT_SECONDS_ = 60;
+  const confGroup         &_conf_group_;
+  Request                  _request_;
+  std::deque<Response>     _response_queue_;
+  std::string              _buffer_;
+  std::time_t              _last_event_time_;
+  static const std::time_t TIMEOUT_SECONDS_ = 60;
 
 private:
   static std::time_t _time_now() { return std::time(NULL); }
 
 public:
-  ClientSocket(int client_fd, const confGroup &conf_group,
-               std::map<int, SocketBase *> &socket_map);
+  ClientSocket(int client_fd, const confGroup &conf_group);
   virtual ~ClientSocket();
   virtual struct pollfd pollfd();
-  virtual void          handle_event(short int revents);
+  virtual SocketMapOp   handle_event(short int revents);
 
-  void handle_receive_event();
-  void handle_send_event();
+  SocketMapOp handle_receive_event();
+  void        handle_send_event();
 
   void create_sequential_transaction();
   bool append_receive_buffer();
