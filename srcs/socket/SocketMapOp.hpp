@@ -14,14 +14,17 @@ enum OperationType {
 struct SocketMapOp {
 
   OperationType type_;
+  int           socket_fd_;
   SocketBase   *target_;
 
   SocketMapOp()
       : type_(NO_OP)
+      , socket_fd_(-1)
       , target_(NULL) {}
 
-  SocketMapOp(OperationType type, SocketBase *target)
+  SocketMapOp(OperationType type, int socket_fd, SocketBase *target)
       : type_(type)
+      , socket_fd_(socket_fd)
       , target_(target) {}
 };
 

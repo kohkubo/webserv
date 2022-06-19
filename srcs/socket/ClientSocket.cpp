@@ -34,7 +34,7 @@ SocketMapOp ClientSocket::handle_receive_event() {
   if (is_socket_closed_from_client) {
     LOG("got FIN from connection");
     close();
-    return SocketMapOp(DELETE, this);
+    return SocketMapOp(DELETE, _socket_fd_, this);
   }
   create_sequential_transaction();
   _last_event_time_ = _time_now();

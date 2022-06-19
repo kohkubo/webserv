@@ -21,5 +21,5 @@ SocketMapOp ListenSocket::handle_event(short int revents) {
   LOG("insert " << conn_fd << " to connection");
   // insert new connection to socket map
   SocketBase *new_client = new ClientSocket(conn_fd, conf_group_);
-  return SocketMapOp(INSERT, new_client);
+  return SocketMapOp(INSERT, conn_fd, new_client);
 }
