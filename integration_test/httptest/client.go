@@ -61,7 +61,7 @@ func NewClientWithConn(prev_conn net.Conn, info TestSource) *Client {
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
 func (c *Client) DoAndCheck() bool {
-	if err := c.SendAllRequest(); err != nil {
+	if err := c.SendRequestAll(); err != nil {
 		webserv.ExitWithKill(err)
 	}
 	if err := c.RecvResponse(); err != nil {
@@ -75,19 +75,28 @@ func (c *Client) DoAndCheck() bool {
 }
 
 // リクエスト送信
-func (c *Client) SendAllRequest() error {
+func (c *Client) SendRequestAll() error {
 	for c.SendCnt < len(c.Request) {
-		rand.Seed(time.Now().UnixNano())
-		r := rand.Intn(len(c.Request))
-		if err := c.SendPartialRequest(r); err != nil {
+		if err := c.SendRequestRandom(); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
+// 決めた文字数のリクエストを送信
+// IOMULTIで使おうかと
+func (c *Client) SendRequestRandom() error {
+	rand.Seed(time.Now().UnixNano())
+	randN := rand.Intn(len(c.Request))
+	if err := c.SendRequestN(randN); err != nil {
+		return err
+	}
+	return nil
+}
+
 // 指定文字数のみリクエスト送信
-func (c *Client) SendPartialRequest(n int) (err error) {
+func (c *Client) SendRequestN(n int) (err error) {
 	limit := c.SendCnt + n
 	if len(c.Request) < limit {
 		limit = len(c.Request)
