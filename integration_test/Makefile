@@ -23,4 +23,4 @@ re: clean all
 
 .PHONY: run
 run: build
-	./integration_test
+	./integration_test $(TESTFLAG)

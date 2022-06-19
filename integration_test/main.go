@@ -8,7 +8,14 @@ import (
 	"time"
 )
 
+var optionalTest bool
+
 func main() {
+	if len(os.Args) != 1 {
+		if os.Args[1] == "-o" {
+			optionalTest = true
+		}
+	}
 	var status int
 	select {
 	case <-time.After(5 * time.Minute):
@@ -29,7 +36,7 @@ func main() {
 func test() chan bool {
 	result := make(chan bool)
 	go func() {
-		t := tests.Generate()
+		t := tests.Generate(optionalTest)
 		result <- t.Test()
 	}()
 	return result

@@ -35,7 +35,7 @@ cav: $(objs)
 
 .PHONY: itest
 itest: $(NAME)
-	$(MAKE) -C $(itestdir) run
+	$(MAKE) -C $(itestdir) run TESTFLAG=$(ITESTFLAG)
 
 .PHONY: wtest
 wtest: test itest
