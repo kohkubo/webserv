@@ -20,6 +20,7 @@ bool ClientSocket::is_timed_out() {
 }
 
 SocketMapAction ClientSocket::handle_event(short int revents) {
+  _last_event_time_ = _time_now();
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of fd " << _socket_fd_);
     SocketMapAction socket_map_action = handle_receive_event();
@@ -41,7 +42,6 @@ SocketMapAction ClientSocket::handle_receive_event() {
     return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
   }
   parse_buffer();
-  _last_event_time_ = _time_now();
   return SocketMapAction();
 }
 
@@ -50,7 +50,6 @@ void ClientSocket::handle_send_event() {
   if (response_state == COMPLETE) {
     _response_queue_.pop_front();
   }
-  _last_event_time_ = _time_now();
 }
 
 void ClientSocket::parse_buffer() {
