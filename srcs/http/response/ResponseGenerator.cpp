@@ -60,14 +60,14 @@ std::map<int, std::string> init_response_status_phrase_map() {
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
-static bool is_error_status_code(HttpStatusCode status_code) {
+static bool is_error_status_code(HttpStatusCode::StatusCode status_code) {
   // TODO: エラーのステータスコードの扱いを決まったら再実装
   return status_code > 299 && status_code < 600;
 }
 
 // TODO: config.error_page validate
-static std::string error_page_body(const RequestInfo &request_info,
-                                   HttpStatusCode     status_code) {
+static std::string error_page_body(const RequestInfo         &request_info,
+                                   HttpStatusCode::StatusCode status_code) {
   errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(status_code);
   if (it != request_info.config_.error_pages_.end()) {
@@ -79,7 +79,7 @@ static std::string error_page_body(const RequestInfo &request_info,
       return result.str_;
     }
     LOG("error_page_body: read_file_to_str error");
-    status_code = INTERNAL_SERVER_ERROR_500;
+    status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   }
   return "<!DOCTYPE html>\n"
          "<html>\n"
@@ -101,7 +101,8 @@ std::string ResponseGenerator::_body(const RequestInfo &request_info) {
   if (has_suffix(request_info.file_path_, ".py")) {
     Result result = _read_file_to_str_cgi(request_info);
     if (result.is_err_) {
-      return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
+      return error_page_body(request_info,
+                             HttpStatusCode::INTERNAL_SERVER_ERROR_500);
     }
     return result.str_;
   }
@@ -110,18 +111,19 @@ std::string ResponseGenerator::_body(const RequestInfo &request_info) {
   }
   Result result = read_file_to_str(request_info.file_path_);
   if (result.is_err_) {
-    return error_page_body(request_info, INTERNAL_SERVER_ERROR_500);
+    return error_page_body(request_info,
+                           HttpStatusCode::INTERNAL_SERVER_ERROR_500);
   }
   return result.str_;
 }
 
-static std::string start_line(const HttpStatusCode status_code) {
+static std::string start_line(const HttpStatusCode::StatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
 static std::string connection_header() { return "Connection: close" + CRLF; }
-static std::string location_header(const returnMap &return_map,
-                                   HttpStatusCode   status_code) {
+static std::string location_header(const returnMap           &return_map,
+                                   HttpStatusCode::StatusCode status_code) {
   returnMap::const_iterator it = return_map.find(status_code);
   return "Location: " + it->second + CRLF;
 }
@@ -131,9 +133,8 @@ static std::string entity_header_and_body(const std::string &body) {
          "Content-Type: text/html" + CRLF + CRLF + body;
 }
 
-std::string
-ResponseGenerator::generate_error_response(const RequestInfo &request_info,
-                                           HttpStatusCode     status_code) {
+std::string ResponseGenerator::generate_error_response(
+    const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
   LOG("generate_error_response()");
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
@@ -144,17 +145,17 @@ ResponseGenerator::generate_error_response(const RequestInfo &request_info,
   return response;
 }
 
-static std::string response_message(HttpStatusCode     status_code,
-                                    const std::string &body,
-                                    const RequestInfo &request_info) {
+static std::string response_message(HttpStatusCode::StatusCode status_code,
+                                    const std::string         &body,
+                                    const RequestInfo         &request_info) {
   std::string response = start_line(status_code);
   if (request_info.connection_close_) {
     response += connection_header();
   }
-  if (status_code == NO_CONTENT_204) {
+  if (status_code == HttpStatusCode::NO_CONTENT_204) {
     return response + CRLF;
   }
-  if (MOVED_PERMANENTLY_301 == status_code) {
+  if (HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
     response +=
         location_header(request_info.location_.return_map_, status_code);
   }
@@ -164,7 +165,7 @@ static std::string response_message(HttpStatusCode     status_code,
 
 std::string
 ResponseGenerator::generate_response(const RequestInfo &request_info) {
-  HttpStatusCode status_code = NONE;
+  HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
   // TODO:locationを決定する処理をResponseの前に挟むと、
@@ -172,7 +173,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
   // return がセットされていたら
   if (request_info.location_.return_map_.size() != 0) {
     // intをHttpStatusCodeに変換する
-    status_code = static_cast<HttpStatusCode>(
+    status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_.return_map_.begin()->first);
     return response_message(status_code, "", request_info);
   }
@@ -182,7 +183,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
     return generate_error_response(request_info, status_code);
   }
-  if (status_code == NO_CONTENT_204) {
+  if (status_code == HttpStatusCode::NO_CONTENT_204) {
     // TODO:
     // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
     // kohkubo

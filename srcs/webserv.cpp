@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 
-#include "config/ConfGroupMapGenerator.hpp"
 #include "config/Config.hpp"
 #include "event/Server.hpp"
 
@@ -20,11 +19,8 @@ static const char *resolve_config_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char           *config_file_path = resolve_config_file(argc, argv);
-  ConfGroupMapGenerator conf_group_map_generator(config_file_path);
-  std::map<listenFd, confGroup> conf_group_map =
-      conf_group_map_generator.generate();
-  Server server(conf_group_map);
+  const char *config_file_path = resolve_config_file(argc, argv);
+  Server      server(config_file_path);
   server.run_loop();
   return (0);
 }

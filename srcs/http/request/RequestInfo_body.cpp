@@ -19,7 +19,8 @@ void RequestInfo::parse_request_body(std::string       &request_body,
     form_map_ = _parse_request_multi_part(request_body, content_type);
   } else {
     ERROR_LOG("unknown content-type:" + content_type.type_);
-    throw RequestInfo::BadRequestException(NOT_IMPLEMENTED_501); // tmp
+    throw RequestInfo::BadRequestException(
+        HttpStatusCode::NOT_IMPLEMENTED_501); // tmp
   }
 }
 
