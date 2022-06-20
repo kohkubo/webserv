@@ -20,7 +20,7 @@ private:
   std::map<int, SocketBase *> _generate();
   std::vector<struct pollfd>  _create_pollfds();
   SocketMapAction _handle_socket_event(int socket_fd, short int revents);
-  void            _do_map_operation(const SocketMapAction &socket_map_op);
+  void            _do_map_action(const SocketMapAction &socket_map_op);
   void            _close_timedout_socket();
 
 public:

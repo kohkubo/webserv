@@ -22,9 +22,9 @@ bool ClientSocket::is_timed_out() {
 SocketMapAction ClientSocket::handle_event(short int revents) {
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of fd " << _socket_fd_);
-    SocketMapAction socket_map_op = handle_receive_event();
-    if (socket_map_op.type_ == SocketMapAction::DELETE)
-      return socket_map_op;
+    SocketMapAction socket_map_action = handle_receive_event();
+    if (socket_map_action.type_ == SocketMapAction::DELETE)
+      return socket_map_action;
   }
   if ((revents & POLLOUT) != 0) {
     LOG("got POLLOUT event of fd " << _socket_fd_);
