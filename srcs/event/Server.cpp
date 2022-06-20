@@ -11,7 +11,6 @@
 #include "config/Config.hpp"
 #include "socket/ClientSocket.hpp"
 #include "socket/ListenSocket.hpp"
-#include "socket/SocketOpener.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/syscall_wrapper.hpp"
 #include "utils/tokenize.hpp"
@@ -88,9 +87,9 @@ std::map<int, SocketBase *> Server::_generate() {
       (dynamic_cast<ListenSocket *>(it->second))
           ->conf_group_.push_back(&(*sl_it));
     } else {
-      listenFd    listen_fd = SocketOpener::open_new_socket(sl_it->addrinfo_);
-      SocketBase *listen_socket = new ListenSocket(listen_fd, &(*sl_it));
-      socket_map.insert(std::make_pair(listen_fd, listen_socket));
+      SocketBase *listen_socket = new ListenSocket(&(*sl_it));
+      socket_map.insert(
+          std::make_pair(listen_socket->socket_fd(), listen_socket));
     }
   }
   return socket_map;
@@ -106,7 +105,7 @@ std::vector<struct pollfd> Server::_create_pollfds() {
   return pollfds;
 }
 
-void Server::_do_map_action(const SocketMapAction &socket_map_action) {
+void Server::_do_socket_map_action(const SocketMapAction &socket_map_action) {
   switch (socket_map_action.type_) {
   case SocketMapAction::INSERT:
     _socket_map_.insert(std::make_pair(socket_map_action.socket_fd_,
@@ -131,7 +130,7 @@ void Server::_close_timedout_socket() {
       // CGI追加時に仮想関数に
       dynamic_cast<ClientSocket *>(socket)->close();
       it++;
-      _do_map_action(
+      _do_socket_map_action(
           SocketMapAction(SocketMapAction::DELETE, socket_fd, socket));
     } else {
       it++;
@@ -153,7 +152,7 @@ void Server::run_loop() {
       nready--;
       SocketMapAction socket_map_action =
           _socket_map_[it->fd]->handle_event(it->revents);
-      _do_map_action(socket_map_action);
+      _do_socket_map_action(socket_map_action);
     }
   }
 }

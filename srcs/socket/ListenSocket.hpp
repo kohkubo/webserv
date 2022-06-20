@@ -12,8 +12,14 @@ class ListenSocket : public SocketBase {
 public:
   confGroup conf_group_;
 
+private:
+  static listenFd _create_socket(struct addrinfo *info);
+  static void     _bind_address(listenFd listen_fd, struct addrinfo *info);
+  static void     _start_listen(listenFd listen_fd);
+  static listenFd _open_new_socket(struct addrinfo *info);
+
 public:
-  ListenSocket(int passive_socket, const Config *config);
+  ListenSocket(const Config *config);
   virtual ~ListenSocket() {}
   virtual struct pollfd   pollfd();
   virtual SocketMapAction handle_event(short int revents);
