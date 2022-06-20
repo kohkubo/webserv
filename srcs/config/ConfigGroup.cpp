@@ -28,3 +28,11 @@ bool ConfigGroup::try_add_config(const Config config) {
   _config_group_.insert(std::make_pair(config.server_name_, ref));
   return true;
 }
+
+const Config *ConfigGroup::select_config(const std::string &host_name) {
+  bool has_server_name = static_cast<bool>(_config_group_.count(host_name));
+  if (has_server_name) {
+    return _config_group_.find(host_name)->second;
+  }
+  return _config_group_.find(_default_server_name_)->second;
+}
