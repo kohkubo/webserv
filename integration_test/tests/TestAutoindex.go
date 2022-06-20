@@ -3,10 +3,7 @@ package tests
 import (
 	"integration_test/httpresp"
 	"integration_test/httptest"
-	"integration_test/webserv"
 	"net/http"
-	"os"
-	"path/filepath"
 )
 
 // TODO: autoindex
