@@ -12,8 +12,8 @@ TEST(request_parse_test, normal) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config    config;
-  confGroup conf_group;
+  Config      config;
+  confGroup   conf_group;
   conf_group.push_back(&config);
   Request request;
 
@@ -34,8 +34,8 @@ TEST(request_parse_test, normal_delete) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config    config;
-  confGroup conf_group;
+  Config      config;
+  confGroup   conf_group;
   conf_group.push_back(&config);
   Request request;
 
@@ -84,8 +84,8 @@ TEST(request_parse_test, query_string) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config    config;
-  confGroup conf_group;
+  Config      config;
+  confGroup   conf_group;
   conf_group.push_back(&config);
   Request request;
 
@@ -95,59 +95,4 @@ TEST(request_parse_test, query_string) {
   EXPECT_EQ(request_info.method_, "GET");
   EXPECT_EQ(request_info.request_target_, "/hoge.cgi");
   EXPECT_EQ(request_info.query_string_, "name=taro&age=15");
-}
-
-TEST(request_parse_test, select_location) {
-
-  Config   config;
-  Location location;
-  location.location_path_ = "/";
-  config.locations_.push_back(location);
-  location.location_path_ = "/dir1/dir2/";
-  config.locations_.push_back(location);
-  location.location_path_ = "/dir1/";
-  config.locations_.push_back(location);
-  confGroup conf_group;
-  conf_group.push_back(&config);
-
-  {
-    std::string request_buffer = "GET / HTTP/1.1\r\n"
-                                 "Host: 127.0.0.1:50001\r\n"
-                                 "\r\n";
-    Request     request;
-    request.handle_request(request_buffer, conf_group);
-    const Location &request_location = request.request_info().location_;
-
-    EXPECT_EQ(request_location.location_path_, "/");
-  }
-  {
-    std::string request_buffer = "GET /dir1/ HTTP/1.1\r\n"
-                                 "Host: 127.0.0.1:50001\r\n"
-                                 "\r\n";
-    Request     request;
-    request.handle_request(request_buffer, conf_group);
-    const Location &request_location = request.request_info().location_;
-
-    EXPECT_EQ(request_location.location_path_, "/dir1/");
-  }
-  {
-    std::string request_buffer = "GET /dir1/dir2/ HTTP/1.1\r\n"
-                                 "Host: 127.0.0.1:50001\r\n"
-                                 "\r\n";
-    Request     request;
-    request.handle_request(request_buffer, conf_group);
-    const Location &request_location = request.request_info().location_;
-
-    EXPECT_EQ(request_location.location_path_, "/dir1/dir2/");
-  }
-  {
-    std::string request_buffer = "GET /nosush HTTP/1.1\r\n"
-                                 "Host: 127.0.0.1:50001\r\n"
-                                 "\r\n";
-    Request     request;
-    request.handle_request(request_buffer, conf_group);
-    const Location &request_location = request.request_info().location_;
-
-    EXPECT_EQ(request_location.location_path_, "/");
-  }
 }

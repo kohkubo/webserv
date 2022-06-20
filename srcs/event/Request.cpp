@@ -31,24 +31,23 @@ static std::string cutout_request_body(std::string &request_buffer,
 // TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
 static Location select_proper_location(const std::string           &request_uri,
                                        const std::vector<Location> &locations) {
-  // clang-format off
-  std::string    path;
-  const Location *ret_location = NULL;
+  const Location *location = NULL;
+  std::string     path;
+
   std::vector<Location>::const_iterator it = locations.begin();
-  // clang-format on
   for (; it != locations.end(); ++it) {
     if (request_uri.find(it->location_path_) == 0) {
       if (path.size() < it->location_path_.size()) {
-        path         = it->location_path_;
-        ret_location = &(*it);
+        path     = it->location_path_;
+        location = &(*it);
       }
     }
   }
-  if (ret_location != NULL) {
-    return *ret_location;
+  if (location == NULL) {
+    LOG("no match found with locations.");
+    throw RequestInfo::BadRequestException(NOT_FOUND_404);
   }
-  LOG("location is null");
-  throw RequestInfo::BadRequestException(NOT_FOUND_404);
+  return *location;
 }
 
 static std::string create_file_path(const std::string &request_target,
