@@ -30,18 +30,15 @@ static std::string read_fd_to_str(int fd) {
 // TODO: error処理
 Result
 ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
-  Result result    = {};
-  int    pipefd[2] = {0, 0};
+  int pipefd[2] = {0, 0};
   if (pipe(pipefd) == -1) {
     ERROR_LOG("error: pipe in read_file_to_str_cgi");
-    result.is_err_ = true;
-    return result;
+    return Error();
   }
   pid_t pid = fork();
   if (pid == -1) {
     ERROR_LOG("error: fork in read_file_to_str_cgi");
-    result.is_err_ = true;
-    return result;
+    return Error();
   }
   // child
   if (pid == 0) {
@@ -66,9 +63,7 @@ ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {
     ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-    result.is_err_ = true;
-    return result;
+    return Error();
   }
-  result.str_ = str;
-  return result;
+  return Ok(str);
 }
