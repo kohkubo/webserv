@@ -1,7 +1,8 @@
 #ifndef SRCS_HTTP_CONST_CONST_HTTP_ENUMS_HPP
 #define SRCS_HTTP_CONST_CONST_HTTP_ENUMS_HPP
 
-enum HttpStatusCode {
+namespace HttpStatusCode {
+enum StatusCode {
   NONE                      = -1,
   OK_200                    = 200,
   NO_CONTENT_204            = 204,
@@ -16,5 +17,6 @@ enum HttpStatusCode {
   NOT_IMPLEMENTED_501       = 501,
   UNKNOWN_ERROR_520         = 520,
 };
+}
 
 #endif /* SRCS_HTTP_CONST_CONST_HTTP_ENUMS_HPP */
