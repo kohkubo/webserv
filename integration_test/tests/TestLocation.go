@@ -85,7 +85,7 @@ var testLocation = testCatergory{
 			},
 		},
 		{
-			caseName: "最長マッチチェック 2",
+			caseName: "最長マッチチェック 3",
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 200
