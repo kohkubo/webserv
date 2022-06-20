@@ -53,11 +53,11 @@ static Location select_proper_location(const std::string           &request_uri,
 static std::string create_file_path(const std::string &request_target,
                                     const Location    &location) {
   std::string file_path = location.root_ + request_target;
-  LOG("create_file_path: " << file_path);
   if (has_suffix(file_path, "/") &&
       is_file_exists(file_path + location.index_)) {
     file_path += location.index_;
   }
+  LOG("create_file_path: " << file_path);
   return file_path;
 }
 
