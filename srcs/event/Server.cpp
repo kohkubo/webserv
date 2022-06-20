@@ -89,8 +89,8 @@ std::map<int, SocketBase *> Server::_generate() {
           ->conf_group_.push_back(&(*sl_it));
     } else {
       listenFd    listen_fd = SocketOpener::open_new_socket(sl_it->addrinfo_);
-      SocketBase *new_listen_socket = new ListenSocket(listen_fd, &(*sl_it));
-      socket_map.insert(std::make_pair(listen_fd, new_listen_socket));
+      SocketBase *listen_socket = new ListenSocket(listen_fd, &(*sl_it));
+      socket_map.insert(std::make_pair(listen_fd, listen_socket));
     }
   }
   return socket_map;
@@ -106,13 +106,13 @@ std::vector<struct pollfd> Server::_create_pollfds() {
   return pollfds;
 }
 
-void Server::_do_map_operation(const SocketMapOp &socket_map_op) {
+void Server::_do_map_operation(const SocketMapAction &socket_map_op) {
   switch (socket_map_op.type_) {
-  case INSERT:
+  case SocketMapAction::INSERT:
     _socket_map_.insert(
         std::make_pair(socket_map_op.socket_fd_, socket_map_op.target_));
     break;
-  case DELETE:
+  case SocketMapAction::DELETE:
     delete socket_map_op.target_;
     _socket_map_.erase(socket_map_op.socket_fd_);
     break;
@@ -131,7 +131,8 @@ void Server::_close_timedout_socket() {
       // CGI追加時に仮想関数に
       dynamic_cast<ClientSocket *>(socket)->close();
       it++;
-      _do_map_operation(SocketMapOp(DELETE, socket_fd, socket));
+      _do_map_operation(
+          SocketMapAction(SocketMapAction::DELETE, socket_fd, socket));
     } else {
       it++;
     }
@@ -150,7 +151,7 @@ void Server::run_loop() {
         continue;
       }
       nready--;
-      SocketMapOp socket_map_op =
+      SocketMapAction socket_map_op =
           _socket_map_[it->fd]->handle_event(it->revents);
       _do_map_operation(socket_map_op);
     }

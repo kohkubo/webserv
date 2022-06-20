@@ -28,12 +28,12 @@ private:
 public:
   ClientSocket(int client_fd, const confGroup &conf_group);
   virtual ~ClientSocket() {}
-  virtual struct pollfd pollfd();
-  virtual SocketMapOp   handle_event(short int revents);
-  virtual bool          is_timed_out();
+  virtual struct pollfd   pollfd();
+  virtual SocketMapAction handle_event(short int revents);
+  virtual bool            is_timed_out();
 
-  SocketMapOp handle_receive_event();
-  void        handle_send_event();
+  SocketMapAction handle_receive_event();
+  void            handle_send_event();
 
   void parse_buffer();
   bool append_receive_buffer();

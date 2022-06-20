@@ -19,30 +19,30 @@ bool ClientSocket::is_timed_out() {
   return std::difftime(_time_now(), _last_event_time_) >= TIMEOUT_SECONDS_;
 }
 
-SocketMapOp ClientSocket::handle_event(short int revents) {
+SocketMapAction ClientSocket::handle_event(short int revents) {
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of fd " << _socket_fd_);
-    SocketMapOp socket_map_op = handle_receive_event();
-    if (socket_map_op.type_ == DELETE)
+    SocketMapAction socket_map_op = handle_receive_event();
+    if (socket_map_op.type_ == SocketMapAction::DELETE)
       return socket_map_op;
   }
   if ((revents & POLLOUT) != 0) {
     LOG("got POLLOUT event of fd " << _socket_fd_);
     handle_send_event();
   }
-  return SocketMapOp();
+  return SocketMapAction();
 }
 
-SocketMapOp ClientSocket::handle_receive_event() {
+SocketMapAction ClientSocket::handle_receive_event() {
   bool is_socket_closed_from_client = append_receive_buffer();
   if (is_socket_closed_from_client) {
     LOG("got FIN from connection");
     close();
-    return SocketMapOp(DELETE, _socket_fd_, this);
+    return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
   }
   parse_buffer();
   _last_event_time_ = _time_now();
-  return SocketMapOp();
+  return SocketMapAction();
 }
 
 void ClientSocket::handle_send_event() {

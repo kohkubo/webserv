@@ -5,7 +5,7 @@
 
 #include "config/Config.hpp"
 #include "socket/SocketBase.hpp"
-#include "socket/SocketMapOp.hpp"
+#include "socket/SocketMapAction.hpp"
 
 class Server {
 private:
@@ -19,9 +19,9 @@ private:
   void                        _read_config(const char *config_file_path);
   std::map<int, SocketBase *> _generate();
   std::vector<struct pollfd>  _create_pollfds();
-  SocketMapOp _handle_socket_event(int socket_fd, short int revents);
-  void        _do_map_operation(const SocketMapOp &socket_map_op);
-  void        _close_timedout_socket();
+  SocketMapAction _handle_socket_event(int socket_fd, short int revents);
+  void            _do_map_operation(const SocketMapAction &socket_map_op);
+  void            _close_timedout_socket();
 
 public:
   Server(const char *config_file_path);

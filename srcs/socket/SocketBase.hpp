@@ -3,7 +3,7 @@
 
 #include <poll.h>
 
-#include "socket/SocketMapOp.hpp"
+#include "socket/SocketMapAction.hpp"
 
 class SocketBase {
 protected:
@@ -15,9 +15,9 @@ public:
   SocketBase(int socket_fd)
       : _socket_fd_(socket_fd) {}
   virtual ~SocketBase() {}
-  virtual bool          is_timed_out()                  = 0;
-  virtual struct pollfd pollfd()                        = 0;
-  virtual SocketMapOp   handle_event(short int revents) = 0;
+  virtual bool            is_timed_out()                  = 0;
+  virtual struct pollfd   pollfd()                        = 0;
+  virtual SocketMapAction handle_event(short int revents) = 0;
 };
 
 #endif /* SRCS_SOCKET_SOCKETBASE_HPP */

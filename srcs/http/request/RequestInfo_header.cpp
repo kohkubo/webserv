@@ -45,7 +45,8 @@ void RequestInfo::parse_request_header(
   if (itr == header_field_map.end()) {
     // TODO:
     // この例外処理、header_field_mapを格納し終わった後にすれば、header_field_mapをメンバ変数として持たなくて良い気がする
-    throw BadRequestException(BAD_REQUEST_400, "Host field is not found.");
+    throw BadRequestException(HttpStatusCode::BAD_REQUEST_400,
+                              "Host field is not found.");
   }
   host_ = parse_request_host(itr->second);
   itr   = header_field_map.find("Connection");
