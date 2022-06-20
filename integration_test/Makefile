@@ -24,3 +24,7 @@ re: clean all
 .PHONY: run
 run: build
 	./integration_test
+
+.PHONY: gotest
+gotest: build
+	go test ./...

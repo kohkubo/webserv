@@ -37,6 +37,10 @@ cav: $(objs)
 itest: $(NAME)
 	$(MAKE) -C $(itestdir) run
 
+.PHONY: gotest
+gotest: $(NAME)
+	$(MAKE) -C $(itestdir) gotest
+
 .PHONY: wtest
 wtest: test itest
 
