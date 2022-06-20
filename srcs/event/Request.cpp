@@ -45,7 +45,7 @@ static Location select_proper_location(const std::string           &request_uri,
   }
   if (location == NULL) {
     LOG("no match found with locations.");
-    throw RequestInfo::BadRequestException(NOT_FOUND_404);
+    throw RequestInfo::BadRequestException(HttpStatusCode::NOT_FOUND_404);
   }
   return *location;
 }
