@@ -6,17 +6,24 @@ jobs:
   gtest:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: make_test
-      run: |
-        make -m
-        make -C ./googletest
-        cd ./googletest
-        ./tester
+      - uses: actions/checkout@v3
+      - name: make_test
+        run: |
+          make -m
+          make -C ./googletest
+          cd ./googletest
+          ./tester
 
   itest:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: make_itest
-      run: make itest
+      - uses: actions/checkout@v3
+      - name: make_itest
+        run: make itest
+
+  gotest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: make_gotest
+        run: make gotest
