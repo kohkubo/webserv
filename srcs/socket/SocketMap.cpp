@@ -117,9 +117,6 @@ void SocketMap::close_timedout_socket() {
     if (it->second->is_timed_out()) {
       int         socket_fd = it->first;
       SocketBase *socket    = it->second;
-      // 現状、clientSocketしかこの条件に入らないためdynamic_castでclose
-      // CGI追加時に仮想関数に
-      dynamic_cast<ClientSocket *>(socket)->close();
       it++;
       do_socket_map_action(
           SocketMapAction(SocketMapAction::DELETE, socket_fd, socket));
