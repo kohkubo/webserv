@@ -3,7 +3,9 @@ package tests
 import (
 	"integration_test/httpresp"
 	"integration_test/httptest"
+	"math/rand"
 	"net/http"
+	"time"
 )
 
 var testIOMulti = testCatergory{
@@ -79,18 +81,18 @@ var testIOMulti = testCatergory{
 					},
 					ExpectBody: expectBody,
 				}))
-
-				for i, count := 0, 5; i < count; i++ {
+				rand.Seed(time.Now().UnixNano())
+				randN := rand.Intn(20)
+				for i := 0; i <= randN; i++ {
 					for _, c := range clients {
-						switch i {
-						case count - 1:
+						if i < randN {
+							c.SendRequestRandom()
+						} else {
 							c.SendRequestAll()
 							c.RecvResponse()
 							if ok := c.IsExpectedResponse(); !ok {
 								return false
 							}
-						default:
-							c.SendRequestRandom()
 						}
 					}
 				}
