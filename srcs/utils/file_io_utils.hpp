@@ -6,6 +6,19 @@
 struct Result {
   bool        is_err_;
   std::string str_;
+
+  Result(bool is_err = true, const std::string &str = "")
+      : is_err_(is_err)
+      , str_(str) {}
+};
+
+struct Error : public Result {
+  Error() {}
+};
+
+struct Ok : public Result {
+  Ok(const std::string str)
+      : Result(false, str) {}
 };
 
 bool   is_file_exists(const std::string &path);
