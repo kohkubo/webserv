@@ -64,19 +64,15 @@ func NewClientWithConn(prev_conn net.Conn, info TestSource) *Client {
 func (c *Client) DoAndCheck() bool {
 	c.SendRequestAll()
 	c.RecvResponse()
-	result := c.IsExpectedResponse()
-	return result
+	return c.IsExpectedResponse()
 }
 
 // リクエスト送信
 func (c *Client) SendRequestAll() {
-	for c.sendCnt < len(c.Request) {
-		c.SendRequestRandom()
-	}
+	c.SendRequestN(len(c.Request))
 }
 
-// 決めた文字数のリクエストを送信
-// IOMULTIで使おうかと
+// ランダム文字数でリクエストを送信
 func (c *Client) SendRequestRandom() {
 	rand.Seed(time.Now().UnixNano())
 	randN := rand.Intn(len(c.Request))
@@ -91,12 +87,10 @@ func (c *Client) SendRequestN(n int) {
 	}
 	sendContent := c.Request[c.sendCnt:limit]
 	sendN, err := fmt.Fprintf(c.Conn, sendContent)
-	// 連続で使用された場合にリクエストが分かれるようにsleep
 	if err != nil {
 		webserv.ExitWithKill(err)
 	}
 	c.sendLog = append(c.sendLog, sendContent)
-	time.Sleep(1 * time.Millisecond)
 	c.sendCnt += sendN
 }
 
@@ -139,11 +133,15 @@ func (c *Client) IsExpectedResponse() bool {
 	c.GotResponse.Body.Close()
 	testOK := result == 0
 	if !testOK {
-		fmt.Println("===Request log===")
-		for _, r := range c.sendLog {
-			fmt.Printf("[%s]%d\n", r, len(r))
-		}
-		fmt.Println("=================")
+		c.PrintRequestLog()
 	}
 	return testOK
+}
+
+func (c *Client) PrintRequestLog() {
+	fmt.Println("===Request log===")
+	for _, r := range c.sendLog {
+		fmt.Printf("[%s]%d\n", r, len(r))
+	}
+	fmt.Println("=================")
 }
