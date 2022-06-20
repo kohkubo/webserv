@@ -22,7 +22,10 @@ Config::Config()
     , server_name_("")
     , addrinfo_(NULL) {}
 
-Config::Config(const Config &other) { *this = other; }
+Config::Config(const Config &other)
+    : addrinfo_(NULL) {
+  *this = other;
+}
 
 Config &Config::operator=(const Config &other) {
   if (this == &other) {
@@ -34,6 +37,9 @@ Config &Config::operator=(const Config &other) {
   server_name_          = other.server_name_;
   error_pages_          = other.error_pages_;
   locations_            = other.locations_;
+  if (addrinfo_ != NULL) {
+    freeaddrinfo(addrinfo_);
+  }
   _set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return *this;
 }
@@ -131,9 +137,11 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
     location.limit_except_.push_back("DELETE");
   }
   if (has_suffix(location.index_, "/"))
-    throw UnexpectedTokenException("index directive failed.");
+    throw UnexpectedTokenException(
+        "index directive failed. don't add \"/\" to file path.");
   if (!has_suffix(location.root_, "/"))
-    throw UnexpectedTokenException("root directive failed.");
+    throw UnexpectedTokenException(
+        "root directive failed. please add \"/\" to end of root dir");
   if (is_location_path_duplication(location.location_path_, locations_))
     throw UnexpectedTokenException("location path duplication.");
   if (is_minus_depth(location.location_path_) ||
