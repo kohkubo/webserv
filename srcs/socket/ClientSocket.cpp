@@ -74,7 +74,6 @@ bool ClientSocket::append_receive_buffer() {
   if (rc == 0) {
     return true;
   }
-  LOG("request:\n" << buf);
   _buffer_.append(buf, rc);
   return false;
 }
