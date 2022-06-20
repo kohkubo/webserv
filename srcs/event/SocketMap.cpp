@@ -19,6 +19,13 @@
 SocketMap::SocketMap(const ConfigList &config_list)
     : _socket_map_(_generate(config_list)) {}
 
+SocketMap::~SocketMap() {
+  std::map<int, SocketBase *>::iterator it = _socket_map_.begin();
+  for (; it != _socket_map_.end(); it++) {
+    delete it->second;
+  }
+}
+
 static bool is_same_socket(const Config &serv_x, const Config &serv_y) {
   struct sockaddr_in *x = NULL;
   struct sockaddr_in *y = NULL;

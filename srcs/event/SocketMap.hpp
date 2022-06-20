@@ -20,9 +20,7 @@ private:
 public:
   SocketMap() {}
   SocketMap(const ConfigList &config_list);
-  ~SocketMap() {
-    // TODO: map socket delete
-  }
+  ~SocketMap();
   void                       close_timedout_socket();
   std::vector<struct pollfd> create_pollfds();
   SocketMapAction handle_socket_event(int socket_fd, short int revents);
