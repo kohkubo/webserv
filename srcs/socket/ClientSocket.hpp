@@ -1,8 +1,6 @@
 #ifndef SRCS_SOCKET_CLIENTSOCKET_HPP
 #define SRCS_SOCKET_CLIENTSOCKET_HPP
 
-#include <unistd.h>
-
 #include <ctime>
 #include <deque>
 #include <string>
@@ -37,11 +35,6 @@ public:
 
   void parse_buffer();
   bool append_receive_buffer();
-
-  void close() const {
-    LOG("close connection fd: " << _socket_fd_);
-    ::close(_socket_fd_);
-  }
 };
 
 #endif /* SRCS_SOCKET_CLIENTSOCKET_HPP */

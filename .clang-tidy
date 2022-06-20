@@ -73,5 +73,5 @@ CheckOptions:
   - key:            readability-identifier-naming.LocalVariableSuffix
     value:          ""
     # typedef
-  - key:            readability-identifier-naming.TypedefCase
-    value:          camelBack
+  # - key:            readability-identifier-naming.TypedefCase
+  #   value:          camelBack

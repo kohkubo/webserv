@@ -1,34 +1,23 @@
-#ifndef SRCS_SOCKET_SOCKETMAP_HPP
-#define SRCS_SOCKET_SOCKETMAP_HPP
+#ifndef SRCS_EVENT_SERVER_HPP
+#define SRCS_EVENT_SERVER_HPP
 
-#include <poll.h>
-
-#include "config/Config.hpp"
-#include "socket/SocketBase.hpp"
-#include "socket/SocketMapAction.hpp"
+#include "config/ConfigList.hpp"
+#include "socket/SocketMap.hpp"
 
 class Server {
 private:
-  serverList                  _server_list_;
-  std::map<int, SocketBase *> _socket_map_;
+  ConfigList _config_list_;
+  SocketMap  _socket_map_;
 
 private:
-  Server();
-  Server(const Server &other);
-  Server                     &operator=(const Server &other);
-  void                        _read_config(const char *config_file_path);
-  std::map<int, SocketBase *> _generate();
-  std::vector<struct pollfd>  _create_pollfds();
-  SocketMapAction _handle_socket_event(int socket_fd, short int revents);
-  void            _do_socket_map_action(const SocketMapAction &socket_map_op);
-  void            _close_timedout_socket();
+  Server() {}
 
 public:
-  Server(const char *config_file_path);
-  ~Server() {
-    // TODO: map socket delete
-  }
+  Server(const char *config_file_path)
+      : _config_list_(config_file_path)
+      , _socket_map_(_config_list_) {}
+  ~Server() {}
   void run_loop();
 };
 
-#endif /* SRCS_SOCKET_SOCKETMAP_HPP */
+#endif /* SRCS_EVENT_SERVER_HPP */

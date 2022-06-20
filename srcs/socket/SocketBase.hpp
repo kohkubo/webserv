@@ -3,7 +3,10 @@
 
 #include <poll.h>
 
+#include <unistd.h>
+
 #include "socket/SocketMapAction.hpp"
+#include "utils/utils.hpp"
 
 class SocketBase {
 protected:
@@ -14,7 +17,10 @@ public:
       : _socket_fd_(-1) {}
   SocketBase(int socket_fd)
       : _socket_fd_(socket_fd) {}
-  virtual ~SocketBase() {}
+  virtual ~SocketBase() {
+    LOG("close connection fd: " << _socket_fd_);
+    close(_socket_fd_);
+  }
   virtual bool            is_timed_out()                  = 0;
   virtual struct pollfd   pollfd()                        = 0;
   virtual SocketMapAction handle_event(short int revents) = 0;

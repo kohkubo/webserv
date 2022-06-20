@@ -38,7 +38,6 @@ SocketMapAction ClientSocket::handle_receive_event() {
   bool is_socket_closed_from_client = append_receive_buffer();
   if (is_socket_closed_from_client) {
     LOG("got FIN from connection");
-    close();
     return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
   }
   parse_buffer();
