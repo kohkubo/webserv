@@ -25,7 +25,7 @@ private:
 public:
   ConfigGroup() {}
   ConfigGroup(const Config config);
-  ~ConfigGroup();
+  ~ConfigGroup() {}
   bool is_same_socket(const Config &config);
   bool try_add_config(const Config config);
 };
