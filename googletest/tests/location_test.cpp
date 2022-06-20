@@ -38,7 +38,7 @@ static Location select_proper_location(const std::string           &request_uri,
     }
   }
   LOG("location is null");
-  throw RequestInfo::BadRequestException(NOT_FOUND_404);
+  throw RequestInfo::BadRequestException(HttpStatusCode::NOT_FOUND_404);
 }
 
 static std::string create_file_path(const std::string &request_target,
