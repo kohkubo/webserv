@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include "event/SocketMap.hpp"
+#include "socket/SocketMap.hpp"
 #include "socket/SocketMapAction.hpp"
 #include "utils/syscall_wrapper.hpp"
 

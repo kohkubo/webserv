@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_SOCKETMAP_HPP
-#define SRCS_EVENT_SOCKETMAP_HPP
+#ifndef SRCS_SOCKET_SOCKETMAP_HPP
+#define SRCS_SOCKET_SOCKETMAP_HPP
 
 #include <poll.h>
 
@@ -27,4 +27,4 @@ public:
   void            do_socket_map_action(const SocketMapAction &socket_map_op);
 };
 
-#endif /* SRCS_EVENT_SOCKETMAP_HPP */
+#endif /* SRCS_SOCKET_SOCKETMAP_HPP */

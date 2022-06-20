@@ -2,7 +2,7 @@
 #define SRCS_EVENT_SERVER_HPP
 
 #include "config/ConfigList.hpp"
-#include "event/SocketMap.hpp"
+#include "socket/SocketMap.hpp"
 
 class Server {
 private:
