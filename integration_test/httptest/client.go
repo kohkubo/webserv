@@ -104,11 +104,11 @@ func (c *Client) SendRequestN(n int) (err error) {
 	}
 	sendContent := c.Request[c.sendCnt:limit]
 	sendN, err := fmt.Fprintf(c.Conn, sendContent)
-	c.sendLog = append(c.sendLog, sendContent)
 	// 連続で使用された場合にリクエストが分かれるようにsleep
 	if err != nil {
 		return fmt.Errorf("sendPartialRequest: %v", err)
 	}
+	c.sendLog = append(c.sendLog, sendContent)
 	time.Sleep(1 * time.Millisecond)
 	c.sendCnt += sendN
 	return err
