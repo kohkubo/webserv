@@ -25,6 +25,8 @@ private:
 public:
   ConfigGroup() {}
   ConfigGroup(Config config);
+  ConfigGroup(const ConfigGroup &other);
+  ConfigGroup &operator=(const ConfigGroup &other);
   ~ConfigGroup() {}
   struct addrinfo *addrinfo() const;
   bool             is_same_socket(const Config &config);

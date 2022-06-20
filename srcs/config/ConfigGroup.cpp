@@ -7,6 +7,28 @@ ConfigGroup::ConfigGroup(const Config config)
   _config_group_.insert(std::make_pair(config.server_name_, ptr));
 }
 
+ConfigGroup::ConfigGroup(const ConfigGroup &other)
+    : _default_server_name_(other._default_server_name_)
+    , _config_list_(other._config_list_) {
+  std::vector<Config>::iterator it = _config_list_.begin();
+  for (; it != _config_list_.end(); it++) {
+    _config_group_.insert(std::make_pair(it->server_name_, &(*it)));
+  }
+}
+
+ConfigGroup &ConfigGroup::operator=(const ConfigGroup &other) {
+  if (this == &other) {
+    return *this;
+  }
+  _default_server_name_            = other._default_server_name_;
+  _config_list_                    = other._config_list_;
+  std::vector<Config>::iterator it = _config_list_.begin();
+  for (; it != _config_list_.end(); it++) {
+    _config_group_.insert(std::make_pair(it->server_name_, &(*it)));
+  }
+  return *this;
+}
+
 struct addrinfo *ConfigGroup::addrinfo() const {
   return _config_list_[0].addrinfo_;
 }
