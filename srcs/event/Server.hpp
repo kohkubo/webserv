@@ -25,7 +25,9 @@ private:
 
 public:
   Server(const char *config_file_path);
-  ~Server(){};
+  ~Server() {
+    // TODO: map socket delete
+  }
   void run_loop();
 };
 

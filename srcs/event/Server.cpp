@@ -106,10 +106,6 @@ std::vector<struct pollfd> Server::_create_pollfds() {
   return pollfds;
 }
 
-SocketMapOp Server::_handle_socket_event(int socket_fd, short int revents) {
-  return _socket_map_[socket_fd]->handle_event(revents);
-}
-
 void Server::_do_map_operation(const SocketMapOp &socket_map_op) {
   switch (socket_map_op.type_) {
   case INSERT:
@@ -154,7 +150,8 @@ void Server::run_loop() {
         continue;
       }
       nready--;
-      SocketMapOp socket_map_op = _handle_socket_event(it->fd, it->revents);
+      SocketMapOp socket_map_op =
+          _socket_map_[it->fd]->handle_event(it->revents);
       _do_map_operation(socket_map_op);
     }
   }
