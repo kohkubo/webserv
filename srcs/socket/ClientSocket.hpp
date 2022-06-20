@@ -6,14 +6,14 @@
 #include <string>
 #include <vector>
 
-#include "config/Config.hpp"
+#include "config/ConfigGroup.hpp"
 #include "event/Request.hpp"
 #include "event/Response.hpp"
 #include "socket/SocketBase.hpp"
 
 class ClientSocket : public SocketBase {
 private:
-  const confGroup         &_conf_group_;
+  const ConfigGroup       &_config_group_;
   Request                  _request_;
   std::deque<Response>     _response_queue_;
   std::string              _buffer_;
@@ -24,7 +24,7 @@ private:
   static std::time_t _time_now() { return std::time(NULL); }
 
 public:
-  ClientSocket(int client_fd, const confGroup &conf_group);
+  ClientSocket(int client_fd, const ConfigGroup &config_group);
   virtual ~ClientSocket() {}
   virtual struct pollfd   pollfd();
   virtual SocketMapAction handle_event(short int revents);

@@ -14,9 +14,9 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-ListenSocket::ListenSocket(const Config *config) {
-  _socket_fd_ = _open_new_socket(config->addrinfo_);
-  conf_group_.push_back(config);
+ListenSocket::ListenSocket(const ConfigGroup &config_group)
+    : config_group_(config_group) {
+  _socket_fd_ = _open_new_socket(config_group.addrinfo());
 }
 
 listenFd ListenSocket::_open_new_socket(struct addrinfo *info) {
@@ -66,7 +66,7 @@ SocketMapAction ListenSocket::handle_event(short int revents) {
   if ((revents & POLLIN) != 0) {
     connFd conn_fd = xaccept(_socket_fd_);
     LOG("add new connection fd: " << conn_fd);
-    SocketBase *client_socket = new ClientSocket(conn_fd, conf_group_);
+    SocketBase *client_socket = new ClientSocket(conn_fd, config_group_);
     return SocketMapAction(SocketMapAction::INSERT, conn_fd, client_socket);
   }
   return SocketMapAction();

@@ -3,11 +3,11 @@
 ConfigGroup::ConfigGroup(const Config config)
     : _default_server_name_(config.server_name_) {
   _config_list_.push_back(config);
-  const Config *ptr = &_config_list_.back();
+  Config *ptr = &_config_list_.back();
   _config_group_.insert(std::make_pair(config.server_name_, ptr));
 }
 
-struct addrinfo *ConfigGroup::addrinfo() {
+struct addrinfo *ConfigGroup::addrinfo() const {
   return _config_list_[0].addrinfo_;
 }
 
@@ -28,12 +28,12 @@ bool ConfigGroup::try_add_config(const Config config) {
     return false;
   }
   _config_list_.push_back(config);
-  const Config *ref = &_config_list_.back();
+  Config *ref = &_config_list_.back();
   _config_group_.insert(std::make_pair(config.server_name_, ref));
   return true;
 }
 
-const Config *ConfigGroup::select_config(const std::string &host_name) {
+Config *ConfigGroup::select_config(const std::string &host_name) const {
   bool has_server_name = static_cast<bool>(_config_group_.count(host_name));
   if (has_server_name) {
     return _config_group_.find(host_name)->second;

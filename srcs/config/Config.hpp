@@ -43,7 +43,7 @@ public:
       : listen_address_("0.0.0.0")
       , listen_port_("80")
       , client_max_body_size_(1024)
-      , server_name_("")
+      , server_name_("_")
       , addrinfo_(NULL) {
     try {
       _last_iterator_pos_ = _parse(start, end);
@@ -82,9 +82,6 @@ private:
                                                tokenIterator             end);
 };
 
-// TODO: Config ポインタ -> 実体
-// conf_group: 同じソケットのserver_confの集合
-typedef std::vector<const Config *> confGroup;
-typedef int                         listenFd;
+typedef int listenFd;
 
 #endif /* SRCS_CONFIG_CONFIG_HPP */

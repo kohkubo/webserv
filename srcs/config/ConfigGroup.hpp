@@ -18,20 +18,18 @@
 
 class ConfigGroup {
 private:
-  std::vector<Config>                   _config_list_;
-  std::map<std::string, const Config *> _config_group_;
-  std::string                           _default_server_name_;
-
-private:
-  ConfigGroup() {}
+  std::string                     _default_server_name_;
+  std::vector<Config>             _config_list_;
+  std::map<std::string, Config *> _config_group_;
 
 public:
-  ConfigGroup(const Config config);
+  ConfigGroup() {}
+  ConfigGroup(Config config);
   ~ConfigGroup() {}
-  struct addrinfo *addrinfo();
+  struct addrinfo *addrinfo() const;
   bool             is_same_socket(const Config &config);
   bool             try_add_config(const Config config);
-  const Config    *select_config(const std::string &host_name);
+  Config          *select_config(const std::string &host_name) const;
 };
 
 #endif /* SRCS_CONFIG_CONFIGGROUP_HPP */

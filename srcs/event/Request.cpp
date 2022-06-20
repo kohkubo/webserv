@@ -8,17 +8,6 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-static const Config *select_proper_config(const confGroup   &conf_group,
-                                          const std::string &host_name) {
-  confGroup::const_iterator it = conf_group.begin();
-  for (; it != conf_group.end(); it++) {
-    if ((*it)->server_name_ == host_name) {
-      return *it;
-    }
-  }
-  return conf_group[0];
-}
-
 static std::string cutout_request_body(std::string &request_buffer,
                                        size_t       content_length) {
   std::string request_body = request_buffer.substr(0, content_length);
@@ -62,8 +51,8 @@ static std::string create_file_path(const std::string &request_target,
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-RequestState Request::handle_request(std::string     &request_buffer,
-                                     const confGroup &conf_group) {
+RequestState Request::handle_request(std::string       &request_buffer,
+                                     const ConfigGroup &config_group) {
   try {
     // TODO: そもそもstartlineは最初の一行なので、ループ処理する必要がない
     // kohkubo
@@ -90,7 +79,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
           // throws BadRequestException
           // TODO: 例外の処理を整理したあと、1関数に切り出し予定です。 kohkubo
           _request_info_.config_ =
-              *select_proper_config(conf_group, _request_info_.host_);
+              *config_group.select_config(_request_info_.host_);
           _request_info_.location_ =
               select_proper_location(_request_info_.request_target_,
                                      _request_info_.config_.locations_);
