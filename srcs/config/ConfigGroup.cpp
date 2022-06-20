@@ -7,6 +7,10 @@ ConfigGroup::ConfigGroup(const Config config)
   _config_group_.insert(std::make_pair(config.server_name_, ptr));
 }
 
+struct addrinfo *ConfigGroup::addrinfo() {
+  return _config_list_[0].addrinfo_;
+}
+
 bool ConfigGroup::is_same_socket(const Config &config) {
   struct sockaddr_in *x = NULL;
   struct sockaddr_in *y = NULL;

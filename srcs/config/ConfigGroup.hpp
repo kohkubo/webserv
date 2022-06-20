@@ -22,13 +22,16 @@ private:
   std::map<std::string, const Config *> _config_group_;
   std::string                           _default_server_name_;
 
-public:
+private:
   ConfigGroup() {}
+
+public:
   ConfigGroup(const Config config);
   ~ConfigGroup() {}
-  bool          is_same_socket(const Config &config);
-  bool          try_add_config(const Config config);
-  const Config *select_config(const std::string &host_name);
+  struct addrinfo *addrinfo();
+  bool             is_same_socket(const Config &config);
+  bool             try_add_config(const Config config);
+  const Config    *select_config(const std::string &host_name);
 };
 
 #endif /* SRCS_CONFIG_CONFIGGROUP_HPP */
