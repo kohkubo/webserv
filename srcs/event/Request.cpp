@@ -26,30 +26,6 @@ static std::string cutout_request_body(std::string &request_buffer,
   return request_body;
 }
 
-// 最長マッチ
-// TODO: pairでの実装の方がいいのか、意見聞きたいです。 kohkubo
-// TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
-static Location select_proper_location(const std::string           &request_uri,
-                                       const std::vector<Location> &locations) {
-  const Location *location = NULL;
-  std::string     path;
-
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); ++it) {
-    if (request_uri.find(it->location_path_) == 0) {
-      if (path.size() < it->location_path_.size()) {
-        path     = it->location_path_;
-        location = &(*it);
-      }
-    }
-  }
-  if (location == NULL) {
-    LOG("no match found with locations.");
-    throw RequestInfo::BadRequestException(HttpStatusCode::NOT_FOUND_404);
-  }
-  return *location;
-}
-
 static std::string create_file_path(const std::string &request_target,
                                     const Location    &location) {
   std::string file_path = location.root_ + request_target;
@@ -91,9 +67,14 @@ RequestState Request::handle_request(std::string     &request_buffer,
           // TODO: 例外の処理を整理したあと、1関数に切り出し予定です。 kohkubo
           _request_info_.config_ =
               *select_proper_config(conf_group, _request_info_.host_);
-          _request_info_.location_ =
-              select_proper_location(_request_info_.request_target_,
-                                     _request_info_.config_.locations_);
+          const Location *location =
+              _request_info_.config_.locations_.select_location(
+                  _request_info_.request_target_);
+          if (location == NULL) {
+            throw RequestInfo::BadRequestException(
+                HttpStatusCode::NOT_FOUND_404);
+          }
+          _request_info_.location_  = *location;
           _request_info_.file_path_ = create_file_path(
               _request_info_.request_target_, _request_info_.location_);
           // TODO: validate request_header

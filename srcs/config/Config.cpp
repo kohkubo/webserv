@@ -65,7 +65,7 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
-  if (locations_.size() == 0)
+  if (locations_.empty())
     throw UnexpectedTokenException("could not detect location directive.");
   return ++pos;
 }
@@ -89,40 +89,28 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   return pos + 2;
 }
 
-static bool
-is_location_path_duplication(const std::string           &location_path,
-                             const std::vector<Location> &locations) {
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); it++) {
-    if (it->location_path_ == location_path) {
-      return true;
-    }
-  }
-  return false;
-}
-
 tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
-  Location location;
-  location.limit_except_.clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
+  Location *location = new Location();
+  location->limit_except_.clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
   pos++;
   if (pos == end)
     throw UnexpectedTokenException("could not detect directive value.");
-  location.location_path_ = *pos++;
+  location->location_path_ = *pos++;
   if (pos == end || *pos != "{")
     throw UnexpectedTokenException("could not detect context.");
   pos++;
   while (pos != end && *pos != "}") {
     tokenIterator head = pos;
     // clang-format off
-    pos = _parse_string_directive("root", location.root_, pos, end);
-    pos = _parse_string_directive("index", location.index_, pos, end);
-    pos = _parse_bool_directive("autoindex", location.autoindex_, pos, end);
-    pos = _parse_map_directive("return", location.return_map_, pos, end);
-    pos = _parse_vector_directive("limit_except", location.limit_except_, pos, end);
-    pos = _parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
-    pos = _parse_bool_directive("upload_file", location.upload_file_, pos, end);
+    pos = _parse_string_directive("root", location->root_, pos, end);
+    pos = _parse_string_directive("index", location->index_, pos, end);
+    pos = _parse_bool_directive("autoindex", location->autoindex_, pos, end);
+    pos = _parse_map_directive("return", location->return_map_, pos, end);
+    pos = _parse_vector_directive("limit_except", location->limit_except_, pos, end);
+    pos = _parse_bool_directive("cgi_extension", location->cgi_extension_, pos, end);
+    pos = _parse_bool_directive("upload_file", location->upload_file_, pos, end);
     // clang-format on
     if (pos == head) {
       throw UnexpectedTokenException("parse location directive failed.");
@@ -131,23 +119,23 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
   // TODO: 雑だけど他に思いつかない。案ほしい。
-  if (location.limit_except_.size() == 0) {
-    location.limit_except_.push_back("GET");
-    location.limit_except_.push_back("POST");
-    location.limit_except_.push_back("DELETE");
+  if (location->limit_except_.size() == 0) {
+    location->limit_except_.push_back("GET");
+    location->limit_except_.push_back("POST");
+    location->limit_except_.push_back("DELETE");
   }
-  if (has_suffix(location.index_, "/"))
+  if (has_suffix(location->index_, "/"))
     throw UnexpectedTokenException(
         "index directive failed. don't add \"/\" to file path.");
-  if (!has_suffix(location.root_, "/"))
+  if (!has_suffix(location->root_, "/"))
     throw UnexpectedTokenException(
         "root directive failed. please add \"/\" to end of root dir");
-  if (is_location_path_duplication(location.location_path_, locations_))
-    throw UnexpectedTokenException("location path duplication.");
-  if (is_minus_depth(location.location_path_) ||
-      is_minus_depth(location.root_) || is_minus_depth(location.index_))
+  if (is_minus_depth(location->location_path_) ||
+      is_minus_depth(location->root_) || is_minus_depth(location->index_))
     throw UnexpectedTokenException("minus depth path failed.");
-  locations_.push_back(location);
+  if (!locations_.add_or_else(location)) {
+    throw UnexpectedTokenException("duplicate location directive.");
+  }
   return ++pos;
 }
 
