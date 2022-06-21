@@ -22,7 +22,7 @@ void Server::run_loop() {
       }
       nready--;
       SocketMapAction socket_map_action =
-          _socket_map_[it->fd]->handle_event(it->revents);
+          _socket_map_.handle_socket_event(it->fd, it->revents);
       _socket_map_.do_socket_map_action(socket_map_action);
     }
   }

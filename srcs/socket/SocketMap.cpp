@@ -91,6 +91,11 @@ std::vector<struct pollfd> SocketMap::create_pollfds() {
   return pollfds;
 }
 
+SocketMapAction SocketMap::handle_socket_event(int       socket_fd,
+                                               short int revents) {
+  return _socket_map_[socket_fd]->handle_event(revents);
+}
+
 void SocketMap::do_socket_map_action(const SocketMapAction &socket_map_action) {
   switch (socket_map_action.type_) {
   case SocketMapAction::INSERT:
