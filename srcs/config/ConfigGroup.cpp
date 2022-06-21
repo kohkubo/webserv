@@ -18,15 +18,14 @@ bool ConfigGroup::is_same_socket(const Config &config) {
          (x->sin_port == y->sin_port);
 }
 
-bool ConfigGroup::try_add_config(const Config config) {
+void ConfigGroup::try_add_config(const Config config) {
   bool has_server_name =
       static_cast<bool>(_config_group_.count(config.server_name_));
   if (has_server_name) {
     LOG("server_name conflicts.");
-    return false;
+    return;
   }
   _config_group_.insert(std::make_pair(config.server_name_, config));
-  return true;
 }
 
 Config ConfigGroup::select_config(const std::string &host_name) const {
