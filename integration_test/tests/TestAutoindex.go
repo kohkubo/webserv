@@ -10,24 +10,29 @@ import (
 
 var content_dir1 = "in dir1"
 
+func mkdirExitIfError(name string) {
+	if err := os.MkdirAll(name, 0750); err != nil {
+		webserv.ExitWithKill(err)
+	}
+}
+
+func writeFileExitIfError(name string, data string) {
+	if err := os.WriteFile(name, []byte(data), 0750); err != nil {
+		webserv.ExitWithKill(err)
+	}
+}
+
 func makeTestPath() func() {
 	testRoot := "tmp/"
 	testDir := testRoot + "autoindex/"
 	dir1 := testDir + "dir1/"
 	dir2 := testDir + "dir2/"
-	file1 := dir1 + "index.html"
-	if err := os.MkdirAll(dir1, 0750); err != nil {
-		webserv.ExitWithKill(err)
-	}
-	if err := os.MkdirAll(dir2, 0750); err != nil {
-		webserv.ExitWithKill(err)
-	}
-	if f, err := os.Create(file1); err != nil {
-		webserv.ExitWithKill(err)
-	} else {
-		defer f.Close()
-		f.WriteString(content_dir1)
-	}
+	mkdirExitIfError(dir1)
+	mkdirExitIfError(dir2)
+	writeFileExitIfError(dir1+"index.html", content_dir1)
+	mkdirExitIfError(testDir + "a_dummy_dir/")
+	writeFileExitIfError(testDir+"a_dummy_file", "")
+	writeFileExitIfError(testDir+"dummy_file", "")
 	return func() { os.RemoveAll(testRoot) }
 }
 
@@ -52,8 +57,11 @@ var testAutoindex = testCatergory{
 						"      <h1>Index of /autoindex/</h1>\n" +
 						"      <ul style=\"list-style:none\">\n" +
 						"        <li><a href=\"../\">../ </a></li>\n" +
+						"        <li><a href=\"a_dummy_dir/\">a_dummy_dir/ </a></li>\n" +
 						"        <li><a href=\"dir1/\">dir1/ </a></li>\n" +
 						"        <li><a href=\"dir2/\">dir2/ </a></li>\n" +
+						"        <li><a href=\"a_dummy_file\">a_dummy_file </a></li>\n" +
+						"        <li><a href=\"dummy_file\">dummy_file </a></li>\n" +
 						"    </ul>\n" +
 						"   </body>\n" +
 						"</html>")
