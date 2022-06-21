@@ -20,10 +20,10 @@ static const char *resolve_config_file(int argc, char **argv) {
 
 int main(int argc, char **argv) {
   const char              *config_file_path = resolve_config_file(argc, argv);
-  std::vector<ConfigGroup> config_group =
+  std::vector<ConfigGroup> config_group_list =
       generate_config_group(config_file_path);
 
-  Server server(config_group);
+  Server server(config_group_list);
   server.run_loop();
   return (0);
 }
