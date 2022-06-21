@@ -30,7 +30,8 @@ bool ConfigGroup::try_add_config(const Config config) {
 }
 
 Config ConfigGroup::select_config(const std::string &host_name) const {
-  container_type::const_iterator proper_conf = _config_group_.find(host_name);
+  std::map<std::string, Config>::const_iterator proper_conf =
+      _config_group_.find(host_name);
   if (proper_conf != _config_group_.end()) {
     return proper_conf->second;
   }

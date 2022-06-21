@@ -14,14 +14,12 @@
 /*
   同じソケットを使うconfigのリスト
   Config自体はvectorで保存、server_nameをkeyにしたmapを持つ。
- */
+*/
 
 class ConfigGroup {
 private:
-  typedef std::map<std::string, Config> container_type;
-
-  std::string    _default_server_name_;
-  container_type _config_group_;
+  std::string                   _default_server_name_;
+  std::map<std::string, Config> _config_group_;
 
 private:
   ConfigGroup() {}
