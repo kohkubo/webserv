@@ -22,8 +22,8 @@ struct AutoindexCategory {
   nameVector                file_names_;
 };
 
-// TODO: DT_DIR系のマクロが定義されてない場合を考慮すべきかわからない
-// TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外はどうするか
+// TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外は無視している
+//       検証方法を調べらてない+そもそも考えなくて良いと思っている rakiyama
 static AutoindexCategory
 read_dir_to_autoindex_category(const std::string &path) {
   AutoindexCategory autoindex_category;
@@ -44,10 +44,7 @@ read_dir_to_autoindex_category(const std::string &path) {
   return autoindex_category;
 }
 
-static std::string one_line(std::string name) {
-  if (name == "") {
-    return "";
-  }
+static std::string one_dir_list_line(std::string name) {
   return "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
 }
 
@@ -56,7 +53,7 @@ static std::string read_vector_to_lines(AutoindexCategory::nameVector &names) {
   std::sort(names.begin(), names.end());
   AutoindexCategory::nameVector::const_iterator it = names.begin();
   for (; it != names.end(); it++) {
-    res += one_line(*it);
+    res += one_dir_list_line(*it);
   }
   return res;
 }
@@ -64,7 +61,7 @@ static std::string read_vector_to_lines(AutoindexCategory::nameVector &names) {
 static std::string dir_list_lines(const std::string &path) {
   AutoindexCategory autoindex_category = read_dir_to_autoindex_category(path);
   std::string       lines;
-  lines += one_line(autoindex_category.updir_name_);
+  lines += one_dir_list_line(autoindex_category.updir_name_);
   lines += read_vector_to_lines(autoindex_category.dir_names_);
   lines += read_vector_to_lines(autoindex_category.file_names_);
   return lines;
