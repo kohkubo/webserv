@@ -1,5 +1,7 @@
 #include "config/Locations.hpp"
 
+#include <string>
+
 bool Locations::add_or_else(const Location *location) {
   std::vector<const Location *>::const_iterator it =
       std::find(_location_vector_.begin(), _location_vector_.end(), location);
