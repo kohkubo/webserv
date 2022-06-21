@@ -37,9 +37,9 @@ TEST(request_chunked_test, chunked_body) {
   const RequestInfo &info = request.request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  // clang-format off
-  EXPECT_EQ(info.body_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello world\ntest");
-  // clang-format on
+  EXPECT_EQ(info.body_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+                        "Networkhello world\ntest");
+  delete location;
 }
 
 TEST(request_chunked_test, chunked_body_split) {
@@ -83,4 +83,5 @@ TEST(request_chunked_test, chunked_body_split) {
   EXPECT_EQ(info.body_,
             "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello "
             "world\ntest");
+  delete location;
 }
