@@ -10,10 +10,9 @@ struct addrinfo *ConfigGroup::addrinfo() const {
 }
 
 bool ConfigGroup::is_same_socket(const Config &config) {
-  struct sockaddr_in *x = NULL;
-  struct sockaddr_in *y = NULL;
-  x = reinterpret_cast<sockaddr_in *>(config.addrinfo_->ai_addr);
-  y = reinterpret_cast<sockaddr_in *>(
+  struct sockaddr_in *x =
+      reinterpret_cast<sockaddr_in *>(config.addrinfo_->ai_addr);
+  struct sockaddr_in *y = reinterpret_cast<sockaddr_in *>(
       _config_group_.begin()->second.addrinfo_->ai_addr);
   return (x->sin_addr.s_addr == y->sin_addr.s_addr) &&
          (x->sin_port == y->sin_port);

@@ -21,8 +21,6 @@ enum RequestState {
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
-// TODO: string -> vector<char>
-
 struct Request {
 private:
   RequestState                       _state_;

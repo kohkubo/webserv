@@ -30,7 +30,6 @@ public:
   errorPageMap          error_pages_;
   std::vector<Location> locations_;
 
-  // error_page;
 public:
   class UnexpectedTokenException : public std::logic_error {
   public:

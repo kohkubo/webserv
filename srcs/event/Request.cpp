@@ -17,7 +17,6 @@ static std::string cutout_request_body(std::string &request_buffer,
 
 // 最長マッチ
 // TODO: pairでの実装の方がいいのか、意見聞きたいです。 kohkubo
-// TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
 static Location select_proper_location(const std::string           &request_uri,
                                        const std::vector<Location> &locations) {
   const Location *location = NULL;
