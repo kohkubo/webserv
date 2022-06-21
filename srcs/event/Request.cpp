@@ -51,13 +51,16 @@ static Location select_proper_location(const std::string           &request_uri,
 }
 
 static std::string create_file_path(const std::string &request_target,
+                                    const std::string &request_method,
                                     const Location    &location) {
   std::string file_path = location.root_ + request_target;
-  LOG("create_file_path: " << file_path);
-  if (has_suffix(file_path, "/") &&
-      is_file_exists(file_path + location.index_)) {
-    file_path += location.index_;
+  if (request_method == "GET") {
+    if (has_suffix(file_path, "/") &&
+        is_file_exists(file_path + location.index_)) {
+      file_path += location.index_;
+    }
   }
+  LOG("create_file_path: " << file_path);
   return file_path;
 }
 
@@ -95,7 +98,8 @@ RequestState Request::handle_request(std::string     &request_buffer,
               select_proper_location(_request_info_.request_target_,
                                      _request_info_.config_.locations_);
           _request_info_.file_path_ = create_file_path(
-              _request_info_.request_target_, _request_info_.location_);
+              _request_info_.request_target_, _request_info_.method_,
+              _request_info_.location_);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
