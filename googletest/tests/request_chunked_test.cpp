@@ -23,11 +23,11 @@ TEST(request_chunked_test, chunked_body) {
                                "0\r\n"
                                "\r\n";
 
-  Config      config;
-  Location    location;
-  location.root_ = "/";
-  location.location_path_ = "/";
-  config.locations_.push_back(location);
+  Config    config;
+  Location *location       = new Location();
+  location->root_          = "/";
+  location->location_path_ = "/";
+  config.locations_.add_or_else(location);
 
   confGroup conf_group;
   conf_group.push_back(&config);
@@ -61,11 +61,11 @@ TEST(request_chunked_test, chunked_body_split) {
                                 "0\r\n"
                                 "\r\n";
 
-  Config      config;
-  Location    location;
-  location.root_ = "/";
-  location.location_path_ = "/";
-  config.locations_.push_back(location);
+  Config    config;
+  Location *location       = new Location();
+  location->root_          = "/";
+  location->location_path_ = "/";
+  config.locations_.add_or_else(location);
   confGroup conf_group;
   conf_group.push_back(&config);
   Request     request;
