@@ -26,7 +26,6 @@ public:
   };
   typedef std::map<std::string, Form> formMap;
 
-  bool        is_blank_first_line_;
   std::string method_;
   std::string request_target_;
   std::string query_string_;
@@ -53,8 +52,7 @@ private:
 
 public:
   RequestInfo()
-      : is_blank_first_line_(false)
-      , method_("")
+      : method_("")
       , connection_close_(false)
       , is_chunked_(false)
       , content_length_(0) {}

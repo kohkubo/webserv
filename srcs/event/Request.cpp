@@ -17,11 +17,11 @@ static std::string cutout_request_body(std::string &request_buffer,
 
 RequestState Request::_handle_request_startline(std::string &request_buffer) {
   std::string line;
-  while (getline(request_buffer, line)) {
-    _request_info_.check_first_multi_blank_line(line);
-    // throws BadRequestException
-    if (_request_info_.is_blank_first_line_) {
-      continue;
+  if (getline(request_buffer, line)) {
+    if (!_is_blank_first_line_ && line == "") {
+      _is_blank_first_line_ = true;
+    } else if (_is_blank_first_line_ && line == "") {
+      return ERROR;
     }
     RequestInfo::check_bad_parse_request_start_line(line);
     // throws BadRequestException
@@ -99,6 +99,9 @@ RequestState Request::handle_request(std::string     &request_buffer,
     }
     if (_state_ == SUCCESS) {
       _response_ = ResponseGenerator::generate_response(_request_info_);
+    }
+    if (_state_ == ERROR) {
+      throw RequestInfo::BadRequestException();
     }
   } catch (const RequestInfo::BadRequestException &e) {
     _response_ =

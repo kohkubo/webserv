@@ -17,6 +17,7 @@ enum RequestState {
   RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
   RECEIVING_BODY,      // リクエストはbodyを読み取り中。
   SUCCESS,             // リクエストのパース完了。
+  ERROR,               // リクエストのパースエラー。
 };
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
@@ -25,6 +26,7 @@ enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
 struct Request {
 private:
+  bool                               _is_blank_first_line_;
   RequestState                       _state_;
   RequestInfo                        _request_info_;
   std::string                        _response_;
