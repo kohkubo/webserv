@@ -10,6 +10,7 @@
 #include "event/Request.hpp"
 #include "event/Response.hpp"
 #include "socket/SocketBase.hpp"
+#include "socket/Timeout.hpp"
 
 class ClientSocket : public SocketBase {
 private:
@@ -17,11 +18,8 @@ private:
   Request                  _request_;
   std::deque<Response>     _response_queue_;
   std::string              _buffer_;
-  std::time_t              _last_event_time_;
+  Timeout                  _timeout_;
   static const std::time_t TIMEOUT_SECONDS_ = 60;
-
-private:
-  static std::time_t _time_now() { return std::time(NULL); }
 
 public:
   ClientSocket(int client_fd, const ConfigGroup &config_group);
