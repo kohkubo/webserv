@@ -23,10 +23,10 @@ RequestState Request::_handle_request_startline(std::string &request_buffer) {
     } else if (_is_blank_first_line_ && line == "") {
       return ERROR;
     }
-    RequestInfo::check_bad_parse_request_start_line(line);
-    // throws BadRequestException
-    _request_info_.parse_request_start_line(line); // noexcept
-    return RECEIVING_HEADER;
+    if (getline(request_buffer, line)) {
+      _request_info_.parse_request_start_line(line);
+      return RECEIVING_HEADER;
+    }
   }
   return _state_;
 }

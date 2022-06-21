@@ -11,7 +11,10 @@
 void RequestInfo::parse_request_start_line(const std::string &request_line) {
   std::size_t first_sp = request_line.find_first_of(' ');
   std::size_t last_sp  = request_line.find_last_of(' ');
-  method_              = request_line.substr(0, first_sp);
+  if (first_sp == std::string::npos || first_sp == last_sp) {
+    throw BadRequestException();
+  }
+  method_         = request_line.substr(0, first_sp);
   request_target_ = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
   std::size_t query_pos = request_target_.find('?');
   if (query_pos != std::string::npos) {
