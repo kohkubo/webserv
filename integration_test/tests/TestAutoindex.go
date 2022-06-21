@@ -3,8 +3,33 @@ package tests
 import (
 	"integration_test/httpresp"
 	"integration_test/httptest"
+	"integration_test/webserv"
 	"net/http"
+	"os"
 )
+
+var content_dir1 = "in dir1"
+
+func makeTestPath() func() {
+	testRoot := "tmp/"
+	testDir := testRoot + "autoindex/"
+	dir1 := testDir + "dir1/"
+	dir2 := testDir + "dir2/"
+	file1 := dir1 + "index.html"
+	if err := os.MkdirAll(dir1, 0750); err != nil {
+		webserv.ExitWithKill(err)
+	}
+	if err := os.MkdirAll(dir2, 0750); err != nil {
+		webserv.ExitWithKill(err)
+	}
+	if f, err := os.Create(file1); err != nil {
+		webserv.ExitWithKill(err)
+	} else {
+		defer f.Close()
+		f.WriteString(content_dir1)
+	}
+	return func() { os.RemoveAll(testRoot) }
+}
 
 // TODO: autoindex
 var testAutoindex = testCatergory{
@@ -15,31 +40,6 @@ var testAutoindex = testCatergory{
 		//	// ソートして再挑戦
 		//	caseName: "simple",
 		//	test: func() bool {
-		//		dirPath := "tmp/autoindex/"
-		//		dirPath1 := dirPath + "dir1/"
-		//		dirPath2 := dirPath + "dir2/"
-		//		filePath := dirPath + "test.html"
-		//		filePath1 := dirPath1 + "index.html"
-		//		filePath2 := dirPath2 + "test.html"
-		//		if err := os.MkdirAll(filepath.Dir(dirPath), 0750); err != nil {
-		//			webserv.ExitWithKill(err)
-		//		}
-		//		if err := os.MkdirAll(filepath.Dir(dirPath1), 0750); err != nil {
-		//			webserv.ExitWithKill(err)
-		//		}
-		//		if err := os.MkdirAll(filepath.Dir(dirPath2), 0750); err != nil {
-		//			webserv.ExitWithKill(err)
-		//		}
-		//		if _, err := os.Create(filePath); err != nil {
-		//			webserv.ExitWithKill(err)
-		//		}
-		//		if _, err := os.Create(filePath1); err != nil {
-		//			webserv.ExitWithKill(err)
-		//		}
-		//		if _, err := os.Create(filePath2); err != nil {
-		//			webserv.ExitWithKill(err)
-		//		}
-		//		defer os.RemoveAll("tmp/")
 		//		port := "50001"
 		//		expectStatusCode := 200
 		//		expectBody := []byte(
@@ -78,6 +78,7 @@ var testAutoindex = testCatergory{
 		{
 			caseName: "forbidden",
 			test: func() bool {
+				defer makeTestPath()()
 				port := "50001"
 				expectStatusCode := 403
 				expectBody := httpresp.ErrorBody(403)
@@ -103,9 +104,10 @@ var testAutoindex = testCatergory{
 		{
 			caseName: "index_priority",
 			test: func() bool {
+				defer makeTestPath()()
 				port := "50001"
 				expectStatusCode := 200
-				expectBody := []byte("in test_autoindex/dir1")
+				expectBody := []byte(content_dir1)
 
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
