@@ -4,8 +4,8 @@
 #include <string>
 
 bool Locations::add_or_else(const Location &location) {
-  std::string location_path = location.location_path_;
-  std::vector<Location>::iterator it = _location_vector_.begin();
+  std::string                     location_path = location.location_path_;
+  std::vector<Location>::iterator it            = _location_vector_.begin();
   for (; it != _location_vector_.end(); ++it) {
     if (it->location_path_ == location_path) {
       return false;
