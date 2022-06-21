@@ -37,6 +37,21 @@ static std::string create_file_path(const std::string &request_target,
   return file_path;
 }
 
+RequestState Request::_handle_request_body(std::string &request_buffer) {
+  if (_request_info_.is_chunked_) {
+    _state_ = _chunk_loop(request_buffer);
+  } else if (request_buffer.size() >= _request_info_.content_length_) {
+    _request_body_ =
+        cutout_request_body(request_buffer, _request_info_.content_length_);
+    _state_ = SUCCESS;
+  }
+  if (_state_ == SUCCESS) {
+    _request_info_.parse_request_body(_request_body_,
+                                      _request_info_.content_type_);
+  }
+  return _state_;
+}
+
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState Request::handle_request(std::string     &request_buffer,
                                      const confGroup &conf_group) {
@@ -94,22 +109,7 @@ RequestState Request::handle_request(std::string     &request_buffer,
       }
     }
     if (_state_ == RECEIVING_BODY) {
-      if (_request_info_.is_chunked_) {
-        _state_ = _chunk_loop(request_buffer);
-        // throws BadRequestException
-        _check_max_client_body_size_exception(
-            _request_body_.size(),
-            _request_info_.config_.client_max_body_size_);
-        // throws BadRequestException
-      } else if (request_buffer.size() >= _request_info_.content_length_) {
-        _request_body_ =
-            cutout_request_body(request_buffer, _request_info_.content_length_);
-        _state_ = SUCCESS;
-      }
-      if (_state_ == SUCCESS) {
-        _request_info_.parse_request_body(_request_body_,
-                                          _request_info_.content_type_);
-      }
+      _state_ = _handle_request_body(request_buffer);
     }
     if (_state_ == SUCCESS) {
       _response_ = ResponseGenerator::generate_response(_request_info_);
