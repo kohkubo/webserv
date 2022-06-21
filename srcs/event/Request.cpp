@@ -15,6 +15,22 @@ static std::string cutout_request_body(std::string &request_buffer,
   return request_body;
 }
 
+RequestState Request::_handle_request_startline(std::string &request_buffer) {
+  std::string line;
+  while (getline(request_buffer, line)) {
+    _request_info_.check_first_multi_blank_line(line);
+    // throws BadRequestException
+    if (_request_info_.is_blank_first_line_) {
+      continue;
+    }
+    RequestInfo::check_bad_parse_request_start_line(line);
+    // throws BadRequestException
+    _request_info_.parse_request_start_line(line); // noexcept
+    return RECEIVING_HEADER;
+  }
+  return _state_;
+}
+
 RequestState Request::_handle_request_body(std::string &request_buffer) {
   if (_request_info_.is_chunked_) {
     _state_ = _chunk_loop(request_buffer);
@@ -40,20 +56,13 @@ RequestState Request::handle_request(std::string     &request_buffer,
   try {
     // TODO: そもそもstartlineは最初の一行なので、ループ処理する必要がない
     // kohkubo
-    if (_state_ == RECEIVING_STARTLINE || _state_ == RECEIVING_HEADER) {
+    if (_state_ == RECEIVING_STARTLINE) {
+      _state_ = _handle_request_startline(request_buffer);
+    }
+    if (_state_ == RECEIVING_HEADER) {
       std::string line;
       while (getline(request_buffer, line)) { // noexcept
-        if (_state_ == RECEIVING_STARTLINE) {
-          _request_info_.check_first_multi_blank_line(line);
-          // throws BadRequestException
-          if (_request_info_.is_blank_first_line_) {
-            continue;
-          }
-          RequestInfo::check_bad_parse_request_start_line(line);
-          // throws BadRequestException
-          _request_info_.parse_request_start_line(line); // noexcept
-          _state_ = RECEIVING_HEADER;
-        } else if (_state_ == RECEIVING_HEADER) {
+        if (_state_ == RECEIVING_HEADER) {
           if (line != "") {
             RequestInfo::store_request_header_field_map(line, _field_map_);
             // throws BadRequestException
