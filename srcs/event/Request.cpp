@@ -31,6 +31,35 @@ RequestState Request::_handle_request_startline(std::string &request_buffer) {
   return _state_;
 }
 
+RequestState Request::_handle_request_header(std::string &request_buffer) {
+  std::string line;
+  while (getline(request_buffer, line)) { // noexcept
+    if (_state_ == RECEIVING_HEADER) {
+      if (line != "") {
+        RequestInfo::store_request_header_field_map(line, _field_map_);
+        // throws BadRequestException
+        continue;
+      }
+      _request_info_.parse_request_header(_field_map_);
+      // throws BadRequestException
+      // TODO: validate request_header
+      // delete with body
+      // has transfer-encoding but last elm is not chunked
+      // content-length and transfer-encoding -> delete content-length
+      _check_max_client_body_size_exception(
+          _request_info_.content_length_,
+          _request_info_.config_.client_max_body_size_);
+      if (_request_info_.has_body()) {
+        _state_ = RECEIVING_BODY;
+        break;
+      }
+      _state_ = SUCCESS;
+      break;
+    }
+  }
+  return _state_;
+}
+
 RequestState Request::_handle_request_body(std::string &request_buffer) {
   if (_request_info_.is_chunked_) {
     _state_ = _chunk_loop(request_buffer);
@@ -58,42 +87,18 @@ RequestState Request::handle_request(std::string     &request_buffer,
     // kohkubo
     if (_state_ == RECEIVING_STARTLINE) {
       _state_ = _handle_request_startline(request_buffer);
+      _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     }
     if (_state_ == RECEIVING_HEADER) {
-      std::string line;
-      while (getline(request_buffer, line)) { // noexcept
-        if (_state_ == RECEIVING_HEADER) {
-          if (line != "") {
-            RequestInfo::store_request_header_field_map(line, _field_map_);
-            // throws BadRequestException
-            continue;
-          }
-          _request_info_.parse_request_header(_field_map_);
-          // throws BadRequestException
-          _tmp(conf_group);
-          // TODO: validate request_header
-          // delete with body
-          // has transfer-encoding but last elm is not chunked
-          // content-length and transfer-encoding -> delete content-length
-          _check_max_client_body_size_exception(
-              _request_info_.content_length_,
-              _request_info_.config_.client_max_body_size_);
-          if (_request_info_.has_body()) {
-            _state_ = RECEIVING_BODY;
-            break;
-          }
-          _state_ = SUCCESS;
-          break;
-        }
-      }
+      _state_ = _handle_request_header(request_buffer);
+      _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+      _tmp(conf_group);
     }
     if (_state_ == RECEIVING_BODY) {
       _state_ = _handle_request_body(request_buffer);
     }
     if (_state_ == SUCCESS) {
       _response_ = ResponseGenerator::generate_response(_request_info_);
-    } else if (_state_ == RECEIVING_STARTLINE || _state_ == RECEIVING_HEADER) {
-      _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
     _response_ =
