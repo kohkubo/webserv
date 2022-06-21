@@ -98,7 +98,7 @@ static std::string error_page_body(const RequestInfo         &request_info,
 }
 
 std::string ResponseGenerator::_body(const RequestInfo &request_info) {
-  if (has_suffix(request_info.file_path_, ".py")) {
+  if (has_suffix(request_info.target_path_, ".py")) {
     Result result = _read_file_to_str_cgi(request_info);
     if (result.is_err_) {
       return error_page_body(request_info,
@@ -106,10 +106,10 @@ std::string ResponseGenerator::_body(const RequestInfo &request_info) {
     }
     return result.str_;
   }
-  if (has_suffix(request_info.file_path_, "/")) {
+  if (has_suffix(request_info.target_path_, "/")) {
     return _create_autoindex_body(request_info);
   }
-  Result result = read_file_to_str(request_info.file_path_);
+  Result result = read_file_to_str(request_info.target_path_);
   if (result.is_err_) {
     return error_page_body(request_info,
                            HttpStatusCode::INTERNAL_SERVER_ERROR_500);

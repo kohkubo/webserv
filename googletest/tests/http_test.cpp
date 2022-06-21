@@ -21,7 +21,7 @@ TEST(http_test, create_response_info_get_403) {
   RequestInfo request_info;
   request_info.config_   = config;
   request_info.location_ = config.locations_[0];
-  request_info.file_path_ =
+  request_info.target_path_ =
       config.locations_[0].root_ + request_info.request_target_;
   request_info.method_           = "GET";
   request_info.request_target_   = "/000.html";
@@ -63,11 +63,11 @@ TEST(http_test, create_response_info_get_403_config_error_pages) {
   config.locations_[0].index_         = "index.html";
   config.error_pages_[403]            = "forbidden.html";
   RequestInfo request_info;
-  request_info.config_           = config;
-  request_info.location_         = config.locations_[0];
-  request_info.method_           = "GET";
-  request_info.request_target_   = "/000.html";
-  request_info.file_path_        =
+  request_info.config_         = config;
+  request_info.location_       = config.locations_[0];
+  request_info.method_         = "GET";
+  request_info.request_target_ = "/000.html";
+  request_info.target_path_ =
       config.locations_[0].root_ + request_info.request_target_;
   request_info.version_          = "HTTP/1.1";
   request_info.host_             = "localhost";
@@ -106,7 +106,7 @@ TEST(http_test, create_response_info_delete_normal) {
   config.locations_[0].index_         = "index.html";
   request_info.config_                = config;
   request_info.location_              = config.locations_[0];
-  request_info.file_path_ =
+  request_info.target_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
   system("touch html/delete_target.html");
@@ -128,7 +128,7 @@ TEST(http_test, create_response_info_delete_404) {
   config.locations_[0].index_         = "index.html";
   request_info.config_                = config;
   request_info.location_              = config.locations_[0];
-  request_info.file_path_ =
+  request_info.target_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
   std::string expected_string = "\
@@ -166,7 +166,7 @@ TEST(http_test, create_response_info_delete_403) {
   config.locations_[0].index_         = "index.html";
   request_info.config_                = config;
   request_info.location_              = config.locations_[0];
-  request_info.file_path_ =
+  request_info.target_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
   std::string expected_response = "\
@@ -209,7 +209,7 @@ TEST(http_test, create_response_info_delete_400) {
   config.locations_[0].index_         = "index.html";
   request_info.config_                = config;
   request_info.location_              = config.locations_[0];
-  request_info.file_path_ =
+  request_info.target_path_ =
       config.locations_[0].root_ + request_info.request_target_;
 
   std::string expected_response = "\
