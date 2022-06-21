@@ -4,38 +4,23 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <cstdlib>
-#include <iostream>
-#include <string>
-
-#include "config/Config.hpp"
-#include "socket/ClientSocket.hpp"
+#include "config/ConfigGroup.hpp"
 #include "socket/ListenSocket.hpp"
-#include "utils/file_io_utils.hpp"
 
-#include "utils/tokenize.hpp"
-#include "utils/utils.hpp"
-
-SocketMap::SocketMap(const std::vector<ConfigGroup> &config_group_list)
-    : _socket_map_(_generate(config_group_list)) {}
+SocketMap::SocketMap(const std::vector<ConfigGroup> &config_group_list) {
+  std::vector<ConfigGroup>::const_iterator it = config_group_list.begin();
+  for (; it != config_group_list.end(); it++) {
+    SocketBase *listen_socket = new ListenSocket(*it);
+    _socket_map_.insert(
+        std::make_pair(listen_socket->socket_fd(), listen_socket));
+  }
+}
 
 SocketMap::~SocketMap() {
   std::map<int, SocketBase *>::iterator it = _socket_map_.begin();
   for (; it != _socket_map_.end(); it++) {
     delete it->second;
   }
-}
-
-std::map<int, SocketBase *>
-SocketMap::_generate(const std::vector<ConfigGroup> &config_group_list) {
-  std::map<int, SocketBase *>              socket_map;
-  std::vector<ConfigGroup>::const_iterator it = config_group_list.begin();
-  for (; it != config_group_list.end(); it++) {
-    SocketBase *listen_socket = new ListenSocket(*it);
-    socket_map.insert(
-        std::make_pair(listen_socket->socket_fd(), listen_socket));
-  }
-  return socket_map;
 }
 
 std::vector<struct pollfd> SocketMap::create_pollfds() {

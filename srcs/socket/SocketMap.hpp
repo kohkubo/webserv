@@ -3,7 +3,6 @@
 
 #include <poll.h>
 
-#include "config/Config.hpp"
 #include "config/ConfigGroup.hpp"
 #include "socket/SocketBase.hpp"
 #include "socket/SocketMapAction.hpp"
@@ -15,8 +14,6 @@ private:
 private:
   SocketMap(const SocketMap &other);
   SocketMap &operator=(const SocketMap &other);
-  static std::map<int, SocketBase *>
-  _generate(const std::vector<ConfigGroup> &config_group_list);
 
 public:
   SocketMap() {}
