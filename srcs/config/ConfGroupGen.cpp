@@ -13,6 +13,18 @@ find_same_socket(const Config             &config,
   return it;
 }
 
+static bool
+join_same_socket_group(Config                    config,
+                       std::vector<ConfigGroup> &config_group_list) {
+  std::vector<ConfigGroup>::iterator same_socket_group =
+      find_same_socket(config, config_group_list);
+  if (same_socket_group != config_group_list.end()) {
+    same_socket_group->try_add_config(config);
+    return true;
+  }
+  return false;
+}
+
 std::vector<ConfigGroup> generate_config_group(const char *config_file_path) {
   std::vector<ConfigGroup> config_group_list;
 
@@ -27,11 +39,7 @@ std::vector<ConfigGroup> generate_config_group(const char *config_file_path) {
     if (*it == "server") {
       Config config(it, token_vector.end());
       it = config.last_iterator_pos();
-      std::vector<ConfigGroup>::iterator same_socket_group =
-          find_same_socket(config, config_group_list);
-      if (same_socket_group != config_group_list.end()) {
-        same_socket_group->try_add_config(config);
-      } else {
+      if (!join_same_socket_group(config, config_group_list)) {
         config_group_list.push_back(ConfigGroup(config));
       }
     } else {
