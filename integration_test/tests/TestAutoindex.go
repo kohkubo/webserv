@@ -30,9 +30,12 @@ func makeTestPath() func() {
 	mkdirExitIfError(dir1)
 	mkdirExitIfError(dir2)
 	writeFileExitIfError(dir1+"index.html", content_dir1)
+
+	// dummy for checking if dir listing is sorted
 	mkdirExitIfError(testDir + "a_dummy_dir/")
 	writeFileExitIfError(testDir+"a_dummy_file", "")
 	writeFileExitIfError(testDir+"dummy_file", "")
+
 	return func() { os.RemoveAll(testRoot) }
 }
 
@@ -44,7 +47,8 @@ var testAutoindex = testCatergory{
 		{
 			caseName: "simple",
 			test: func() bool {
-				defer makeTestPath()()
+				clear := makeTestPath()
+				defer clear()
 				port := "50001"
 				expectStatusCode := 200
 				expectBody := []byte(
@@ -85,7 +89,8 @@ var testAutoindex = testCatergory{
 		{
 			caseName: "forbidden",
 			test: func() bool {
-				defer makeTestPath()()
+				clear := makeTestPath()
+				defer clear()
 				port := "50001"
 				expectStatusCode := 403
 				expectBody := httpresp.ErrorBody(403)
@@ -111,7 +116,8 @@ var testAutoindex = testCatergory{
 		{
 			caseName: "index_priority",
 			test: func() bool {
-				defer makeTestPath()()
+				clear := makeTestPath()
+				defer clear()
 				port := "50001"
 				expectStatusCode := 200
 				expectBody := []byte(content_dir1)
