@@ -1,6 +1,14 @@
 #ifndef SRCS_HTTP_CONST_CONST_HTTP_ENUMS_HPP
 #define SRCS_HTTP_CONST_CONST_HTTP_ENUMS_HPP
 
+enum RequestState {
+  RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
+  RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
+  RECEIVING_BODY,      // リクエストはbodyを読み取り中。
+  SUCCESS,             // リクエストのパース完了。
+  ERROR,               // リクエストのパースエラー。
+};
+
 namespace HttpStatusCode {
 enum StatusCode {
   NONE                      = -1,

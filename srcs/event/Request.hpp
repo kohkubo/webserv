@@ -7,18 +7,11 @@
 
 #include "config/Config.hpp"
 #include "event/Response.hpp"
+#include "http/const/const_http_enums.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 
 typedef int connFd;
-
-enum RequestState {
-  RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
-  RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
-  RECEIVING_BODY,      // リクエストはbodyを読み取り中。
-  SUCCESS,             // リクエストのパース完了。
-  ERROR,               // リクエストのパースエラー。
-};
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
 
