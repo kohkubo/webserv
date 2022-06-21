@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "config/ConfigGroup.hpp"
 #include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
 
@@ -13,11 +14,10 @@ TEST(request_parse_test, normal) {
                                "Accept: */*\r\n\r\n";
 
   Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Request request;
+  ConfigGroup config_group(config);
+  Request     request;
 
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.method_, "GET");
@@ -35,11 +35,10 @@ TEST(request_parse_test, normal_delete) {
                                "Accept: */*\r\n\r\n";
 
   Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Request request;
+  ConfigGroup config_group(config);
+  Request     request;
 
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.method_, "DELETE");
@@ -59,12 +58,11 @@ TEST(request_parse_test, normal_post) {
       "Content-Type: applicATION/X-WWW-FORM-URlencoded\r\n"
       "Content-Length: 18\r\n\r\n";
 
-  Config    config;
-  confGroup conf_group;
-  conf_group.push_back(&config);
-  Request request;
+  Config      config;
+  ConfigGroup config_group(config);
+  Request     request;
 
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.method_, "POST");
@@ -85,11 +83,10 @@ TEST(request_parse_test, query_string) {
                                "Accept: */*\r\n\r\n";
 
   Config      config;
-  confGroup   conf_group;
-  conf_group.push_back(&config);
-  Request request;
+  ConfigGroup config_group(config);
+  Request     request;
 
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.method_, "GET");

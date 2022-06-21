@@ -23,8 +23,10 @@ private:
   std::string    _default_server_name_;
   container_type _config_group_;
 
-public:
+private:
   ConfigGroup() {}
+
+public:
   ConfigGroup(Config config);
   ~ConfigGroup() {}
   struct addrinfo *addrinfo() const;
