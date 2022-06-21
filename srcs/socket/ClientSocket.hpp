@@ -14,12 +14,12 @@
 
 class ClientSocket : public SocketBase {
 private:
-  static const std::time_t TIMEOUT_SECONDS_ = 60;
   const confGroup         &_conf_group_;
   Request                  _request_;
   std::deque<Response>     _response_queue_;
   std::string              _buffer_;
   Timeout                  _timeout_;
+  static const std::time_t TIMEOUT_SECONDS_ = 60;
 
 public:
   ClientSocket(int client_fd, const confGroup &conf_group);
