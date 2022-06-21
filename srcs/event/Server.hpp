@@ -12,8 +12,8 @@ private:
   Server() {}
 
 public:
-  Server(const std::vector<ConfigGroup> &config_group_list)
-      : _socket_map_(config_group_list) {}
+  Server(const std::vector<ConfigGroup> &config_groups)
+      : _socket_map_(config_groups) {}
   ~Server() {}
   void run_loop();
 };

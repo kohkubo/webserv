@@ -7,9 +7,9 @@
 #include "config/ConfigGroup.hpp"
 #include "socket/ListenSocket.hpp"
 
-SocketMap::SocketMap(const std::vector<ConfigGroup> &config_group_list) {
-  std::vector<ConfigGroup>::const_iterator it = config_group_list.begin();
-  for (; it != config_group_list.end(); it++) {
+SocketMap::SocketMap(const std::vector<ConfigGroup> &config_groups) {
+  std::vector<ConfigGroup>::const_iterator it = config_groups.begin();
+  for (; it != config_groups.end(); it++) {
     SocketBase *listen_socket = new ListenSocket(*it);
     _socket_map_.insert(
         std::make_pair(listen_socket->socket_fd(), listen_socket));
