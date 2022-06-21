@@ -1,31 +1,73 @@
 #include "http/response/ResponseGenerator.hpp"
 
+#include <algorithm>
 #include <dirent.h>
 #include <sstream>
+#include <vector>
 
 #include "utils/syscall_wrapper.hpp"
 
+/* autoindex example
+../
+dir1/
+dir2/
+file1/
+file2/
+*/
+struct AutoindexCategory {
+  typedef std::string       name;
+  typedef std::vector<name> nameVector;
+  name                      updir_name_;
+  nameVector                dir_name_vector_;
+  nameVector                file_name_vector_;
+};
+
+static std::string dir_listing_line(std::string name) {
+  if (name == "") {
+    return "";
+  }
+  return "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
+}
+
 // TODO: DT_DIR系のマクロが定義されてない場合を考慮すべきかわからない
 // TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外はどうするか
-static std::string dir_list_lines(const std::string &file_path) {
-  std::string    lines;
-  DIR           *dir    = xopendir(file_path.c_str());
-  struct dirent *diread = NULL;
+static AutoindexCategory
+read_dir_to_autoindex_category(const std::string &path) {
+  AutoindexCategory autoindex_category;
+  DIR              *dir    = xopendir(path.c_str());
+  struct dirent    *diread = NULL;
   while ((diread = xreaddir(dir)) != NULL) {
     std::string name = diread->d_name;
-    if (name == ".")
+    if (name == "." || (diread->d_type & (DT_DIR | DT_REG | DT_LNK)) == 0)
       continue;
-    // ブラウザ上でlist表示された時,
-    // ディレクトリが選択された場合にディレクトリとして再度リクエストが出されるために末尾に"/"
-    // nginxでもディレクトリは末尾に"/"ついて表示されていた
-    if ((diread->d_type & DT_DIR) != 0)
-      name += "/";
-    else if (!((diread->d_type & DT_REG) != 0 ||
-               (diread->d_type & DT_LNK) != 0))
-      continue;
-    lines += "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
+    if (name == "..")
+      autoindex_category.updir_name_ = name + "/";
+    else if ((diread->d_type & DT_DIR) != 0)
+      autoindex_category.dir_name_vector_.push_back(name + "/");
+    else
+      autoindex_category.file_name_vector_.push_back(name);
   }
   xclosedir(dir);
+  return autoindex_category;
+}
+
+static std::string
+read_vector_to_line(AutoindexCategory::nameVector &name_vector) {
+  std::string res;
+  std::sort(name_vector.begin(), name_vector.end());
+  AutoindexCategory::nameVector::const_iterator it = name_vector.begin();
+  for (; it != name_vector.end(); it++) {
+    res += dir_listing_line(*it);
+  }
+  return res;
+}
+
+static std::string dir_list_lines(const std::string &path) {
+  AutoindexCategory autoindex_category = read_dir_to_autoindex_category(path);
+  std::string       lines;
+  lines += dir_listing_line(autoindex_category.updir_name_);
+  lines += read_vector_to_line(autoindex_category.dir_name_vector_);
+  lines += read_vector_to_line(autoindex_category.file_name_vector_);
   return lines;
 }
 
