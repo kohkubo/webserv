@@ -1,5 +1,6 @@
 #include "config/Locations.hpp"
 
+#include <algorithm>
 #include <string>
 
 bool Locations::add_or_else(const Location *location) {
