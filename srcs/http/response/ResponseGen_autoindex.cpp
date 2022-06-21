@@ -7,27 +7,20 @@
 
 #include "utils/syscall_wrapper.hpp"
 
-/* autoindex example
-../
-dir1/
-dir2/
-file1/
-file2/
-*/
+/* listing order of autoindex
+ * ../
+ * dir1/
+ * dir2/
+ * file1/
+ * file2/
+ */
 struct AutoindexCategory {
   typedef std::string       name;
   typedef std::vector<name> nameVector;
-  name                      updir_name_;
-  nameVector                dir_name_vector_;
-  nameVector                file_name_vector_;
+  name                      updir_name_; // "../"のこと
+  nameVector                dir_names_;
+  nameVector                file_names_;
 };
-
-static std::string dir_listing_line(std::string name) {
-  if (name == "") {
-    return "";
-  }
-  return "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
-}
 
 // TODO: DT_DIR系のマクロが定義されてない場合を考慮すべきかわからない
 // TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外はどうするか
@@ -43,21 +36,27 @@ read_dir_to_autoindex_category(const std::string &path) {
     if (name == "..")
       autoindex_category.updir_name_ = name + "/";
     else if ((diread->d_type & DT_DIR) != 0)
-      autoindex_category.dir_name_vector_.push_back(name + "/");
+      autoindex_category.dir_names_.push_back(name + "/");
     else
-      autoindex_category.file_name_vector_.push_back(name);
+      autoindex_category.file_names_.push_back(name);
   }
   xclosedir(dir);
   return autoindex_category;
 }
 
-static std::string
-read_vector_to_line(AutoindexCategory::nameVector &name_vector) {
+static std::string one_line(std::string name) {
+  if (name == "") {
+    return "";
+  }
+  return "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
+}
+
+static std::string read_vector_to_lines(AutoindexCategory::nameVector &names) {
   std::string res;
-  std::sort(name_vector.begin(), name_vector.end());
-  AutoindexCategory::nameVector::const_iterator it = name_vector.begin();
-  for (; it != name_vector.end(); it++) {
-    res += dir_listing_line(*it);
+  std::sort(names.begin(), names.end());
+  AutoindexCategory::nameVector::const_iterator it = names.begin();
+  for (; it != names.end(); it++) {
+    res += one_line(*it);
   }
   return res;
 }
@@ -65,9 +64,9 @@ read_vector_to_line(AutoindexCategory::nameVector &name_vector) {
 static std::string dir_list_lines(const std::string &path) {
   AutoindexCategory autoindex_category = read_dir_to_autoindex_category(path);
   std::string       lines;
-  lines += dir_listing_line(autoindex_category.updir_name_);
-  lines += read_vector_to_line(autoindex_category.dir_name_vector_);
-  lines += read_vector_to_line(autoindex_category.file_name_vector_);
+  lines += one_line(autoindex_category.updir_name_);
+  lines += read_vector_to_lines(autoindex_category.dir_names_);
+  lines += read_vector_to_lines(autoindex_category.file_names_);
   return lines;
 }
 
