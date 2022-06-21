@@ -7,15 +7,15 @@
 
 class Locations {
 private:
-  std::vector<const Location *> _location_vector_;
+  std::vector<Location> _location_vector_;
 
 private:
-  Locations(const Locations &other);
+  Locations(Locations &other);
 
 public:
   Locations() {}
   ~Locations(){};
-  bool            add_or_else(const Location *location);
+  bool            add_or_else(const Location &location);
   const Location *select_location(const std::string &request_target) const;
   bool            empty() const { return _location_vector_.empty(); }
 };

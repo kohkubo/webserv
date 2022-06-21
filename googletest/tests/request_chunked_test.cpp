@@ -23,10 +23,10 @@ TEST(request_chunked_test, chunked_body) {
                                "0\r\n"
                                "\r\n";
 
-  Config    config;
-  Location *location       = new Location();
-  location->root_          = "/";
-  location->location_path_ = "/";
+  Config   config;
+  Location location;
+  location.root_          = "/";
+  location.location_path_ = "/";
   config.locations_.add_or_else(location);
 
   confGroup conf_group;
@@ -39,7 +39,6 @@ TEST(request_chunked_test, chunked_body) {
   EXPECT_EQ(info.is_chunked_, true);
   EXPECT_EQ(info.body_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
                         "Networkhello world\ntest");
-  delete location;
 }
 
 TEST(request_chunked_test, chunked_body_split) {
@@ -61,10 +60,10 @@ TEST(request_chunked_test, chunked_body_split) {
                                 "0\r\n"
                                 "\r\n";
 
-  Config    config;
-  Location *location       = new Location();
-  location->root_          = "/";
-  location->location_path_ = "/";
+  Config   config;
+  Location location;
+  location.root_          = "/";
+  location.location_path_ = "/";
   config.locations_.add_or_else(location);
   confGroup conf_group;
   conf_group.push_back(&config);
@@ -83,5 +82,4 @@ TEST(request_chunked_test, chunked_body_split) {
   EXPECT_EQ(info.body_,
             "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello "
             "world\ntest");
-  delete location;
 }
