@@ -17,3 +17,14 @@ curl localhost:8080 -v
 curl -X DELETE localhost:8080 -v
 curl localhost:8080 -v
 docker-compose down
+rm -r deletedir
+
+export confpath="./conf/post.conf"
+mkdir postdir
+docker-compose up -d
+curl -d "content" -X PUT http://localhost:8080/filename -v
+curl -d "update" -X PUT http://localhost:8080/filename -v
+curl -d "content" -X PUT http://localhost:8080/nosuch/filename -v
+curl -d "content" -X PUT http://localhost:8080/dir/ -v
+docker-compose down
+rm -r postdir
