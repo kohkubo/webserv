@@ -79,7 +79,7 @@ RequestState Request::handle_request(std::string       &request_buffer,
           // throws BadRequestException
           // TODO: 例外の処理を整理したあと、1関数に切り出し予定です。 kohkubo
           _request_info_.config_ =
-              *config_group.select_config(_request_info_.host_);
+              config_group.select_config(_request_info_.host_);
           _request_info_.location_ =
               select_proper_location(_request_info_.request_target_,
                                      _request_info_.config_.locations_);
