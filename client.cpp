@@ -41,11 +41,13 @@ int main() {
   // std::vector<char> str(50000, 'A');
   // write(sock, &str[0], send_count);
   // sleep(1);
-  char buf[5000];
-  int  rc = read(sock, &buf, 5000);
-  buf[rc] = '\0';
-  std::cout << "rc: " << rc << std::endl;
-  std::cout << buf << std::endl;
-  close(sock);
+  // char buf[5000];
+  // int  rc = read(sock, &buf, 5000);
+  // buf[rc] = '\0';
+  // std::cout << "rc: " << rc << std::endl;
+  // std::cout << buf << std::endl;
+  // close(sock);
+  while (1)
+    ;
   return 0;
 }
