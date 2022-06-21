@@ -5,7 +5,7 @@
 ClientSocket::ClientSocket(int client_fd, const confGroup &conf_group)
     : SocketBase(client_fd)
     , _conf_group_(conf_group)
-    , _last_event_time_(_time_now()) {}
+    , _timeout_(TIMEOUT_SECONDS_) {}
 
 struct pollfd ClientSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -15,12 +15,10 @@ struct pollfd ClientSocket::pollfd() {
   return pfd;
 }
 
-bool ClientSocket::is_timed_out() {
-  return std::difftime(_time_now(), _last_event_time_) >= TIMEOUT_SECONDS_;
-}
+bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketMapAction ClientSocket::handle_event(short int revents) {
-  _last_event_time_ = _time_now();
+  _timeout_.update_last_event();
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of fd " << _socket_fd_);
     SocketMapAction socket_map_action = handle_receive_event();
