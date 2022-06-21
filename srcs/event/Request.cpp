@@ -45,7 +45,7 @@ static Location select_proper_location(const std::string           &request_uri,
   }
   if (location == NULL) {
     LOG("no match found with locations.");
-    throw RequestInfo::BadRequestException(NOT_FOUND_404);
+    throw RequestInfo::BadRequestException(HttpStatusCode::NOT_FOUND_404);
   }
   return *location;
 }
@@ -189,7 +189,8 @@ void Request::_check_max_client_body_size_exception(
     std::size_t actual_body_size, std::size_t max_body_size) {
   if (actual_body_size > max_body_size) {
     LOG("max_client_body_size exceeded");
-    throw RequestInfo::BadRequestException(ENTITY_TOO_LARGE_413);
+    throw RequestInfo::BadRequestException(
+        HttpStatusCode::ENTITY_TOO_LARGE_413);
   }
 }
 

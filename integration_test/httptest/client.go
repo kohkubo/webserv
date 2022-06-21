@@ -3,6 +3,7 @@ package httptest
 import (
 	"fmt"
 	"integration_test/webserv"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -20,11 +21,12 @@ type TestSource struct {
 type Client struct {
 	Port           string
 	Request        string
-	SendCnt        int
 	Conn           net.Conn
 	Close          bool
 	GotResponse    *http.Response
 	ReponseChecker ReponseChecker
+	sendCnt        int
+	sendLog        []string
 }
 
 type ReponseChecker interface {
@@ -60,57 +62,51 @@ func NewClientWithConn(prev_conn net.Conn, info TestSource) *Client {
 // リクエストの送信, 受信, 結果の確認まで行う
 // 成功->true, 失敗->false
 func (c *Client) DoAndCheck() bool {
-	if err := c.SendAllRequest(); err != nil {
-		webserv.ExitWithKill(err)
-	}
-	if err := c.RecvResponse(); err != nil {
-		webserv.ExitWithKill(err)
-	}
-	result, err := c.IsExpectedResponse()
-	if err != nil {
-		webserv.ExitWithKill(err)
-	}
-	return result
+	c.SendRequestAll()
+	c.RecvResponse()
+	return c.IsExpectedResponse()
 }
 
 // リクエスト送信
-func (c *Client) SendAllRequest() error {
-	return c.SendPartialRequest(len(c.Request))
+func (c *Client) SendRequestAll() {
+	c.SendRequestN(len(c.Request))
 }
 
-// 先頭のRequestのみ送信
-func (c *Client) SendPartialRequest(n int) (err error) {
-	len := len(c.Request)
-	if c.SendCnt < len {
-		limit := c.SendCnt + n
-		if len < limit {
-			limit = len
-		}
-		sendN, err := fmt.Fprintf(c.Conn, c.Request[c.SendCnt:limit])
-		// 連続で使用された場合にリクエストが分かれるようにsleep
-		time.Sleep(1 * time.Millisecond)
-		if err != nil {
-			return fmt.Errorf("sendPartialRequest: %v", err)
-		}
-		c.SendCnt += sendN
+// ランダム文字数でリクエストを送信
+func (c *Client) SendRequestRandom() {
+	rand.Seed(time.Now().UnixNano())
+	randN := rand.Intn(len(c.Request))
+	c.SendRequestN(randN)
+}
+
+// 指定文字数のみリクエスト送信
+func (c *Client) SendRequestN(n int) {
+	limit := c.sendCnt + n
+	if len(c.Request) < limit {
+		limit = len(c.Request)
 	}
-	return err
+	sendContent := c.Request[c.sendCnt:limit]
+	sendN, err := fmt.Fprintf(c.Conn, sendContent)
+	if err != nil {
+		webserv.ExitWithKill(err)
+	}
+	c.sendLog = append(c.sendLog, sendContent)
+	c.sendCnt += sendN
 }
 
 // レスポンスを受ける
-func (c *Client) RecvResponse() error {
-	if c.SendCnt != len(c.Request) {
-		return fmt.Errorf("recvResponse: all request is not send!")
+func (c *Client) RecvResponse() {
+	if c.sendCnt != len(c.Request) {
+		webserv.ExitWithKill(fmt.Errorf("recvResponse: all request is not send!"))
 	}
 	resp, err := readParseResponse(c.Conn, resolveMethod(c.Request))
 	if err != nil {
-		return fmt.Errorf("recvResponse: %v", err)
+		webserv.ExitWithKill(err)
 	}
 	c.GotResponse = resp
 	if c.Close {
 		c.Conn.Close()
 	}
-	return err
 }
 
 // リクエスト文字列を元にmethod(recvResponseで必要になる)を解決する
@@ -126,11 +122,26 @@ func resolveMethod(req string) string {
 }
 
 // レスポンスが期待するものか確認する
-func (c *Client) IsExpectedResponse() (bool, error) {
+func (c *Client) IsExpectedResponse() bool {
+	if c.GotResponse == nil {
+		webserv.ExitWithKill(fmt.Errorf("isExpectedResult: GotResponse is nil"))
+	}
 	result, err := c.ReponseChecker.Check(c.GotResponse)
 	if err != nil {
-		return false, fmt.Errorf("isExpectedResult: %v", err)
+		webserv.ExitWithKill(err)
 	}
 	c.GotResponse.Body.Close()
-	return result == 0, err
+	testOK := result == 0
+	if !testOK {
+		c.PrintRequestLog()
+	}
+	return testOK
+}
+
+func (c *Client) PrintRequestLog() {
+	fmt.Println("===Request log===")
+	for _, r := range c.sendLog {
+		fmt.Printf("[%s]%d\n", r, len(r))
+	}
+	fmt.Println("=================")
 }

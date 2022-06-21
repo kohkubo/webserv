@@ -128,11 +128,11 @@ TEST(util_test, is_minus_depth_test) {
 }
 
 TEST(util_test, test_hexstr_to_size) {
-  EXPECT_EQ(hexstr_to_size("0"), 0);
-  EXPECT_EQ(hexstr_to_size("1"), 1);
-  EXPECT_EQ(hexstr_to_size("b"), 11);
-  EXPECT_EQ(hexstr_to_size("f"), 15);
-  EXPECT_EQ(hexstr_to_size("20"), 32);
-  EXPECT_EQ(hexstr_to_size("ff"), 255);
+  EXPECT_EQ(hexstr_to_size("0"), (std::size_t)0);
+  EXPECT_EQ(hexstr_to_size("1"), (std::size_t)1);
+  EXPECT_EQ(hexstr_to_size("b"), (std::size_t)11);
+  EXPECT_EQ(hexstr_to_size("f"), (std::size_t)15);
+  EXPECT_EQ(hexstr_to_size("20"), (std::size_t)32);
+  EXPECT_EQ(hexstr_to_size("ff"), (std::size_t)255);
   EXPECT_EQ(hexstr_to_size("ffffffffffffffff"), SIZE_MAX);
 }
