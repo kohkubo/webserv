@@ -39,9 +39,12 @@ private:
   static void
   _check_max_client_body_size_exception(std::size_t actual_body_size,
                                         std::size_t max_body_size);
-  static void _check_buffer_length_exception(std::string &request_buffer,
-                                             std::size_t  buffer_limit_length);
-  void        _tmp(const confGroup &conf_group);
+  static void  _check_buffer_length_exception(std::string &request_buffer,
+                                              std::size_t  buffer_limit_length);
+  void         _tmp(const confGroup &conf_group);
+  RequestState _handle_request_startline(std::string &request_buffer);
+  RequestState _handle_request_header(std::string &request_buffer);
+  RequestState _handle_request_body(std::string &request_buffer);
 
 public:
   Request()
