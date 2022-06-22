@@ -71,12 +71,12 @@ static std::string error_page_body(const RequestInfo         &request_info,
   errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(status_code);
   if (it != request_info.config_.error_pages_.end()) {
-    std::string file_path = request_info.location_.root_ + it->second;
+    std::string file_path      = request_info.location_.root_ + it->second;
     // TODO:
     // 無いエラーページを指定した場合、nginxではどのような挙動になるのかチェックが必要
-    Result result         = read_file_to_str(file_path);
+    Result<std::string> result = read_file_to_str(file_path);
     if (!result.is_err_) {
-      return result.str_;
+      return result.object_;
     }
     LOG("error_page_body: read_file_to_str error");
     status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
@@ -98,23 +98,23 @@ static std::string error_page_body(const RequestInfo         &request_info,
 }
 
 std::string ResponseGenerator::_body(const RequestInfo &request_info) {
-  if (has_suffix(request_info.file_path_, ".py")) {
-    Result result = _read_file_to_str_cgi(request_info);
+  if (has_suffix(request_info.target_path_, ".py")) {
+    Result<std::string> result = _read_file_to_str_cgi(request_info);
     if (result.is_err_) {
       return error_page_body(request_info,
                              HttpStatusCode::INTERNAL_SERVER_ERROR_500);
     }
-    return result.str_;
+    return result.object_;
   }
-  if (has_suffix(request_info.file_path_, "/")) {
+  if (has_suffix(request_info.target_path_, "/")) {
     return _create_autoindex_body(request_info);
   }
-  Result result = read_file_to_str(request_info.file_path_);
+  Result<std::string> result = read_file_to_str(request_info.target_path_);
   if (result.is_err_) {
     return error_page_body(request_info,
                            HttpStatusCode::INTERNAL_SERVER_ERROR_500);
   }
-  return result.str_;
+  return result.object_;
 }
 
 static std::string start_line(const HttpStatusCode::StatusCode status_code) {
@@ -153,6 +153,7 @@ static std::string response_message(HttpStatusCode::StatusCode status_code,
     response += connection_header();
   }
   if (status_code == HttpStatusCode::NO_CONTENT_204) {
+    // TODO: generate_response()と処理被っている rakiyama
     return response + CRLF;
   }
   if (HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {

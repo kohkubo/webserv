@@ -2,9 +2,9 @@
 
 #include <poll.h>
 
-ClientSocket::ClientSocket(int client_fd, const confGroup &conf_group)
+ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
-    , _conf_group_(conf_group)
+    , _config_group_(config_group)
     , _timeout_(TIMEOUT_SECONDS_) {}
 
 struct pollfd ClientSocket::pollfd() {
@@ -52,7 +52,7 @@ void ClientSocket::handle_send_event() {
 void ClientSocket::parse_buffer() {
   for (;;) {
     RequestState request_state =
-        _request_.handle_request(_buffer_, _conf_group_);
+        _request_.handle_request(_buffer_, _config_group_);
     if (request_state != SUCCESS) {
       break;
     }
