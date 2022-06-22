@@ -34,17 +34,17 @@ bool is_dir_exists(const std::string &path) {
   return ((file_info.st_mode & S_IFMT) == S_IFDIR);
 }
 
-Result read_file_to_str(const std::string &path) {
+Result<std::string> read_file_to_str(const std::string &path) {
   std::ifstream file(path.c_str());
   if (file.fail()) {
-    return Error();
+    return Error<std::string>();
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
   // 空ファイルの時: buffer.fail() -> true, buffer.str() = "": 問題なし.
   // その他のエラーケースに関しても再現が困難なので現状エラー確認なし.
   file.close();
-  return Ok(buffer.str());
+  return Ok<std::string>(buffer.str());
 }
 
 bool remove_file(const std::string &file_path) {
