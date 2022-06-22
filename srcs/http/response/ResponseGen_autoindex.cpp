@@ -15,15 +15,15 @@
  * file2/
  */
 struct AutoindexCategory {
-  typedef std::string       name;
-  typedef std::vector<name> nameVector;
-  name                      updir_name_; // "../"のこと
-  nameVector                dir_names_;
-  nameVector                file_names_;
+  typedef std::string           fileName;
+  typedef std::vector<fileName> fileNames;
+  fileName                      updir_name_; // "../"のこと
+  fileNames                     dir_names_;
+  fileNames                     file_names_;
 };
 
 // TODO: DIR(ディレ), REG(通常ファイル), LNK(リンク)以外は無視している
-//       検証方法を調べらてない+そもそも考えなくて良いと思っている rakiyama
+//       検証方法を調べらてない+考えなくて良いと思っている rakiyama
 static AutoindexCategory
 read_dir_to_autoindex_category(const std::string &path) {
   AutoindexCategory autoindex_category;
@@ -44,26 +44,29 @@ read_dir_to_autoindex_category(const std::string &path) {
   return autoindex_category;
 }
 
-static std::string one_dir_list_line(std::string name) {
-  return "        <li><a href=\"" + name + "\">" + name + " </a></li>\n";
+static std::string
+one_dirlisting_line(const AutoindexCategory::fileName &file_name) {
+  return "        <li><a href=\"" + file_name + "\">" + file_name +
+         " </a></li>\n";
 }
 
-static std::string read_vector_to_lines(AutoindexCategory::nameVector &names) {
+static std::string
+read_vector_to_dirlisting_lines(AutoindexCategory::fileNames &file_names) {
   std::string res;
-  std::sort(names.begin(), names.end());
-  AutoindexCategory::nameVector::const_iterator it = names.begin();
-  for (; it != names.end(); it++) {
-    res += one_dir_list_line(*it);
+  std::sort(file_names.begin(), file_names.end());
+  AutoindexCategory::fileNames::const_iterator it = file_names.begin();
+  for (; it != file_names.end(); it++) {
+    res += one_dirlisting_line(*it);
   }
   return res;
 }
 
-static std::string dir_list_lines(const std::string &path) {
+static std::string dirlisting_lines(const std::string &path) {
   AutoindexCategory autoindex_category = read_dir_to_autoindex_category(path);
   std::string       lines;
-  lines += one_dir_list_line(autoindex_category.updir_name_);
-  lines += read_vector_to_lines(autoindex_category.dir_names_);
-  lines += read_vector_to_lines(autoindex_category.file_names_);
+  lines += one_dirlisting_line(autoindex_category.updir_name_);
+  lines += read_vector_to_dirlisting_lines(autoindex_category.dir_names_);
+  lines += read_vector_to_dirlisting_lines(autoindex_category.file_names_);
   return lines;
 }
 
@@ -80,7 +83,7 @@ ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info) {
        << "   <body>\n"
        << "      <h1>Index of " << request_info.request_target_ << "</h1>\n"
        << "      <ul style=\"list-style:none\">\n"
-       <<          dir_list_lines(request_info.file_path_)
+       <<          dirlisting_lines(request_info.file_path_)
        << "    </ul>\n"
        << "   </body>\n"
        << "</html>";
