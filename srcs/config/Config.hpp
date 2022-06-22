@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "config/Location.hpp"
+#include "config/Locations.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
@@ -22,15 +23,14 @@ private:
   tokenIterator _last_iterator_pos_;
 
 public:
-  std::string           listen_address_;
-  std::string           listen_port_;
-  size_t                client_max_body_size_;
-  std::string           server_name_;
-  struct addrinfo      *addrinfo_;
-  errorPageMap          error_pages_;
-  std::vector<Location> locations_;
+  std::string      listen_address_;
+  std::string      listen_port_;
+  size_t           client_max_body_size_;
+  std::string      server_name_;
+  struct addrinfo *addrinfo_;
+  errorPageMap     error_pages_;
+  Locations        locations_;
 
-  // error_page;
 public:
   class UnexpectedTokenException : public std::logic_error {
   public:
@@ -82,9 +82,6 @@ private:
                                                tokenIterator             end);
 };
 
-// TODO: Config ポインタ -> 実体
-// conf_group: 同じソケットのserver_confの集合
-typedef std::vector<const Config *> confGroup;
-typedef int                         listenFd;
+typedef int listenFd;
 
 #endif /* SRCS_CONFIG_CONFIG_HPP */

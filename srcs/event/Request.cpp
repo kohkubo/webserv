@@ -16,8 +16,8 @@ static std::string cutout_request_body(std::string &request_buffer,
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-RequestState Request::handle_request(std::string     &request_buffer,
-                                     const confGroup &conf_group) {
+RequestState Request::handle_request(std::string       &request_buffer,
+                                     const ConfigGroup &config_group) {
   try {
     // TODO: そもそもstartlineは最初の一行なので、ループ処理する必要がない
     // kohkubo
