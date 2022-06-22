@@ -15,22 +15,6 @@ static std::string cutout_request_body(std::string &request_buffer,
   return request_body;
 }
 
-// GETの条件分岐をhandle_method()のGETの処理で行うなら,
-// request_infoの外にtarget_path_変数を出して編集可能にすべきと考える rakiyama
-static std::string create_target_path(const std::string &request_target,
-                                      const std::string &request_method,
-                                      const Location    &location) {
-  std::string target_path = location.root_ + request_target;
-  if (request_method == "GET") {
-    if (has_suffix(target_path, "/") &&
-        is_file_exists(target_path + location.index_)) {
-      target_path += location.index_;
-    }
-  }
-  LOG("create_target_path: " << target_path);
-  return target_path;
-}
-
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState Request::handle_request(std::string       &request_buffer,
                                      const ConfigGroup &config_group) {
@@ -58,20 +42,7 @@ RequestState Request::handle_request(std::string       &request_buffer,
           }
           _request_info_.parse_request_header(_field_map_);
           // throws BadRequestException
-          // TODO: 例外の処理を整理したあと、1関数に切り出し予定です。 kohkubo
-          _request_info_.config_ =
-              config_group.select_config(_request_info_.host_);
-          const Location *location =
-              _request_info_.config_.locations_.select_location(
-                  _request_info_.request_target_);
-          if (location == NULL) {
-            throw RequestInfo::BadRequestException(
-                HttpStatusCode::NOT_FOUND_404);
-          }
-          _request_info_.location_    = *location;
-          _request_info_.target_path_ = create_target_path(
-              _request_info_.request_target_, _request_info_.method_,
-              _request_info_.location_);
+          _tmp(config_group);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
@@ -118,63 +89,4 @@ RequestState Request::handle_request(std::string       &request_buffer,
     _state_                          = SUCCESS;
   }
   return _state_;
-}
-
-static bool get_next_chunk_line(NextChunkType chunk_type,
-                                std::string &request_buffer, std::string &line,
-                                size_t next_chunk_size) {
-  if (chunk_type == CHUNK_SIZE) {
-    return getline(request_buffer, line);
-  }
-  if (request_buffer.size() < next_chunk_size + CRLF.size()) {
-    return false;
-  }
-  line = request_buffer.substr(0, next_chunk_size);
-  request_buffer.erase(0, next_chunk_size);
-  if (!has_prefix(request_buffer, CRLF)) {
-    throw RequestInfo::BadRequestException();
-  }
-  request_buffer.erase(0, CRLF.size());
-  return true;
-}
-
-RequestState Request::_chunk_loop(std::string &request_buffer) {
-  std::string line;
-  while (get_next_chunk_line(_next_chunk_, request_buffer, line,
-                             _next_chunk_size_)) {
-    if (_next_chunk_ == CHUNK_SIZE) {
-      // TODO: validate line
-      _next_chunk_size_ = hexstr_to_size(line);
-      _next_chunk_      = CHUNK_DATA;
-    } else {
-      bool is_last_chunk = _next_chunk_size_ == 0 && line == "";
-      if (is_last_chunk) {
-        return SUCCESS;
-      }
-      _request_body_.append(line);
-      _next_chunk_ = CHUNK_SIZE;
-    }
-  }
-  if (_next_chunk_ == CHUNK_SIZE) {
-    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
-  }
-  return RECEIVING_BODY;
-}
-
-void Request::_check_max_client_body_size_exception(
-    std::size_t actual_body_size, std::size_t max_body_size) {
-  if (actual_body_size > max_body_size) {
-    LOG("max_client_body_size exceeded");
-    throw RequestInfo::BadRequestException(
-        HttpStatusCode::ENTITY_TOO_LARGE_413);
-  }
-}
-
-void Request::_check_buffer_length_exception(std::string &request_buffer,
-                                             std::size_t  buffer_max_length) {
-  if (request_buffer.size() >= buffer_max_length) {
-    request_buffer.clear();
-    LOG("buffer_max_length exceeded");
-    throw RequestInfo::BadRequestException();
-  }
 }
