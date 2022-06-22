@@ -3,8 +3,8 @@
 #include "utils/file_io_utils.hpp"
 
 static std::vector<ConfigGroup>::iterator
-find_same_socket(const Config             &config,
-                 std::vector<ConfigGroup> &config_groups) {
+find_joinable_config_group(const Config             &config,
+                           std::vector<ConfigGroup> &config_groups) {
   std::vector<ConfigGroup>::iterator it = config_groups.begin();
   for (; it != config_groups.end(); it++) {
     if (it->is_same_socket(config))
@@ -27,10 +27,10 @@ std::vector<ConfigGroup> generate_config_group(const char *config_file_path) {
     if (*it == "server") {
       Config config(it, token_vector.end());
       it = config.last_iterator_pos();
-      std::vector<ConfigGroup>::iterator same_socket_group =
-          find_same_socket(config, config_groups);
-      if (same_socket_group != config_groups.end()) {
-        same_socket_group->try_add_config(config);
+      std::vector<ConfigGroup>::iterator joinable_config_group =
+          find_joinable_config_group(config, config_groups);
+      if (joinable_config_group != config_groups.end()) {
+        joinable_config_group->add_config_or_exit(config);
       } else {
         config_groups.push_back(ConfigGroup(config));
       }

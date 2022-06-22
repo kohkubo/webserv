@@ -29,7 +29,7 @@ public:
   ~ConfigGroup() {}
   struct addrinfo *addrinfo() const;
   bool             is_same_socket(const Config &config);
-  void             try_add_config(const Config config);
+  void             add_config_or_exit(const Config config);
   Config           select_config(const std::string &host_name) const;
 };
 
