@@ -55,7 +55,7 @@ public:
   RequestState       handle_request(std::string       &request_buffer,
                                     const ConfigGroup &config_group);
   Response           create_response() {
-              return Response(_response_, _request_info_.connection_close_);
+    return Response(_response_, _request_info_.connection_close_);
   }
 };
 
