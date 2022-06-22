@@ -3,6 +3,7 @@
 #include <string>
 
 #include "config/Config.hpp"
+#include "config/ConfigGroup.hpp"
 #include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
 
@@ -23,23 +24,21 @@ TEST(request_chunked_test, chunked_body) {
                                "0\r\n"
                                "\r\n";
 
-  Config      config;
-  Location    location;
-  location.root_ = "/";
+  Config   config;
+  Location location;
+  location.root_          = "/";
   location.location_path_ = "/";
-  config.locations_.push_back(location);
+  config.locations_.add_or_else(location);
 
-  confGroup conf_group;
-  conf_group.push_back(&config);
-  Request request;
+  ConfigGroup config_group(config);
+  Request     request;
 
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
   const RequestInfo &info = request.request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  // clang-format off
-  EXPECT_EQ(info.body_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello world\ntest");
-  // clang-format on
+  EXPECT_EQ(info.body_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+                        "Networkhello world\ntest");
 }
 
 TEST(request_chunked_test, chunked_body_split) {
@@ -61,21 +60,20 @@ TEST(request_chunked_test, chunked_body_split) {
                                 "0\r\n"
                                 "\r\n";
 
-  Config      config;
-  Location    location;
-  location.root_ = "/";
+  Config   config;
+  Location location;
+  location.root_          = "/";
   location.location_path_ = "/";
-  config.locations_.push_back(location);
-  confGroup conf_group;
-  conf_group.push_back(&config);
+  config.locations_.add_or_else(location);
+  ConfigGroup config_group(config);
   Request     request;
   std::string request_buffer;
   request_buffer.append(request_buffer1);
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
   request_buffer.append(request_buffer2);
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
   request_buffer.append(request_buffer3);
-  request.handle_request(request_buffer, conf_group);
+  request.handle_request(request_buffer, config_group);
 
   const RequestInfo &info = request.request_info();
 

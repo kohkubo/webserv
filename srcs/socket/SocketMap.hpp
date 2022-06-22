@@ -3,8 +3,7 @@
 
 #include <poll.h>
 
-#include "config/Config.hpp"
-#include "config/ConfigList.hpp"
+#include "config/ConfigGroup.hpp"
 #include "socket/SocketBase.hpp"
 #include "socket/SocketMapAction.hpp"
 
@@ -14,12 +13,11 @@ private:
 
 private:
   SocketMap(const SocketMap &other);
-  SocketMap                         &operator=(const SocketMap &other);
-  static std::map<int, SocketBase *> _generate(const ConfigList &config_list);
+  SocketMap &operator=(const SocketMap &other);
 
 public:
   SocketMap() {}
-  SocketMap(const ConfigList &config_list);
+  SocketMap(const std::vector<ConfigGroup> &config_groups);
   ~SocketMap();
   void                       close_timedout_socket();
   std::vector<struct pollfd> create_pollfds();

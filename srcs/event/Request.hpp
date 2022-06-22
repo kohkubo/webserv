@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "config/Config.hpp"
+#include "config/ConfigGroup.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
@@ -20,8 +20,6 @@ enum RequestState {
 };
 
 enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
-
-// TODO: string -> vector<char>
 
 struct Request {
 private:
@@ -39,8 +37,12 @@ private:
   static void
   _check_max_client_body_size_exception(std::size_t actual_body_size,
                                         std::size_t max_body_size);
-  static void _check_buffer_length_exception(std::string &request_buffer,
-                                             std::size_t  buffer_limit_length);
+  static void  _check_buffer_length_exception(std::string &request_buffer,
+                                              std::size_t  buffer_limit_length);
+  void         _tmp(const ConfigGroup &config_group);
+  RequestState _handle_request_startline(std::string &request_buffer);
+  RequestState _handle_request_header(std::string &request_buffer);
+  RequestState _handle_request_body(std::string &request_buffer);
 
 public:
   Request()
@@ -50,8 +52,8 @@ public:
 
   // TODO: テストでの使用のみなのでテストを変更し、消去する 2022/06/10 22:15 3人
   const RequestInfo &request_info() const { return _request_info_; }
-  RequestState       handle_request(std::string     &request_buffer,
-                                    const confGroup &conf_group);
+  RequestState       handle_request(std::string       &request_buffer,
+                                    const ConfigGroup &config_group);
   Response           create_response() {
     return Response(_response_, _request_info_.connection_close_);
   }

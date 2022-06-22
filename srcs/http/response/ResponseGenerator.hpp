@@ -20,7 +20,8 @@ public:
 private:
   ResponseGenerator();
   ~ResponseGenerator();
-  static Result      _read_file_to_str_cgi(const RequestInfo &request_info);
+  static Result<std::string>
+                     _read_file_to_str_cgi(const RequestInfo &request_info);
   static std::string _body(const RequestInfo &request_info);
   static std::string _create_autoindex_body(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
