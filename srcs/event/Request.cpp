@@ -15,29 +15,6 @@ static std::string cutout_request_body(std::string &request_buffer,
   return request_body;
 }
 
-// 最長マッチ
-// TODO: pairでの実装の方がいいのか、意見聞きたいです。 kohkubo
-static Location select_proper_location(const std::string           &request_uri,
-                                       const std::vector<Location> &locations) {
-  const Location *location = NULL;
-  std::string     path;
-
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); ++it) {
-    if (request_uri.find(it->location_path_) == 0) {
-      if (path.size() < it->location_path_.size()) {
-        path     = it->location_path_;
-        location = &(*it);
-      }
-    }
-  }
-  if (location == NULL) {
-    LOG("no match found with locations.");
-    throw RequestInfo::BadRequestException(HttpStatusCode::NOT_FOUND_404);
-  }
-  return *location;
-}
-
 // GETの条件分岐をhandle_method()のGETの処理で行うなら,
 // request_infoの外にtarget_path_変数を出して編集可能にすべきと考える rakiyama
 static std::string create_target_path(const std::string &request_target,
@@ -84,9 +61,14 @@ RequestState Request::handle_request(std::string       &request_buffer,
           // TODO: 例外の処理を整理したあと、1関数に切り出し予定です。 kohkubo
           _request_info_.config_ =
               config_group.select_config(_request_info_.host_);
-          _request_info_.location_ =
-              select_proper_location(_request_info_.request_target_,
-                                     _request_info_.config_.locations_);
+          const Location *location =
+              _request_info_.config_.locations_.select_location(
+                  _request_info_.request_target_);
+          if (location == NULL) {
+            throw RequestInfo::BadRequestException(
+                HttpStatusCode::NOT_FOUND_404);
+          }
+          _request_info_.location_    = *location;
           _request_info_.target_path_ = create_target_path(
               _request_info_.request_target_, _request_info_.method_,
               _request_info_.location_);

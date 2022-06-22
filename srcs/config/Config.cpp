@@ -65,7 +65,7 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   }
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
-  if (locations_.size() == 0)
+  if (locations_.empty())
     throw UnexpectedTokenException("could not detect location directive.");
   return ++pos;
 }
@@ -87,18 +87,6 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   }
   _set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
   return pos + 2;
-}
-
-static bool
-is_location_path_duplication(const std::string           &location_path,
-                             const std::vector<Location> &locations) {
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); it++) {
-    if (it->location_path_ == location_path) {
-      return true;
-    }
-  }
-  return false;
 }
 
 tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
@@ -142,12 +130,12 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (!has_suffix(location.root_, "/"))
     throw UnexpectedTokenException(
         "root directive failed. please add \"/\" to end of root dir");
-  if (is_location_path_duplication(location.location_path_, locations_))
-    throw UnexpectedTokenException("location path duplication.");
   if (is_minus_depth(location.location_path_) ||
       is_minus_depth(location.root_) || is_minus_depth(location.index_))
     throw UnexpectedTokenException("minus depth path failed.");
-  locations_.push_back(location);
+  if (!locations_.add_or_else(location)) {
+    throw UnexpectedTokenException("duplicate location directive.");
+  }
   return ++pos;
 }
 

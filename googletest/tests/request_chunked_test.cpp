@@ -28,7 +28,7 @@ TEST(request_chunked_test, chunked_body) {
   Location location;
   location.root_          = "/";
   location.location_path_ = "/";
-  config.locations_.push_back(location);
+  config.locations_.add_or_else(location);
 
   ConfigGroup config_group(config);
   Request     request;
@@ -37,9 +37,8 @@ TEST(request_chunked_test, chunked_body) {
   const RequestInfo &info = request.request_info();
 
   EXPECT_EQ(info.is_chunked_, true);
-  // clang-format off
-  EXPECT_EQ(info.body_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello world\ntest");
-  // clang-format on
+  EXPECT_EQ(info.body_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+                        "Networkhello world\ntest");
 }
 
 TEST(request_chunked_test, chunked_body_split) {
@@ -65,7 +64,7 @@ TEST(request_chunked_test, chunked_body_split) {
   Location location;
   location.root_          = "/";
   location.location_path_ = "/";
-  config.locations_.push_back(location);
+  config.locations_.add_or_else(location);
   ConfigGroup config_group(config);
   Request     request;
   std::string request_buffer;
