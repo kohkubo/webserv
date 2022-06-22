@@ -257,5 +257,9 @@ TEST(server_config_test, parse_location_directive) {
     EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
     EXPECT_EQ(location->limit_except_[0], "GET");
     EXPECT_EQ(location->limit_except_[1], "POST");
+    location = config.locations_.select_location("/dir1");
+    EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
+    EXPECT_EQ(location->limit_except_[0], "GET");
+    EXPECT_EQ(location->limit_except_[1], "POST");
   }
 }
