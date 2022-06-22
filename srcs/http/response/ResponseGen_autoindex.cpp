@@ -2,75 +2,68 @@
 
 #include <algorithm>
 #include <dirent.h>
+#include <set>
 #include <sstream>
-#include <vector>
 
 #include "utils/syscall_wrapper.hpp"
 
-/* listing order of autoindex
- * ../
- * dir1/
- * dir2/
- * file1/
- * file2/
- */
 struct AutoindexCategory {
-  typedef std::string        entry;
-  typedef std::vector<entry> entrys;
-  entry                      updir_;
-  entrys                     dirs_;
-  entrys                     files_;
+  typedef std::string         entryName;
+  typedef std::set<entryName> entryNames;
+  bool                        has_updir_;
+  entryNames                  dirs_;
+  entryNames                  files_;
 };
 
-// TODO: vector -> set
-// file type(DT_DIR,DT_REG,DT_LNK):
+// Reference of acceptable entry types:
 // nginx/ngx_http_autoindex_module.c at master · nginx/nginx
 // https://github.com/nginx/nginx/blob/master/src/http/modules/ngx_http_autoindex_module.c
-static AutoindexCategory
-read_dir_to_autoindex_category(const std::string &path) {
+static AutoindexCategory read_dir_to_entry_category(const std::string &path) {
   AutoindexCategory autoindex_category;
-  DIR              *dir    = xopendir(path.c_str());
-  struct dirent    *diread = NULL;
-  while ((diread = xreaddir(dir)) != NULL) {
-    std::string name = diread->d_name;
-    if (name == "." || (diread->d_type & (DT_DIR | DT_REG | DT_LNK)) == 0)
+  DIR              *dir   = xopendir(path.c_str());
+  struct dirent    *entry = NULL;
+  while ((entry = xreaddir(dir)) != NULL) {
+    AutoindexCategory::entryName entry_name = entry->d_name;
+    bool                         is_dir     = (entry->d_type & DT_DIR) != 0;
+    bool                         is_file    = (entry->d_type & DT_REG) != 0;
+    bool                         is_link    = (entry->d_type & DT_LNK) != 0;
+    if (entry_name == "." || !(is_dir || is_file || is_link))
       continue;
-    if (name == "..")
-      autoindex_category.updir_ = "../";
-    else if ((diread->d_type & DT_DIR) != 0)
-      autoindex_category.dirs_.push_back(name + "/");
+    if (entry_name == "..")
+      autoindex_category.has_updir_ = true;
+    else if (is_dir)
+      autoindex_category.dirs_.insert(entry_name + "/");
     else
-      autoindex_category.files_.push_back(name);
+      autoindex_category.files_.insert(entry_name);
   }
   xclosedir(dir);
   return autoindex_category;
 }
 
 static std::string
-one_dirlisting_line(const AutoindexCategory::entry &file_name) {
-  return "        <li><a href=\"" + file_name + "\">" + file_name +
-         " </a></li>\n";
+one_dirlisting_line(const AutoindexCategory::entryName &entry_name) {
+  // clang-format off
+  return "        <li><a href=\"" + entry_name + "\">" + entry_name + " </a></li>\n";
+  // clang-format on
 }
 
-static std::string
-read_vector_to_dirlisting_lines(AutoindexCategory::entrys &file_names) {
-  std::string res;
-  std::sort(file_names.begin(), file_names.end());
-  AutoindexCategory::entrys::const_iterator it = file_names.begin();
-  for (; it != file_names.end(); it++) {
-    res += one_dirlisting_line(*it);
+static std::string read_entry_names_to_dirlistring_lines(
+    AutoindexCategory::entryNames &entry_names) {
+  std::string                                   lines;
+  AutoindexCategory::entryNames::const_iterator it = entry_names.begin();
+  for (; it != entry_names.end(); it++) {
+    lines += one_dirlisting_line(*it);
   }
-  return res;
+  return lines;
 }
 
 static std::string dirlisting_lines(const std::string &path) {
-  AutoindexCategory autoindex_category = read_dir_to_autoindex_category(path);
+  AutoindexCategory autoindex_category = read_dir_to_entry_category(path);
   std::string       lines;
-  if (autoindex_category.updir_ != "") {
-    lines += one_dirlisting_line(autoindex_category.updir_);
-  }
-  lines += read_vector_to_dirlisting_lines(autoindex_category.dirs_);
-  lines += read_vector_to_dirlisting_lines(autoindex_category.files_);
+  if (autoindex_category.has_updir_)
+    lines += one_dirlisting_line("../");
+  lines += read_entry_names_to_dirlistring_lines(autoindex_category.dirs_);
+  lines += read_entry_names_to_dirlistring_lines(autoindex_category.files_);
   return lines;
 }
 
