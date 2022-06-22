@@ -186,24 +186,26 @@ TEST(server_config_test, parse_map_directive) {
 
 TEST(server_config_test, parse_boolean_directive) {
   {
-    std::string str          = "server {\n"
-                               "    location / {\n"
-                               "        autoindex on;\n"
-                               "    }\n"
-                               "}\n";
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.locations_[0].autoindex_, true);
+    std::string     str          = "server {\n"
+                                   "    location / {\n"
+                                   "        autoindex on;\n"
+                                   "    }\n"
+                                   "}\n";
+    tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    Config          config(token_vector.begin(), token_vector.end());
+    const Location *location = config.locations_.select_location("/");
+    EXPECT_EQ(location->autoindex_, true);
   }
   {
-    std::string str          = "server {\n"
-                               "    location / {\n"
-                               "        autoindex off;\n"
-                               "    }\n"
-                               "}\n";
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.locations_[0].autoindex_, false);
+    std::string     str          = "server {\n"
+                                   "    location / {\n"
+                                   "        autoindex off;\n"
+                                   "    }\n"
+                                   "}\n";
+    tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    Config          config(token_vector.begin(), token_vector.end());
+    const Location *location = config.locations_.select_location("/");
+    EXPECT_EQ(location->autoindex_, false);
   }
 }
 
@@ -223,42 +225,41 @@ TEST(server_config_test, parse_size_directive) {
 
 TEST(server_config_test, parse_vector_directive) {
   {
-    std::string str          = "server {\n"
-                               "    location / {\n"
-                               "        limit_except GET POST;\n"
-                               "    }\n"
-                               "}\n";
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.locations_[0].limit_except_.size(),
-              static_cast<std::size_t>(2));
-    EXPECT_EQ(config.locations_[0].limit_except_[0], "GET");
-    EXPECT_EQ(config.locations_[0].limit_except_[1], "POST");
+    std::string     str          = "server {\n"
+                                   "    location / {\n"
+                                   "        limit_except GET POST;\n"
+                                   "    }\n"
+                                   "}\n";
+    tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    Config          config(token_vector.begin(), token_vector.end());
+    const Location *location = config.locations_.select_location("/");
+    EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
+    EXPECT_EQ(location->limit_except_[0], "GET");
+    EXPECT_EQ(location->limit_except_[1], "POST");
   }
 }
 
 TEST(server_config_test, parse_location_directive) {
   {
-    std::string str          = "server {\n"
-                               "    location / {\n"
-                               "        root /var/www/;\n"
-                               "        limit_except GET POST;\n"
-                               "    }\n"
-                               "    location /dir1 {\n"
-                               "        root /var/www/;\n"
-                               "        limit_except GET POST;\n"
-                               "    }\n"
-                               "}\n";
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.locations_.size(), static_cast<std::size_t>(2));
-    EXPECT_EQ(config.locations_[0].limit_except_.size(),
-              static_cast<std::size_t>(2));
-    EXPECT_EQ(config.locations_[0].limit_except_[0], "GET");
-    EXPECT_EQ(config.locations_[0].limit_except_[1], "POST");
-    EXPECT_EQ(config.locations_[1].limit_except_.size(),
-              static_cast<std::size_t>(2));
-    EXPECT_EQ(config.locations_[1].limit_except_[0], "GET");
-    EXPECT_EQ(config.locations_[1].limit_except_[1], "POST");
+    std::string     str          = "server {\n"
+                                   "    location / {\n"
+                                   "        root /var/www/;\n"
+                                   "        limit_except GET POST;\n"
+                                   "    }\n"
+                                   "    location /dir1 {\n"
+                                   "        root /var/www/;\n"
+                                   "        limit_except GET POST;\n"
+                                   "    }\n"
+                                   "}\n";
+    tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    Config          config(token_vector.begin(), token_vector.end());
+    const Location *location = config.locations_.select_location("/");
+    EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
+    EXPECT_EQ(location->limit_except_[0], "GET");
+    EXPECT_EQ(location->limit_except_[1], "POST");
+    location = config.locations_.select_location("/dir1");
+    EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
+    EXPECT_EQ(location->limit_except_[0], "GET");
+    EXPECT_EQ(location->limit_except_[1], "POST");
   }
 }
