@@ -1,40 +1,5 @@
 #include "event/Request.hpp"
 
-static const Config *select_proper_config(const confGroup   &conf_group,
-                                          const std::string &host_name) {
-  confGroup::const_iterator it = conf_group.begin();
-  for (; it != conf_group.end(); it++) {
-    if ((*it)->server_name_ == host_name) {
-      return *it;
-    }
-  }
-  return conf_group[0];
-}
-
-// 最長マッチ
-// TODO: pairでの実装の方がいいのか、意見聞きたいです。 kohkubo
-// TODO: マッチしないパターンがどうなるのか、検証必要 kohkubo
-static Location select_proper_location(const std::string           &request_uri,
-                                       const std::vector<Location> &locations) {
-  const Location *location = NULL;
-  std::string     path;
-
-  std::vector<Location>::const_iterator it = locations.begin();
-  for (; it != locations.end(); ++it) {
-    if (request_uri.find(it->location_path_) == 0) {
-      if (path.size() < it->location_path_.size()) {
-        path     = it->location_path_;
-        location = &(*it);
-      }
-    }
-  }
-  if (location == NULL) {
-    LOG("no match found with locations.");
-    throw RequestInfo::BadRequestException(HttpStatusCode::NOT_FOUND_404);
-  }
-  return *location;
-}
-
 // GETの条件分岐をhandle_method()のGETの処理で行うなら,
 // request_infoの外にtarget_path_変数を出して編集可能にすべきと考える rakiyama
 static std::string create_target_path(const std::string &request_target,
