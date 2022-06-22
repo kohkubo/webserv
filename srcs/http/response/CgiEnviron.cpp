@@ -29,8 +29,8 @@ create_environ_map(const RequestInfo &request_info) {
     environ_map["CONTENT_TYPE"]   = request_info.content_type_.type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-  environ_map["PATH_INFO"]         = get_realpath(request_info.file_path_);
-  environ_map["PATH_TRANSLATED"]   = get_realpath(request_info.file_path_);
+  environ_map["PATH_INFO"]         = get_realpath(request_info.target_path_);
+  environ_map["PATH_TRANSLATED"]   = get_realpath(request_info.target_path_);
   environ_map["QUERY_STRING"]      = request_info.query_string_;
   environ_map["REQUEST_METHOD"]    = request_info.method_;
   environ_map["SERVER_PROTOCOL"]   = "HTTP/1.1";

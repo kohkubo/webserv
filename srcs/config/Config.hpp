@@ -31,7 +31,6 @@ public:
   errorPageMap     error_pages_;
   Locations        locations_;
 
-  // error_page;
 public:
   class UnexpectedTokenException : public std::logic_error {
   public:
@@ -83,9 +82,6 @@ private:
                                                tokenIterator             end);
 };
 
-// TODO: Config ポインタ -> 実体
-// conf_group: 同じソケットのserver_confの集合
-typedef std::vector<const Config *> confGroup;
-typedef int                         listenFd;
+typedef int listenFd;
 
 #endif /* SRCS_CONFIG_CONFIG_HPP */
