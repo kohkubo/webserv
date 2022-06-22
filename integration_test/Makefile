@@ -26,5 +26,5 @@ run: build
 	./integration_test
 
 .PHONY: gotest
-gotest:
+gotest: build
 	go test ./...
