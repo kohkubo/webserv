@@ -9,9 +9,10 @@
 typedef int connFd;
 
 enum ResponseState {
-  SENDING,
-  CLOSING,
-  COMPLETE,
+  SENDING,  // おくってないか、送信中
+  CLOSING,  // クライアントからのclose待ち
+  COMPLETE, // 送信終了
+  CGI,      // CGIのレスポンス待ち
 };
 
 class Response {
