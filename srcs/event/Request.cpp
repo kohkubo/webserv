@@ -42,7 +42,7 @@ RequestState Request::handle_request(std::string       &request_buffer,
           }
           _request_info_.parse_request_header(_field_map_);
           // throws BadRequestException
-          _tmp(conf_group);
+          _tmp(config_group);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked
