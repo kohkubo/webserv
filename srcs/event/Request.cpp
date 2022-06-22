@@ -50,15 +50,20 @@ static Location select_proper_location(const std::string           &request_uri,
   return *location;
 }
 
-static std::string create_file_path(const std::string &request_target,
-                                    const Location    &location) {
-  std::string file_path = location.root_ + request_target;
-  LOG("create_file_path: " << file_path);
-  if (has_suffix(file_path, "/") &&
-      is_file_exists(file_path + location.index_)) {
-    file_path += location.index_;
+// GETの条件分岐をhandle_method()のGETの処理で行うなら,
+// request_infoの外にtarget_path_変数を出して編集可能にすべきと考える rakiyama
+static std::string create_target_path(const std::string &request_target,
+                                      const std::string &request_method,
+                                      const Location    &location) {
+  std::string target_path = location.root_ + request_target;
+  if (request_method == "GET") {
+    if (has_suffix(target_path, "/") &&
+        is_file_exists(target_path + location.index_)) {
+      target_path += location.index_;
+    }
   }
-  return file_path;
+  LOG("create_target_path: " << target_path);
+  return target_path;
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
@@ -94,8 +99,9 @@ RequestState Request::handle_request(std::string     &request_buffer,
           _request_info_.location_ =
               select_proper_location(_request_info_.request_target_,
                                      _request_info_.config_.locations_);
-          _request_info_.file_path_ = create_file_path(
-              _request_info_.request_target_, _request_info_.location_);
+          _request_info_.target_path_ = create_target_path(
+              _request_info_.request_target_, _request_info_.method_,
+              _request_info_.location_);
           // TODO: validate request_header
           // delete with body
           // has transfer-encoding but last elm is not chunked

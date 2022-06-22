@@ -12,8 +12,8 @@
 // TODO: リンクやその他のファイルシステムの時どうするか
 static HttpStatusCode::StatusCode
 check_filepath_status(const RequestInfo &request_info) {
-  if (has_suffix(request_info.file_path_, "/")) {
-    if (is_dir_exists(request_info.file_path_)) {
+  if (has_suffix(request_info.target_path_, "/")) {
+    if (is_dir_exists(request_info.target_path_)) {
       if (!request_info.location_.autoindex_) {
         return HttpStatusCode::FORBIDDEN_403; // nginxに合わせた
       }
@@ -21,11 +21,11 @@ check_filepath_status(const RequestInfo &request_info) {
     }
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_file_exists(request_info.file_path_)) {
+  if (!is_file_exists(request_info.target_path_)) {
     LOG("check_filepath_status: file not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_accessible(request_info.file_path_, R_OK)) {
+  if (!is_accessible(request_info.target_path_, R_OK)) {
     // TODO: Permission error が 403なのか確かめてない
     return HttpStatusCode::FORBIDDEN_403;
   }
@@ -60,15 +60,15 @@ delete_target_file(const RequestInfo &request_info) {
     ERROR_LOG("DELETE with body is unsupported");
     return HttpStatusCode::BAD_REQUEST_400;
   }
-  if (!is_file_exists(request_info.file_path_)) {
+  if (!is_file_exists(request_info.target_path_)) {
     ERROR_LOG("target file is not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_accessible(request_info.file_path_, W_OK)) {
+  if (!is_accessible(request_info.target_path_, W_OK)) {
     ERROR_LOG("process can not delete target file");
     return HttpStatusCode::FORBIDDEN_403;
   }
-  if (!remove_file(request_info.file_path_)) {
+  if (!remove_file(request_info.target_path_)) {
     ERROR_LOG("unknown error while deleting file");
     return HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   }
