@@ -153,6 +153,7 @@ static std::string response_message(HttpStatusCode::StatusCode status_code,
     response += connection_header();
   }
   if (status_code == HttpStatusCode::NO_CONTENT_204) {
+    // TODO: generate_response()と処理被っている rakiyama
     return response + CRLF;
   }
   if (HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
