@@ -14,13 +14,16 @@ import (
 // http.ResponseではCloseというメンバーに設定されていたので
 // TestInfoのHeader mapからConnectionだけ判定して, mapから削除
 func NewResponseChecker(statusCode int, header http.Header, body []byte) ReponseChecker {
-	c := &ResponseChecker{}
+	c := &Checker{}
 	c.Status = httpresp.Status(statusCode)
 	c.StatusCode = statusCode
 	c.Proto = "HTTP/1.1"
-	c.Header = header
+	c.Header = make(http.Header)
+	for k, v := range header {
+		c.Header[k] = v
+	}
 	c.Body = body
-	c.Close = resolveClose(header)
+	c.Close = resolveClose(c.Header)
 	return c
 }
 
@@ -37,7 +40,7 @@ func resolveClose(header http.Header) bool {
 
 // 必要に応じてチェック項目(メンバー変数)を追加する
 // http.Response参照
-type ResponseChecker struct {
+type Checker struct {
 	Status     string
 	StatusCode int
 	Proto      string
@@ -47,7 +50,7 @@ type ResponseChecker struct {
 }
 
 // レスポンスが期待するヘッダーとボディを持っているか確認
-func (c ResponseChecker) Check(got *http.Response) (int, error) {
+func (c Checker) Check(got *http.Response) (int, error) {
 	var diff_flag int
 	diff_checker := func(title string, x interface{}, y interface{}) {
 		if diff := cmp.Diff(x, y); diff != "" {
