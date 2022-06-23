@@ -50,52 +50,6 @@ bool getline(std::string &source, std::string &line) {
   return true;
 }
 
-bool is_uint8(const std::string &str) {
-  if (str.size() == 1) {
-    return (str[0] >= '0' && str[0] <= '9');
-  }
-  if (str.size() == 2) {
-    return (str[0] >= '1' && str[0] <= '9' && str[1] >= '0' && str[1] <= '9');
-  }
-  if (str.size() == 3) {
-    if (str[0] == '1') {
-      if ((str[1] >= '0' && str[1] <= '9') && (str[2] >= '0' && str[2] <= '9'))
-        return true;
-    }
-    if (str[0] == '2') {
-      if ((str[1] >= '0' && str[1] <= '4') && (str[2] >= '0' && str[2] <= '9'))
-        return true;
-      if (str[1] == '5' && (str[2] >= '0' && str[2] <= '5'))
-        return true;
-    }
-  }
-  return false;
-}
-
-bool is_ip(const std::string &str) {
-  tokenVector   tokens = tokenize(str, ".", "");
-  tokenIterator it     = tokens.begin();
-  size_t        count  = 0;
-  for (; it != tokens.end(); it++, count++) {
-    if (!is_uint8(*it))
-      return false;
-    it++;
-    if (count == 3)
-      break;
-    if (it != tokens.end() && *it != ".")
-      return false;
-  }
-  return true;
-}
-
-bool is_digits(const std::string &str) {
-  for (size_t i = 0; i < str.size(); i++) {
-    if (isdigit(str[i]) == 0)
-      return false;
-  }
-  return true;
-}
-
 std::size_t hexstr_to_size(const std::string &str) {
   std::size_t       x = 0;
   std::stringstream ss;
