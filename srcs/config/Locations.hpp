@@ -15,7 +15,7 @@ private:
 public:
   Locations() {}
   ~Locations(){};
-  bool            add_or_else(const Location &location);
+  void            add_or_exit(const Location &location);
   const Location *select_location(const std::string &request_target) const;
   bool            empty() const { return _location_vector_.empty(); }
 };
