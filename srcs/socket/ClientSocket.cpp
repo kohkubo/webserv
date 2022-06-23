@@ -43,17 +43,18 @@ SocketMapAction ClientSocket::handle_receive_event() {
 }
 
 void ClientSocket::handle_send_event() {
-  ResponseState response_state = _response_queue_.front().send(_socket_fd_);
-  if (response_state == COMPLETE) {
+  Response::ResponseState response_state =
+      _response_queue_.front().send(_socket_fd_);
+  if (response_state == Response::COMPLETE) {
     _response_queue_.pop_front();
   }
 }
 
 void ClientSocket::parse_buffer() {
   for (;;) {
-    RequestState request_state =
+    Request::RequestState request_state =
         _request_.handle_request(_buffer_, _config_group_);
-    if (request_state != SUCCESS) {
+    if (request_state != Request::SUCCESS) {
       break;
     }
     _response_queue_.push_back(_request_.create_response());
