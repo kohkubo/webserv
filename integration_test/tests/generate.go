@@ -26,6 +26,7 @@ func Generate() T {
 		testServerName,
 		testReturn,
 		testKeepAlive,
+		testMultiConnection,
 	}
 	return s
 }

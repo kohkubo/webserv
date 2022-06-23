@@ -182,6 +182,8 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
         request_info.location_->return_map_.begin()->first);
     return response_message(status_code, "", request_info);
   }
+  // CGI
+
   status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
     LOG("generate_response: error status code");

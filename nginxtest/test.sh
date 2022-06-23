@@ -28,3 +28,16 @@ curl -d "content" -X PUT http://localhost:8080/nosuch/filename -v
 curl -d "content" -X PUT http://localhost:8080/dir/ -v
 docker-compose down
 rm -r postdir
+
+export confpath="./conf/autoindex.conf"
+mkdir -p autoindexdir/dir1/dir2
+echo "in autoindexdir/" > autoindexdir/test.html
+echo "in autoindexdir/dir1/" > autoindexdir/dir1/index.html
+echo "in autoindexdir/dir1/dir2/" > autoindexdir/dir1/dir2/test.html
+ln -s autoindexdir/test.html autoindexdir/link_to_test
+docker-compose up -d
+curl localhost:8080/autoindexdir -v
+curl localhost:8080/autoindexdir/ -v
+curl localhost:8080/autoindexdir/dir1/ -v
+curl localhost:8080/autoindexdir/dir1/dir2/ -v
+rm -r autoindexdir

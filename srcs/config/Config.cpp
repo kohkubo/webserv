@@ -11,10 +11,6 @@
 
 #include "utils/utils.hpp"
 
-Config::UnexpectedTokenException::UnexpectedTokenException(
-    const std::string &msg)
-    : logic_error(msg) {}
-
 Config::Config()
     : listen_address_("0.0.0.0")
     , listen_port_("80")
@@ -49,7 +45,7 @@ Config::~Config() { freeaddrinfo(addrinfo_); }
 tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   pos++;
   if (*pos++ != "{")
-    throw UnexpectedTokenException("server directive does not have context.");
+    ERROR_EXIT("server directive does not have context.");
   while (pos != end && *pos != "}") {
     tokenIterator head = pos;
     // clang-format off
@@ -60,13 +56,13 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
     pos = _parse_map_directive("error_page", error_pages_, pos, end);
     // clang-format on
     if (pos == head) {
-      throw UnexpectedTokenException("parse server directive failed.");
+      ERROR_EXIT("parse server directive failed.");
     }
   }
   if (pos == end)
-    throw UnexpectedTokenException("could not detect context end.");
+    ERROR_EXIT("could not detect context end.");
   if (locations_.empty())
-    throw UnexpectedTokenException("could not detect location directive.");
+    ERROR_EXIT("could not detect location directive.");
   return ++pos;
 }
 
@@ -75,7 +71,7 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
     return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directive value.");
+    ERROR_EXIT("could not detect directive value.");
   tokenVector   l  = tokenize(*pos, ": ", " ");
   tokenIterator it = l.begin();
   for (; it != l.end(); it++) {
@@ -93,13 +89,14 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
   Location location;
-  location.limit_except_.clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
+  location.available_methods_
+      .clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
   pos++;
   if (pos == end)
-    throw UnexpectedTokenException("could not detect directive value.");
+    ERROR_EXIT("could not detect directive value.");
   location.location_path_ = *pos++;
   if (pos == end || *pos != "{")
-    throw UnexpectedTokenException("could not detect context.");
+    ERROR_EXIT("could not detect context.");
   pos++;
   while (pos != end && *pos != "}") {
     tokenIterator head = pos;
@@ -108,34 +105,30 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
     pos = _parse_string_directive("index", location.index_, pos, end);
     pos = _parse_bool_directive("autoindex", location.autoindex_, pos, end);
     pos = _parse_map_directive("return", location.return_map_, pos, end);
-    pos = _parse_vector_directive("limit_except", location.limit_except_, pos, end);
+    pos = _parse_vector_directive("available_methods", location.available_methods_, pos, end);
     pos = _parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
     pos = _parse_bool_directive("upload_file", location.upload_file_, pos, end);
     // clang-format on
     if (pos == head) {
-      throw UnexpectedTokenException("parse location directive failed.");
+      ERROR_EXIT("parse location directive failed.");
     }
   }
   if (pos == end)
-    throw UnexpectedTokenException("could not detect context end.");
+    ERROR_EXIT("could not detect context end.");
   // TODO: 雑だけど他に思いつかない。案ほしい。
-  if (location.limit_except_.size() == 0) {
-    location.limit_except_.push_back("GET");
-    location.limit_except_.push_back("POST");
-    location.limit_except_.push_back("DELETE");
+  if (location.available_methods_.size() == 0) {
+    location.available_methods_.push_back("GET");
+    location.available_methods_.push_back("POST");
+    location.available_methods_.push_back("DELETE");
   }
   if (has_suffix(location.index_, "/"))
-    throw UnexpectedTokenException(
-        "index directive failed. don't add \"/\" to file path.");
+    ERROR_EXIT("index directive failed. don't add \"/\" to file path.");
   if (!has_suffix(location.root_, "/"))
-    throw UnexpectedTokenException(
-        "root directive failed. please add \"/\" to end of root dir");
+    ERROR_EXIT("root directive failed. please add \"/\" to end of root dir");
   if (is_minus_depth(location.location_path_) ||
       is_minus_depth(location.root_) || is_minus_depth(location.index_))
-    throw UnexpectedTokenException("minus depth path failed.");
-  if (!locations_.add_or_else(location)) {
-    throw UnexpectedTokenException("duplicate location directive.");
-  }
+    ERROR_EXIT("minus depth path failed.");
+  locations_.add_or_exit(location);
   return ++pos;
 }
 
@@ -147,7 +140,7 @@ tokenIterator Config::_parse_map_directive(std::string                 key,
     return pos;
   pos++;
   if (pos == end || pos + 2 == end || *(pos + 2) != ";")
-    throw UnexpectedTokenException("could not detect directive value.");
+    ERROR_EXIT("could not detect directive value.");
   value.insert(std::make_pair(std::atoi((*pos).c_str()), *(pos + 1)));
   return pos + 3;
 }
@@ -160,7 +153,7 @@ tokenIterator Config::_parse_string_directive(std::string   key,
     return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directive value.");
+    ERROR_EXIT("could not detect directive value.");
   value = *pos;
   return pos + 2;
 }
@@ -172,7 +165,7 @@ tokenIterator Config::_parse_size_directive(std::string key, size_t &value,
     return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directive value.");
+    ERROR_EXIT("could not detect directive value.");
   // TODO: size_tに変換できるやり方ちゃんと調査
   // TODO: エラー処理
   value = std::atol((*pos).c_str());
@@ -186,13 +179,13 @@ tokenIterator Config::_parse_bool_directive(std::string key, bool &value,
     return pos;
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    throw UnexpectedTokenException("could not detect directive value.");
+    ERROR_EXIT("could not detect directive value.");
   if (*pos == "on")
     value = true;
   else if (*pos == "off")
     value = false;
   else
-    throw UnexpectedTokenException("bool directive value is invalid.");
+    ERROR_EXIT("bool directive value is invalid.");
   return pos + 2;
 }
 
@@ -204,12 +197,12 @@ tokenIterator Config::_parse_vector_directive(std::string               key,
     return pos;
   pos++;
   if (pos == end)
-    throw UnexpectedTokenException("could not detect directive value.");
+    ERROR_EXIT("could not detect directive value.");
   for (; pos != end && *pos != ";"; pos++) {
     value.push_back(*pos);
   }
   if (pos == end)
-    throw UnexpectedTokenException("vector directive value is invalid.");
+    ERROR_EXIT("vector directive value is invalid.");
   return pos + 1;
 }
 
