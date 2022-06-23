@@ -14,10 +14,10 @@ public:
   const ConfigGroup &config_group_;
 
 private:
-  static listenFd _create_socket(struct addrinfo *info);
-  static void     _bind_address(listenFd listen_fd, struct addrinfo *info);
+  static listenFd _create_socket();
+  static void     _bind_address(listenFd listen_fd, struct sockaddr_in info);
   static void     _start_listen(listenFd listen_fd);
-  static listenFd _open_new_socket(struct addrinfo *info);
+  static listenFd _open_new_socket(struct sockaddr_in info);
 
 public:
   ListenSocket(const ConfigGroup &config_group);
