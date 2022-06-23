@@ -15,10 +15,10 @@
 #define WRITE_FD 1
 
 static std::string read_fd_to_str(int fd) {
-  char        buf[1024];
+  char        buf[1024 + 1];
   std::string s;
   for (;;) {
-    int n = read(fd, buf, sizeof(buf));
+    int n = read(fd, buf, 1024);
     if (n == 0)
       break;
     buf[n] = '\0';
@@ -61,6 +61,10 @@ ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
   // TODO: cgiからのレスポンスは、ヘッダー＋レスポンスbody、要パース
   // local redirectどうするか
   std::string str = read_fd_to_str(pipefd[READ_FD]);
+  LOG("######################################");
+  LOG(str);
+  LOG("######################################");
+
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {
     ERROR_LOG("error: waitpid in read_file_to_str_cgi");

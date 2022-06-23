@@ -15,7 +15,7 @@ struct Location {
   bool                     cgi_extension_;
   bool                     upload_file_;
   returnMap                return_map_;
-  std::vector<std::string> limit_except_;
+  std::vector<std::string> available_methods_;
 
   Location()
       : root_("html/")
@@ -23,9 +23,9 @@ struct Location {
       , autoindex_(false)
       , cgi_extension_(false)
       , upload_file_(false) {
-    limit_except_.push_back("GET");
-    limit_except_.push_back("POST");
-    limit_except_.push_back("DELETE");
+    available_methods_.push_back("GET");
+    available_methods_.push_back("POST");
+    available_methods_.push_back("DELETE");
   }
 };
 

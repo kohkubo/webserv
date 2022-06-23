@@ -3,16 +3,17 @@
 #include <algorithm>
 #include <string>
 
-bool Locations::add_or_else(const Location &location) {
+#include "utils/utils.hpp"
+
+void Locations::add_or_exit(const Location &location) {
   std::string                     location_path = location.location_path_;
   std::vector<Location>::iterator it            = _location_vector_.begin();
   for (; it != _location_vector_.end(); ++it) {
     if (it->location_path_ == location_path) {
-      return false;
+      ERROR_EXIT("duplicate location directive.");
     }
   }
   _location_vector_.push_back(location);
-  return true;
 }
 
 const Location *
