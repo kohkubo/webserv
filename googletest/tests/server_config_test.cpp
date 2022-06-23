@@ -227,15 +227,15 @@ TEST(server_config_test, parse_vector_directive) {
   {
     std::string     str          = "server {\n"
                                    "    location / {\n"
-                                   "        limit_except GET POST;\n"
+                                   "        available_methods GET POST;\n"
                                    "    }\n"
                                    "}\n";
     tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config          config(token_vector.begin(), token_vector.end());
     const Location *location = config.locations_.select_location("/");
-    EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
-    EXPECT_EQ(location->limit_except_[0], "GET");
-    EXPECT_EQ(location->limit_except_[1], "POST");
+    EXPECT_EQ(location->available_methods_.size(), static_cast<std::size_t>(2));
+    EXPECT_EQ(location->available_methods_[0], "GET");
+    EXPECT_EQ(location->available_methods_[1], "POST");
   }
 }
 
@@ -244,22 +244,22 @@ TEST(server_config_test, parse_location_directive) {
     std::string     str          = "server {\n"
                                    "    location / {\n"
                                    "        root /var/www/;\n"
-                                   "        limit_except GET POST;\n"
+                                   "        available_methods GET POST;\n"
                                    "    }\n"
                                    "    location /dir1 {\n"
                                    "        root /var/www/;\n"
-                                   "        limit_except GET POST;\n"
+                                   "        available_methods GET POST;\n"
                                    "    }\n"
                                    "}\n";
     tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config          config(token_vector.begin(), token_vector.end());
     const Location *location = config.locations_.select_location("/");
-    EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
-    EXPECT_EQ(location->limit_except_[0], "GET");
-    EXPECT_EQ(location->limit_except_[1], "POST");
+    EXPECT_EQ(location->available_methods_.size(), static_cast<std::size_t>(2));
+    EXPECT_EQ(location->available_methods_[0], "GET");
+    EXPECT_EQ(location->available_methods_[1], "POST");
     location = config.locations_.select_location("/dir1");
-    EXPECT_EQ(location->limit_except_.size(), static_cast<std::size_t>(2));
-    EXPECT_EQ(location->limit_except_[0], "GET");
-    EXPECT_EQ(location->limit_except_[1], "POST");
+    EXPECT_EQ(location->available_methods_.size(), static_cast<std::size_t>(2));
+    EXPECT_EQ(location->available_methods_[0], "GET");
+    EXPECT_EQ(location->available_methods_[1], "POST");
   }
 }
