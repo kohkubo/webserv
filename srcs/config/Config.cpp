@@ -93,7 +93,8 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
   Location location;
-  location.limit_except_.clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
+  location.available_methods_
+      .clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
   pos++;
   if (pos == end)
     throw UnexpectedTokenException("could not detect directive value.");
@@ -108,7 +109,7 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
     pos = _parse_string_directive("index", location.index_, pos, end);
     pos = _parse_bool_directive("autoindex", location.autoindex_, pos, end);
     pos = _parse_map_directive("return", location.return_map_, pos, end);
-    pos = _parse_vector_directive("limit_except", location.limit_except_, pos, end);
+    pos = _parse_vector_directive("available_methods", location.available_methods_, pos, end);
     pos = _parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
     pos = _parse_bool_directive("upload_file", location.upload_file_, pos, end);
     // clang-format on
@@ -119,10 +120,10 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (pos == end)
     throw UnexpectedTokenException("could not detect context end.");
   // TODO: 雑だけど他に思いつかない。案ほしい。
-  if (location.limit_except_.size() == 0) {
-    location.limit_except_.push_back("GET");
-    location.limit_except_.push_back("POST");
-    location.limit_except_.push_back("DELETE");
+  if (location.available_methods_.size() == 0) {
+    location.available_methods_.push_back("GET");
+    location.available_methods_.push_back("POST");
+    location.available_methods_.push_back("DELETE");
   }
   if (has_suffix(location.index_, "/"))
     throw UnexpectedTokenException(
