@@ -14,12 +14,12 @@ jobs:
           cd ./googletest
           ./tester
 
-  itest:
+  itest_all:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: make_itest
-        run: make itest
+      - name: make_itest_all
+        run: make itest_all
 
   gotest:
     runs-on: ubuntu-latest
