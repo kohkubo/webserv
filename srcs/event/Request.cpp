@@ -104,10 +104,10 @@ Request::RequestState Request::handle_request(std::string       &request_buffer,
       _response_ = ResponseGenerator::generate_response(_request_info_);
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    _response_ =
-        ResponseGenerator::generate_error_response(_request_info_, e.status());
     _request_info_.connection_close_ = true;
-    _state_                          = SUCCESS;
+    _response_ =
+        ResponseGenerator::_response_message(e.status(), "", _request_info_);
+    _state_ = SUCCESS;
   }
   return _state_;
 }

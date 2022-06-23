@@ -13,9 +13,9 @@
 class ResponseGenerator {
 public:
   static std::string generate_response(const RequestInfo &request_info);
-  static std::string
-  generate_error_response(const RequestInfo         &request_info,
-                          HttpStatusCode::StatusCode status_code);
+  static std::string _response_message(HttpStatusCode::StatusCode status_code,
+                                       const std::string         &body,
+                                       const RequestInfo         &request_info);
 
 private:
   ResponseGenerator();

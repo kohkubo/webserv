@@ -62,7 +62,7 @@ std::map<int, std::string> g_response_status_phrase_map =
 
 static bool is_error_status_code(HttpStatusCode::StatusCode status_code) {
   // TODO: エラーのステータスコードの扱いを決まったら再実装
-  return status_code > 299 && status_code < 600;
+  return 399 < status_code && status_code < 600;
 }
 
 // TODO: config.error_page validate
@@ -134,9 +134,10 @@ static std::string entity_header_and_body(const std::string &body) {
          "Content-Type: text/html" + CRLF + CRLF + body;
 }
 
-std::string ResponseGenerator::generate_error_response(
-    const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
-  LOG("generate_error_response()");
+static std::string
+error_response_message(const RequestInfo         &request_info,
+                       HttpStatusCode::StatusCode status_code) {
+  LOG("error_response_message()");
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   response += connection_header();
@@ -146,15 +147,18 @@ std::string ResponseGenerator::generate_error_response(
   return response;
 }
 
-static std::string response_message(HttpStatusCode::StatusCode status_code,
-                                    const std::string         &body,
-                                    const RequestInfo         &request_info) {
+std::string
+ResponseGenerator::_response_message(HttpStatusCode::StatusCode status_code,
+                                     const std::string         &body,
+                                     const RequestInfo         &request_info) {
+  if (is_error_status_code(status_code)) {
+    return error_response_message(request_info, status_code);
+  }
   std::string response = start_line(status_code);
   if (request_info.connection_close_) {
     response += connection_header();
   }
-  if (status_code == HttpStatusCode::NO_CONTENT_204) {
-    // TODO: generate_response()と処理被っている rakiyama
+  if (HttpStatusCode::NO_CONTENT_204 == status_code) {
     return response + CRLF;
   }
   if (HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
@@ -183,18 +187,6 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     return response_message(status_code, "", request_info);
   }
   // CGI
-
   status_code = _handle_method(request_info);
-  if (is_error_status_code(status_code)) {
-    LOG("generate_response: error status code");
-    // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
-    return generate_error_response(request_info, status_code);
-  }
-  if (status_code == HttpStatusCode::NO_CONTENT_204) {
-    // TODO:
-    // 本来はここに分岐がない方がよいですが、現状のロジックだと必要なのでとりあえずの実装です
-    // kohkubo
-    return response_message(status_code, "", request_info);
-  }
-  return response_message(status_code, _body(request_info), request_info);
+  return _response_message(status_code, _body(request_info), request_info);
 }
