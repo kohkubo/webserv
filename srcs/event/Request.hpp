@@ -12,16 +12,15 @@
 
 typedef int connFd;
 
-enum RequestState {
-  RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
-  RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
-  RECEIVING_BODY,      // リクエストはbodyを読み取り中。
-  SUCCESS,             // リクエストのパース完了。
-};
-
-enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
-
 struct Request {
+  enum RequestState {
+    RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
+    RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
+    RECEIVING_BODY,      // リクエストはbodyを読み取り中。
+    SUCCESS,             // リクエストのパース完了。
+  };
+  enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
+
 private:
   RequestState                       _state_;
   RequestInfo                        _request_info_;

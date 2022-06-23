@@ -21,11 +21,13 @@ void Request::_tmp(const ConfigGroup &config_group) {
   _request_info_.config_   = config_group.select_config(_request_info_.host_);
   const Location *location = _request_info_.config_.locations_.select_location(
       _request_info_.request_target_);
-  if (location == NULL) {
-    throw RequestInfo::BadRequestException(HttpStatusCode::NOT_FOUND_404);
+  _request_info_.location_ = location;
+  if (_request_info_.location_ != NULL) {
+    // rakiyama
+    // target_pathの解決をもっと後の処理で
+    // (その場合const request_infoのメンバではなくローカル変数とか？)やる
+    _request_info_.target_path_ =
+        create_target_path(_request_info_.request_target_,
+                           _request_info_.method_, *(_request_info_.location_));
   }
-  _request_info_.location_ = *location;
-  _request_info_.target_path_ =
-      create_target_path(_request_info_.request_target_, _request_info_.method_,
-                         _request_info_.location_);
 }

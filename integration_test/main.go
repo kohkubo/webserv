@@ -29,8 +29,12 @@ func main() {
 func test() chan bool {
 	result := make(chan bool)
 	go func() {
-		t := tests.Generate()
-		result <- t.Test()
+		nomal_ok := tests.NormalTests().Test()
+		option_ok := true
+		if len(os.Args) != 1 && os.Args[1] == "-all" {
+			option_ok = tests.OptionalTests().Test()
+		}
+		result <- nomal_ok && option_ok
 	}()
 	return result
 }

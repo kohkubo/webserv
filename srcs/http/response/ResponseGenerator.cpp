@@ -70,8 +70,9 @@ static std::string error_page_body(const RequestInfo         &request_info,
                                    HttpStatusCode::StatusCode status_code) {
   errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(status_code);
-  if (it != request_info.config_.error_pages_.end()) {
-    std::string file_path      = request_info.location_.root_ + it->second;
+  if (it != request_info.config_.error_pages_.end() &&
+      request_info.location_ != NULL) {
+    std::string file_path      = request_info.location_->root_ + it->second;
     // TODO:
     // 無いエラーページを指定した場合、nginxではどのような挙動になるのかチェックが必要
     Result<std::string> result = read_file_to_str(file_path);
@@ -159,7 +160,7 @@ static std::string response_message(HttpStatusCode::StatusCode status_code,
   }
   if (HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
     response +=
-        location_header(request_info.location_.return_map_, status_code);
+        location_header(request_info.location_->return_map_, status_code);
   }
   response += entity_header_and_body(body);
   return response;
@@ -168,11 +169,18 @@ static std::string response_message(HttpStatusCode::StatusCode status_code,
 std::string
 ResponseGenerator::generate_response(const RequestInfo &request_info) {
   HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
+  if (request_info.location_ == NULL) {
+    return generate_error_response(request_info, HttpStatusCode::NOT_FOUND_404);
+  }
+  // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
+  // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
+  // TODO:locationを決定する処理をResponseの前に挟むと、
+  // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
   // return がセットされていたら
-  if (request_info.location_.return_map_.size() != 0) {
+  if (request_info.location_->return_map_.size() != 0) {
     // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode::StatusCode>(
-        request_info.location_.return_map_.begin()->first);
+        request_info.location_->return_map_.begin()->first);
     return response_message(status_code, "", request_info);
   }
   // CGI
