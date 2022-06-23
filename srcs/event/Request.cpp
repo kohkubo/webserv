@@ -82,29 +82,19 @@ RequestState Request::_handle_request_body(std::string &request_buffer) {
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 RequestState Request::handle_request(std::string       &request_buffer,
                                      const ConfigGroup &config_group) {
-  try {
-    if (_state_ == RECEIVING_STARTLINE) {
-      _state_ = _handle_request_startline(request_buffer);
-      // TODO: この例外チェックの適切な場所を見直す kohkubo
-      _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
-    }
-    if (_state_ == RECEIVING_HEADER) {
-      _state_ = _handle_request_header(request_buffer);
-      // TODO: この例外チェックの適切な場所を見直す kohkubo
-      _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
-      _tmp(config_group);
-    }
-    if (_state_ == RECEIVING_BODY) {
-      _state_ = _handle_request_body(request_buffer);
-    }
-    if (_state_ == SUCCESS) {
-      _response_ = ResponseGenerator::generate_response(_request_info_);
-    }
-  } catch (const RequestInfo::BadRequestException &e) {
-    _response_ =
-        ResponseGenerator::generate_error_response(_request_info_, e.status());
-    _request_info_.connection_close_ = true;
-    _state_                          = SUCCESS;
+  if (_state_ == RECEIVING_STARTLINE) {
+    _state_ = _handle_request_startline(request_buffer);
+    // TODO: この例外チェックの適切な場所を見直す kohkubo
+    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+  }
+  if (_state_ == RECEIVING_HEADER) {
+    _state_ = _handle_request_header(request_buffer);
+    // TODO: この例外チェックの適切な場所を見直す kohkubo
+    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+    _tmp(config_group);
+  }
+  if (_state_ == RECEIVING_BODY) {
+    _state_ = _handle_request_body(request_buffer);
   }
   return _state_;
 }
