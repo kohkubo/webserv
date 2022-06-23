@@ -53,6 +53,26 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   return ++pos;
 }
 
+struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
+                                      const std::string &listen_port) {
+  struct addrinfo  hints    = {};
+  struct addrinfo *addrinfo = NULL;
+  hints.ai_family           = AF_INET;
+  hints.ai_socktype         = SOCK_STREAM;
+  int error = getaddrinfo(listen_address.c_str(), listen_port.c_str(), &hints,
+                          &addrinfo);
+  if (error != 0) {
+    ERROR_EXIT("getaddrinfo: " << gai_strerror(error));
+  }
+  struct sockaddr_in *tmp = reinterpret_cast<sockaddr_in *>(addrinfo->ai_addr);
+  struct sockaddr_in  sockaddr_in;
+  sockaddr_in.sin_family = hints.ai_family;
+  sockaddr_in.sin_addr   = tmp->sin_addr;
+  sockaddr_in.sin_port   = tmp->sin_port;
+  freeaddrinfo(addrinfo);
+  return sockaddr_in;
+}
+
 tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   if (*pos != "listen")
     return pos;
@@ -65,28 +85,13 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   if (it == token_vector.end()) {
     ERROR_EXIT("could not detect listen address.");
   }
-  std::string listen_address = *it;
+  std::string listen_address = *it++;
   LOG("listen address: " << listen_address);
-  it++;
   if (it == token_vector.end()) {
     ERROR_EXIT("could not detect listen port.");
   }
-  std::string listen_port   = *it;
-
-  struct addrinfo  hints    = {};
-  struct addrinfo *addrinfo = NULL;
-  hints.ai_family           = AF_INET;
-  hints.ai_socktype         = SOCK_STREAM;
-  int error = getaddrinfo(listen_address.c_str(), listen_port.c_str(), &hints,
-                          &addrinfo);
-  if (error != 0) {
-    ERROR_EXIT("getaddrinfo: " << gai_strerror(error));
-  }
-  sockaddr_in_.sin_family = AF_INET;
-  struct sockaddr_in *tmp = reinterpret_cast<sockaddr_in *>(addrinfo->ai_addr);
-  sockaddr_in_.sin_addr   = tmp->sin_addr;
-  sockaddr_in_.sin_port   = tmp->sin_port;
-  freeaddrinfo(addrinfo);
+  std::string listen_port = *it;
+  sockaddr_in_            = create_sockaddr_in(listen_address, listen_port);
   return pos + 2;
 }
 
