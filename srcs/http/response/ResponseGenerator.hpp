@@ -15,8 +15,8 @@ public:
   static std::string generate_response(
       const RequestInfo         &request_info,
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
-  static std::string response_message(HttpStatusCode::StatusCode status_code,
-                                      const RequestInfo         &request_info);
+  static std::string response_message(const RequestInfo         &request_info,
+                                      HttpStatusCode::StatusCode status_code);
 
 private:
   ResponseGenerator();
