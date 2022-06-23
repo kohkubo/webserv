@@ -1,9 +1,9 @@
 #include "event/Request.hpp"
 
-static bool get_next_chunk_line(NextChunkType chunk_type,
+static bool get_next_chunk_line(Request::NextChunkType chunk_type,
                                 std::string &request_buffer, std::string &line,
                                 size_t next_chunk_size) {
-  if (chunk_type == CHUNK_SIZE) {
+  if (chunk_type == Request::CHUNK_SIZE) {
     return getline(request_buffer, line);
   }
   if (request_buffer.size() < next_chunk_size + CRLF.size()) {
@@ -18,7 +18,7 @@ static bool get_next_chunk_line(NextChunkType chunk_type,
   return true;
 }
 
-RequestState Request::_chunk_loop(std::string &request_buffer) {
+Request::RequestState Request::_chunk_loop(std::string &request_buffer) {
   std::string line;
   while (get_next_chunk_line(_next_chunk_, request_buffer, line,
                              _next_chunk_size_)) {
