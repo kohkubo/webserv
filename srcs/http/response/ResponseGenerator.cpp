@@ -66,9 +66,8 @@ static bool is_error_status_code(HttpStatusCode::StatusCode status_code) {
 }
 
 // TODO: config.error_page validate
-// TODO: default_body()に変える
-static std::string error_page_body(const RequestInfo         &request_info,
-                                   HttpStatusCode::StatusCode status_code) {
+static std::string body_of_status_code(const RequestInfo         &request_info,
+                                       HttpStatusCode::StatusCode status_code) {
   errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(status_code);
   if (it != request_info.config_.error_pages_.end() &&
@@ -80,7 +79,7 @@ static std::string error_page_body(const RequestInfo         &request_info,
     if (!result.is_err_) {
       return result.object_;
     }
-    LOG("error_page_body: read_file_to_str error");
+    LOG("body_of_status_code: read_file_to_str error");
     status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   }
   return "<!DOCTYPE html>\n"
@@ -94,7 +93,7 @@ static std::string error_page_body(const RequestInfo         &request_info,
          "<h2>" +
          g_response_status_phrase_map[status_code] +
          "</h2>\n"
-         "default error page\n" // provided by webserv
+         "provided by webserv\n"
          "    </body>\n"
          "</html>";
 }
@@ -104,13 +103,13 @@ ResponseGenerator::_body(const RequestInfo               &request_info,
                          const HttpStatusCode::StatusCode status_code) {
   if (is_error_status_code(status_code) ||
       HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
-    return error_page_body(request_info, status_code);
+    return body_of_status_code(request_info, status_code);
   }
   if (has_suffix(request_info.target_path_, ".py")) {
     Result<std::string> result = _read_file_to_str_cgi(request_info);
     if (result.is_err_) {
-      return error_page_body(request_info,
-                             HttpStatusCode::INTERNAL_SERVER_ERROR_500);
+      return body_of_status_code(request_info,
+                                 HttpStatusCode::INTERNAL_SERVER_ERROR_500);
     }
     return result.object_;
   }
@@ -119,8 +118,8 @@ ResponseGenerator::_body(const RequestInfo               &request_info,
   }
   Result<std::string> result = read_file_to_str(request_info.target_path_);
   if (result.is_err_) {
-    return error_page_body(request_info,
-                           HttpStatusCode::INTERNAL_SERVER_ERROR_500);
+    return body_of_status_code(request_info,
+                               HttpStatusCode::INTERNAL_SERVER_ERROR_500);
   }
   return result.object_;
 }

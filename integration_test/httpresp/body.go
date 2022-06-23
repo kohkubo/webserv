@@ -15,7 +15,7 @@ func ErrorBody(statusCode int) []byte {
 			"<h2>" +
 			Status(statusCode) +
 			"</h2>\n" +
-			"default error page\n" +
+			"provided by webserv\n" +
 			"    </body>\n" +
 			"</html>")
 }
