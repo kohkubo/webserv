@@ -51,13 +51,18 @@ void ClientSocket::handle_send_event() {
 }
 
 void ClientSocket::parse_buffer() {
-  for (;;) {
-    Request::RequestState request_state =
-        _request_.handle_request(_buffer_, _config_group_);
-    if (request_state != Request::SUCCESS) {
-      break;
+  try {
+    for (;;) {
+      Request::RequestState request_state =
+          _request_.handle_request(_buffer_, _config_group_);
+      if (request_state != Request::SUCCESS) {
+        break;
+      }
+      _response_queue_.push_back(_request_.create_response());
+      _request_ = Request();
     }
-    _response_queue_.push_back(_request_.create_response());
+  } catch (const RequestInfo::BadRequestException &e) {
+    _response_queue_.push_back(_request_.create_response(e.status()));
     _request_ = Request();
   }
 }

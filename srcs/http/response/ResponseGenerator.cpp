@@ -123,6 +123,7 @@ static std::string start_line(const HttpStatusCode::StatusCode status_code) {
 }
 
 static std::string connection_header() { return "Connection: close" + CRLF; }
+
 static std::string location_header(const returnMap           &return_map,
                                    HttpStatusCode::StatusCode status_code) {
   returnMap::const_iterator it = return_map.find(status_code);
@@ -186,8 +187,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
 
   status_code = _handle_method(request_info);
   if (is_error_status_code(status_code)) {
-    LOG("generate_response: error status code");
-    // TODO: locationの渡し方は全体の処理の流れが決まるまで保留 kohkubo
+    LOG("generate_response: error status code: " << status_code);
     return generate_error_response(request_info, status_code);
   }
   if (status_code == HttpStatusCode::NO_CONTENT_204) {
