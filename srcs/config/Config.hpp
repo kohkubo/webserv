@@ -45,11 +45,7 @@ public:
       , client_max_body_size_(1024)
       , server_name_("")
       , addrinfo_(NULL) {
-    try {
-      _last_iterator_pos_ = _parse(start, end);
-    } catch (const std::exception &e) {
-      ERROR_EXIT(e.what());
-    }
+    _last_iterator_pos_ = _parse(start, end);
   }
   ~Config();
   Config(const Config &other);
