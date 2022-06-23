@@ -38,7 +38,7 @@ itest: $(NAME)
 	$(MAKE) -C $(itestdir) run
 
 .PHONY: gotest
-gotest: $(NAME)
+gotest:
 	$(MAKE) -C $(itestdir) gotest
 
 .PHONY: wtest
