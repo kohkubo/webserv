@@ -58,9 +58,10 @@ public:
     return Response(response, _request_info_.connection_close_);
   }
   Response create_response(HttpStatusCode::StatusCode status_code) {
+    _request_info_.connection_close_ = true;
     std::string response =
-        ResponseGenerator::generate_error_response(_request_info_, status_code);
-    return Response(response, true);
+        ResponseGenerator::generate_response(_request_info_, status_code);
+    return Response(response, _request_info_.connection_close_);
   }
 };
 

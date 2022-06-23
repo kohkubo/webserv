@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"integration_test/httpresp"
 	"integration_test/httptest"
 	"net/http"
 )
@@ -15,7 +16,7 @@ var testReturn = testCatergory{
 			test: func() bool {
 				port := "50002"
 				expectStatusCode := 301
-				expectBody := []byte{}
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
