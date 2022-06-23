@@ -20,7 +20,7 @@ bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 SocketMapAction ClientSocket::handle_event(short int revents) {
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
-    LOG("[LOG] connection (or write end of connection) was closed.");
+    LOG("connection was closed by client.");
     return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
   }
   if ((revents & POLLIN) != 0) {
