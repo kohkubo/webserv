@@ -27,6 +27,9 @@ listenFd ListenSocket::_open_new_socket(struct addrinfo *info) {
 }
 
 listenFd ListenSocket::_create_socket(struct addrinfo *info) {
+  std::cout << "info->ai_family: " << info->ai_family << std::endl;
+  std::cout << "info->ai_socktype: " << info->ai_socktype << std::endl;
+  std::cout << "info->ai_protocol: " << info->ai_protocol << std::endl;
   listenFd listen_fd =
       socket(info->ai_family, info->ai_socktype, info->ai_protocol);
   if (listen_fd == -1) {
