@@ -26,21 +26,21 @@ public:
   };
   typedef std::map<std::string, Form> formMap;
 
-  bool        is_blank_first_line_;
-  std::string method_;
-  std::string request_target_;
-  std::string query_string_;
-  std::string version_;
-  std::string host_;
-  std::string body_;
-  bool        connection_close_;
-  bool        is_chunked_;
-  std::size_t content_length_;
-  std::string target_path_;
-  Config      config_;
-  Location    location_;
-  ContentInfo content_type_;
-  formMap     form_map_;
+  bool            is_blank_first_line_;
+  std::string     method_;
+  std::string     request_target_;
+  std::string     query_string_;
+  std::string     version_;
+  std::string     host_;
+  std::string     body_;
+  bool            connection_close_;
+  bool            is_chunked_;
+  std::size_t     content_length_;
+  std::string     target_path_;
+  Config          config_;
+  const Location *location_;
+  ContentInfo     content_type_;
+  formMap         form_map_;
 
 private:
   static formMap     _parse_request_multi_part(const std::string &request_body,

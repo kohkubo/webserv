@@ -14,7 +14,7 @@ static HttpStatusCode::StatusCode
 check_filepath_status(const RequestInfo &request_info) {
   if (has_suffix(request_info.target_path_, "/")) {
     if (is_dir_exists(request_info.target_path_)) {
-      if (!request_info.location_.autoindex_) {
+      if (!request_info.location_->autoindex_) {
         return HttpStatusCode::FORBIDDEN_403; // nginxに合わせた
       }
       return HttpStatusCode::OK_200;
@@ -35,9 +35,9 @@ check_filepath_status(const RequestInfo &request_info) {
 static HttpStatusCode::StatusCode
 handle_post_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_.available_methods_.begin(),
-                request_info.location_.available_methods_.end(),
-                "POST") == request_info.location_.available_methods_.end()) {
+  if (std::find(request_info.location_->available_methods_.begin(),
+                request_info.location_->available_methods_.end(),
+                "POST") == request_info.location_->available_methods_.end()) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
   return check_filepath_status(request_info);
@@ -46,9 +46,9 @@ handle_post_method(const RequestInfo &request_info) {
 static HttpStatusCode::StatusCode
 handle_get_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_.available_methods_.begin(),
-                request_info.location_.available_methods_.end(),
-                "GET") == request_info.location_.available_methods_.end()) {
+  if (std::find(request_info.location_->available_methods_.begin(),
+                request_info.location_->available_methods_.end(),
+                "GET") == request_info.location_->available_methods_.end()) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
   return check_filepath_status(request_info);
@@ -79,9 +79,9 @@ delete_target_file(const RequestInfo &request_info) {
 static HttpStatusCode::StatusCode
 handle_delete_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_.available_methods_.begin(),
-                request_info.location_.available_methods_.end(),
-                "DELETE") == request_info.location_.available_methods_.end()) {
+  if (std::find(request_info.location_->available_methods_.begin(),
+                request_info.location_->available_methods_.end(),
+                "DELETE") == request_info.location_->available_methods_.end()) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
   return delete_target_file(request_info);
