@@ -13,7 +13,7 @@ func (tc testCategories) Test() bool {
 	return countTestFail == 0
 }
 
-func Generate() T {
+func NormalTests() T {
 	s := testCategories{
 		testGET,
 		testDELETE,
@@ -26,6 +26,12 @@ func Generate() T {
 		testServerName,
 		testReturn,
 		testKeepAlive,
+	}
+	return s
+}
+
+func OptionalTests() T {
+	s := testCategories{
 		testMultiConnection,
 	}
 	return s

@@ -25,6 +25,10 @@ re: clean all
 run: build
 	./integration_test
 
+.PHONY: run_all
+run_all: build
+	./integration_test -all
+
 .PHONY: gotest
 gotest: build
 	go test ./...
