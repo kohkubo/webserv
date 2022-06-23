@@ -84,7 +84,7 @@ Request::_handle_request_body(std::string &request_buffer) {
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 Request::RequestState Request::handle_request(std::string       &request_buffer,
-                                     const ConfigGroup &config_group) {
+                                              const ConfigGroup &config_group) {
   if (_state_ == Request::RECEIVING_STARTLINE) {
     _state_ = _handle_request_startline(request_buffer);
     // TODO: この例外チェックの適切な場所を見直す kohkubo
