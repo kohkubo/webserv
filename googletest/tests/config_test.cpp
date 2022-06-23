@@ -63,6 +63,7 @@ TEST(server_config_test, parse_string_derective_exception) {
 TEST(server_config_test, parse_string_derective) {
   {
     std::string str          = "server {\n"
+                               "    listen 0.0.0.0:50001;\n"
                                "    server_name example.com;\n"
                                "    location / {\n"
                                "        root /var/www/html/;\n"
@@ -75,6 +76,7 @@ TEST(server_config_test, parse_string_derective) {
   }
   {
     std::string str          = "server {\n"
+                               "    listen 0.0.0.0:50001;\n"
                                "    server_name    example.com    ;\n"
                                "    location / {\n"
                                "        root /var/www/html/;\n"
@@ -142,6 +144,7 @@ TEST(server_config_test, listen_exception4) {
 TEST(server_config_test, parse_map_directive) {
   {
     std::string str          = "server {\n"
+                               "    listen 0.0.0.0:50001;\n"
                                "    error_page 404 /404.html;\n"
                                "    error_page 500 /500.html;\n"
                                "    location / {\n"
@@ -159,6 +162,7 @@ TEST(server_config_test, parse_map_directive) {
 TEST(server_config_test, parse_boolean_directive) {
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        autoindex on;\n"
                                    "    }\n"
@@ -170,6 +174,7 @@ TEST(server_config_test, parse_boolean_directive) {
   }
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        autoindex off;\n"
                                    "    }\n"
@@ -184,6 +189,7 @@ TEST(server_config_test, parse_boolean_directive) {
 TEST(server_config_test, parse_size_directive) {
   {
     std::string str          = "server {\n"
+                               "   listen 0.0.0.0:50001;\n"
                                "    client_max_body_size 1000;\n"
                                "    location / {\n"
                                "        root /var/www/;\n"
@@ -198,6 +204,7 @@ TEST(server_config_test, parse_size_directive) {
 TEST(server_config_test, parse_vector_directive) {
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        available_methods GET POST;\n"
                                    "    }\n"
@@ -214,6 +221,7 @@ TEST(server_config_test, parse_vector_directive) {
 TEST(server_config_test, parse_location_directive) {
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        root /var/www/;\n"
                                    "        available_methods GET POST;\n"
