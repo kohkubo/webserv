@@ -167,7 +167,7 @@ std::string
 ResponseGenerator::generate_response(const RequestInfo &request_info) {
   HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
   if (request_info.location_ == NULL) {
-    return generate_error_response(request_info, HttpStatusCode::NOT_FOUND_404);
+    return _response_message(HttpStatusCode::NOT_FOUND_404, "", request_info);
   }
   // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
   // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
@@ -178,7 +178,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info) {
     // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
-    return response_message(status_code, "", request_info);
+    return _response_message(status_code, "", request_info);
   }
   // CGI
   status_code = _handle_method(request_info);
