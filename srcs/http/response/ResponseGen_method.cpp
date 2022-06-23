@@ -35,9 +35,9 @@ check_filepath_status(const RequestInfo &request_info) {
 static HttpStatusCode::StatusCode
 handle_post_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_.limit_except_.begin(),
-                request_info.location_.limit_except_.end(),
-                "POST") == request_info.location_.limit_except_.end()) {
+  if (std::find(request_info.location_.available_methods_.begin(),
+                request_info.location_.available_methods_.end(),
+                "POST") == request_info.location_.available_methods_.end()) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
   return check_filepath_status(request_info);
@@ -46,9 +46,9 @@ handle_post_method(const RequestInfo &request_info) {
 static HttpStatusCode::StatusCode
 handle_get_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_.limit_except_.begin(),
-                request_info.location_.limit_except_.end(),
-                "GET") == request_info.location_.limit_except_.end()) {
+  if (std::find(request_info.location_.available_methods_.begin(),
+                request_info.location_.available_methods_.end(),
+                "GET") == request_info.location_.available_methods_.end()) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
   return check_filepath_status(request_info);
@@ -79,9 +79,9 @@ delete_target_file(const RequestInfo &request_info) {
 static HttpStatusCode::StatusCode
 handle_delete_method(const RequestInfo &request_info) {
   // TODO: ここらへんの処理、未定なので雑に書いています。
-  if (std::find(request_info.location_.limit_except_.begin(),
-                request_info.location_.limit_except_.end(),
-                "DELETE") == request_info.location_.limit_except_.end()) {
+  if (std::find(request_info.location_.available_methods_.begin(),
+                request_info.location_.available_methods_.end(),
+                "DELETE") == request_info.location_.available_methods_.end()) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
   return delete_target_file(request_info);
