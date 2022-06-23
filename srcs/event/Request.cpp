@@ -106,7 +106,7 @@ Request::RequestState Request::handle_request(std::string       &request_buffer,
   } catch (const RequestInfo::BadRequestException &e) {
     _request_info_.connection_close_ = true;
     _response_ =
-        ResponseGenerator::_response_message(e.status(), "", _request_info_);
+        ResponseGenerator::response_message(e.status(), _request_info_);
     _state_ = SUCCESS;
   }
   return _state_;

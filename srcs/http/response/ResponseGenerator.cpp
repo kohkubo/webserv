@@ -66,6 +66,7 @@ static bool is_error_status_code(HttpStatusCode::StatusCode status_code) {
 }
 
 // TODO: config.error_page validate
+// TODO: default_body()に変える
 static std::string error_page_body(const RequestInfo         &request_info,
                                    HttpStatusCode::StatusCode status_code) {
   errorPageMap::const_iterator it =
@@ -93,12 +94,18 @@ static std::string error_page_body(const RequestInfo         &request_info,
          "<h2>" +
          g_response_status_phrase_map[status_code] +
          "</h2>\n"
-         "default error page\n"
+         "default error page\n" // provided by webserv
          "    </body>\n"
          "</html>";
 }
 
-std::string ResponseGenerator::_body(const RequestInfo &request_info) {
+std::string
+ResponseGenerator::_body(const RequestInfo               &request_info,
+                         const HttpStatusCode::StatusCode status_code) {
+  if (is_error_status_code(status_code) ||
+      HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
+    return error_page_body(request_info, status_code);
+  }
   if (has_suffix(request_info.target_path_, ".py")) {
     Result<std::string> result = _read_file_to_str_cgi(request_info);
     if (result.is_err_) {
@@ -135,22 +142,12 @@ static std::string entity_header_and_body(const std::string &body) {
 }
 
 std::string
-ResponseGenerator::_response_message(HttpStatusCode::StatusCode status_code,
-                                     const std::string         &body,
-                                     const RequestInfo         &request_info) {
-  // TODO: bodyの生成もこの中でしたら処理が綺麗になる？ rakiyama
+ResponseGenerator::response_message(HttpStatusCode::StatusCode status_code,
+                                    const RequestInfo         &request_info) {
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   if (request_info.connection_close_) {
-    // TODO: 400エラーではcloseで入ってくるはず rakiyama
     response += connection_header();
-  }
-  if (is_error_status_code(status_code)) {
-    std::string error_body = error_page_body(request_info, status_code);
-    response += entity_header_and_body(error_body);
-    LOG("error_response_message");
-    LOG(response);
-    return response;
   }
   if (HttpStatusCode::NO_CONTENT_204 == status_code) {
     return response + CRLF;
@@ -159,7 +156,7 @@ ResponseGenerator::_response_message(HttpStatusCode::StatusCode status_code,
     response +=
         location_header(request_info.location_->return_map_, status_code);
   }
-  response += entity_header_and_body(body);
+  response += entity_header_and_body(_body(request_info, status_code));
   return response;
 };
 
@@ -167,20 +164,13 @@ std::string
 ResponseGenerator::generate_response(const RequestInfo &request_info) {
   HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
   if (request_info.location_ == NULL) {
-    return _response_message(HttpStatusCode::NOT_FOUND_404, "", request_info);
+    return response_message(HttpStatusCode::NOT_FOUND_404, request_info);
   }
-  // TODO: 例外処理をここに挟むかも 2022/05/22 16:21 kohkubo nakamoto 話し合い
-  // エラーがあった場合、それ以降の処理が不要なので、例外処理でその都度投げる??
-  // TODO:locationを決定する処理をResponseの前に挟むと、
-  // Responseクラスがconst参照としてLocationを持つことができるがどうだろう。kohkubo
-  // return がセットされていたら
   if (request_info.location_->return_map_.size() != 0) {
-    // intをHttpStatusCodeに変換する
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
-    return _response_message(status_code, "", request_info);
+    return response_message(status_code, request_info);
   }
-  // CGI
   status_code = _handle_method(request_info);
-  return _response_message(status_code, _body(request_info), request_info);
+  return response_message(status_code, request_info);
 }
