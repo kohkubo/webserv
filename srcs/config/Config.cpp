@@ -50,6 +50,9 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
     ERROR_EXIT("could not detect context end.");
   if (locations_.empty())
     ERROR_EXIT("could not detect location directive.");
+  if (!has_listen_) {
+    ERROR_EXIT("could not detect listen directive.");
+  }
   return ++pos;
 }
 
@@ -93,6 +96,7 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   ++it;
   std::string listen_port = *it;
   sockaddr_in_            = create_sockaddr_in(listen_address, listen_port);
+  has_listen_             = true;
   return pos + 2;
 }
 

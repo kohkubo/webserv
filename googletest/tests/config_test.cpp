@@ -115,7 +115,7 @@ TEST(server_config_test, listen_exception2) {
 
 TEST(server_config_test, listen_exception3) {
   std::string str          = "server {\n"
-                             "    listen hogegoe3::4933;\n"
+                             "    listen hogegoe3:4933;\n"
                              "    location / {\n"
                              "        root /var/www/html/;\n"
                              "    }\n"

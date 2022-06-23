@@ -30,9 +30,10 @@ private:
 public:
   size_t             client_max_body_size_;
   std::string        server_name_;
+  bool               has_listen_;
+  struct sockaddr_in sockaddr_in_;
   errorPageMap       error_pages_;
   Locations          locations_;
-  struct sockaddr_in sockaddr_in_;
 
 public:
   class UnexpectedTokenException : public std::logic_error {
@@ -44,7 +45,9 @@ public:
   Config();
   Config(tokenIterator start, tokenIterator end)
       : client_max_body_size_(1024)
-      , server_name_("") {
+      , server_name_("")
+      , has_listen_(false) {
+    memset(&sockaddr_in_, 0, sizeof(sockaddr_in_));
     _last_iterator_pos_ = _parse(start, end);
   }
   ~Config(){};
