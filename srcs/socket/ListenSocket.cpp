@@ -16,19 +16,18 @@
 
 ListenSocket::ListenSocket(const ConfigGroup &config_group)
     : config_group_(config_group) {
-  _socket_fd_ = _open_new_socket(config_group.addrinfo());
+  _socket_fd_ = _open_new_socket(config_group.sockaddr_in());
 }
 
-listenFd ListenSocket::_open_new_socket(struct addrinfo *info) {
-  listenFd listen_fd = _create_socket(info);
+listenFd ListenSocket::_open_new_socket(struct sockaddr_in info) {
+  listenFd listen_fd = _create_socket();
   _bind_address(listen_fd, info);
   _start_listen(listen_fd);
   return listen_fd;
 }
 
-listenFd ListenSocket::_create_socket(struct addrinfo *info) {
-  listenFd listen_fd =
-      socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+listenFd ListenSocket::_create_socket() {
+  listenFd listen_fd = socket(AF_INET, SOCK_STREAM, 6);
   if (listen_fd == -1) {
     ERROR_EXIT_WITH_ERRNO("socket() failed.");
   }
@@ -44,8 +43,8 @@ listenFd ListenSocket::_create_socket(struct addrinfo *info) {
   return listen_fd;
 }
 
-void ListenSocket::_bind_address(listenFd listen_fd, struct addrinfo *info) {
-  if (bind(listen_fd, info->ai_addr, info->ai_addrlen) == -1) {
+void ListenSocket::_bind_address(listenFd listen_fd, struct sockaddr_in info) {
+  if (bind(listen_fd, (const struct sockaddr *)&info, sizeof(info)) == -1) {
     close(listen_fd);
     ERROR_EXIT_WITH_ERRNO("bind() failed.");
   }

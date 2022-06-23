@@ -12,35 +12,22 @@
 #include "utils/utils.hpp"
 
 Config::Config()
-    : listen_address_("0.0.0.0")
-    , listen_port_("80")
-    , client_max_body_size_(1024)
-    , server_name_("")
-    , addrinfo_(NULL) {}
+    : client_max_body_size_(1024)
+    , server_name_("") {}
 
-Config::Config(const Config &other)
-    : addrinfo_(NULL) {
-  *this = other;
-}
+Config::Config(const Config &other) { *this = other; }
 
 Config &Config::operator=(const Config &other) {
   if (this == &other) {
     return *this;
   }
-  listen_address_       = other.listen_address_;
-  listen_port_          = other.listen_port_;
   client_max_body_size_ = other.client_max_body_size_;
   server_name_          = other.server_name_;
   error_pages_          = other.error_pages_;
   locations_            = other.locations_;
-  if (addrinfo_ != NULL) {
-    freeaddrinfo(addrinfo_);
-  }
-  _set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
+  sockaddr_in_          = other.sockaddr_in_;
   return *this;
 }
-
-Config::~Config() { freeaddrinfo(addrinfo_); }
 
 tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   pos++;
@@ -63,7 +50,30 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
     ERROR_EXIT("could not detect context end.");
   if (locations_.empty())
     ERROR_EXIT("could not detect location directive.");
+  if (!has_listen_) {
+    ERROR_EXIT("could not detect listen directive.");
+  }
   return ++pos;
+}
+
+struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
+                                      const std::string &listen_port) {
+  struct addrinfo  hints    = {};
+  struct addrinfo *addrinfo = NULL;
+  hints.ai_family           = AF_INET;
+  hints.ai_socktype         = SOCK_STREAM;
+  int error = getaddrinfo(listen_address.c_str(), listen_port.c_str(), &hints,
+                          &addrinfo);
+  if (error != 0) {
+    ERROR_EXIT("getaddrinfo: " << gai_strerror(error));
+  }
+  struct sockaddr_in *tmp = reinterpret_cast<sockaddr_in *>(addrinfo->ai_addr);
+  struct sockaddr_in  sockaddr_in;
+  sockaddr_in.sin_family = hints.ai_family;
+  sockaddr_in.sin_addr   = tmp->sin_addr;
+  sockaddr_in.sin_port   = tmp->sin_port;
+  freeaddrinfo(addrinfo);
+  return sockaddr_in;
 }
 
 tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
@@ -72,16 +82,21 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
-  tokenVector   l  = tokenize(*pos, ": ", " ");
-  tokenIterator it = l.begin();
-  for (; it != l.end(); it++) {
-    if (is_digits(*it)) {
-      listen_port_ = *it;
-    } else if (is_ip(*it) || *it != ":") {
-      listen_address_ = *it;
-    }
+  LOG("listen: " << *pos);
+  tokenVector   token_vector = tokenize(*pos, ":", "");
+  tokenIterator it           = token_vector.begin();
+  if (it == token_vector.end()) {
+    ERROR_EXIT("could not detect listen address.");
   }
-  _set_getaddrinfo(listen_address_, listen_port_, &addrinfo_);
+  std::string listen_address = *it++;
+  LOG("listen address: " << listen_address);
+  if (it == token_vector.end()) {
+    ERROR_EXIT("could not detect listen port.");
+  }
+  ++it;
+  std::string listen_port = *it;
+  sockaddr_in_            = create_sockaddr_in(listen_address, listen_port);
+  has_listen_             = true;
   return pos + 2;
 }
 
@@ -204,16 +219,4 @@ tokenIterator Config::_parse_vector_directive(std::string               key,
   if (pos == end)
     ERROR_EXIT("vector directive value is invalid.");
   return pos + 1;
-}
-
-void Config::_set_getaddrinfo(const std::string &host, const std::string &port,
-                              struct addrinfo **addrinfo) {
-  struct addrinfo hints = {};
-
-  hints.ai_family       = AF_INET;
-  hints.ai_socktype     = SOCK_STREAM;
-  int error = getaddrinfo(host.c_str(), port.c_str(), &hints, addrinfo);
-  if (error != 0) {
-    ERROR_EXIT("getaddrinfo: " << gai_strerror(error));
-  }
 }

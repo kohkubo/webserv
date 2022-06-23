@@ -63,6 +63,7 @@ TEST(server_config_test, parse_string_derective_exception) {
 TEST(server_config_test, parse_string_derective) {
   {
     std::string str          = "server {\n"
+                               "    listen 0.0.0.0:50001;\n"
                                "    server_name example.com;\n"
                                "    location / {\n"
                                "        root /var/www/html/;\n"
@@ -75,6 +76,7 @@ TEST(server_config_test, parse_string_derective) {
   }
   {
     std::string str          = "server {\n"
+                               "    listen 0.0.0.0:50001;\n"
                                "    server_name    example.com    ;\n"
                                "    location / {\n"
                                "        root /var/www/html/;\n"
@@ -87,89 +89,62 @@ TEST(server_config_test, parse_string_derective) {
   }
 }
 
-TEST(server_config_test, listen_except) {
-  {
-    std::string str          = "server {\n"
-                               "    listen 888\n"
-                               "    location / {\n"
-                               "        root /var/www/html/;\n"
-                               "    }\n"
-                               "}\n";
+TEST(server_config_test, listen_exception) {
+  std::string str          = "server {\n"
+                             "    listen 888\n"
+                             "    location / {\n"
+                             "        root /var/www/html/;\n"
+                             "    }\n"
+                             "}\n";
 
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
-                ::testing::ExitedWithCode(EXIT_FAILURE), "");
-  }
-  {
-    std::string str          = "server {\n"
-                               "    listen ;\n"
-                               "    location / {\n"
-                               "        root /var/www/html/;\n"
-                               "    }\n"
-                               "}\n";
-
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
-                ::testing::ExitedWithCode(EXIT_FAILURE), "");
-  }
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
 }
 
-TEST(server_config_test, parse_listen) {
-  {
-    std::string str          = "server {\n"
-                               "    listen 888;\n"
-                               "    location / {\n"
-                               "        root /var/www/html/;\n"
-                               "    }\n"
-                               "}\n";
+TEST(server_config_test, listen_exception2) {
+  std::string str          = "server {\n"
+                             "    listen ;\n"
+                             "    location / {\n"
+                             "        root /var/www/html/;\n"
+                             "    }\n"
+                             "}\n";
 
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.listen_port_, "888");
-  }
-  {
-    std::string str          = "server {\n"
-                               "    listen 192.168.0.1;\n"
-                               "    location / {\n"
-                               "        root /var/www/html/;\n"
-                               "    }\n"
-                               "}\n";
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
+}
 
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.listen_address_, "192.168.0.1");
-  }
-  {
-    std::string str          = "server {\n"
-                               "    listen 192.168.0.1:80;\n"
-                               "    location / {\n"
-                               "        root /var/www/html/;\n"
-                               "    }\n"
-                               "}\n";
+TEST(server_config_test, listen_exception3) {
+  std::string str          = "server {\n"
+                             "    listen hogegoe3:4933;\n"
+                             "    location / {\n"
+                             "        root /var/www/html/;\n"
+                             "    }\n"
+                             "}\n";
 
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.listen_address_, "192.168.0.1");
-    EXPECT_EQ(config.listen_port_, "80");
-  }
-  {
-    std::string str          = "server {\n"
-                               "    listen localhost:80;\n"
-                               "    location / {\n"
-                               "        root /var/www/html/;\n"
-                               "    }\n"
-                               "}\n";
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
+}
 
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.listen_address_, "localhost");
-    EXPECT_EQ(config.listen_port_, "80");
-  }
+TEST(server_config_test, listen_exception4) {
+  std::string str          = "server {\n"
+                             "    listen 4:::3dd4;\n"
+                             "    location / {\n"
+                             "        root /var/www/html/;\n"
+                             "    }\n"
+                             "}\n";
+
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
 }
 
 TEST(server_config_test, parse_map_directive) {
   {
     std::string str          = "server {\n"
+                               "    listen 0.0.0.0:50001;\n"
                                "    error_page 404 /404.html;\n"
                                "    error_page 500 /500.html;\n"
                                "    location / {\n"
@@ -187,6 +162,7 @@ TEST(server_config_test, parse_map_directive) {
 TEST(server_config_test, parse_boolean_directive) {
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        autoindex on;\n"
                                    "    }\n"
@@ -198,6 +174,7 @@ TEST(server_config_test, parse_boolean_directive) {
   }
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        autoindex off;\n"
                                    "    }\n"
@@ -212,6 +189,7 @@ TEST(server_config_test, parse_boolean_directive) {
 TEST(server_config_test, parse_size_directive) {
   {
     std::string str          = "server {\n"
+                               "   listen 0.0.0.0:50001;\n"
                                "    client_max_body_size 1000;\n"
                                "    location / {\n"
                                "        root /var/www/;\n"
@@ -226,6 +204,7 @@ TEST(server_config_test, parse_size_directive) {
 TEST(server_config_test, parse_vector_directive) {
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        available_methods GET POST;\n"
                                    "    }\n"
@@ -242,6 +221,7 @@ TEST(server_config_test, parse_vector_directive) {
 TEST(server_config_test, parse_location_directive) {
   {
     std::string     str          = "server {\n"
+                                   "   listen 0.0.0.0:50001;\n"
                                    "    location / {\n"
                                    "        root /var/www/;\n"
                                    "        available_methods GET POST;\n"

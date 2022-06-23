@@ -5,17 +5,14 @@ ConfigGroup::ConfigGroup(const Config config)
   _config_group_.insert(std::make_pair(config.server_name_, config));
 }
 
-struct addrinfo *ConfigGroup::addrinfo() const {
-  return _config_group_.begin()->second.addrinfo_;
+struct sockaddr_in ConfigGroup::sockaddr_in() const {
+  return _config_group_.begin()->second.sockaddr_in_;
 }
 
 bool ConfigGroup::is_same_socket(const Config &config) {
-  struct sockaddr_in *x =
-      reinterpret_cast<sockaddr_in *>(config.addrinfo_->ai_addr);
-  struct sockaddr_in *y = reinterpret_cast<sockaddr_in *>(
-      _config_group_.begin()->second.addrinfo_->ai_addr);
-  return (x->sin_addr.s_addr == y->sin_addr.s_addr) &&
-         (x->sin_port == y->sin_port);
+  struct sockaddr_in x = config.sockaddr_in_;
+  struct sockaddr_in y = _config_group_.begin()->second.sockaddr_in_;
+  return (x.sin_addr.s_addr == y.sin_addr.s_addr) && (x.sin_port == y.sin_port);
 }
 
 void ConfigGroup::add_config_or_exit(const Config config) {
