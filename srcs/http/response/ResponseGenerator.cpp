@@ -129,6 +129,7 @@ static std::string start_line(const HttpStatusCode::StatusCode status_code) {
 }
 
 static std::string connection_header() { return "Connection: close" + CRLF; }
+
 static std::string location_header(const returnMap           &return_map,
                                    HttpStatusCode::StatusCode status_code) {
   returnMap::const_iterator it = return_map.find(status_code);

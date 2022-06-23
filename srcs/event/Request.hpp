@@ -24,7 +24,6 @@ struct Request {
 private:
   RequestState                       _state_;
   RequestInfo                        _request_info_;
-  std::string                        _response_;
   NextChunkType                      _next_chunk_;
   std::size_t                        _next_chunk_size_;
   std::string                        _request_body_;
@@ -53,8 +52,15 @@ public:
   const RequestInfo &request_info() const { return _request_info_; }
   RequestState       handle_request(std::string       &request_buffer,
                                     const ConfigGroup &config_group);
-  Response           create_response() {
-    return Response(_response_, _request_info_.connection_close_);
+
+  Response create_response() {
+    std::string response = ResponseGenerator::generate_response(_request_info_);
+    return Response(response, _request_info_.connection_close_);
+  }
+  Response create_response(HttpStatusCode::StatusCode status_code) {
+    std::string response =
+        ResponseGenerator::generate_error_response(_request_info_, status_code);
+    return Response(response, true);
   }
 };
 
