@@ -15,7 +15,8 @@ static std::string cutout_request_body(std::string &request_buffer,
   return request_body;
 }
 
-RequestState Request::_handle_request_startline(std::string &request_buffer) {
+Request::RequestState
+Request::_handle_request_startline(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) {
     _request_info_.check_first_multi_blank_line(line);
@@ -31,7 +32,8 @@ RequestState Request::_handle_request_startline(std::string &request_buffer) {
   return _state_;
 }
 
-RequestState Request::_handle_request_header(std::string &request_buffer) {
+Request::RequestState
+Request::_handle_request_header(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) { // noexcept
     if (_state_ == RECEIVING_HEADER) {
@@ -60,7 +62,8 @@ RequestState Request::_handle_request_header(std::string &request_buffer) {
   return _state_;
 }
 
-RequestState Request::_handle_request_body(std::string &request_buffer) {
+Request::RequestState
+Request::_handle_request_body(std::string &request_buffer) {
   if (_request_info_.is_chunked_) {
     _state_ = _chunk_loop(request_buffer);
     // throws BadRequestException
@@ -80,8 +83,8 @@ RequestState Request::_handle_request_body(std::string &request_buffer) {
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
-RequestState Request::handle_request(std::string       &request_buffer,
-                                     const ConfigGroup &config_group) {
+Request::RequestState Request::handle_request(std::string       &request_buffer,
+                                              const ConfigGroup &config_group) {
   try {
     if (_state_ == RECEIVING_STARTLINE) {
       _state_ = _handle_request_startline(request_buffer);
