@@ -80,7 +80,7 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
   LOG("listen: " << *pos);
-  tokenVector   token_vector = tokenize(*pos, ":", ":");
+  tokenVector   token_vector = tokenize(*pos, ":", "");
   tokenIterator it           = token_vector.begin();
   if (it == token_vector.end()) {
     ERROR_EXIT("could not detect listen address.");
@@ -90,6 +90,7 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   if (it == token_vector.end()) {
     ERROR_EXIT("could not detect listen port.");
   }
+  ++it;
   std::string listen_port = *it;
   sockaddr_in_            = create_sockaddr_in(listen_address, listen_port);
   return pos + 2;
