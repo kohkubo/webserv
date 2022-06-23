@@ -138,11 +138,19 @@ std::string
 ResponseGenerator::_response_message(HttpStatusCode::StatusCode status_code,
                                      const std::string         &body,
                                      const RequestInfo         &request_info) {
+  // TODO: bodyの生成もこの中でしたら処理が綺麗になる？ rakiyama
   LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   if (request_info.connection_close_) {
-    // 400エラーではcloseで入ってくるはず rakiyama
+    // TODO: 400エラーではcloseで入ってくるはず rakiyama
     response += connection_header();
+  }
+  if (is_error_status_code(status_code)) {
+    std::string error_body = error_page_body(request_info, status_code);
+    response += entity_header_and_body(error_body);
+    LOG("error_response_message");
+    LOG(response);
+    return response;
   }
   if (HttpStatusCode::NO_CONTENT_204 == status_code) {
     return response + CRLF;
@@ -151,14 +159,7 @@ ResponseGenerator::_response_message(HttpStatusCode::StatusCode status_code,
     response +=
         location_header(request_info.location_->return_map_, status_code);
   }
-  if (is_error_status_code(status_code)) {
-    LOG("error_response_message");
-    std::string error_body = error_page_body(request_info, status_code);
-    response += entity_header_and_body(error_body);
-    return response;
-  }
   response += entity_header_and_body(body);
-  LOG(response);
   return response;
 };
 
