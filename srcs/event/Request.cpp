@@ -97,6 +97,28 @@ Request::RequestState Request::handle_request(std::string       &request_buffer,
     _tmp(config_group);
   }
   if (_state_ == Request::RECEIVING_BODY) {
+    /*
+    TODO: bodyは指定がない場合、無限に長くて大丈夫。 kohkubo
+    RFC 9110
+    8.6. Content-Length
+    Any Content-Length field value greater than or equal to zero is valid.
+    ゼロ以上のContent-Lengthフィールド値はすべて有効です。
+
+    Since there is no predefined limit to the length of content, a recipient
+    MUST anticipate potentially large decimal numerals and prevent parsing
+    errors due to integer conversion overflows or precision loss due to integer
+    conversion (Section 17.5).
+    コンテンツの長さに事前定義された制限がないため、受信者は潜在的に大きな10進数を予測し、
+    整数変換のオーバーフローによる解析エラーや整数変換による精度の低下を防止する必要があります（セクション17.5）。
+
+    TODO: クライアントのbodyが想定より短い場合は、以下の理由でエラーにして返す
+    kohkubo
+    RFC 9110
+    8.6. Content-Length
+    As a result, a sender MUST NOT forward a message with a Content- Length
+    header field value that is known to be incorrect.
+    その結果、送信者は、正しくないことがわかっているContent-Lengthヘッダーフィールド値を持つメッセージを転送してはなりません（MUSTNOT）。
+    */
     _state_ = _handle_request_body(request_buffer);
   }
   return _state_;
