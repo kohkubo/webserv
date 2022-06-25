@@ -82,14 +82,14 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
-  LOG("listen: " << *pos);
+  // LOG("listen: " << *pos);
   tokenVector   token_vector = tokenize(*pos, ":", "");
   tokenIterator it           = token_vector.begin();
   if (it == token_vector.end()) {
     ERROR_EXIT("could not detect listen address.");
   }
   std::string listen_address = *it++;
-  LOG("listen address: " << listen_address);
+  // LOG("listen address: " << listen_address);
   if (it == token_vector.end()) {
     ERROR_EXIT("could not detect listen port.");
   }

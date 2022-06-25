@@ -12,7 +12,7 @@ static std::string create_target_path(const std::string &request_target,
       target_path += location.index_;
     }
   }
-  LOG("create_target_path: " << target_path);
+  // LOG("create_target_path: " << target_path);
   return target_path;
 }
 
