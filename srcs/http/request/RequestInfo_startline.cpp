@@ -7,6 +7,16 @@
 // 要求行の前に受信された少なくとも1つの空行（CRLF）を無視する必要があります（SHOULD）。
 // rfc 7230 3.5
 
+// TODO: 2022/06/25 kohkubo
+// RFC 9110
+// 4.2.3.http(s) Normalization and Comparison
+// 以下は同じ扱い
+/*
+      http://example.com:80/~smith/home.html
+      http://EXAMPLE.com/%7Esmith/home.html
+      http://EXAMPLE.com:/%7esmith/home.html
+*/
+
 // request-line = method SP request-target SP HTTP-version (CRLF)
 void RequestInfo::parse_request_start_line(const std::string &request_line) {
   std::size_t first_sp = request_line.find_first_of(' ');
