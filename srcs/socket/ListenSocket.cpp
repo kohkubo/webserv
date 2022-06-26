@@ -63,8 +63,8 @@ struct pollfd ListenSocket::pollfd() {
 
 SocketMapAction ListenSocket::handle_event(short int revents) {
   if ((revents & POLLIN) != 0) {
-    connFd conn_fd = xaccept(_socket_fd_);
-    LOG("add new connection fd: " << conn_fd);
+    connFd conn_fd            = xaccept(_socket_fd_);
+    // LOG("add new connection fd: " << conn_fd);
     SocketBase *client_socket = new ClientSocket(conn_fd, config_group_);
     return SocketMapAction(SocketMapAction::INSERT, conn_fd, client_socket);
   }

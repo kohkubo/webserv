@@ -24,13 +24,13 @@ SocketMapAction ClientSocket::handle_event(short int revents) {
     return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
   }
   if ((revents & POLLIN) != 0) {
-    LOG("got POLLIN  event of fd " << _socket_fd_);
+    // LOG("got POLLIN  event of fd " << _socket_fd_);
     SocketMapAction socket_map_action = handle_receive_event();
     if (socket_map_action.type_ == SocketMapAction::DELETE)
       return socket_map_action;
   }
   if ((revents & POLLOUT) != 0) {
-    LOG("got POLLOUT event of fd " << _socket_fd_);
+    // LOG("got POLLOUT event of fd " << _socket_fd_);
     handle_send_event();
   }
   return SocketMapAction();
@@ -39,7 +39,7 @@ SocketMapAction ClientSocket::handle_event(short int revents) {
 SocketMapAction ClientSocket::handle_receive_event() {
   bool is_socket_closed_from_client = append_receive_buffer();
   if (is_socket_closed_from_client) {
-    LOG("got FIN from connection");
+    // LOG("got FIN from connection");
     return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
   }
   parse_buffer();
