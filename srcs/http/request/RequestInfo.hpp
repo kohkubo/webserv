@@ -19,12 +19,6 @@ public:
     std::string                        type_;
     std::map<std::string, std::string> parameter_;
   };
-  struct Form {
-    ContentInfo content_disposition_;
-    ContentInfo content_type_;
-    std::string content_;
-  };
-  typedef std::map<std::string, Form> formMap;
 
   bool            is_blank_first_line_;
   std::string     method_;
@@ -40,15 +34,8 @@ public:
   Config          config_;
   const Location *location_;
   ContentInfo     content_type_;
-  formMap         form_map_;
 
 private:
-  static formMap     _parse_request_multi_part(const std::string &request_body,
-                                               const ContentInfo &content_type);
-  static formMap     _parse_multi_part_loop(std::string        body,
-                                            const std::string &boudary_specified);
-  static void        _parse_form_header(const std::string  line,
-                                        RequestInfo::Form &form);
   static ContentInfo _parse_content_info(const std::string &content);
 
 public:
