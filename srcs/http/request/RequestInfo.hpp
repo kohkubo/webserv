@@ -57,7 +57,7 @@ public:
       , method_("")
       , connection_close_(false)
       , is_chunked_(false)
-      , content_length_(0) {}
+      , content_length_(-1) {}
 
   class BadRequestException : public std::logic_error {
   private:
@@ -70,7 +70,7 @@ public:
     HttpStatusCode::StatusCode status() const;
   };
 
-  bool has_body() const { return content_length_ != 0 || is_chunked_; }
+  bool has_body() const { return content_length_ != -1 || is_chunked_; }
 
   static void store_request_header_field_map(
       const std::string                  &header_line,
