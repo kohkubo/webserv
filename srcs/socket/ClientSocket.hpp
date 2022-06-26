@@ -20,6 +20,8 @@ private:
   std::string              _buffer_;
   Timeout                  _timeout_;
   static const std::time_t TIMEOUT_SECONDS_ = 60;
+  // #define NGX_HTTP_LINGERING_BUFFER_SIZE     4096
+  static const size_t HTTP_LINGERING_BUFFER_SIZE_ = 4096;
 
 public:
   ClientSocket(int client_fd, const ConfigGroup &config_group);
