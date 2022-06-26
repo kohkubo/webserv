@@ -34,10 +34,6 @@ check_filepath_status(const RequestInfo &request_info) {
 
 static HttpStatusCode::StatusCode
 delete_target_file(const RequestInfo &request_info) {
-  if (request_info.content_length_ != 0) {
-    ERROR_LOG("DELETE with body is unsupported");
-    return HttpStatusCode::BAD_REQUEST_400;
-  }
   if (!is_file_exists(request_info.target_path_)) {
     ERROR_LOG("target file is not found");
     return HttpStatusCode::NOT_FOUND_404;

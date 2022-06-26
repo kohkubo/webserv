@@ -65,7 +65,8 @@ void RequestInfo::parse_request_header(
   }
   itr = header_field_map.find("Content-Length");
   if (itr != header_field_map.end()) {
-    content_length_ = parse_request_content_length(itr->second);
+    has_content_length_ = true;
+    content_length_     = parse_request_content_length(itr->second);
   }
   itr = header_field_map.find("Transfer-Encoding");
   if (itr != header_field_map.end()) {

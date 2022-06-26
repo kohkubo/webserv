@@ -70,7 +70,7 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Content-Length: 1025\r\n" +
 						"\r\n" +
@@ -97,7 +97,7 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
@@ -124,7 +124,7 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
@@ -152,12 +152,114 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
 						"4\r\n" +
 						"Mozilla \r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "get with body",
+			test: func() bool {
+
+				expectStatusCode := 400
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Content-Length: 0\r\n" +
+						"\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "delete with body",
+			test: func() bool {
+
+				expectStatusCode := 400
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "DELETE / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Content-Length: 0\r\n" +
+						"\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "post with no body",
+			test: func() bool {
+
+				expectStatusCode := 400
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "POST / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "content-length and chunked",
+			test: func() bool {
+
+				expectStatusCode := 400
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Content-Length: 1000\r\n" +
+						"Transfer-Encoding: chunked\r\n" +
 						"\r\n",
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
