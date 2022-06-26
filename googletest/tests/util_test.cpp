@@ -88,11 +88,25 @@ TEST(util_test, is_minus_depth_test) {
 }
 
 TEST(util_test, test_hexstr_to_size) {
-  EXPECT_EQ(hexstr_to_size("0"), (std::size_t)0);
-  EXPECT_EQ(hexstr_to_size("1"), (std::size_t)1);
-  EXPECT_EQ(hexstr_to_size("b"), (std::size_t)11);
-  EXPECT_EQ(hexstr_to_size("f"), (std::size_t)15);
-  EXPECT_EQ(hexstr_to_size("20"), (std::size_t)32);
-  EXPECT_EQ(hexstr_to_size("ff"), (std::size_t)255);
-  EXPECT_EQ(hexstr_to_size("ffffffffffffffff"), SIZE_MAX);
+  EXPECT_EQ(hexstr_to_size("0").object_, (std::size_t)0);
+  EXPECT_EQ(hexstr_to_size("1").object_, (std::size_t)1);
+  EXPECT_EQ(hexstr_to_size("b").object_, (std::size_t)11);
+  EXPECT_EQ(hexstr_to_size("B").object_, (std::size_t)11);
+  EXPECT_EQ(hexstr_to_size("f").object_, (std::size_t)15);
+  EXPECT_EQ(hexstr_to_size("F").object_, (std::size_t)15);
+  EXPECT_EQ(hexstr_to_size("20").object_, (std::size_t)32);
+  EXPECT_EQ(hexstr_to_size("ff").object_, (std::size_t)255);
+  EXPECT_EQ(hexstr_to_size("FF").object_, (std::size_t)255);
+  EXPECT_EQ(hexstr_to_size("ffffffffffffffff").object_, SIZE_MAX);
+
+  EXPECT_EQ(hexstr_to_size("0020").object_, (std::size_t)32);
+  EXPECT_EQ(
+      hexstr_to_size("0000000000000000000000000000000000000000020").object_,
+      (std::size_t)32);
+
+  EXPECT_TRUE(hexstr_to_size("0020h").is_err_);
+  EXPECT_FALSE(hexstr_to_size("abcdef").is_err_);
+  EXPECT_TRUE(hexstr_to_size("abcdefg").is_err_);
+  EXPECT_FALSE(hexstr_to_size("1234567890").is_err_);
+  EXPECT_TRUE(hexstr_to_size("1234567890u").is_err_);
 }

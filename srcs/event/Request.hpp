@@ -28,7 +28,11 @@ private:
   std::size_t                        _next_chunk_size_;
   std::string                        _request_body_;
   std::map<std::string, std::string> _field_map_;
-  static const std::size_t           BUFFER_MAX_LENGTH_ = 8192;
+  // RFC 9110
+  // 4.1.URI References
+  // It is RECOMMENDED that all senders and recipients support, at a minimum,
+  // URIs with lengths of 8000 octets in protocol elements.
+  static const std::size_t BUFFER_MAX_LENGTH_ = 8192;
 
 private:
   RequestState _chunk_loop(std::string &request_buffer);
