@@ -19,11 +19,6 @@ Request::RequestState
 Request::_handle_request_startline(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) {
-    _request_info_.check_first_multi_blank_line(line);
-    // throws BadRequestException
-    if (_request_info_.is_blank_first_line_) {
-      continue;
-    }
     RequestInfo::check_bad_parse_request_start_line(line);
     // throws BadRequestException
     _request_info_.parse_request_start_line(line); // noexcept
