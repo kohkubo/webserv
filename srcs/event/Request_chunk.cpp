@@ -23,8 +23,11 @@ Request::RequestState Request::_chunk_loop(std::string &request_buffer) {
   while (get_next_chunk_line(_next_chunk_, request_buffer, line,
                              _next_chunk_size_)) {
     if (_next_chunk_ == CHUNK_SIZE) {
-      // TODO: validate line
-      _next_chunk_size_ = hexstr_to_size(line);
+      Result<std::size_t> result = hexstr_to_size(line);
+      if (result.is_err_) {
+        throw RequestInfo::BadRequestException();
+      }
+      _next_chunk_size_ = result.object_;
       _next_chunk_      = CHUNK_DATA;
     } else {
       bool is_last_chunk = _next_chunk_size_ == 0 && line == "";
