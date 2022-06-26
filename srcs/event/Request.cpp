@@ -16,7 +16,7 @@ static std::string cutout_request_body(std::string &request_buffer,
 }
 
 Request::RequestState
-Request::_handle_request_startline(std::string &request_buffer) {
+Request::_handle_request_line(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) {
     RequestInfo::check_bad_parse_request_line(line);
@@ -79,7 +79,7 @@ Request::_handle_request_body(std::string &request_buffer) {
 Request::RequestState Request::handle_request(std::string       &request_buffer,
                                               const ConfigGroup &config_group) {
   if (_state_ == Request::RECEIVING_STARTLINE) {
-    _state_ = _handle_request_startline(request_buffer);
+    _state_ = _handle_request_line(request_buffer);
     // TODO: この例外チェックの適切な場所を見直す kohkubo
     _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   }
