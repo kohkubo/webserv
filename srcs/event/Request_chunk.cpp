@@ -20,25 +20,25 @@ static bool get_next_chunk_line(Request::NextChunkType chunk_type,
 
 Request::RequestState Request::_chunk_loop(std::string &request_buffer) {
   std::string line;
-  while (get_next_chunk_line(_next_chunk_, request_buffer, line,
-                             _next_chunk_size_)) {
-    if (_next_chunk_ == CHUNK_SIZE) {
+  while (get_next_chunk_line(_chunk_._next_chunk_type, request_buffer, line,
+                             _chunk_._next_chunk_size)) {
+    if (_chunk_._next_chunk_type == CHUNK_SIZE) {
       Result<std::size_t> result = hexstr_to_size(line);
       if (result.is_err_) {
         throw RequestInfo::BadRequestException();
       }
-      _next_chunk_size_ = result.object_;
-      _next_chunk_      = CHUNK_DATA;
+      _chunk_._next_chunk_size = result.object_;
+      _chunk_._next_chunk_type = CHUNK_DATA;
     } else {
-      bool is_last_chunk = _next_chunk_size_ == 0 && line == "";
+      bool is_last_chunk = _chunk_._next_chunk_size == 0 && line == "";
       if (is_last_chunk) {
         return SUCCESS;
       }
       _request_body_.append(line);
-      _next_chunk_ = CHUNK_SIZE;
+      _chunk_._next_chunk_type = CHUNK_SIZE;
     }
   }
-  if (_next_chunk_ == CHUNK_SIZE) {
+  if (_chunk_._next_chunk_type == CHUNK_SIZE) {
     _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   }
   return RECEIVING_BODY;
