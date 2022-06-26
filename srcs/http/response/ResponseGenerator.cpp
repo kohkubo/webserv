@@ -79,7 +79,7 @@ static std::string body_of_status_code(const RequestInfo         &request_info,
     if (!result.is_err_) {
       return result.object_;
     }
-    LOG("body_of_status_code: read_file_to_str error");
+    ERROR_LOG("body_of_status_code: read_file_to_str error");
     status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   }
   return "<!DOCTYPE html>\n"
@@ -144,7 +144,7 @@ static std::string entity_header_and_body(const std::string &body) {
 std::string
 ResponseGenerator::response_message(const RequestInfo         &request_info,
                                     HttpStatusCode::StatusCode status_code) {
-  LOG("status_code: " << status_code);
+  // LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   if (request_info.connection_close_) {
     response += connection_header();
