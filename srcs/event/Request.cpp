@@ -98,7 +98,7 @@ Request::RequestState Request::handle_request(std::string       &request_buffer,
   }
   if (_state_ == Request::RECEIVING_BODY) {
     /*
-    TODO: bodyは指定がない場合、無限に長くて大丈夫。 kohkubo
+    TODO: bodyはconfigで指定がない場合、無限に長くて大丈夫。 kohkubo
     RFC 9110
     8.6. Content-Length
     Any Content-Length field value greater than or equal to zero is valid.
