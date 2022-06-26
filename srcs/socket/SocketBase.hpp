@@ -18,7 +18,7 @@ public:
   SocketBase(int socket_fd)
       : _socket_fd_(socket_fd) {}
   virtual ~SocketBase() {
-    LOG("close connection fd: " << _socket_fd_);
+    // LOG("close connection fd: " << _socket_fd_);
     close(_socket_fd_);
   }
   virtual bool            is_timed_out()                  = 0;
