@@ -55,7 +55,7 @@ TEST(request_parse_test, normal_post) {
       "User-Agent: curl/7.68.0\r\n"
       "Connection: close\r\n"
       "Accept: */*\r\n"
-      "Content-Type: applicATION/X-WWW-FORM-URlencoded\r\n"
+      "Content-Type: application/x-www-form-urlencoded\r\n"
       "Content-Length: 18\r\n\r\n";
 
   Config      config;
@@ -69,8 +69,7 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(request_info.request_target_, "/target");
   EXPECT_EQ(request_info.version_, "HTTP/1.1");
   EXPECT_EQ(request_info.host_, "127.0.0.1");
-  EXPECT_EQ(request_info.content_type_.type_,
-            "application/x-www-form-urlencoded");
+  EXPECT_EQ(request_info.content_type_, "application/x-www-form-urlencoded");
   EXPECT_EQ(request_info.connection_close_, true);
   EXPECT_EQ(request_info.content_length_, static_cast<std::size_t>(18));
 }

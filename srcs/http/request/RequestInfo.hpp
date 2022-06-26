@@ -15,11 +15,6 @@ private:
   static const std::string OWS_;
 
 public:
-  struct ContentInfo {
-    std::string                        type_;
-    std::map<std::string, std::string> parameter_;
-  };
-
   bool            is_blank_first_line_;
   std::string     method_;
   std::string     request_target_;
@@ -33,10 +28,7 @@ public:
   std::string     target_path_;
   Config          config_;
   const Location *location_;
-  ContentInfo     content_type_;
-
-private:
-  static ContentInfo _parse_content_info(const std::string &content);
+  std::string     content_type_;
 
 public:
   RequestInfo()
@@ -67,8 +59,6 @@ public:
   void parse_request_start_line(const std::string &request_line);
   void parse_request_header(
       const std::map<std::string, std::string> &header_field_map);
-  void parse_request_body(std::string       &request_body,
-                          const ContentInfo &content_type);
   void check_first_multi_blank_line(const std::string &request_line);
 };
 

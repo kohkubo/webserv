@@ -76,8 +76,7 @@ Request::_handle_request_body(std::string &request_buffer) {
     _state_ = SUCCESS;
   }
   if (_state_ == SUCCESS) {
-    _request_info_.parse_request_body(_request_body_,
-                                      _request_info_.content_type_);
+    _request_info_.body_ = _request_body_;
   }
   return _state_;
 }
