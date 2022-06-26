@@ -21,11 +21,11 @@ struct Request {
   };
   enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
   struct Chunk {
-    NextChunkType _next_chunk_type;
-    std::size_t   _next_chunk_size;
+    NextChunkType next_chunk_type_;
+    std::size_t   next_chunk_size_;
     Chunk()
-        : _next_chunk_type(CHUNK_SIZE)
-        , _next_chunk_size(-1) {}
+        : next_chunk_type_(CHUNK_SIZE)
+        , next_chunk_size_(-1) {}
   };
 
 private:
