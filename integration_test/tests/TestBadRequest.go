@@ -70,7 +70,7 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Content-Length: 1025\r\n" +
 						"\r\n" +
@@ -97,7 +97,7 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
@@ -124,7 +124,7 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
@@ -152,7 +152,7 @@ var testBadRequest = testCatergory{
 				port := "55000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET / HTTP/1.1\r\n" +
+					Request: "POST / HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Transfer-Encoding: chunked\r\n" +
 						"\r\n" +
