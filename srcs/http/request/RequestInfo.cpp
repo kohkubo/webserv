@@ -18,11 +18,12 @@ bool RequestInfo::is_valid_request_header() const {
   }
   // TODO: has Transfer-Encoding but last encoding is not chunked. -> 400
   // そもそもchunked以外のTransfer-Encoding実装する？
-  if ((method_ == "GET" || method_ == "DELETE") && has_body()) {
+  if ((request_line_.method_ == "GET" || request_line_.method_ == "DELETE") &&
+      has_body()) {
     // LOG("GET or DELETE request has body.");
     return false;
   }
-  if (method_ == "POST" && !has_body()) {
+  if (request_line_.method_ == "POST" && !has_body()) {
     // LOG("POST request does not have body.");
     return false;
   }

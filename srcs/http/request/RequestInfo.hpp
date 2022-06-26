@@ -15,10 +15,27 @@ private:
   static const std::string OWS_;
 
 public:
-  std::string     method_;
-  std::string     request_target_;
-  std::string     query_string_;
-  std::string     version_;
+  /*
+  request-line
+    = method SP request-target SP HTTP-version
+
+  request-target
+  = origin-form
+  / absolute-form
+  / authority-form
+  / asterisk-form
+
+  今回使うのはorigin-formだけ
+  origin-form
+  = absolute-path [ "?" query ]
+  */
+  struct RequestLine {
+    std::string method_;
+    std::string absolute_path_;
+    std::string query_;
+    std::string http_version_;
+  };
+  RequestLine     request_line_;
   std::string     host_;
   std::string     body_;
   bool            connection_close_;
@@ -32,8 +49,7 @@ public:
 
 public:
   RequestInfo()
-      : method_("")
-      , connection_close_(false)
+      : connection_close_(false)
       , is_chunked_(false)
       , has_content_length_(false)
       , content_length_(0) {}
@@ -54,11 +70,10 @@ public:
   static void store_request_header_field_map(
       const std::string                  &header_line,
       std::map<std::string, std::string> &header_field_map);
-  static void
-       check_bad_parse_request_start_line(const std::string &request_line);
-  void parse_request_start_line(const std::string &request_line);
-  void parse_request_header(
-      const std::map<std::string, std::string> &header_field_map);
+  static void check_bad_parse_request_line(const std::string &request_line);
+  void        parse_request_line(const std::string &request_line);
+  void        parse_request_header(
+             const std::map<std::string, std::string> &header_field_map);
   bool is_valid_request_header() const;
 };
 
