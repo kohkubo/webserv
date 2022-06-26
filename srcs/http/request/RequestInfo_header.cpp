@@ -37,6 +37,16 @@ static size_t parse_request_content_length(const std::string &content_length) {
 
 // 呼び出し元で例外をcatchする
 // リクエストヘッダのパースが終了 true。エラー→例外
+/*
+TODO: 全部400で返すのはRFCに反する? 2022/06/25 kohkubo
+RFC 9110
+5.4. Field Limits
+A server that receives a request header field line, field value, or set of
+fields larger than it wishes to process MUST respond with an appropriate 4xx
+(Client Error) status code.
+要求ヘッダーのフィールド行、フィールド値、または処理したいよりも大きいフィールドのセットを受信するサーバーは、
+適切な4xx（クライアントエラー）ステータスコードで応答する必要があります。
+*/
 void RequestInfo::parse_request_header(
     const std::map<std::string, std::string> &header_field_map) {
   // call each field's parser
@@ -76,7 +86,18 @@ static bool is_comma_separated(std::string &field_name) {
   // tmp
   return false;
 }
+/*
+RFC 9110
+5.3.  Field Order
+A server MUST NOT apply a request to the target resource until it receives the
+entire request header section, since later header field lines might include
+conditionals, authentication credentials, or deliberately misleading duplicate
+header fields that could impact request processing.
+サーバーは、リクエストヘッダーセクション全体を受信するまで、ターゲットリソースにリクエストを適用してはなりません。
+これは、後のヘッダーフィールド行に、条件、認証クレデンシャル、またはリクエスト処理に影響を与える可能性のある意図的に誤解を招く重複ヘッダーフィールドが含まれる可能性があるためです。
 
+TODO: この部分を読むと、ヘッダーごとにパースしても問題ない？ kohkubo
+*/
 void RequestInfo::store_request_header_field_map(
     const std::string                  &header_line,
     std::map<std::string, std::string> &header_field_map) {
