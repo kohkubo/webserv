@@ -170,6 +170,33 @@ var testBadRequest = testCatergory{
 				return clientA.DoAndCheck()
 			},
 		},
+
+		{
+			caseName: "chunk size is not hexdig",
+			test: func() bool {
+
+				expectStatusCode := 400
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "POST / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Transfer-Encoding: chunked\r\n" +
+						"\r\n" +
+						"4r\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
 		{
 			caseName: "get with body",
 			test: func() bool {
