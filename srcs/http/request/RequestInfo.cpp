@@ -12,7 +12,7 @@ HttpStatusCode::StatusCode RequestInfo::BadRequestException::status() const {
 }
 
 bool RequestInfo::is_valid_request_header() const {
-  if (content_length_ != -1 && is_chunked_) {
+  if (has_content_length_ && is_chunked_) {
     LOG("request contains both of Content-Length and Chunked-Encoding.");
     return false;
   }
