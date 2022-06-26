@@ -6,8 +6,8 @@ includes = srcs
 srcsdir = srcs
 objsdir = objs
 srcs = $(shell find $(srcsdir) -name "*.cpp" -type f)
-objs = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.o))
-deps = $(patsubst $(srcsdir)%,$(objsdir)%,$(srcs:.cpp=.d))
+objs = $(srcs:$(srcsdir)%.cpp=$(objsdir)%.o)
+deps = $(srcs:$(srcsdir)%.cpp=$(objsdir)%.d)
 
 # == path of googletest dir ==
 gtestdir := googletest
