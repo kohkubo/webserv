@@ -74,7 +74,7 @@ void RequestInfo::parse_request_header(
   }
   itr = header_field_map.find("Content-Type");
   if (itr != header_field_map.end()) {
-    content_type_ = _parse_content_info(itr->second);
+    content_type_ = itr->second;
   }
 }
 
@@ -119,53 +119,4 @@ void RequestInfo::store_request_header_field_map(
   } else {
     header_field_map[field_name] = field_value;
   }
-}
-
-// content-typeのparameter(key=value)のvalueについて切り出す関数
-// ""で囲まれていれば, それらを削除
-static std::string cutout_parameter_value(std::string str) {
-  if (str.size() == 0) {
-    return str;
-  }
-  std::size_t last = str.size() - 1;
-  if (str[0] == '\"' || str[last] == '\"') {
-    bool is_lacking_quote = (0 == last || str[0] != str[last]);
-    if (is_lacking_quote) {
-      throw RequestInfo::BadRequestException();
-    }
-    str = str.substr(1, last - 1);
-  }
-  return str;
-}
-
-// 例 Content-Type: multipart/form-data;boundary="boundary"
-// Content-Type = media-type = type "/" subtype *( OWS ";" OWS parameter )
-// parameter    = token "=" ( token / quoted-string )
-// TODO: token以外の文字があったときのバリデーとはするか
-// TODO: keyの被り考慮するか
-// parameter(key=value)の大文字小文字を区別するかについて:
-// RFC7231: valueは大文字と小文字を区別する場合としない場合があります。
-// 現状はmultipart/form-dataに合わせて大小文字は区別する(引用符があれば削除するだけ)
-// もし大小文字について考慮するなら,
-// 各valueの中身を参照する時にそれぞれの処理でやるべきかも
-RequestInfo::ContentInfo
-RequestInfo::_parse_content_info(const std::string &content) {
-  ContentInfo   res;
-  tokenVector   tokens = tokenize(content, ";", ";");
-  tokenIterator it     = tokens.begin();
-  for (; it != tokens.end(); it++) {
-    std::string str = trim(*it, OWS_);
-    if (res.type_ == "") {
-      res.type_ = tolower(str);
-    } else {
-      std::size_t equal_pos = str.find('=');
-      if (equal_pos == std::string::npos) {
-        throw BadRequestException();
-      }
-      std::string key     = tolower(str.substr(0, equal_pos));
-      std::string value   = cutout_parameter_value(str.substr(equal_pos + 1));
-      res.parameter_[key] = value;
-    }
-  }
-  return res;
 }
