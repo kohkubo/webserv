@@ -83,6 +83,7 @@ public:
   void parse_request_body(std::string       &request_body,
                           const ContentInfo &content_type);
   void check_first_multi_blank_line(const std::string &request_line);
+  bool is_valid_request_header() const;
 };
 
 #endif /* SRCS_HTTP_REQUEST_REQUESTINFO_HPP */

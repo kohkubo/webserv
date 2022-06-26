@@ -44,10 +44,9 @@ Request::_handle_request_header(std::string &request_buffer) {
       }
       _request_info_.parse_request_header(_field_map_);
       // throws BadRequestException
-      // TODO: validate request_header
-      // delete with body
-      // has transfer-encoding but last elm is not chunked
-      // content-length and transfer-encoding -> delete content-length
+      if (!_request_info_.is_valid_request_header()) {
+        throw RequestInfo::BadRequestException();
+      }
       _check_max_client_body_size_exception(
           _request_info_.content_length_,
           _request_info_.config_.client_max_body_size_);
