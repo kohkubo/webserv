@@ -22,7 +22,7 @@ check_filepath_status(const RequestInfo &request_info) {
     return HttpStatusCode::NOT_FOUND_404;
   }
   if (!is_file_exists(request_info.target_path_)) {
-    LOG("check_filepath_status: file not found");
+    ERROR_LOG("check_filepath_status: file not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
   if (!is_accessible(request_info.target_path_, R_OK)) {
@@ -74,7 +74,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   } else if ("DELETE" == request_info.method_) {
     status_code = delete_target_file(request_info);
   } else {
-    LOG("unknown method: " << request_info.method_);
+    ERROR_LOG("unknown method: " << request_info.method_);
     status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
   }
   return status_code;

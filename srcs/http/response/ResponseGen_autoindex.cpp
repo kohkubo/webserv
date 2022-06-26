@@ -69,7 +69,7 @@ static std::string dirlisting_lines(const std::string &path) {
 
 std::string
 ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info) {
-  LOG("create autoindex body");
+  // LOG("create autoindex body");
   std::stringstream buff;
   // clang-format off
   buff << "<!DOCTYPE html>\n"
