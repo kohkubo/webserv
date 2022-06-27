@@ -32,17 +32,6 @@ void RequestInfo::parse_request_start_line(const std::string &request_line) {
   version_ = request_line.substr(last_sp + 1);
 }
 
-void RequestInfo::check_first_multi_blank_line(
-    const std::string &request_line) {
-  if (!is_blank_first_line_ && request_line == "") {
-    is_blank_first_line_ = true;
-    return;
-  }
-  if (is_blank_first_line_ && request_line == "") {
-    throw BadRequestException();
-  }
-}
-
 void RequestInfo::check_bad_parse_request_start_line(
     const std::string &request_line) {
   std::size_t first_sp = request_line.find_first_of(' ');

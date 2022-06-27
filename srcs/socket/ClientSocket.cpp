@@ -72,9 +72,8 @@ void ClientSocket::parse_buffer() {
 }
 
 bool ClientSocket::append_receive_buffer() {
-  const int buf_size      = 2048;
-  char      buf[buf_size] = {0};
-  ssize_t   rc            = recv(_socket_fd_, buf, buf_size, MSG_DONTWAIT);
+  char    buf[HTTP_BUFFER_SIZE_] = {};
+  ssize_t rc = recv(_socket_fd_, buf, HTTP_BUFFER_SIZE_, MSG_DONTWAIT);
   if (rc == -1) {
     ERROR_LOG("recv error.");
     return false;
