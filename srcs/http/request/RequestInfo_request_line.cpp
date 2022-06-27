@@ -18,8 +18,11 @@
 */
 
 void RequestInfo::parse_request_line(const std::string &request_line) {
-  std::size_t first_sp  = request_line.find_first_of(' ');
-  std::size_t last_sp   = request_line.find_last_of(' ');
+  std::size_t first_sp = request_line.find_first_of(' ');
+  std::size_t last_sp  = request_line.find_last_of(' ');
+  if (first_sp == std::string::npos || first_sp == last_sp) {
+    throw BadRequestException();
+  }
   request_line_.method_ = request_line.substr(0, first_sp);
   request_line_.absolute_path_ =
       request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
@@ -30,13 +33,4 @@ void RequestInfo::parse_request_line(const std::string &request_line) {
     request_line_.absolute_path_.erase(query_pos);
   }
   request_line_.http_version_ = request_line.substr(last_sp + 1);
-}
-
-void RequestInfo::check_bad_parse_request_line(
-    const std::string &request_line) {
-  std::size_t first_sp = request_line.find_first_of(' ');
-  std::size_t last_sp  = request_line.find_last_of(' ');
-  if (first_sp == std::string::npos || first_sp == last_sp) {
-    throw BadRequestException();
-  }
 }
