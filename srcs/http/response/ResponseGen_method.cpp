@@ -13,6 +13,7 @@
 static HttpStatusCode::StatusCode
 check_filepath_status(const RequestInfo &request_info,
                       const std::string &target_path) {
+  // TODO: 分岐整理　rakiyama
   if (has_suffix(target_path, "/")) {
     if (is_dir_exists(target_path)) {
       if (!request_info.location_->autoindex_) {
