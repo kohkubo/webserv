@@ -26,7 +26,7 @@ private:
                                   const HttpStatusCode::StatusCode status_code);
   static std::string _create_autoindex_body(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
-                     _handle_method(const RequestInfo &request_info);
+  _handle_method(const RequestInfo &request_info);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
