@@ -10,7 +10,7 @@
 
 #include "config/Config.hpp"
 #include "socket/ClientSocket.hpp"
-#include "socket/SocketMapAction.hpp"
+#include "socket/SocketMapActions.hpp"
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
@@ -61,14 +61,17 @@ struct pollfd ListenSocket::pollfd() {
   return (struct pollfd){_socket_fd_, POLLIN, 0};
 }
 
-SocketMapAction ListenSocket::handle_event(short int revents) {
+SocketMapActions ListenSocket::handle_event(short int revents) {
+  SocketMapActions socket_map_actions;
   if ((revents & POLLIN) != 0) {
     connFd conn_fd            = xaccept(_socket_fd_);
     // LOG("add new connection fd: " << conn_fd);
     SocketBase *client_socket = new ClientSocket(conn_fd, config_group_);
-    return SocketMapAction(SocketMapAction::INSERT, conn_fd, client_socket);
+
+    socket_map_actions.add_socket_map_action(
+        SocketMapAction(SocketMapAction::INSERT, conn_fd, client_socket));
   }
-  return SocketMapAction();
+  return socket_map_actions;
 }
 
 bool ListenSocket::is_timed_out() { return false; }

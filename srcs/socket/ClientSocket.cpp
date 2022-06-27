@@ -2,6 +2,8 @@
 
 #include <poll.h>
 
+#include "SocketMapActions.hpp"
+
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
     , _config_group_(config_group)
@@ -17,33 +19,41 @@ struct pollfd ClientSocket::pollfd() {
 
 bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-SocketMapAction ClientSocket::handle_event(short int revents) {
+// SocketMapAction* linked list
+// std::vector<SocketMapAction> SocketMapActions.add(socket_map_action)
+
+SocketMapActions ClientSocket::handle_event(short int revents) {
+  SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
     LOG("connection was closed by client.");
-    return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
+    socket_map_actions.add_socket_map_action(
+        SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+    return socket_map_actions;
   }
   if ((revents & POLLIN) != 0) {
     // LOG("got POLLIN  event of fd " << _socket_fd_);
-    SocketMapAction socket_map_action = handle_receive_event();
-    if (socket_map_action.type_ == SocketMapAction::DELETE)
-      return socket_map_action;
+    bool is_close = handle_receive_event(socket_map_actions);
+    if (is_close)
+      return socket_map_actions;
   }
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of fd " << _socket_fd_);
     handle_send_event();
   }
-  return SocketMapAction();
+  return socket_map_actions;
 }
 
-SocketMapAction ClientSocket::handle_receive_event() {
+bool ClientSocket::handle_receive_event(SocketMapActions &socket_map_actions) {
   bool is_socket_closed_from_client = append_receive_buffer();
   if (is_socket_closed_from_client) {
     // LOG("got FIN from connection");
-    return SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this);
+    socket_map_actions.add_socket_map_action(
+        SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+    return true;
   }
-  parse_buffer();
-  return SocketMapAction();
+  parse_buffer(socket_map_actions);
+  return false;
 }
 
 void ClientSocket::handle_send_event() {
@@ -54,7 +64,8 @@ void ClientSocket::handle_send_event() {
   }
 }
 
-void ClientSocket::parse_buffer() {
+void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
+  (void)socket_map_actions;
   try {
     for (;;) {
       Request::RequestState request_state =
@@ -62,7 +73,14 @@ void ClientSocket::parse_buffer() {
       if (request_state != Request::SUCCESS) {
         break;
       }
+      // fileを読むか、handle_methodやるところまで -> http status code
+      // 結果Result<openされたfd>が返ってくる。
+      // Result<int> result = open_read_file_if_needed(_request_);
       _response_queue_.push_back(_request_.create_response());
+      // SocketBase *file_socket =
+      //     new FileSocket(result.object_, _response_queue_.back());
+      // socket_map_actions.add_socket_map_action(SocketMapAction(
+      //     SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "socket/SocketMap.hpp"
-#include "socket/SocketMapAction.hpp"
+#include "socket/SocketMapActions.hpp"
 #include "utils/syscall_wrapper.hpp"
 
 void Server::run_loop() {
@@ -21,9 +21,9 @@ void Server::run_loop() {
         continue;
       }
       nready--;
-      SocketMapAction socket_map_action =
+      SocketMapActions socket_map_actions =
           _socket_map_.handle_socket_event(it->fd, it->revents);
-      _socket_map_.do_socket_map_action(socket_map_action);
+      socket_map_actions.do_action(_socket_map_);
     }
   }
 }

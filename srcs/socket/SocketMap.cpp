@@ -6,6 +6,7 @@
 
 #include "config/ConfigGroup.hpp"
 #include "socket/ListenSocket.hpp"
+#include "socket/SocketMapActions.hpp"
 
 SocketMap::SocketMap(const std::vector<ConfigGroup> &config_groups) {
   std::vector<ConfigGroup>::const_iterator it = config_groups.begin();
@@ -33,8 +34,8 @@ std::vector<struct pollfd> SocketMap::create_pollfds() {
   return pollfds;
 }
 
-SocketMapAction SocketMap::handle_socket_event(int       socket_fd,
-                                               short int revents) {
+SocketMapActions SocketMap::handle_socket_event(int       socket_fd,
+                                                short int revents) {
   return _socket_map_[socket_fd]->handle_event(revents);
 }
 
