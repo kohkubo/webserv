@@ -168,18 +168,16 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
                                      HttpStatusCode::StatusCode status_code) {
   if (request_info.location_ == NULL) {
     status_code = HttpStatusCode::NOT_FOUND_404;
-  }
-  std::string response;
-  if (is_error_status_code(status_code)) {
-    response = response_message(request_info, is_connection_close, status_code);
+  } else if (is_error_status_code(status_code)) {
+    // LOG("status_code: " << status_code);
   } else if (request_info.location_->return_map_.size() != 0) {
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
-    response = response_message(request_info, is_connection_close, status_code);
   } else {
     status_code = _handle_method(request_info);
-    response = response_message(request_info, is_connection_close, status_code);
   }
+  std::string response =
+      response_message(request_info, is_connection_close, status_code);
   return Response(response, is_connection_close);
 }
 
