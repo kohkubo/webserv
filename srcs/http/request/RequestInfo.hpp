@@ -16,6 +16,8 @@ private:
 
 public:
   /*
+  RFC 9112
+  https://triple-underscore.github.io/http1-ja.html#p.absolute-form
   request-line
     = method SP request-target SP HTTP-version
 
