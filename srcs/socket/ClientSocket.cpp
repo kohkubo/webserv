@@ -82,7 +82,9 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       // 結果Result<openされたfd>が返ってくる。
       // Result<int> result =
       // open_read_file_if_needed(_request_.request_info());
-      _response_queue_.push_back(_request_.create_response());
+      _response_queue_.push_back(ResponseGenerator::generate_response(
+          _request_.request_info(),
+          _request_.request_info().connection_close_));
       // SocketBase *file_socket =
       //     new FileSocket(result.object_, _response_queue_.back());
       // socket_map_actions.add_socket_map_action(SocketMapAction(
@@ -90,7 +92,8 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    _response_queue_.push_back(_request_.create_response(e.status()));
+    _response_queue_.push_back(ResponseGenerator::generate_response(
+        _request_.request_info(), true, e.status()));
     _request_ = Request();
   }
 }
