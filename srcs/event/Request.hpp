@@ -20,13 +20,19 @@ struct Request {
     SUCCESS,             // リクエストのパース完了。
   };
   enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
+  struct Chunk {
+    NextChunkType next_chunk_type_;
+    std::size_t   next_chunk_size_;
+    Chunk()
+        : next_chunk_type_(CHUNK_SIZE)
+        , next_chunk_size_(-1) {}
+  };
 
 private:
   RequestState                       _state_;
   RequestInfo                        _request_info_;
-  NextChunkType                      _next_chunk_;
-  std::size_t                        _next_chunk_size_;
   std::string                        _request_body_;
+  Chunk                              _chunk_;
   std::map<std::string, std::string> _field_map_;
   // RFC 9110
   // 4.1.URI References
@@ -48,9 +54,7 @@ private:
 
 public:
   Request()
-      : _state_(RECEIVING_STARTLINE)
-      , _next_chunk_(CHUNK_SIZE)
-      , _next_chunk_size_(-1) {}
+      : _state_(RECEIVING_STARTLINE) {}
 
   // TODO: テストでの使用のみなのでテストを変更し、消去する 2022/06/10 22:15 3人
   const RequestInfo &request_info() const { return _request_info_; }
