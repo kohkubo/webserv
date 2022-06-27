@@ -61,9 +61,6 @@ ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info) {
   // TODO: cgiからのレスポンスは、ヘッダー＋レスポンスbody、要パース
   // local redirectどうするか
   std::string str = read_fd_to_str(pipefd[READ_FD]);
-  // LOG("######################################");
-  // LOG(str);
-  // LOG("######################################");
 
   close(pipefd[READ_FD]);
   if (waitpid(pid, NULL, 0) == -1) {

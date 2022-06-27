@@ -20,6 +20,12 @@ static std::string get_realpath(const std::string &file_path) {
   return res;
 }
 
+static std::string get_script_name(const std::string &absolute_path) {
+  std::size_t last_slash  = absolute_path.find_last_of('/');
+  std::string script_name = absolute_path.substr(last_slash);
+  return script_name;
+}
+
 static std::map<std::string, std::string>
 create_environ_map(const RequestInfo &request_info) {
   std::map<std::string, std::string> environ_map;
@@ -35,16 +41,11 @@ create_environ_map(const RequestInfo &request_info) {
   environ_map["REQUEST_METHOD"]    = request_info.request_line_.method_;
   environ_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
   environ_map["SERVER_SOFTWARE"]   = "webserv 0.0.0";
-
-  // TODO: addrinfoからアドレスを文字列に変換
-  environ_map["REMOTE_ADDR"]       = "";
-
-  // TODO: request_targetからファイルのパスだけ取る。
-  // ex) target: /hoge/test.py script_name: /test.py
-  environ_map["SCRIPT_NAME"]       = request_info.request_line_.absolute_path_;
-
-  // TODO: addrinfoからポートを変換
-  environ_map["SERVER_PORT"]       = "";
+  environ_map["REMOTE_ADDR"]       = request_info.config_.server_name_;
+  environ_map["SERVER_PORT"] =
+      to_string(ntohs(request_info.config_.sockaddr_in_.sin_port));
+  environ_map["SCRIPT_NAME"] =
+      get_script_name(request_info.request_line_.absolute_path_);
 
   // なくても良さそうなもの
   // environ_map["AUTH_TYPE"] = "";
