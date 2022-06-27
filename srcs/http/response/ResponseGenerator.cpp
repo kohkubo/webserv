@@ -100,8 +100,8 @@ static std::string body_of_status_code(const RequestInfo         &request_info,
 }
 
 std::string
-ResponseGenerator::_body(const RequestInfo               &request_info,
-                         const HttpStatusCode::StatusCode status_code) {
+ResponseGenerator::_create_body(const RequestInfo               &request_info,
+                                const HttpStatusCode::StatusCode status_code) {
   if (is_error_status_code(status_code) ||
       HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
     return body_of_status_code(request_info, status_code);
