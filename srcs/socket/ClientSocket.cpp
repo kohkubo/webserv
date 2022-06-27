@@ -64,15 +64,6 @@ void ClientSocket::handle_send_event() {
   }
 }
 
-// typedef int filefd;
-
-// struct ResultOfMethodHandle {
-//   bool has_read_file_;
-// };
-
-// static Result<int> open_read_file_if_needed(const RequestInfo &request_info)
-// {}
-
 void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
   (void)socket_map_actions;
   try {
@@ -83,8 +74,10 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
         break;
       }
       // fileを読むか、handle_methodやるところまで -> http status code
-      //// 結果Result<openされたfd>が返ってくる。
-      // ResultOfMethodHandle result =
+      // 結果Result<openされたfd>が返ってくる。
+      // ResponseGenerator::Body body =
+      // create_fd_or_body(_request_.request_info()); ResultOfMethodHandle
+      // result =
       //     open_read_file_if_needed(_request_.request_info());
       // if (result.has_read_file_) {
       //  SocketBase *file_socket =
