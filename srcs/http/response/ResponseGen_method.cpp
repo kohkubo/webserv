@@ -63,7 +63,7 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
-ResponseGenerator::ResultOfHandleMethod
+ResponseGenerator::ResponseInfo
 ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   // TODO: 501が必要？ kohkubo
   /*
@@ -74,7 +74,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
   */
   if (is_available_methods(request_info)) {
-    return ResultOfHandleMethod(HttpStatusCode::NOT_ALLOWED_405);
+    return ResponseInfo(HttpStatusCode::NOT_ALLOWED_405);
   }
   HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
   std::string                target_path =
@@ -120,5 +120,5 @@ even when the value is 0 (indicating empty content). >
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
     status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
   }
-  return ResultOfHandleMethod(status_code, target_path);
+  return ResponseInfo(status_code, target_path);
 }

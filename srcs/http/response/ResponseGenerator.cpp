@@ -178,9 +178,9 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
   } else {
-    ResultOfHandleMethod result = _handle_method(request_info);
-    status_code                 = result.status_code_;
-    target_path                 = result.target_path_;
+    ResponseInfo result = _handle_method(request_info);
+    status_code         = result.status_code_;
+    target_path         = result.target_path_;
   }
   std::string response = response_message(request_info, is_connection_close,
                                           status_code, target_path);
