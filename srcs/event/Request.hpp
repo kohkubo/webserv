@@ -62,14 +62,11 @@ public:
                                     const ConfigGroup &config_group);
 
   Response create_response() {
-    std::string response = ResponseGenerator::generate_response(_request_info_);
-    return Response(response, _request_info_.connection_close_);
+    return ResponseGenerator::generate_response(_request_info_);
   }
   Response create_response(HttpStatusCode::StatusCode status_code) {
     _request_info_.connection_close_ = true;
-    std::string response =
-        ResponseGenerator::generate_response(_request_info_, status_code);
-    return Response(response, _request_info_.connection_close_);
+    return ResponseGenerator::generate_response(_request_info_, status_code);
   }
 };
 
