@@ -14,9 +14,10 @@
 class ResponseGenerator {
 public:
   static Response generate_response(
-      const RequestInfo         &request_info,
+      const RequestInfo &request_info, const bool is_connection_close,
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
-  static std::string response_message(const RequestInfo         &request_info,
+  static std::string response_message(const RequestInfo &request_info,
+                                      const bool         is_connection_close,
                                       HttpStatusCode::StatusCode status_code);
 
 private:

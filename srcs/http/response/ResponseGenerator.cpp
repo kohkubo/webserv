@@ -143,11 +143,12 @@ static std::string entity_header_and_body(const std::string &body) {
 }
 
 std::string
-ResponseGenerator::response_message(const RequestInfo         &request_info,
+ResponseGenerator::response_message(const RequestInfo &request_info,
+                                    const bool         is_connection_close,
                                     HttpStatusCode::StatusCode status_code) {
   // LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
-  if (request_info.connection_close_) {
+  if (is_connection_close) {
     response += connection_header();
   }
   if (HttpStatusCode::NO_CONTENT_204 == status_code) {
@@ -162,22 +163,26 @@ ResponseGenerator::response_message(const RequestInfo         &request_info,
 };
 
 Response
-ResponseGenerator::generate_response(const RequestInfo         &request_info,
+ResponseGenerator::generate_response(const RequestInfo &request_info,
+                                     const bool         is_connection_close,
                                      HttpStatusCode::StatusCode status_code) {
   if (request_info.location_ == NULL) {
     status_code = HttpStatusCode::NOT_FOUND_404;
   }
   if (is_error_status_code(status_code)) {
-    std::string response = response_message(request_info, status_code);
-    return Response(response, request_info.connection_close_);
+    std::string response =
+        response_message(request_info, is_connection_close, status_code);
+    return Response(response, is_connection_close);
   }
   if (request_info.location_->return_map_.size() != 0) {
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
-    std::string response = response_message(request_info, status_code);
-    return Response(response, request_info.connection_close_);
+    std::string response =
+        response_message(request_info, is_connection_close, status_code);
+    return Response(response, is_connection_close);
   }
-  status_code          = _handle_method(request_info);
-  std::string response = response_message(request_info, status_code);
-  return Response(response, request_info.connection_close_);
+  status_code = _handle_method(request_info);
+  std::string response =
+      response_message(request_info, is_connection_close, status_code);
+  return Response(response, is_connection_close);
 }

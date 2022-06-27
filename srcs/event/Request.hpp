@@ -62,11 +62,12 @@ public:
                                     const ConfigGroup &config_group);
 
   Response create_response() {
-    return ResponseGenerator::generate_response(_request_info_);
+    return ResponseGenerator::generate_response(
+        _request_info_, _request_info_.connection_close_);
   }
   Response create_response(HttpStatusCode::StatusCode status_code) {
-    _request_info_.connection_close_ = true;
-    return ResponseGenerator::generate_response(_request_info_, status_code);
+    return ResponseGenerator::generate_response(_request_info_, true,
+                                                status_code);
   }
 };
 
