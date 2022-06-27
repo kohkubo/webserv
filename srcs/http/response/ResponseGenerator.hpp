@@ -27,9 +27,6 @@ private:
   static std::string _create_autoindex_body(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
                      _handle_method(const RequestInfo &request_info);
-  static std::string _create_response_message(
-      const RequestInfo &request_info, const bool is_connection_close,
-      HttpStatusCode::StatusCode status_code, const std::string &body);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

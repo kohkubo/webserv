@@ -161,7 +161,7 @@ create_response_header(const RequestInfo         &request_info,
   return response;
 }
 
-std::string ResponseGenerator::_create_response_message(
+static std::string create_response_message(
     const RequestInfo &request_info, const bool is_connection_close,
     HttpStatusCode::StatusCode status_code, const std::string &body) {
   std::string response =
@@ -185,7 +185,7 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
     status_code = _handle_method(request_info);
   }
   std::string body     = _create_body(request_info, status_code);
-  std::string response = _create_response_message(
+  std::string response = create_response_message(
       request_info, is_connection_close, status_code, body);
   return Response(response, is_connection_close);
 }
