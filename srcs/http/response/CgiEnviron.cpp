@@ -31,8 +31,8 @@ create_environ_map(const RequestInfo &request_info) {
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
   environ_map["PATH_INFO"]         = get_realpath(request_info.target_path_);
   environ_map["PATH_TRANSLATED"]   = get_realpath(request_info.target_path_);
-  environ_map["QUERY_STRING"]      = request_info.query_string_;
-  environ_map["REQUEST_METHOD"]    = request_info.method_;
+  environ_map["QUERY_STRING"]      = request_info.request_line_.query_;
+  environ_map["REQUEST_METHOD"]    = request_info.request_line_.method_;
   environ_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
   environ_map["SERVER_SOFTWARE"]   = "webserv 0.0.0";
 
@@ -41,7 +41,7 @@ create_environ_map(const RequestInfo &request_info) {
 
   // TODO: request_targetからファイルのパスだけ取る。
   // ex) target: /hoge/test.py script_name: /test.py
-  environ_map["SCRIPT_NAME"]       = request_info.request_target_;
+  environ_map["SCRIPT_NAME"]       = request_info.request_line_.absolute_path_;
 
   // TODO: addrinfoからポートを変換
   environ_map["SERVER_PORT"]       = "";

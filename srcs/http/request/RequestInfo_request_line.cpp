@@ -17,22 +17,22 @@
       http://EXAMPLE.com:/%7esmith/home.html
 */
 
-// request-line = method SP request-target SP HTTP-version (CRLF)
-void RequestInfo::parse_request_start_line(const std::string &request_line) {
-  std::size_t first_sp = request_line.find_first_of(' ');
-  std::size_t last_sp  = request_line.find_last_of(' ');
-  method_              = request_line.substr(0, first_sp);
-  request_target_ = request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
-  std::size_t query_pos = request_target_.find('?');
+void RequestInfo::parse_request_line(const std::string &request_line) {
+  std::size_t first_sp  = request_line.find_first_of(' ');
+  std::size_t last_sp   = request_line.find_last_of(' ');
+  request_line_.method_ = request_line.substr(0, first_sp);
+  request_line_.absolute_path_ =
+      request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
+  std::size_t query_pos = request_line_.absolute_path_.find('?');
   if (query_pos != std::string::npos) {
-    query_string_ = request_target_.substr(query_pos + 1);
-    // request_target_からquery_stringを削除しているので注意（いっしょに持った方がいいかも）
-    request_target_.erase(query_pos);
+    request_line_.query_ = request_line_.absolute_path_.substr(query_pos + 1);
+    // request_line_.absolute_path_からquery_stringを削除しているので注意（いっしょに持った方がいいかも）
+    request_line_.absolute_path_.erase(query_pos);
   }
-  version_ = request_line.substr(last_sp + 1);
+  request_line_.http_version_ = request_line.substr(last_sp + 1);
 }
 
-void RequestInfo::check_bad_parse_request_start_line(
+void RequestInfo::check_bad_parse_request_line(
     const std::string &request_line) {
   std::size_t first_sp = request_line.find_first_of(' ');
   std::size_t last_sp  = request_line.find_last_of(' ');

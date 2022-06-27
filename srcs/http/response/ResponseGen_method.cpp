@@ -58,7 +58,7 @@ delete_target_file(const RequestInfo &request_info) {
 static bool is_available_methods(const RequestInfo &request_info) {
   return std::find(request_info.location_->available_methods_.begin(),
                    request_info.location_->available_methods_.end(),
-                   request_info.method_) ==
+                   request_info.request_line_.method_) ==
          request_info.location_->available_methods_.end();
 }
 
@@ -76,9 +76,9 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   if (is_available_methods(request_info)) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
-  if ("GET" == request_info.method_) {
+  if ("GET" == request_info.request_line_.method_) {
     status_code = check_filepath_status(request_info);
-  } else if ("POST" == request_info.method_) {
+  } else if ("POST" == request_info.request_line_.method_) {
     /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -107,10 +107,10 @@ even when the value is 0 (indicating empty content). >
 たとえば、ユーザーエージェントは通常、値が0（空のコンテンツを示す）の場合でも、POSTリクエストでContent-Lengthを送信します。
 */
     status_code = check_filepath_status(request_info);
-  } else if ("DELETE" == request_info.method_) {
+  } else if ("DELETE" == request_info.request_line_.method_) {
     status_code = delete_target_file(request_info);
   } else {
-    ERROR_LOG("unknown method: " << request_info.method_);
+    ERROR_LOG("unknown method: " << request_info.request_line_.method_);
     status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
   }
   return status_code;

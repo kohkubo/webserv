@@ -48,7 +48,7 @@ private:
   static void  _check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
   void         _tmp(const ConfigGroup &config_group);
-  RequestState _handle_request_startline(std::string &request_buffer);
+  RequestState _handle_request_line(std::string &request_buffer);
   RequestState _handle_request_header(std::string &request_buffer);
   RequestState _handle_request_body(std::string &request_buffer);
 
