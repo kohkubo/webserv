@@ -179,10 +179,9 @@ static std::string create_response_message(
   return response;
 };
 
-Response
-ResponseGenerator::generate_response(const RequestInfo &request_info,
-                                     const bool         is_connection_close,
-                                     HttpStatusCode::StatusCode status_code) {
+HttpStatusCode::StatusCode
+ResponseGenerator::_get_status_code(const RequestInfo         &request_info,
+                                    HttpStatusCode::StatusCode status_code) {
   if (request_info.location_ == NULL) {
     status_code = HttpStatusCode::NOT_FOUND_404;
   } else if (is_error_status_code(status_code)) {
@@ -193,7 +192,15 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
   } else {
     status_code = _handle_method(request_info);
   }
-  Body body = _create_body(request_info, status_code);
+  return status_code;
+}
+
+Response
+ResponseGenerator::generate_response(const RequestInfo &request_info,
+                                     const bool         is_connection_close,
+                                     HttpStatusCode::StatusCode status_code) {
+  status_code = _get_status_code(request_info, status_code);
+  Body body   = _create_body(request_info, status_code);
   if (body.has_fd_) {
     Result<std::string> result = read_fd(body.fd_);
     if (result.is_err_) {
@@ -208,18 +215,10 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
   return Response(response, is_connection_close);
 }
 
-// ResponseGenerator::Body
-// ResponseGenerator::create_fd_or_body(const RequestInfo         &request_info,
-//                                      HttpStatusCode::StatusCode status_code)
-//                                      {
-//   if (request_info.location_ == NULL) {
-//     status_code = HttpStatusCode::NOT_FOUND_404;
-//   } else if (is_error_status_code(status_code)) {
-//     // LOG("status_code: " << status_code);
-//   } else if (request_info.location_->return_map_.size() != 0) {
-//     status_code = static_cast<HttpStatusCode::StatusCode>(
-//         request_info.location_->return_map_.begin()->first);
-//   } else {
-//     status_code = _handle_method(request_info);
-//   }
-// }
+ResponseGenerator::Body
+ResponseGenerator::create_fd_or_body(const RequestInfo         &request_info,
+                                     HttpStatusCode::StatusCode status_code) {
+  status_code = _get_status_code(request_info, status_code);
+  Body body   = _create_body(request_info, status_code);
+  return body;
+}

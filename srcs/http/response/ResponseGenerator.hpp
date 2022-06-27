@@ -28,8 +28,8 @@ public:
   static Response generate_response(
       const RequestInfo &request_info, const bool is_connection_close,
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
-  Body create_fd_or_body(const RequestInfo         &request_info,
-                         HttpStatusCode::StatusCode status_code);
+  static Body create_fd_or_body(const RequestInfo         &request_info,
+                                HttpStatusCode::StatusCode status_code);
 
 private:
   ResponseGenerator();
@@ -41,6 +41,9 @@ private:
   static std::string _create_autoindex_body(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
   _handle_method(const RequestInfo &request_info);
+  static HttpStatusCode::StatusCode
+  _get_status_code(const RequestInfo         &request_info,
+                   HttpStatusCode::StatusCode status_code);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
