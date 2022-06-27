@@ -9,6 +9,7 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
+#include "event/Response.hpp"
 #include "http/const/const_http_enums.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
@@ -160,20 +161,23 @@ ResponseGenerator::response_message(const RequestInfo         &request_info,
   return response;
 };
 
-std::string
+Response
 ResponseGenerator::generate_response(const RequestInfo         &request_info,
                                      HttpStatusCode::StatusCode status_code) {
   if (request_info.location_ == NULL) {
     status_code = HttpStatusCode::NOT_FOUND_404;
   }
   if (is_error_status_code(status_code)) {
-    return response_message(request_info, status_code);
+    std::string response = response_message(request_info, status_code);
+    return Response(response, request_info.connection_close_);
   }
   if (request_info.location_->return_map_.size() != 0) {
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
-    return response_message(request_info, status_code);
+    std::string response = response_message(request_info, status_code);
+    return Response(response, request_info.connection_close_);
   }
-  status_code = _handle_method(request_info);
-  return response_message(request_info, status_code);
+  status_code          = _handle_method(request_info);
+  std::string response = response_message(request_info, status_code);
+  return Response(response, request_info.connection_close_);
 }

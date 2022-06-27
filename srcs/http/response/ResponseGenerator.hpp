@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "config/Config.hpp"
+#include "event/Response.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
@@ -12,7 +13,7 @@
 
 class ResponseGenerator {
 public:
-  static std::string generate_response(
+  static Response generate_response(
       const RequestInfo         &request_info,
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
   static std::string response_message(const RequestInfo         &request_info,
