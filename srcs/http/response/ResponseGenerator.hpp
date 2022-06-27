@@ -16,20 +16,20 @@ public:
   static Response generate_response(
       const RequestInfo &request_info, const bool is_connection_close,
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
-  static std::string response_message(const RequestInfo &request_info,
-                                      const bool         is_connection_close,
-                                      HttpStatusCode::StatusCode status_code);
 
 private:
   ResponseGenerator();
   ~ResponseGenerator();
   static Result<std::string>
                      _read_file_to_str_cgi(const RequestInfo &request_info);
-  static std::string _body(const RequestInfo               &request_info,
-                           const HttpStatusCode::StatusCode status_code);
+  static std::string _create_body(const RequestInfo               &request_info,
+                                  const HttpStatusCode::StatusCode status_code);
   static std::string _create_autoindex_body(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
-  _handle_method(const RequestInfo &request_info);
+                     _handle_method(const RequestInfo &request_info);
+  static std::string _create_response_message(
+      const RequestInfo &request_info, const bool is_connection_close,
+      HttpStatusCode::StatusCode status_code, const std::string &body);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
