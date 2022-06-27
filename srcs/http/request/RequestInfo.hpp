@@ -72,10 +72,9 @@ public:
   static void store_request_header_field_map(
       const std::string                  &header_line,
       std::map<std::string, std::string> &header_field_map);
-  static void check_bad_parse_request_line(const std::string &request_line);
-  void        parse_request_line(const std::string &request_line);
-  void        parse_request_header(
-             const std::map<std::string, std::string> &header_field_map);
+  void parse_request_line(const std::string &request_line);
+  void parse_request_header(
+      const std::map<std::string, std::string> &header_field_map);
   bool is_valid_request_header() const;
 };
 

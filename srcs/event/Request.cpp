@@ -19,8 +19,6 @@ Request::RequestState
 Request::_handle_request_line(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) {
-    RequestInfo::check_bad_parse_request_line(line);
-    // throws BadRequestException
     _request_info_.parse_request_line(line); // noexcept
     return RECEIVING_HEADER;
   }
