@@ -18,14 +18,28 @@ public:
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
 
 private:
+  struct ResultOfHandleMethod {
+    HttpStatusCode::StatusCode status_code_;
+    std::string                target_path_;
+
+    ResultOfHandleMethod(
+        HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE,
+        std::string                target_path = "")
+        : status_code_(status_code)
+        , target_path_(target_path) {}
+  };
+
   ResponseGenerator();
   ~ResponseGenerator();
   static Result<std::string>
-                     _read_file_to_str_cgi(const RequestInfo &request_info);
+                     _read_file_to_str_cgi(const RequestInfo &request_info,
+                                           const std::string &target_path);
   static std::string _create_body(const RequestInfo               &request_info,
-                                  const HttpStatusCode::StatusCode status_code);
-  static std::string _create_autoindex_body(const RequestInfo &request_info);
-  static HttpStatusCode::StatusCode
+                                  const HttpStatusCode::StatusCode status_code,
+                                  const std::string               &target_path);
+  static std::string _create_autoindex_body(const RequestInfo &request_info,
+                                            const std::string &target_path);
+  static ResponseGenerator::ResultOfHandleMethod
   _handle_method(const RequestInfo &request_info);
 };
 

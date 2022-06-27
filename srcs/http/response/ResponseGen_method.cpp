@@ -11,9 +11,10 @@
 
 // TODO: リンクやその他のファイルシステムの時どうするか
 static HttpStatusCode::StatusCode
-check_filepath_status(const RequestInfo &request_info) {
-  if (has_suffix(request_info.target_path_, "/")) {
-    if (is_dir_exists(request_info.target_path_)) {
+check_filepath_status(const RequestInfo &request_info,
+                      const std::string &target_path) {
+  if (has_suffix(target_path, "/")) {
+    if (is_dir_exists(target_path)) {
       if (!request_info.location_->autoindex_) {
         return HttpStatusCode::FORBIDDEN_403;
       }
@@ -21,11 +22,11 @@ check_filepath_status(const RequestInfo &request_info) {
     }
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_file_exists(request_info.target_path_)) {
+  if (!is_file_exists(target_path)) {
     ERROR_LOG("check_filepath_status: file not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_accessible(request_info.target_path_, R_OK)) {
+  if (!is_accessible(target_path, R_OK)) {
     // TODO: Permission error が 403なのか確かめてない
     return HttpStatusCode::FORBIDDEN_403;
   }
@@ -33,16 +34,16 @@ check_filepath_status(const RequestInfo &request_info) {
 }
 
 static HttpStatusCode::StatusCode
-delete_target_file(const RequestInfo &request_info) {
-  if (!is_file_exists(request_info.target_path_)) {
+delete_target_file(const std::string &target_path) {
+  if (!is_file_exists(target_path)) {
     ERROR_LOG("target file is not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_accessible(request_info.target_path_, W_OK)) {
+  if (!is_accessible(target_path, W_OK)) {
     ERROR_LOG("process can not delete target file");
     return HttpStatusCode::FORBIDDEN_403;
   }
-  if (!remove_file(request_info.target_path_)) {
+  if (!remove_file(target_path)) {
     ERROR_LOG("unknown error while deleting file");
     return HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   }
@@ -62,9 +63,8 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
-HttpStatusCode::StatusCode
+ResponseGenerator::ResultOfHandleMethod
 ResponseGenerator::_handle_method(const RequestInfo &request_info) {
-  HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
   // TODO: 501が必要？ kohkubo
   /*
   RFC 9110
@@ -74,10 +74,17 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
   */
   if (is_available_methods(request_info)) {
-    return HttpStatusCode::NOT_ALLOWED_405;
+    return ResultOfHandleMethod(HttpStatusCode::NOT_ALLOWED_405);
   }
+  HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
+  std::string                target_path =
+      request_info.location_->root_ + request_info.request_line_.absolute_path_;
   if ("GET" == request_info.request_line_.method_) {
-    status_code = check_filepath_status(request_info);
+    if (has_suffix(target_path, "/") &&
+        is_file_exists(target_path + request_info.location_->index_)) {
+      target_path += request_info.location_->index_;
+    }
+    status_code = check_filepath_status(request_info, target_path);
   } else if ("POST" == request_info.request_line_.method_) {
     /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
@@ -106,12 +113,12 @@ For example, a user agent normally sends Content- Length in a POST request
 even when the value is 0 (indicating empty content). >
 たとえば、ユーザーエージェントは通常、値が0（空のコンテンツを示す）の場合でも、POSTリクエストでContent-Lengthを送信します。
 */
-    status_code = check_filepath_status(request_info);
+    status_code = check_filepath_status(request_info, target_path);
   } else if ("DELETE" == request_info.request_line_.method_) {
-    status_code = delete_target_file(request_info);
+    status_code = delete_target_file(target_path);
   } else {
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
     status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
   }
-  return status_code;
+  return ResultOfHandleMethod(status_code, target_path);
 }

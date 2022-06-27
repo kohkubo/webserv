@@ -101,23 +101,25 @@ static std::string body_of_status_code(const RequestInfo         &request_info,
 
 std::string
 ResponseGenerator::_create_body(const RequestInfo               &request_info,
-                                const HttpStatusCode::StatusCode status_code) {
+                                const HttpStatusCode::StatusCode status_code,
+                                const std::string               &target_path) {
   if (is_error_status_code(status_code) ||
       HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
     return body_of_status_code(request_info, status_code);
   }
-  if (has_suffix(request_info.target_path_, ".py")) {
-    Result<std::string> result = _read_file_to_str_cgi(request_info);
+  if (has_suffix(target_path, ".py")) {
+    Result<std::string> result =
+        _read_file_to_str_cgi(request_info, target_path);
     if (result.is_err_) {
       return body_of_status_code(request_info,
                                  HttpStatusCode::INTERNAL_SERVER_ERROR_500);
     }
     return result.object_;
   }
-  if (has_suffix(request_info.target_path_, "/")) {
-    return _create_autoindex_body(request_info);
+  if (has_suffix(target_path, "/")) {
+    return _create_autoindex_body(request_info, target_path);
   }
-  Result<std::string> result = read_file_to_str(request_info.target_path_);
+  Result<std::string> result = read_file_to_str(target_path);
   if (result.is_err_) {
     return body_of_status_code(request_info,
                                HttpStatusCode::INTERNAL_SERVER_ERROR_500);
@@ -163,7 +165,7 @@ create_response_header(const RequestInfo         &request_info,
 
 static std::string create_response_message(
     const RequestInfo &request_info, const bool is_connection_close,
-    HttpStatusCode::StatusCode status_code, const std::string &body) {
+    const HttpStatusCode::StatusCode status_code, const std::string &body) {
   std::string response =
       create_response_header(request_info, is_connection_close, status_code);
   response += entity_header_and_body(body);
@@ -174,6 +176,7 @@ Response
 ResponseGenerator::generate_response(const RequestInfo &request_info,
                                      const bool         is_connection_close,
                                      HttpStatusCode::StatusCode status_code) {
+  std::string target_path;
   if (request_info.location_ == NULL) {
     status_code = HttpStatusCode::NOT_FOUND_404;
   } else if (is_error_status_code(status_code)) {
@@ -182,9 +185,11 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
   } else {
-    status_code = _handle_method(request_info);
+    ResultOfHandleMethod result = _handle_method(request_info);
+    status_code                 = result.status_code_;
+    target_path                 = result.target_path_;
   }
-  std::string body     = _create_body(request_info, status_code);
+  std::string body     = _create_body(request_info, status_code, target_path);
   std::string response = create_response_message(
       request_info, is_connection_close, status_code, body);
   return Response(response, is_connection_close);
