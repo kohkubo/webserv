@@ -18,13 +18,12 @@ public:
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
 
 private:
-  struct ResultOfHandleMethod {
+  struct ResponseInfo {
     HttpStatusCode::StatusCode status_code_;
     std::string                target_path_;
 
-    ResultOfHandleMethod(
-        HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE,
-        std::string                target_path = "")
+    ResponseInfo(HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE,
+                 std::string                target_path = "")
         : status_code_(status_code)
         , target_path_(target_path) {}
   };
@@ -39,7 +38,7 @@ private:
                                   const std::string               &target_path);
   static std::string _create_autoindex_body(const RequestInfo &request_info,
                                             const std::string &target_path);
-  static ResponseGenerator::ResultOfHandleMethod
+  static ResponseGenerator::ResponseInfo
   _handle_method(const RequestInfo &request_info);
 };
 
