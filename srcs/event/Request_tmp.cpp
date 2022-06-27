@@ -20,14 +20,14 @@ void Request::_tmp(const ConfigGroup &config_group) {
   // TODO: 例外の処理を整理したあと、1関数に切り出し予定です。 kohkubo
   _request_info_.config_   = config_group.select_config(_request_info_.host_);
   const Location *location = _request_info_.config_.locations_.select_location(
-      _request_info_.request_target_);
+      _request_info_.request_line_.absolute_path_);
   _request_info_.location_ = location;
   if (_request_info_.location_ != NULL) {
     // rakiyama
     // target_pathの解決をもっと後の処理で
     // (その場合const request_infoのメンバではなくローカル変数とか？)やる
-    _request_info_.target_path_ =
-        create_target_path(_request_info_.request_target_,
-                           _request_info_.method_, *(_request_info_.location_));
+    _request_info_.target_path_ = create_target_path(
+        _request_info_.request_line_.absolute_path_,
+        _request_info_.request_line_.method_, *(_request_info_.location_));
   }
 }

@@ -75,10 +75,10 @@ ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info) {
   buff << "<!DOCTYPE html>\n"
        << "<html>\n"
        << "   <head>\n"
-       << "      <title>Index of " << request_info.request_target_ << "</title>\n"
+       << "      <title>Index of " << request_info.request_line_.absolute_path_ << "</title>\n"
        << "   </head>\n"
        << "   <body>\n"
-       << "      <h1>Index of " << request_info.request_target_ << "</h1>\n"
+       << "      <h1>Index of " << request_info.request_line_.absolute_path_ << "</h1>\n"
        << "      <ul style=\"list-style:none\">\n"
        <<          dirlisting_lines(request_info.target_path_)
        << "    </ul>\n"
