@@ -22,9 +22,9 @@ private:
 public:
   ListenSocket(const ConfigGroup &config_group);
   virtual ~ListenSocket() {}
-  virtual struct pollfd   pollfd();
-  virtual SocketMapAction handle_event(short int revents);
-  virtual bool            is_timed_out();
+  virtual struct pollfd    pollfd();
+  virtual SocketMapActions handle_event(short int revents);
+  virtual bool             is_timed_out();
 };
 
 #endif /* SRCS_SOCKET_LISTENSOCKET_HPP */

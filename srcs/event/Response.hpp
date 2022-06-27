@@ -15,6 +15,7 @@ public:
     CLOSING,  // クライアントからのclose待ち
     COMPLETE, // 送信終了
     CGI,      // CGIのレスポンス待ち
+    FILE,     // fileのリード待ち
   };
 
 private:

@@ -56,18 +56,9 @@ public:
   Request()
       : _state_(RECEIVING_STARTLINE) {}
 
-  // TODO: テストでの使用のみなのでテストを変更し、消去する 2022/06/10 22:15 3人
   const RequestInfo &request_info() const { return _request_info_; }
   RequestState       handle_request(std::string       &request_buffer,
                                     const ConfigGroup &config_group);
-
-  Response create_response() {
-    return ResponseGenerator::generate_response(_request_info_);
-  }
-  Response create_response(HttpStatusCode::StatusCode status_code) {
-    _request_info_.connection_close_ = true;
-    return ResponseGenerator::generate_response(_request_info_, status_code);
-  }
 };
 
 #endif /* SRCS_EVENT_REQUEST_HPP */
