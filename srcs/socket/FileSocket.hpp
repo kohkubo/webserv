@@ -9,8 +9,8 @@
 class FileSocket : public SocketBase {
 private:
   // 何を持つべきか考える
-  HttpStatusCode::StatusCode status_code_;
-  std::string                response_body_;
+  HttpStatusCode::StatusCode _status_code_;
+  std::string                _response_body_;
 
 public:
   FileSocket();
