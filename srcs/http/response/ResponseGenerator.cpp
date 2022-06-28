@@ -183,22 +183,18 @@ ResponseGenerator::ResponseInfo ResponseGenerator::_get_statuscode_body(
     const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
   if (request_info.location_ == NULL) {
     status_code = HttpStatusCode::NOT_FOUND_404;
-    return ResponseInfo(status_code,
-                        body_of_status_code(request_info, status_code));
+    return ResponseInfo(status_code, _create_body(request_info, status_code));
   }
   if (is_error_status_code(status_code)) {
     // LOG("status_code: " << status_code);
-    return ResponseInfo(status_code,
-                        body_of_status_code(request_info, status_code));
+    return ResponseInfo(status_code, _create_body(request_info, status_code));
   }
   if (request_info.location_->return_map_.size() != 0) {
     status_code = static_cast<HttpStatusCode::StatusCode>(
         request_info.location_->return_map_.begin()->first);
-    return ResponseInfo(status_code,
-                        body_of_status_code(request_info, status_code));
+    return ResponseInfo(status_code, _create_body(request_info, status_code));
   }
-  status_code = _handle_method(request_info);
-  return ResponseInfo(status_code, _create_body(request_info, status_code));
+  return _handle_method(request_info);
 }
 
 Response

@@ -46,7 +46,7 @@ private:
   static Body        _create_body(const RequestInfo               &request_info,
                                   const HttpStatusCode::StatusCode status_code);
   static std::string _create_autoindex_body(const RequestInfo &request_info);
-  static HttpStatusCode::StatusCode
+  static ResponseGenerator::ResponseInfo
   _handle_method(const RequestInfo &request_info);
   static ResponseInfo
   _get_statuscode_body(const RequestInfo         &request_info,

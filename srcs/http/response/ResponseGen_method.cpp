@@ -62,7 +62,7 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
-HttpStatusCode::StatusCode
+ResponseGenerator::ResponseInfo
 ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
   // TODO: 501が必要？ kohkubo
@@ -74,11 +74,14 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
   */
   if (is_available_methods(request_info)) {
-    return HttpStatusCode::NOT_ALLOWED_405;
+    status_code = HttpStatusCode::NOT_ALLOWED_405;
+    return ResponseInfo(status_code, _create_body(request_info, status_code));
   }
   if ("GET" == request_info.request_line_.method_) {
     status_code = check_filepath_status(request_info);
-  } else if ("POST" == request_info.request_line_.method_) {
+    return ResponseInfo(status_code, _create_body(request_info, status_code));
+  }
+  if ("POST" == request_info.request_line_.method_) {
     /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -107,11 +110,13 @@ even when the value is 0 (indicating empty content). >
 たとえば、ユーザーエージェントは通常、値が0（空のコンテンツを示す）の場合でも、POSTリクエストでContent-Lengthを送信します。
 */
     status_code = check_filepath_status(request_info);
-  } else if ("DELETE" == request_info.request_line_.method_) {
-    status_code = delete_target_file(request_info);
-  } else {
-    ERROR_LOG("unknown method: " << request_info.request_line_.method_);
-    status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
+    return ResponseInfo(status_code, _create_body(request_info, status_code));
   }
-  return status_code;
+  if ("DELETE" == request_info.request_line_.method_) {
+    status_code = delete_target_file(request_info);
+    return ResponseInfo(status_code, _create_body(request_info, status_code));
+  }
+  ERROR_LOG("unknown method: " << request_info.request_line_.method_);
+  status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
+  return ResponseInfo(status_code, _create_body(request_info, status_code));
 }
