@@ -156,7 +156,11 @@ tokenIterator Config::_parse_map_directive(std::string                 key,
   pos++;
   if (pos == end || pos + 2 == end || *(pos + 2) != ";")
     ERROR_EXIT("could not detect directive value.");
-  value.insert(std::make_pair(std::atoi((*pos).c_str()), *(pos + 1)));
+  Result<std::size_t> result = string_to_size(*pos);
+  if (result.is_err_) {
+    ERROR_EXIT("could not detect directive value.");
+  }
+  value.insert(std::make_pair(result.object_, *(pos + 1)));
   return pos + 3;
 }
 
