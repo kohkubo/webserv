@@ -16,6 +16,14 @@ public:
   static Response generate_response(
       const RequestInfo &request_info, const bool is_connection_close,
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
+<<<<<<< HEAD
+=======
+  static std::string
+  response_message(const RequestInfo               &request_info,
+                   const bool                       is_connection_close,
+                   const HttpStatusCode::StatusCode status_code,
+                   const std::string               &target_path);
+>>>>>>> 6deebcff37bd2787277d6d3292c6961fc9815cd4
 
 private:
   struct ResponseInfo {
@@ -33,9 +41,15 @@ private:
   static Result<std::string>
                      _read_file_to_str_cgi(const RequestInfo &request_info,
                                            const std::string &target_path);
+<<<<<<< HEAD
   static std::string _create_body(const RequestInfo               &request_info,
                                   const HttpStatusCode::StatusCode status_code,
                                   const std::string               &target_path);
+=======
+  static std::string _body(const RequestInfo               &request_info,
+                           const HttpStatusCode::StatusCode status_code,
+                           const std::string               &target_path);
+>>>>>>> 6deebcff37bd2787277d6d3292c6961fc9815cd4
   static std::string _create_autoindex_body(const RequestInfo &request_info,
                                             const std::string &target_path);
   static ResponseGenerator::ResponseInfo

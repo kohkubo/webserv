@@ -100,9 +100,15 @@ static std::string body_of_status_code(const RequestInfo         &request_info,
 }
 
 std::string
+<<<<<<< HEAD
 ResponseGenerator::_create_body(const RequestInfo               &request_info,
                                 const HttpStatusCode::StatusCode status_code,
                                 const std::string               &target_path) {
+=======
+ResponseGenerator::_body(const RequestInfo               &request_info,
+                         const HttpStatusCode::StatusCode status_code,
+                         const std::string               &target_path) {
+>>>>>>> 6deebcff37bd2787277d6d3292c6961fc9815cd4
   if (is_error_status_code(status_code) ||
       HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
     return body_of_status_code(request_info, status_code);
@@ -144,10 +150,17 @@ static std::string entity_header_and_body(const std::string &body) {
          "Content-Type: text/html" + CRLF + CRLF + body;
 }
 
+<<<<<<< HEAD
 static std::string
 create_response_header(const RequestInfo         &request_info,
                        const bool                 is_connection_close,
                        HttpStatusCode::StatusCode status_code) {
+=======
+std::string ResponseGenerator::response_message(
+    const RequestInfo &request_info, const bool is_connection_close,
+    const HttpStatusCode::StatusCode status_code,
+    const std::string               &target_path) {
+>>>>>>> 6deebcff37bd2787277d6d3292c6961fc9815cd4
   // LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   if (is_connection_close) {
@@ -160,6 +173,7 @@ create_response_header(const RequestInfo         &request_info,
     response +=
         location_header(request_info.location_->return_map_, status_code);
   }
+<<<<<<< HEAD
   return response;
 }
 
@@ -169,6 +183,10 @@ static std::string create_response_message(
   std::string response =
       create_response_header(request_info, is_connection_close, status_code);
   response += entity_header_and_body(body);
+=======
+  response +=
+      entity_header_and_body(_body(request_info, status_code, target_path));
+>>>>>>> 6deebcff37bd2787277d6d3292c6961fc9815cd4
   return response;
 };
 
@@ -189,8 +207,13 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
     status_code         = result.status_code_;
     target_path         = result.target_path_;
   }
+<<<<<<< HEAD
   std::string body     = _create_body(request_info, status_code, target_path);
   std::string response = create_response_message(
       request_info, is_connection_close, status_code, body);
+=======
+  std::string response = response_message(request_info, is_connection_close,
+                                          status_code, target_path);
+>>>>>>> 6deebcff37bd2787277d6d3292c6961fc9815cd4
   return Response(response, is_connection_close);
 }
