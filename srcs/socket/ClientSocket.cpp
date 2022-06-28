@@ -77,7 +77,7 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       // 結果Result<openされたfd>が返ってくる。
       // ResponseGenerator::Body body = ResponseGenerator::create_fd_or_body(
       //     _request_.request_info(), HttpStatusCode::OK_200);
-      // if (body.has_fd_) {
+      // if (body.has_fd()) {
       //   SocketBase *file_socket =
       //       new FileSocket(body.fd_, _response_queue_.back());
       // }
