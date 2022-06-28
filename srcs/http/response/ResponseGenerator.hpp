@@ -30,6 +30,15 @@ public:
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
 
 private:
+  struct ResponseInfo {
+    HttpStatusCode::StatusCode status_code_;
+    Body                       body_;
+
+    ResponseInfo(HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE,
+                 Body                       body        = Body())
+        : status_code_(status_code)
+        , body_(body) {}
+  };
   ResponseGenerator();
   ~ResponseGenerator();
   static Result<std::string>
@@ -38,10 +47,9 @@ private:
                                   const HttpStatusCode::StatusCode status_code);
   static std::string _create_autoindex_body(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
-  _handle_method(const RequestInfo &request_info);
-  static HttpStatusCode::StatusCode
-  _get_status_code(const RequestInfo         &request_info,
-                   HttpStatusCode::StatusCode status_code);
+                      _handle_method(const RequestInfo &request_info);
+  static ResponseInfo _get_status_code(const RequestInfo         &request_info,
+                                       HttpStatusCode::StatusCode status_code);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
