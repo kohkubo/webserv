@@ -20,8 +20,7 @@ public:
     std::string content_;
 
     Body()
-        : fd_(-1)
-        , content_("") {}
+        : fd_(-1) {}
     bool has_fd() const { return fd_ != -1; }
   };
 
