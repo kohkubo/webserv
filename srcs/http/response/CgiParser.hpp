@@ -6,6 +6,7 @@
 // clang-format off
 /*
   CGI-Response = document-response | local-redir-response | client-redir-response | client-redirdoc-response
+
   document-response = Content-Type [ Status ] *other-field NL response-body
   local-redir-response = local-Location NL
   client-redir-response = client-Location *extension-field NL
@@ -45,8 +46,13 @@ private:
     client_redirdoc,
   };
 
-public:
+  ResponseType _response_type_;
+  std::string  _new_line_delim_;
+
+private:
   CgiParser();
+
+public:
   CgiParser(const std::string &cgi_response);
   ~CgiParser();
 };
