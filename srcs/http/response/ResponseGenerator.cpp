@@ -214,11 +214,3 @@ ResponseGenerator::generate_response(const RequestInfo &request_info,
       request_info, is_connection_close, status_code, body.content_);
   return Response(response, is_connection_close);
 }
-
-ResponseGenerator::Body
-ResponseGenerator::create_fd_or_body(const RequestInfo         &request_info,
-                                     HttpStatusCode::StatusCode status_code) {
-  status_code = _get_status_code(request_info, status_code);
-  Body body   = _create_body(request_info, status_code);
-  return body;
-}
