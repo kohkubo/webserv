@@ -50,7 +50,7 @@ create_environ_map(const RequestInfo &request_info) {
   environ_map["SERVER_PORT"] =
       to_string(ntohs(request_info.config_.sockaddr_in_.sin_port));
   environ_map["SERVER_PROTOCOL"] = request_info.request_line_.http_version_;
-  environ_map["SERVER_SOFTWARE"] = "webserv 0.0.0";
+  environ_map["SERVER_SOFTWARE"] = "webserv/ver0.0.0";
 
   return environ_map;
 }
