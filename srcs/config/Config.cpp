@@ -181,9 +181,10 @@ tokenIterator Config::_parse_size_directive(std::string key, size_t &value,
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
-  // TODO: size_tに変換できるやり方ちゃんと調査
-  // TODO: エラー処理
-  value = std::atol((*pos).c_str());
+  Result<std::size_t> result = string_to_size(*pos);
+  if (result.is_err_)
+    ERROR_EXIT("could not parse size string.");
+  value = result.object_;
   return pos + 2;
 }
 
