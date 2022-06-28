@@ -16,14 +16,13 @@ typedef int fileFd;
 class ResponseGenerator {
 public:
   struct Body {
-    bool        has_fd_;
     fileFd      fd_;
     std::string content_;
 
     Body()
-        : has_fd_(false)
-        , fd_(-1)
+        : fd_(-1)
         , content_("") {}
+    bool has_fd() const { return fd_ != -1; }
   };
 
 private:

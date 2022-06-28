@@ -82,8 +82,7 @@ body_of_status_code(const RequestInfo         &request_info,
       ERROR_LOG("open error: " << file_path);
       status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
     } else {
-      body.fd_     = fd;
-      body.has_fd_ = true;
+      body.fd_ = fd;
       return body;
     }
   }
@@ -200,7 +199,7 @@ Response ResponseGenerator::generate_response() {
                                                   _response_info_.status_code_);
   Body body =
       _create_body(_response_info_.request_info_, _response_info_.status_code_);
-  if (body.has_fd_) {
+  if (body.has_fd()) {
     Result<std::string> result = read_fd(body.fd_);
     if (result.is_err_) {
       _response_info_.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
