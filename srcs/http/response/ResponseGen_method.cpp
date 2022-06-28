@@ -136,8 +136,9 @@ For example, a user agent normally sends Content- Length in a POST request
 even when the value is 0 (indicating empty content). >
 たとえば、ユーザーエージェントは通常、値が0（空のコンテンツを示す）の場合でも、POSTリクエストでContent-Lengthを送信します。
 */
+    // TODO: ファイル保存処理
     status_code = check_filepath_status(request_info);
-    return ResponseInfo(status_code, _create_body(request_info, status_code));
+    return ResponseInfo(status_code, body);
   }
   if ("DELETE" == request_info.request_line_.method_) {
     status_code = delete_target_file(request_info);
