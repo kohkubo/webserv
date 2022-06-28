@@ -59,3 +59,19 @@ bool remove_file(const std::string &file_path) {
 bool is_accessible(const std::string &file_path, int mode) {
   return access(file_path.c_str(), mode) == 0;
 }
+
+Result<std::string> read_fd(int fd) {
+  std::stringstream buffer;
+  char              buf[1024];
+  while (true) {
+    ssize_t read_size = read(fd, buf, sizeof(buf));
+    if (read_size == -1) {
+      return Error<std::string>();
+    }
+    if (read_size == 0) {
+      break;
+    }
+    buffer << std::string(buf, read_size);
+  }
+  return Ok<std::string>(buffer.str());
+}
