@@ -57,8 +57,13 @@ private:
   static HttpStatusCode::StatusCode
   _handle_method(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
-  _get_status_code(const RequestInfo         &request_info,
-                   HttpStatusCode::StatusCode status_code);
+                     _get_status_code(const RequestInfo         &request_info,
+                                      HttpStatusCode::StatusCode status_code);
+  static std::string _create_response_message(
+      const RequestInfo &request_info, const bool is_connection_close,
+      HttpStatusCode::StatusCode status_code, const std::string &body);
+  static Body _body_of_status_code(const RequestInfo         &request_info,
+                                   HttpStatusCode::StatusCode status_code);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
