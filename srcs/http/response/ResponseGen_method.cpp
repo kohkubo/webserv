@@ -78,13 +78,13 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
     return ResponseInfo(status_code,
                         _body_of_status_code(request_info, status_code));
   }
-  Body body;
   if ("GET" == request_info.request_line_.method_) {
     status_code = check_filepath_status(request_info);
     if (_is_error_status_code(status_code)) {
       return ResponseInfo(status_code,
                           _body_of_status_code(request_info, status_code));
     }
+    Body body;
     if (has_suffix(request_info.target_path_, ".py")) {
       Result<std::string> result = _read_file_to_str_cgi(request_info);
       if (result.is_err_) {
@@ -138,11 +138,15 @@ even when the value is 0 (indicating empty content). >
 */
     // TODO: ファイル保存処理
     status_code = check_filepath_status(request_info);
-    return ResponseInfo(status_code, body);
+    return ResponseInfo(status_code);
   }
   if ("DELETE" == request_info.request_line_.method_) {
     status_code = delete_target_file(request_info);
-    return ResponseInfo(status_code, _create_body(request_info, status_code));
+    if (_is_error_status_code(status_code)) {
+      return ResponseInfo(status_code,
+                          _body_of_status_code(request_info, status_code));
+    }
+    return ResponseInfo(status_code);
   }
   ERROR_LOG("unknown method: " << request_info.request_line_.method_);
   status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
