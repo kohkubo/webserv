@@ -28,8 +28,6 @@ public:
   static Response generate_response(
       const RequestInfo &request_info, const bool is_connection_close,
       HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
-  static Body create_fd_or_body(const RequestInfo         &request_info,
-                                HttpStatusCode::StatusCode status_code);
 
 private:
   ResponseGenerator();
