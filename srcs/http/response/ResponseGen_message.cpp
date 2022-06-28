@@ -1,5 +1,8 @@
 #include "http/response/ResponseGenerator.hpp"
 
+#include "http/const/const_delimiter.hpp"
+#include "http/const/const_status_phrase.hpp"
+
 #include <fcntl.h>
 
 std::map<int, std::string> init_response_status_phrase_map() {

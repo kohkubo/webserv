@@ -1,7 +1,8 @@
 #include "http/response/ResponseGenerator.hpp"
 
-#include <algorithm>
 #include <dirent.h>
+
+#include <algorithm>
 #include <set>
 #include <sstream>
 

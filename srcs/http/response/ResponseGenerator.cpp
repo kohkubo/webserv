@@ -11,7 +11,6 @@
 #include "config/Location.hpp"
 #include "event/Response.hpp"
 #include "http/const/const_http_enums.hpp"
-#include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
