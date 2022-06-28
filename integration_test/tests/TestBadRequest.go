@@ -143,6 +143,33 @@ var testBadRequest = testCatergory{
 			},
 		},
 		{
+			caseName: "invalid content length(minus)",
+			test: func() bool {
+
+				expectStatusCode := 400
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+
+				longline := strings.Repeat("a", 1025)
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "POST / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Content-Length: -1000\r\n" +
+						"\r\n" +
+						longline,
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
 			caseName: "invalid chunk size",
 			test: func() bool {
 
