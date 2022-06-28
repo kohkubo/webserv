@@ -47,38 +47,35 @@ std::map<int, std::string> init_response_status_phrase_map() {
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
+std::string ResponseGenerator::_create_default_body_content(
+    HttpStatusCode::StatusCode status_code) {
+  return "<!DOCTYPE html>\n"
+         "<html>\n"
+         "    <head>\n"
+         "        <title>" +
+         to_string(status_code) +
+         "</title>\n"
+         "    </head>\n"
+         "    <body>\n"
+         "<h2>" +
+         g_response_status_phrase_map[status_code] +
+         "</h2>\n"
+         "provided by webserv\n"
+         "    </body>\n"
+         "</html>";
+}
+
 // TODO: config.error_page validate
-ResponseGenerator::Body ResponseGenerator::_body_of_status_code(
+ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
     const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
-  ResponseGenerator::Body      body;
+  ResponseGenerator::Body body;
+  body.status_code_ = status_code;
   errorPageMap::const_iterator it =
-      request_info.config_.error_pages_.find(status_code);
-  if (it != request_info.config_.error_pages_.end() &&
-      request_info.location_ != NULL) {
+      request_info.config_.error_pages_.find(body.status_code_);
+  if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
-    int         fd        = open(file_path.c_str(), O_RDONLY);
-    if (fd < 0) {
-      ERROR_LOG("open error: " << file_path);
-      status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
-    } else {
-      body.fd_ = fd;
-      return body;
-    }
+    body                  = _open_fd(request_info.target_path_);
   }
-  body.content_ = "<!DOCTYPE html>\n"
-                  "<html>\n"
-                  "    <head>\n"
-                  "        <title>" +
-                  to_string(status_code) +
-                  "</title>\n"
-                  "    </head>\n"
-                  "    <body>\n"
-                  "<h2>" +
-                  g_response_status_phrase_map[status_code] +
-                  "</h2>\n"
-                  "provided by webserv\n"
-                  "    </body>\n"
-                  "</html>";
   return body;
 }
 

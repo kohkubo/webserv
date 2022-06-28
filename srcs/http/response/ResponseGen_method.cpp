@@ -55,16 +55,16 @@ delete_target_file(const RequestInfo &request_info) {
 // An origin server that receives a request method that is recognized and
 // implemented, but not allowed for the target resource, SHOULD respond with the
 // 405 (Method Not Allowed) status code.
-static bool is_available_methods(const RequestInfo &request_info) {
+static bool is_not_allowed(const RequestInfo &request_info) {
   return std::find(request_info.location_->available_methods_.begin(),
                    request_info.location_->available_methods_.end(),
                    request_info.request_line_.method_) ==
          request_info.location_->available_methods_.end();
 }
 
-HttpStatusCode::StatusCode
+ResponseGenerator::Body
 ResponseGenerator::_handle_method(const RequestInfo &request_info) {
-  HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE;
+  Body body;
   // TODO: 501が必要？ kohkubo
   /*
   RFC 9110
@@ -73,11 +73,29 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   implemented SHOULD respond with the 501 (Not Implemented) status code.
   認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
   */
-  if (is_available_methods(request_info)) {
-    return HttpStatusCode::NOT_ALLOWED_405;
-  }
-  if ("GET" == request_info.request_line_.method_) {
-    status_code = check_filepath_status(request_info);
+  if (is_not_allowed(request_info)) {
+    body.status_code_ = HttpStatusCode::NOT_ALLOWED_405;
+  } else if ("GET" == request_info.request_line_.method_) {
+    body.status_code_ = check_filepath_status(request_info);
+    if (_is_error_status_code(body.status_code_)) {
+      return body;
+    }
+    if (has_suffix(request_info.target_path_, ".py")) {
+      Result<std::string> result = _read_file_to_str_cgi(request_info);
+      if (!result.is_err_) {
+        body.content_     = result.object_;
+        body.has_content_ = true;
+        return body;
+      }
+      body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      return body;
+    }
+    if (has_suffix(request_info.target_path_, "/")) {
+      body.content_     = _create_autoindex_body(request_info);
+      body.has_content_ = true;
+      return body;
+    }
+    body = _open_fd(request_info.target_path_);
   } else if ("POST" == request_info.request_line_.method_) {
     /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
@@ -106,12 +124,13 @@ For example, a user agent normally sends Content- Length in a POST request
 even when the value is 0 (indicating empty content). >
 たとえば、ユーザーエージェントは通常、値が0（空のコンテンツを示す）の場合でも、POSTリクエストでContent-Lengthを送信します。
 */
-    status_code = check_filepath_status(request_info);
+    // TODO: ファイル保存処理
+    body.status_code_ = check_filepath_status(request_info);
   } else if ("DELETE" == request_info.request_line_.method_) {
-    status_code = delete_target_file(request_info);
+    body.status_code_ = delete_target_file(request_info);
   } else {
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
-    status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
+    body.status_code_ = HttpStatusCode::NOT_IMPLEMENTED_501;
   }
-  return status_code;
+  return body;
 }
