@@ -42,10 +42,14 @@ private:
   ResponseGenerator();
   ~ResponseGenerator();
   static Result<std::string>
-                     _read_file_to_str_cgi(const RequestInfo &request_info);
-  static Body        _create_body(const RequestInfo               &request_info,
-                                  const HttpStatusCode::StatusCode status_code);
+              _read_file_to_str_cgi(const RequestInfo &request_info);
+  static Body _create_body(const RequestInfo               &request_info,
+                           const HttpStatusCode::StatusCode status_code);
+  static bool _is_error_status_code(HttpStatusCode::StatusCode status_code);
   static std::string _create_autoindex_body(const RequestInfo &request_info);
+  static ResponseGenerator::Body
+  _body_of_status_code(const RequestInfo         &request_info,
+                       HttpStatusCode::StatusCode status_code);
   static ResponseGenerator::ResponseInfo
   _handle_method(const RequestInfo &request_info);
   static ResponseInfo

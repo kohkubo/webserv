@@ -75,8 +75,10 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   */
   if (is_available_methods(request_info)) {
     status_code = HttpStatusCode::NOT_ALLOWED_405;
-    return ResponseInfo(status_code, _create_body(request_info, status_code));
+    return ResponseInfo(status_code,
+                        _body_of_status_code(request_info, status_code));
   }
+  // Body body;
   if ("GET" == request_info.request_line_.method_) {
     status_code = check_filepath_status(request_info);
     return ResponseInfo(status_code, _create_body(request_info, status_code));
