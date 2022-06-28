@@ -25,6 +25,8 @@ public:
         , fd_(-1)
         , content_("") {}
   };
+
+private:
   struct ResponseInfo {
     const RequestInfo         &request_info_;
     HttpStatusCode::StatusCode status_code_;
@@ -38,8 +40,6 @@ public:
               status_code_ == HttpStatusCode::BAD_REQUEST_400 ||
               status_code_ == HttpStatusCode::ENTITY_TOO_LARGE_413) {}
   };
-
-private:
   ResponseInfo _response_info_;
 
 public:
