@@ -50,6 +50,20 @@ bool getline(std::string &source, std::string &line) {
   return true;
 }
 
+Result<std::size_t> string_to_size(const std::string &str) {
+  for (size_t i = 0; i < str.size(); i++) {
+    char c = str[i];
+    if (!(std::isdigit(c) != 0)) {
+      return Error<std::size_t>();
+    }
+  }
+
+  std::size_t       result = 0;
+  std::stringstream ss(str);
+  ss >> result;
+  return Ok<std::size_t>(result);
+}
+
 Result<std::size_t> hexstr_to_size(const std::string &str) {
   for (size_t i = 0; i < str.size(); i++) {
     char c = str[i];
@@ -59,11 +73,11 @@ Result<std::size_t> hexstr_to_size(const std::string &str) {
     }
   }
 
-  std::size_t       x = 0;
+  std::size_t       result = 0;
   std::stringstream ss;
   ss << std::hex << str;
-  ss >> x;
-  return Ok<std::size_t>(x);
+  ss >> result;
+  return Ok<std::size_t>(result);
 }
 
 bool is_dir(const std::string &filepath) {

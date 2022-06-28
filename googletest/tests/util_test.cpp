@@ -110,3 +110,20 @@ TEST(util_test, test_hexstr_to_size) {
   EXPECT_FALSE(hexstr_to_size("1234567890").is_err_);
   EXPECT_TRUE(hexstr_to_size("1234567890u").is_err_);
 }
+
+TEST(util_test, test_string_to_size) {
+  EXPECT_EQ(string_to_size("0").object_, (std::size_t)0);
+  EXPECT_EQ(string_to_size("1").object_, (std::size_t)1);
+  EXPECT_EQ(string_to_size("10").object_, (std::size_t)10);
+  EXPECT_EQ(string_to_size("999").object_, (std::size_t)999);
+  EXPECT_EQ(string_to_size("18446744073709551615").object_, SIZE_MAX);
+
+  EXPECT_EQ(string_to_size("0020").object_, (std::size_t)20);
+  EXPECT_EQ(
+      string_to_size("0000000000000000000000000000000000000000020").object_,
+      (std::size_t)20);
+
+  EXPECT_TRUE(string_to_size("0020h").is_err_);
+  EXPECT_TRUE(string_to_size("abc").is_err_);
+  EXPECT_TRUE(string_to_size("-20").is_err_);
+}
