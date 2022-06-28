@@ -104,36 +104,6 @@ ResponseGenerator::Body ResponseGenerator::_body_of_status_code(
   return body;
 }
 
-ResponseGenerator::Body
-ResponseGenerator::_create_body(const RequestInfo               &request_info,
-                                const HttpStatusCode::StatusCode status_code) {
-  Body body;
-  if (_is_error_status_code(status_code) ||
-      HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
-    return _body_of_status_code(request_info, status_code);
-  }
-  if (has_suffix(request_info.target_path_, ".py")) {
-    Result<std::string> result = _read_file_to_str_cgi(request_info);
-    if (result.is_err_) {
-      return _body_of_status_code(request_info,
-                                  HttpStatusCode::INTERNAL_SERVER_ERROR_500);
-    }
-    body.content_ = result.object_;
-    return body;
-  }
-  if (has_suffix(request_info.target_path_, "/")) {
-    body.content_ = _create_autoindex_body(request_info);
-    return body;
-  }
-  Result<std::string> result = read_file_to_str(request_info.target_path_);
-  if (result.is_err_) {
-    return _body_of_status_code(request_info,
-                                HttpStatusCode::INTERNAL_SERVER_ERROR_500);
-  }
-  body.content_ = result.object_;
-  return body;
-}
-
 static std::string start_line(const HttpStatusCode::StatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }

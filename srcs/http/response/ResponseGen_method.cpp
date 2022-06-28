@@ -150,5 +150,6 @@ even when the value is 0 (indicating empty content). >
   }
   ERROR_LOG("unknown method: " << request_info.request_line_.method_);
   status_code = HttpStatusCode::NOT_IMPLEMENTED_501;
-  return ResponseInfo(status_code, _create_body(request_info, status_code));
+  return ResponseInfo(status_code,
+                      _body_of_status_code(request_info, status_code));
 }
