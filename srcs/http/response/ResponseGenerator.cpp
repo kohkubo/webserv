@@ -179,9 +179,8 @@ static std::string create_response_message(
   return response;
 };
 
-ResponseGenerator::ResponseInfo
-ResponseGenerator::_get_status_code(const RequestInfo         &request_info,
-                                    HttpStatusCode::StatusCode status_code) {
+ResponseGenerator::ResponseInfo ResponseGenerator::_get_statuscode_body(
+    const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
   if (request_info.location_ == NULL) {
     status_code = HttpStatusCode::NOT_FOUND_404;
     return ResponseInfo(status_code,
@@ -206,7 +205,7 @@ Response
 ResponseGenerator::generate_response(const RequestInfo &request_info,
                                      const bool         is_connection_close,
                                      HttpStatusCode::StatusCode status_code) {
-  ResponseInfo response_info = _get_status_code(request_info, status_code);
+  ResponseInfo response_info = _get_statuscode_body(request_info, status_code);
   Body         body          = response_info.body_;
   status_code                = response_info.status_code_;
   if (body.has_fd_) {
