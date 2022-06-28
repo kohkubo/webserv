@@ -195,22 +195,23 @@ ResponseGenerator::_get_status_code(const RequestInfo         &request_info,
   return status_code;
 }
 
-Response
-ResponseGenerator::generate_response(const RequestInfo &request_info,
-                                     const bool         is_connection_close,
-                                     HttpStatusCode::StatusCode status_code) {
-  status_code = _get_status_code(request_info, status_code);
-  Body body   = _create_body(request_info, status_code);
+Response ResponseGenerator::generate_response() {
+  _response_info_.status_code_ = _get_status_code(_response_info_.request_info_,
+                                                  _response_info_.status_code_);
+  Body body =
+      _create_body(_response_info_.request_info_, _response_info_.status_code_);
   if (body.has_fd_) {
     Result<std::string> result = read_fd(body.fd_);
     if (result.is_err_) {
-      status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
-      body        = body_of_status_code(request_info, status_code);
+      _response_info_.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      body = body_of_status_code(_response_info_.request_info_,
+                                 _response_info_.status_code_);
     } else {
       body.content_ = result.object_;
     }
   }
   std::string response = create_response_message(
-      request_info, is_connection_close, status_code, body.content_);
-  return Response(response, is_connection_close);
+      _response_info_.request_info_, _response_info_.is_connection_close_,
+      _response_info_.status_code_, body.content_);
+  return Response(response, _response_info_.is_connection_close_);
 }

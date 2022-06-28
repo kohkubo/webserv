@@ -25,13 +25,32 @@ public:
         , fd_(-1)
         , content_("") {}
   };
-  static Response generate_response(
-      const RequestInfo &request_info, const bool is_connection_close,
-      HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE);
 
 private:
-  ResponseGenerator();
-  ~ResponseGenerator();
+  struct ResponseInfo {
+    const RequestInfo         &request_info_;
+    HttpStatusCode::StatusCode status_code_;
+    bool                       is_connection_close_;
+    ResponseInfo(const RequestInfo         &request_info,
+                 HttpStatusCode::StatusCode status_code)
+        : request_info_(request_info)
+        , status_code_(status_code)
+        , is_connection_close_(
+              request_info_.connection_close_ ||
+              status_code_ == HttpStatusCode::BAD_REQUEST_400 ||
+              status_code_ == HttpStatusCode::ENTITY_TOO_LARGE_413) {}
+  };
+  ResponseInfo _response_info_;
+
+public:
+  ResponseGenerator(
+      const RequestInfo         &request_info,
+      HttpStatusCode::StatusCode status_code = HttpStatusCode::NONE)
+      : _response_info_(request_info, status_code) {}
+  ~ResponseGenerator() {}
+  Response generate_response();
+
+private:
   static Result<std::string>
                      _read_file_to_str_cgi(const RequestInfo &request_info);
   static Body        _create_body(const RequestInfo               &request_info,
