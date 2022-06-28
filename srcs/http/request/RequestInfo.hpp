@@ -44,7 +44,6 @@ public:
   bool            is_chunked_;
   bool            has_content_length_;
   std::size_t     content_length_;
-  std::string     target_path_;
   Config          config_;
   const Location *location_;
   std::string     content_type_;
