@@ -78,10 +78,35 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
     return ResponseInfo(status_code,
                         _body_of_status_code(request_info, status_code));
   }
-  // Body body;
+  Body body;
   if ("GET" == request_info.request_line_.method_) {
     status_code = check_filepath_status(request_info);
-    return ResponseInfo(status_code, _create_body(request_info, status_code));
+    if (_is_error_status_code(status_code)) {
+      return ResponseInfo(status_code,
+                          _body_of_status_code(request_info, status_code));
+    }
+    if (has_suffix(request_info.target_path_, ".py")) {
+      Result<std::string> result = _read_file_to_str_cgi(request_info);
+      if (result.is_err_) {
+        status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+        return ResponseInfo(status_code,
+                            _body_of_status_code(request_info, status_code));
+      }
+      body.content_ = result.object_;
+      return ResponseInfo(status_code, body);
+    }
+    if (has_suffix(request_info.target_path_, "/")) {
+      body.content_ = _create_autoindex_body(request_info);
+      return ResponseInfo(status_code, body);
+    }
+    Result<std::string> result = read_file_to_str(request_info.target_path_);
+    if (result.is_err_) {
+      status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      return ResponseInfo(status_code,
+                          _body_of_status_code(request_info, status_code));
+    }
+    body.content_ = result.object_;
+    return ResponseInfo(status_code, body);
   }
   if ("POST" == request_info.request_line_.method_) {
     /*
