@@ -1,5 +1,7 @@
 #include "event/Request.hpp"
 
+#include "http/const/const_delimiter.hpp"
+
 static bool get_next_chunk_line(Request::NextChunkType chunk_type,
                                 std::string &request_buffer, std::string &line,
                                 size_t next_chunk_size) {

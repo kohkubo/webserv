@@ -3,6 +3,7 @@
 #include <poll.h>
 
 #include "SocketMapActions.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)

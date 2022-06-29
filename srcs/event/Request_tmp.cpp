@@ -1,5 +1,7 @@
 #include "event/Request.hpp"
 
+#include "utils/file_io_utils.hpp"
+
 // GETの条件分岐をhandle_method()のGETの処理で行うなら,
 // request_infoの外にtarget_path_変数を出して編集可能にすべきと考える rakiyama
 static std::string create_target_path(const std::string &request_target,

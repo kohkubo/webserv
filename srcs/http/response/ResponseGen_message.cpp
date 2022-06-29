@@ -2,6 +2,9 @@
 
 #include <fcntl.h>
 
+#include "http/const/const_delimiter.hpp"
+#include "http/const/const_status_phrase.hpp"
+
 std::map<int, std::string> init_response_status_phrase_map() {
   std::map<int, std::string> res;
   res[200] = STATUS_200_PHRASE;
