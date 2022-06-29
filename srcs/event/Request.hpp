@@ -27,7 +27,7 @@ struct Request {
   };
 
 private:
-  RequestState                       _state_;
+  RequestState                       _request_state_;
   RequestInfo                        _request_info_;
   std::string                        _request_body_;
   Chunk                              _chunk_;
@@ -52,7 +52,7 @@ private:
 
 public:
   Request()
-      : _state_(RECEIVING_STARTLINE) {}
+      : _request_state_(RECEIVING_STARTLINE) {}
 
   const RequestInfo &request_info() const { return _request_info_; }
   RequestState       handle_request(std::string       &request_buffer,

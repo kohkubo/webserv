@@ -20,14 +20,14 @@ Request::_handle_request_line(std::string &request_buffer) {
     _request_info_.parse_request_line(line); // noexcept
     return RECEIVING_HEADER;
   }
-  return _state_;
+  return _request_state_;
 }
 
 Request::RequestState
 Request::_handle_request_header(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) { // noexcept
-    if (_state_ == RECEIVING_HEADER) {
+    if (_request_state_ == RECEIVING_HEADER) {
       if (line != "") {
         RequestInfo::store_request_header_field_map(line, _field_map_);
         // throws BadRequestException
@@ -42,20 +42,20 @@ Request::_handle_request_header(std::string &request_buffer) {
           _request_info_.content_length_,
           _request_info_.config_.client_max_body_size_);
       if (_request_info_.has_body()) {
-        _state_ = RECEIVING_BODY;
+        _request_state_ = RECEIVING_BODY;
         break;
       }
-      _state_ = SUCCESS;
+      _request_state_ = SUCCESS;
       break;
     }
   }
-  return _state_;
+  return _request_state_;
 }
 
 Request::RequestState
 Request::_handle_request_body(std::string &request_buffer) {
   if (_request_info_.is_chunked_) {
-    _state_ = _chunk_loop(request_buffer);
+    _request_state_ = _chunk_loop(request_buffer);
     // throws BadRequestException
     _check_max_client_body_size_exception(
         _request_body_.size(), _request_info_.config_.client_max_body_size_);
@@ -63,29 +63,29 @@ Request::_handle_request_body(std::string &request_buffer) {
   } else if (request_buffer.size() >= _request_info_.content_length_) {
     _request_body_ =
         cutout_request_body(request_buffer, _request_info_.content_length_);
-    _state_ = SUCCESS;
+    _request_state_ = SUCCESS;
   }
-  if (_state_ == SUCCESS) {
+  if (_request_state_ == SUCCESS) {
     _request_info_.body_ = _request_body_;
   }
-  return _state_;
+  return _request_state_;
 }
 
 // 一つのリクエストのパースを行う、bufferに一つ以上のリクエストが含まれるときtrueを返す。
 Request::RequestState Request::handle_request(std::string       &request_buffer,
                                               const ConfigGroup &config_group) {
-  if (_state_ == Request::RECEIVING_STARTLINE) {
-    _state_ = _handle_request_line(request_buffer);
+  if (_request_state_ == Request::RECEIVING_STARTLINE) {
+    _request_state_ = _handle_request_line(request_buffer);
     // TODO: この例外チェックの適切な場所を見直す kohkubo
     _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
   }
-  if (_state_ == Request::RECEIVING_HEADER) {
-    _state_ = _handle_request_header(request_buffer);
+  if (_request_state_ == Request::RECEIVING_HEADER) {
+    _request_state_ = _handle_request_header(request_buffer);
     // TODO: この例外チェックの適切な場所を見直す kohkubo
     _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
     _tmp(config_group);
   }
-  if (_state_ == Request::RECEIVING_BODY) {
+  if (_request_state_ == Request::RECEIVING_BODY) {
     /*
     TODO: bodyはconfigで指定がない場合、無限に長くて大丈夫。 kohkubo
     RFC 9110
@@ -108,7 +108,7 @@ Request::RequestState Request::handle_request(std::string       &request_buffer,
     header field value that is known to be incorrect.
     その結果、送信者は、正しくないことがわかっているContent-Lengthヘッダーフィールド値を持つメッセージを転送してはなりません（MUSTNOT）。
     */
-    _state_ = _handle_request_body(request_buffer);
+    _request_state_ = _handle_request_body(request_buffer);
   }
-  return _state_;
+  return _request_state_;
 }
