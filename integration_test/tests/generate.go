@@ -15,17 +15,18 @@ func (tc testCategories) Test() bool {
 
 func NormalTests() T {
 	s := testCategories{
-		testGET,
-		testDELETE,
-		testIOMulti,
-		testCgi,
-		testAutoindex,
-		testBadRequest,
-		testLimitExpect,
-		testLocation,
-		testServerName,
-		testReturn,
-		testKeepAlive,
+		//testGET,
+		testPOST,
+		//testDELETE,
+		//testIOMulti,
+		//testCgi,
+		//testAutoindex,
+		//testBadRequest,
+		//testLimitExpect,
+		//testLocation,
+		//testServerName,
+		//testReturn,
+		//testKeepAlive,
 	}
 	return s
 }
