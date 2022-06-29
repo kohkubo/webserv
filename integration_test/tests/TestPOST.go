@@ -22,7 +22,7 @@ var testPOST = testCatergory{
 				postFilePath := "/tmp/post.txt"                           // httpリクエストで指定するターゲットURI
 				rootRelativePath := "html"                                // configで指定されているrootへの(integration_testからの)相対パス
 				deleteFileRelativePath := rootRelativePath + postFilePath // ターゲットURIへの相対パス
-				os.RemoveAll(filepath.Dir(deleteFileRelativePath))
+				os.RemoveAll(filepath.Dir(deleteFileRelativePath))        // 既に存在していた時を考慮して削除
 				if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
 					webserv.ExitWithKill(err)
 				}
@@ -142,6 +142,39 @@ var testPOST = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "POST /notallow/tmp HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"Content-Length: " + lenStr([]byte(postContent)) + "\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
+						"\r\n" +
+						postContent,
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "dir not exists",
+			test: func() bool {
+				postFilePath := "/tmp/post.txt"                           // httpリクエストで指定するターゲットURI
+				rootRelativePath := "html"                                // configで指定されているrootへの(integration_testからの)相対パス
+				deleteFileRelativePath := rootRelativePath + postFilePath // ターゲットURIへの相対パス
+				os.RemoveAll(filepath.Dir(deleteFileRelativePath))        // ディレクトリが存在しない時のテストなので削除
+
+				expectStatusCode := 500
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+				port := "50001"
+				postContent := "posted content by integration test"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "POST " + postFilePath + " HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"Content-Length: " + lenStr([]byte(postContent)) + "\r\n" +
