@@ -26,10 +26,6 @@ check_filepath_status(const RequestInfo &request_info,
     ERROR_LOG("check_filepath_status: file not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_accessible(target_path, R_OK)) {
-    // TODO: Permission error が 403なのか確かめてない
-    return HttpStatusCode::FORBIDDEN_403;
-  }
   return HttpStatusCode::OK_200;
 }
 
@@ -119,18 +115,6 @@ POSTリクエストを正常に処理した結果、
 オリジンサーバー上に1つ以上のリソースが作成された場合、
 オリジンサーバーは、作成されたプライマリリソースの識別子を提供するLocationヘッダーフィールドを含む201（作成済み）応答を送信する必要があります（セクション10.2）。
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
-
-TODO: postでbodyがない場合もエラー？ kohkubo
-RFC 9110
-8.6. Content-Length
-
-A user agent SHOULD send Content-Length in a request when the method defines a
-meaning for enclosed content and it is not sending Transfer-Encoding. >
-メソッドが囲まれたコンテンツの意味を定義し、Transfer-Encodingを送信していない場合、ユーザーエージェントはリクエストでContent-Lengthを送信する必要があります。
-
-For example, a user agent normally sends Content- Length in a POST request
-even when the value is 0 (indicating empty content). >
-たとえば、ユーザーエージェントは通常、値が0（空のコンテンツを示す）の場合でも、POSTリクエストでContent-Lengthを送信します。
 */
     // TODO: ファイル保存処理
     body.status_code_ = check_filepath_status(request_info, target_path);

@@ -94,7 +94,7 @@ var testGET = testCatergory{
 			caseName: "index解決後のアクセス権限確認test",
 			test: func() bool {
 				port := "50000"
-				expectStatusCode := 403
+				expectStatusCode := 500
 				expectBody := httpresp.ErrorBody(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,

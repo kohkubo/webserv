@@ -41,8 +41,8 @@ Response ResponseGenerator::generate_response() {
   if (!_is_error_status_code(body.status_code_) &&
       body.status_code_ != HttpStatusCode::MOVED_PERMANENTLY_301) {
     body = _handle_method(_response_info_.request_info_);
-    // LOG("_handle_method status_code: " << body.status_code_);
   }
+
   if (body.has_fd()) {
     Result<std::string> result = read_fd(body.fd_);
     if (result.is_err_) {
@@ -57,6 +57,14 @@ Response ResponseGenerator::generate_response() {
     body = _create_status_code_body(_response_info_.request_info_,
                                     body.status_code_);
   }
+  if (!body.has_content_ && body.has_fd()) {
+    Result<std::string> result = read_fd(body.fd_);
+    if (!result.is_err_) {
+      body.content_     = result.object_;
+      body.has_content_ = true;
+    }
+  }
+
   if (!body.has_content_) {
     body.content_ = _create_default_body_content(body.status_code_);
   }

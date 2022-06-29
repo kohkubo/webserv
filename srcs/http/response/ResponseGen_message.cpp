@@ -2,6 +2,8 @@
 
 #include <fcntl.h>
 
+#include "utils/Result.hpp"
+
 std::map<int, std::string> init_response_status_phrase_map() {
   std::map<int, std::string> res;
   res[200] = STATUS_200_PHRASE;
@@ -65,7 +67,15 @@ std::string ResponseGenerator::_create_default_body_content(
          "</html>";
 }
 
-// TODO: config.error_page validate
+static Result<int> open_file(const std::string &target_path) {
+  int fd = open(target_path.c_str(), O_RDONLY);
+  if (fd < 0) {
+    ERROR_LOG("open error: " << target_path);
+    return Error<int>();
+  }
+  return Ok<int>(fd);
+}
+
 ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
     const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
   ResponseGenerator::Body body;
@@ -74,7 +84,22 @@ ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
       request_info.config_.error_pages_.find(body.status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
-    body                  = _open_fd(file_path);
+    if (!is_file_exists(file_path)) {
+      if (body.status_code_ == HttpStatusCode::NOT_FOUND_404) {
+        return body;
+      }
+      return _create_status_code_body(request_info,
+                                      HttpStatusCode::NOT_FOUND_404);
+    }
+    Result<int> result = open_file(file_path);
+    if (result.is_err_) {
+      if (body.status_code_ == HttpStatusCode::INTERNAL_SERVER_ERROR_500) {
+        return body;
+      }
+      return _create_status_code_body(
+          request_info, HttpStatusCode::INTERNAL_SERVER_ERROR_500);
+    }
+    body.fd_ = result.object_;
   }
   return body;
 }
