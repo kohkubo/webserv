@@ -42,9 +42,10 @@ Response ResponseGenerator::generate_response() {
     body = _handle_method(_response_info_.request_info_);
   }
   if (body.has_fd() && body.action_ == Body::WRITE) {
-    if (write(body.fd_, body.content_.c_str(), sizeof(body.content_.c_str())) ==
-        -1)
+    if (write(body.fd_, body.content_.c_str(), body.content_.size()) == -1) {
       body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+    }
+    body.has_content_ = false;
   }
   if (body.has_fd() && body.action_ == Body::READ) {
     Result<std::string> result = read_fd(body.fd_);
