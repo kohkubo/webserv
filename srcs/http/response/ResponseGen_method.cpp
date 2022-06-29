@@ -124,7 +124,7 @@ POSTリクエストを正常に処理した結果、
 オリジンサーバーは、作成されたプライマリリソースの識別子を提供するLocationヘッダーフィールドを含む201（作成済み）応答を送信する必要があります（セクション10.2）。
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
-  _status_code_ = check_post_file_status(request_info, target_path);
+  _status_code_ = check_postfile_status(request_info, target_path);
   if (_status_code_.is_error_status_code()) {
     return;
   }
