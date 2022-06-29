@@ -16,6 +16,8 @@ typedef int fileFd;
 class ResponseGenerator {
 public:
   struct Body {
+    enum Action { READ, WRITE };
+    Action                     action_;
     HttpStatusCode::StatusCode status_code_;
     fileFd                     fd_;
     bool                       has_content_;
