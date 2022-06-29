@@ -16,6 +16,7 @@ func (tc testCategories) Test() bool {
 func NormalTests() T {
 	s := testCategories{
 		testGET,
+		testPOST,
 		testDELETE,
 		testIOMulti,
 		testCgi,

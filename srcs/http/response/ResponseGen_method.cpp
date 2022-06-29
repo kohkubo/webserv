@@ -29,6 +29,17 @@ check_filepath_status(const RequestInfo &request_info,
   return HttpStatusCode::OK_200;
 }
 
+// ファイルが既に存在 -> 上書き
+// ファイルパス中のディレクトリがない -> ファイル作成過程で500
+static HttpStatusCode::StatusCode
+check_postfile_status(const RequestInfo &request_info,
+                      const std::string &target_path) {
+  if (!request_info.location_->upload_file_ || has_suffix(target_path, "/")) {
+    return HttpStatusCode::FORBIDDEN_403;
+  }
+  return HttpStatusCode::Created_201;
+}
+
 static HttpStatusCode::StatusCode
 delete_target_file(const std::string &target_path) {
   if (!is_file_exists(target_path)) {
@@ -99,7 +110,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
       body.has_content_ = true;
       return body;
     }
-    body = _open_fd(target_path);
+    body = _open_read_fd(target_path);
   } else if ("POST" == request_info.request_line_.method_) {
     /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
@@ -116,8 +127,14 @@ POSTリクエストを正常に処理した結果、
 オリジンサーバーは、作成されたプライマリリソースの識別子を提供するLocationヘッダーフィールドを含む201（作成済み）応答を送信する必要があります（セクション10.2）。
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
-    // TODO: ファイル保存処理
-    body.status_code_ = check_filepath_status(request_info, target_path);
+    body.status_code_ = check_postfile_status(request_info, target_path);
+    if (_is_error_status_code(body.status_code_)) {
+      return body;
+    }
+    body              = _open_write_fd(body, target_path);
+    body.content_     = request_info.body_;
+    body.has_content_ = true;
+    return body;
   } else if ("DELETE" == request_info.request_line_.method_) {
     body.status_code_ = delete_target_file(target_path);
   } else {

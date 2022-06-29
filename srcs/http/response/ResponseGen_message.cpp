@@ -112,10 +112,8 @@ static std::string start_line(const HttpStatusCode::StatusCode status_code) {
 
 static std::string connection_header() { return "Connection: close" + CRLF; }
 
-static std::string location_header(const returnMap           &return_map,
-                                   HttpStatusCode::StatusCode status_code) {
-  returnMap::const_iterator it = return_map.find(status_code);
-  return "Location: " + it->second + CRLF;
+static std::string location_header(const std::string &path) {
+  return "Location: " + path + CRLF;
 }
 
 static std::string entity_header_and_body(const std::string &body) {
@@ -136,8 +134,12 @@ create_response_header(const RequestInfo         &request_info,
     return response + CRLF;
   }
   if (HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
-    response +=
-        location_header(request_info.location_->return_map_, status_code);
+    returnMap::const_iterator it =
+        request_info.location_->return_map_.find(status_code);
+    response += location_header(it->second);
+  }
+  if (HttpStatusCode::Created_201 == status_code) {
+    response += location_header(request_info.request_line_.absolute_path_);
   }
   return response;
 }

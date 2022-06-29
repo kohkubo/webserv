@@ -4,6 +4,7 @@
 namespace HttpStatusCode {
 enum StatusCode {
   OK_200                    = 200,
+  Created_201               = 201,
   NO_CONTENT_204            = 204,
   MOVED_PERMANENTLY_301     = 301,
   NOT_MODIFIED_304          = 304,

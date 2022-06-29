@@ -10,6 +10,8 @@ typedef int fileFd;
 class ResponseGenerator {
 public:
   struct Body {
+    enum Action { READ, WRITE };
+    Action                     action_;
     HttpStatusCode::StatusCode status_code_;
     fileFd                     fd_;
     bool                       has_content_;
@@ -48,7 +50,10 @@ public:
 
 private:
   static bool _is_error_status_code(HttpStatusCode::StatusCode status_code);
-  static ResponseGenerator::Body _open_fd(const std::string &target_path);
+  static ResponseGenerator::Body _open_read_fd(const std::string &target_path);
+  static ResponseGenerator::Body
+  _open_write_fd(const ResponseGenerator::Body &body,
+                 const std::string             &target_path);
   static std::string
   _create_default_body_content(HttpStatusCode::StatusCode status_code);
   static Result<std::string>
