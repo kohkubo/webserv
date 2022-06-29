@@ -30,8 +30,8 @@ check_filepath_status(const RequestInfo &request_info,
 }
 
 static HttpStatusCode::StatusCode
-save_target_file(const RequestInfo &request_info,
-                 const std::string &target_path) {
+check_postfile_status(const RequestInfo &request_info,
+                      const std::string &target_path) {
   if (!request_info.location_->upload_file_) {
     return HttpStatusCode::NOT_ALLOWED_405;
   }
@@ -41,11 +41,9 @@ save_target_file(const RequestInfo &request_info,
   if (is_file_exists(target_path)) {
     return HttpStatusCode::NO_CONTENT_204; //上書き
   }
-  if (!is_accessible(target_path, W_OK)) {
-    // アクセス確認必要か調べてない rakiyama
-    return HttpStatusCode::INTERNAL_SERVER_ERROR_500;
-  }
-  // if not create -> INTERNAL_SERVER_ERROR_500
+  // パス途中のディレクトリが存在しないorアクセス権限がない場合は
+  // ファイルを作成する過程のエラーを拾って500返せば良いと思っている
+  // rakiyama
   return HttpStatusCode::Created_201;
 }
 
@@ -136,8 +134,13 @@ POSTリクエストを正常に処理した結果、
 オリジンサーバーは、作成されたプライマリリソースの識別子を提供するLocationヘッダーフィールドを含む201（作成済み）応答を送信する必要があります（セクション10.2）。
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
-    // TODO: ファイル保存処理
-    body.status_code_ = check_filepath_status(request_info, target_path);
+    body.status_code_ = check_postfile_status(request_info, target_path);
+    if (_is_error_status_code(body.status_code_)) {
+      return body;
+    }
+    // ファイル書き込み
+    // fdを書き込み, appendありで開く
+    // エラー -> 500
   } else if ("DELETE" == request_info.request_line_.method_) {
     body.status_code_ = delete_target_file(target_path);
   } else {
