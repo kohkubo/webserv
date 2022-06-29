@@ -52,10 +52,10 @@ delete_target_file(const std::string &target_path) {
 // An origin server that receives a request method that is recognized and
 // implemented, but not allowed for the target resource, SHOULD respond with the
 // 405 (Method Not Allowed) status code.
-static bool is_not_allowed(const RequestInfo &request_info) {
+static bool is_available_methods(const RequestInfo &request_info) {
   return std::find(request_info.location_->available_methods_.begin(),
                    request_info.location_->available_methods_.end(),
-                   request_info.request_line_.method_) ==
+                   request_info.request_line_.method_) !=
          request_info.location_->available_methods_.end();
 }
 
@@ -72,7 +72,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   */
   std::string target_path =
       request_info.location_->root_ + request_info.request_line_.absolute_path_;
-  if (is_not_allowed(request_info)) {
+  if (!is_available_methods(request_info)) {
     body.status_code_ = HttpStatusCode::NOT_ALLOWED_405;
   } else if ("GET" == request_info.request_line_.method_) {
     if (has_suffix(target_path, "/") &&
