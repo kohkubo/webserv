@@ -26,6 +26,7 @@ private:
   const RequestInfo         &_request_info_;
   HttpStatusCode::StatusCode _status_code_;
   bool                       _is_connection_close_;
+  Body                       _body_;
 
 public:
   ResponseGenerator(
