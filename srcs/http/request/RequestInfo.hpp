@@ -56,13 +56,13 @@ public:
 
   class BadRequestException : public std::logic_error {
   private:
-    HttpStatusCode::StatusCode _status_;
+    HttpStatusCode::StatusCode _status_code_;
 
   public:
-    BadRequestException(
-        HttpStatusCode::StatusCode status = HttpStatusCode::BAD_REQUEST_400,
-        const std::string         &msg    = "Illegal request.");
-    HttpStatusCode::StatusCode status() const;
+    BadRequestException(HttpStatusCode::StatusCode status_code =
+                            HttpStatusCode::BAD_REQUEST_400,
+                        const std::string &msg = "Illegal request.");
+    HttpStatusCode::StatusCode status_code() const;
   };
 
   bool has_body() const { return has_content_length_ || is_chunked_; }

@@ -3,12 +3,13 @@
 #include "http/const/const_http_enums.hpp"
 
 RequestInfo::BadRequestException::BadRequestException(
-    HttpStatusCode::StatusCode status, const std::string &msg)
+    HttpStatusCode::StatusCode status_code, const std::string &msg)
     : logic_error(msg)
-    , _status_(status) {}
+    , _status_code_(status_code) {}
 
-HttpStatusCode::StatusCode RequestInfo::BadRequestException::status() const {
-  return _status_;
+HttpStatusCode::StatusCode
+RequestInfo::BadRequestException::status_code() const {
+  return _status_code_;
 }
 
 bool RequestInfo::is_valid_request_header() const {

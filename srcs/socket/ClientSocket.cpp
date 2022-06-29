@@ -95,7 +95,8 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    ResponseGenerator response_generator(_request_.request_info(), e.status());
+    ResponseGenerator response_generator(_request_.request_info(),
+                                         e.status_code());
     _response_queue_.push_back(response_generator.generate_response());
     _request_ = Request();
   }
