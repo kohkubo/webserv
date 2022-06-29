@@ -35,7 +35,7 @@ ResponseGenerator::_open_write_fd(const ResponseGenerator::Body &body,
   } else {
     new_body.fd_          = fd;
     new_body.status_code_ = body.status_code_;
-    new_body.content_     = body.content_
+    new_body.content_     = body.content_;
   }
   return new_body;
 }
