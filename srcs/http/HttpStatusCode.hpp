@@ -25,13 +25,13 @@ private:
 public:
   HttpStatusCode(StatusCode status_code = S_200_OK);
   HttpStatusCode &operator=(const HttpStatusCode &other);
-  HttpStatusCode &operator=(HttpStatusCode::StatusCode status_code);
+  HttpStatusCode &operator=(StatusCode status_code);
   HttpStatusCode &operator=(const int num);
   bool            is_error_status_code() const;
   bool            has_default_content() const;
   StatusCode      status_code() const;
   void            set_status(StatusCode status_code);
-                  operator HttpStatusCode::StatusCode() const;
+                  operator StatusCode() const;
 };
 
 #endif /* SRCS_HTTP_HTTPSTATUSCODE_HPP */

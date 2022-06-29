@@ -1,10 +1,9 @@
 #include "http/HttpStatusCode.hpp"
 
-HttpStatusCode::HttpStatusCode(HttpStatusCode::StatusCode status_code)
+HttpStatusCode::HttpStatusCode(StatusCode status_code)
     : _status_code_(status_code) {}
 
-HttpStatusCode &
-HttpStatusCode::operator=(HttpStatusCode::StatusCode status_code) {
+HttpStatusCode &HttpStatusCode::operator=(StatusCode status_code) {
   _status_code_ = status_code;
   return *this;
 }
@@ -18,7 +17,7 @@ HttpStatusCode &HttpStatusCode::operator=(const HttpStatusCode &other) {
 }
 
 HttpStatusCode &HttpStatusCode::operator=(const int num) {
-  _status_code_ = static_cast<HttpStatusCode::StatusCode>(num);
+  _status_code_ = static_cast<StatusCode>(num);
   return *this;
 }
 
@@ -33,7 +32,7 @@ HttpStatusCode::StatusCode HttpStatusCode::status_code() const {
   return _status_code_;
 }
 
-void HttpStatusCode::set_status(HttpStatusCode::StatusCode status_code) {
+void HttpStatusCode::set_status(StatusCode status_code) {
   _status_code_ = status_code;
 }
 
@@ -41,6 +40,4 @@ bool operator==(const HttpStatusCode &lhs, const HttpStatusCode &rhs) {
   return lhs.status_code() == rhs.status_code();
 }
 
-HttpStatusCode::operator HttpStatusCode::StatusCode() const {
-  return _status_code_;
-}
+HttpStatusCode::operator StatusCode() const { return _status_code_; }
