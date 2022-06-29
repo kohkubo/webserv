@@ -1,10 +1,12 @@
 set -x
 
+#ゲット
 export confpath="./conf/nginx.conf"
 docker-compose up -d
 curl localhost:8080 -v
 docker-compose down
 
+#デリート
 export confpath="./conf/delete.conf"
 mkdir deletedir
 echo "##\nin delete.html\n##" > deletedir/delete.html
@@ -17,6 +19,16 @@ echo "##########"
 curl localhost:8080 -v
 curl -X DELETE localhost:8080 -v
 curl localhost:8080 -v
+docker-compose down
+rm -r deletedir
+
+# デリート権限関係
+export confpath="./conf/delete.conf"
+mkdir deletedir
+echo "##\nin 000.html\n##" > deletedir/000.html
+chmod 000 deletedir/000.html
+docker-compose up -d
+curl -X DELETE localhost:8080/000.html -v
 docker-compose down
 rm -r deletedir
 
