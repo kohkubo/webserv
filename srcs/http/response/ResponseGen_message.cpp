@@ -71,23 +71,22 @@ ResponseGenerator::Body
 ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
   ResponseGenerator::Body      body;
   errorPageMap::const_iterator it =
-      request_info.config_.error_pages_.find(_response_info_.status_code_);
+      request_info.config_.error_pages_.find(_status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
     if (!is_file_exists(file_path)) {
-      if (_response_info_.status_code_ == HttpStatusCode::NOT_FOUND_404) {
+      if (_status_code_ == HttpStatusCode::NOT_FOUND_404) {
         return body;
       }
-      _response_info_.status_code_ = HttpStatusCode::NOT_FOUND_404;
+      _status_code_ = HttpStatusCode::NOT_FOUND_404;
       return _create_status_code_body(request_info);
     }
     Result<int> result = open_read_file(file_path);
     if (result.is_err_) {
-      if (_response_info_.status_code_ ==
-          HttpStatusCode::INTERNAL_SERVER_ERROR_500) {
+      if (_status_code_ == HttpStatusCode::INTERNAL_SERVER_ERROR_500) {
         return body;
       }
-      _response_info_.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
       return _create_status_code_body(request_info);
     }
     body.action_ = Body::READ;

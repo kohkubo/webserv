@@ -84,15 +84,14 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   std::string target_path =
       request_info.location_->root_ + request_info.request_line_.absolute_path_;
   if (!is_available_methods(request_info)) {
-    _response_info_.status_code_ = HttpStatusCode::NOT_ALLOWED_405;
+    _status_code_ = HttpStatusCode::NOT_ALLOWED_405;
   } else if ("GET" == request_info.request_line_.method_) {
     if (has_suffix(target_path, "/") &&
         is_file_exists(target_path + request_info.location_->index_)) {
       target_path += request_info.location_->index_;
     }
-    _response_info_.status_code_ =
-        check_filepath_status(request_info, target_path);
-    if (_is_error_status_code(_response_info_.status_code_)) {
+    _status_code_ = check_filepath_status(request_info, target_path);
+    if (_is_error_status_code(_status_code_)) {
       return body;
     }
     if (has_suffix(target_path, ".py")) {
@@ -103,7 +102,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
         body.has_content_ = true;
         return body;
       }
-      _response_info_.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
       return body;
     }
     if (has_suffix(target_path, "/")) {
@@ -113,7 +112,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
     }
     Result<int> result = open_read_file(target_path);
     if (result.is_err_) {
-      _response_info_.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
     } else {
       body.action_ = Body::READ;
       body.fd_     = result.object_;
@@ -134,14 +133,13 @@ POSTリクエストを正常に処理した結果、
 オリジンサーバーは、作成されたプライマリリソースの識別子を提供するLocationヘッダーフィールドを含む201（作成済み）応答を送信する必要があります（セクション10.2）。
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
-    _response_info_.status_code_ =
-        check_postfile_status(request_info, target_path);
-    if (_is_error_status_code(_response_info_.status_code_)) {
+    _status_code_ = check_postfile_status(request_info, target_path);
+    if (_is_error_status_code(_status_code_)) {
       return body;
     }
     Result<int> result = open_write_file(target_path);
     if (result.is_err_) {
-      _response_info_.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
     } else {
       body.action_      = Body::WRITE;
       body.fd_          = result.object_;
@@ -149,10 +147,10 @@ POSTリクエストを正常に処理した結果、
       body.has_content_ = true;
     }
   } else if ("DELETE" == request_info.request_line_.method_) {
-    _response_info_.status_code_ = delete_target_file(target_path);
+    _status_code_ = delete_target_file(target_path);
   } else {
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
-    _response_info_.status_code_ = HttpStatusCode::NOT_IMPLEMENTED_501;
+    _status_code_ = HttpStatusCode::NOT_IMPLEMENTED_501;
   }
   return body;
 }

@@ -23,26 +23,14 @@ public:
   };
 
 private:
-  struct ResponseInfo {
-    const RequestInfo         &request_info_;
-    HttpStatusCode::StatusCode status_code_;
-    bool                       is_connection_close_;
-    ResponseInfo(const RequestInfo         &request_info,
-                 HttpStatusCode::StatusCode status_code)
-        : request_info_(request_info)
-        , status_code_(status_code)
-        , is_connection_close_(
-              request_info_.connection_close_ ||
-              status_code_ == HttpStatusCode::BAD_REQUEST_400 ||
-              status_code_ == HttpStatusCode::ENTITY_TOO_LARGE_413) {}
-  };
-  ResponseInfo _response_info_;
+  const RequestInfo         &_request_info_;
+  HttpStatusCode::StatusCode _status_code_;
+  bool                       _is_connection_close_;
 
 public:
   ResponseGenerator(
       const RequestInfo         &request_info,
-      HttpStatusCode::StatusCode status_code = HttpStatusCode::OK_200)
-      : _response_info_(request_info, status_code) {}
+      HttpStatusCode::StatusCode status_code = HttpStatusCode::OK_200);
   ~ResponseGenerator() {}
   Response generate_response();
 
