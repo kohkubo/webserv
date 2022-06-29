@@ -37,6 +37,7 @@ mkdir postdir
 docker-compose up -d
 curl -d "content" -X PUT http://localhost:8080/filename -v
 curl -d "update" -X PUT http://localhost:8080/filename -v
+curl -d "content" -X PUT http://localhost:8080/postdir/filename -v
 curl -d "content" -X PUT http://localhost:8080/nosuch/filename -v
 curl -d "content" -X PUT http://localhost:8080/dir/ -v
 docker-compose down
