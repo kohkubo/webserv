@@ -1,0 +1,1 @@
+zsh test.sh &> log
