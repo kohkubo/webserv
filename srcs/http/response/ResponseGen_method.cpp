@@ -29,6 +29,7 @@ check_filepath_status(const RequestInfo &request_info,
   return HttpStatusCode::OK_200;
 }
 
+// nginxのPUTの挙動に合わせた
 static HttpStatusCode::StatusCode
 check_postfile_status(const RequestInfo &request_info,
                       const std::string &target_path) {
