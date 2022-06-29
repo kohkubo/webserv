@@ -30,6 +30,26 @@ check_filepath_status(const RequestInfo &request_info,
 }
 
 static HttpStatusCode::StatusCode
+save_target_file(const RequestInfo &request_info,
+                 const std::string &target_path) {
+  if (!request_info.location_->upload_file_) {
+    return HttpStatusCode::NOT_ALLOWED_405;
+  }
+  if (has_suffix(target_path, "/")) {
+    return HttpStatusCode::Conflict_409;
+  }
+  if (is_file_exists(target_path)) {
+    return HttpStatusCode::NO_CONTENT_204; //上書き
+  }
+  if (!is_accessible(target_path, W_OK)) {
+    // アクセス確認必要か調べてない rakiyama
+    return HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+  }
+  // if not create -> INTERNAL_SERVER_ERROR_500
+  return HttpStatusCode::Created_201;
+}
+
+static HttpStatusCode::StatusCode
 delete_target_file(const std::string &target_path) {
   if (!is_file_exists(target_path)) {
     ERROR_LOG("target file is not found");
