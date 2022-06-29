@@ -60,20 +60,20 @@ Response ResponseGenerator::generate_response() {
   // has_contentがtrue->読み込み成功
 
   // もしステータスコードがエラーor301の時、エラーページに指定されたコンテンツがあるか確認。
-  // もし設定されていた場合、Open成功fd→true、失敗fd→false、500error
-  // もしfdのopenに成功したとき、ステータスコードがリセットされそうだけど大丈夫？
-  /*
-    [ RUN ] 404 error
-    [ERROR_LOG ] file not exists: html//no_such.html
-    [ERROR_LOG ] check_filepath_status: file not found
-    [ERROR_LOG ] open error: html//no_such.html
-  */
+  // もし設定されていた場合、Open成功fd→true、失敗→デフォルトコンテンツ使いたいのでそのまま。
   if (_is_error_status_code(body.status_code_) ||
       body.status_code_ == HttpStatusCode::MOVED_PERMANENTLY_301) {
     body = _create_status_code_body(_response_info_.request_info_,
                                     body.status_code_);
   }
-  // error_pageのfdがセットされた後、readされない。
+  // error_pageのfdがセットされた後、readする必要あり。
+  if (!body.has_content_ && body.has_fd()) {
+    Result<std::string> result = read_fd(body.fd_);
+    if (!result.is_err_) {
+      body.content_     = result.object_;
+      body.has_content_ = true;
+    }
+  }
 
   if (!body.has_content_) {
     body.content_ = _create_default_body_content(body.status_code_);
