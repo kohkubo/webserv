@@ -6,9 +6,7 @@
 #include <string>
 
 #include "config/ConfigGroup.hpp"
-#include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/ResponseGenerator.hpp"
 
 typedef int connFd;
 

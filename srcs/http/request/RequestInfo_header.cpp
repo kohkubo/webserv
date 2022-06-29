@@ -31,12 +31,15 @@ static bool parse_request_connection(const std::string &connection) {
 }
 
 static size_t parse_request_content_length(const std::string &content_length) {
-  // TODO: atoiのエラー処理
-  return atoi(content_length.c_str());
+  Result<std::size_t> result = string_to_size(content_length);
+  if (result.is_err_) {
+    throw RequestInfo::BadRequestException();
+  }
+  return result.object_;
 }
 
 // 呼び出し元で例外をcatchする
-// リクエストヘッダのパースが終了 true。エラー→例外
+// エラー→例外
 /*
 TODO: 全部400で返すのはRFCに反する? 2022/06/25 kohkubo
 RFC 9110

@@ -2,9 +2,9 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <iostream>
 
-#include "config/Config.hpp"
 #include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
