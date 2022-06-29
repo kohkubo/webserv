@@ -1,11 +1,10 @@
-#include "http/response/ResponseGenerator.hpp"
-
 #include <dirent.h>
 
 #include <algorithm>
 #include <set>
 #include <sstream>
 
+#include "http/request/RequestInfo.hpp"
 #include "utils/syscall_wrapper.hpp"
 
 struct AutoindexCategory {
@@ -42,35 +41,34 @@ static AutoindexCategory read_dir_to_entry_category(const std::string &path) {
 }
 
 static std::string
-one_dirlisting_line(const AutoindexCategory::entryName &entry_name) {
+one_dir_listing_line(const AutoindexCategory::entryName &entry_name) {
   // clang-format off
   return "        <li><a href=\"" + entry_name + "\">" + entry_name + " </a></li>\n";
   // clang-format on
 }
 
-static std::string read_entry_names_to_dirlistring_lines(
+static std::string read_entry_names_to_dir_listing_lines(
     AutoindexCategory::entryNames &entry_names) {
   std::string                                   lines;
   AutoindexCategory::entryNames::const_iterator it = entry_names.begin();
   for (; it != entry_names.end(); it++) {
-    lines += one_dirlisting_line(*it);
+    lines += one_dir_listing_line(*it);
   }
   return lines;
 }
 
-static std::string dirlisting_lines(const std::string &path) {
+static std::string dir_listing_lines(const std::string &path) {
   AutoindexCategory autoindex_category = read_dir_to_entry_category(path);
   std::string       lines;
   if (autoindex_category.has_updir_)
-    lines += one_dirlisting_line("../");
-  lines += read_entry_names_to_dirlistring_lines(autoindex_category.dirs_);
-  lines += read_entry_names_to_dirlistring_lines(autoindex_category.files_);
+    lines += one_dir_listing_line("../");
+  lines += read_entry_names_to_dir_listing_lines(autoindex_category.dirs_);
+  lines += read_entry_names_to_dir_listing_lines(autoindex_category.files_);
   return lines;
 }
 
-std::string
-ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info,
-                                          const std::string &target_path) {
+std::string create_autoindex_body(const RequestInfo &request_info,
+                                  const std::string &target_path) {
   // LOG("create autoindex body");
   std::stringstream buff;
   // clang-format off
@@ -82,7 +80,7 @@ ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info,
        << "   <body>\n"
        << "      <h1>Index of " << request_info.request_line_.absolute_path_ << "</h1>\n"
        << "      <ul style=\"list-style:none\">\n"
-       <<          dirlisting_lines(target_path)
+       <<          dir_listing_lines(target_path)
        << "    </ul>\n"
        << "   </body>\n"
        << "</html>";
