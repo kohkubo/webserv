@@ -40,6 +40,17 @@ check_postfile_status(const RequestInfo &request_info,
   return HttpStatusCode::Created_201;
 }
 
+// ファイルが既に存在 -> 上書き
+// ファイルパス中のディレクトリがない -> ファイル作成過程で500
+static HttpStatusCode::StatusCode
+check_postfile_status(const RequestInfo &request_info,
+                      const std::string &target_path) {
+  if (!request_info.location_->upload_file_ || has_suffix(target_path, "/")) {
+    return HttpStatusCode::FORBIDDEN_403;
+  }
+  return HttpStatusCode::Created_201;
+}
+
 static HttpStatusCode::StatusCode
 delete_target_file(const std::string &target_path) {
   if (!is_file_exists(target_path)) {
