@@ -56,6 +56,10 @@ bool remove_file(const std::string &file_path) {
   return true;
 }
 
+bool is_accessible(const std::string &file_path, int mode) {
+  return access(file_path.c_str(), mode) == 0;
+}
+
 Result<std::string> read_fd(int fd) {
   std::stringstream buffer;
   char              buf[1024];

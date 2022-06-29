@@ -35,6 +35,10 @@ delete_target_file(const std::string &target_path) {
     ERROR_LOG("target file is not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
+  if (!is_accessible(target_path, W_OK)) {
+    ERROR_LOG("process can not delete target file");
+    return HttpStatusCode::FORBIDDEN_403;
+  }
   if (!remove_file(target_path)) {
     ERROR_LOG("unknown error while deleting file");
     return HttpStatusCode::INTERNAL_SERVER_ERROR_500;
