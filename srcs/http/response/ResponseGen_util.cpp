@@ -17,7 +17,8 @@ ResponseGenerator::_open_fd(const std::string &target_path) {
     ERROR_LOG("open error: " << target_path);
     body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   } else {
-    body.fd_ = fd;
+    body.action_ = Body::READ;
+    body.fd_     = fd;
     // LOG("fd_" << body.fd_);
   }
   return body;
@@ -33,6 +34,7 @@ ResponseGenerator::_open_write_fd(const ResponseGenerator::Body &body,
     ERROR_LOG("open error: " << target_path);
     new_body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   } else {
+    new_body.action_      = Body::WRITE;
     new_body.fd_          = fd;
     new_body.status_code_ = body.status_code_;
     new_body.content_     = body.content_;
