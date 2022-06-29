@@ -28,6 +28,8 @@ check_location(const Location *location) {
   return std::make_pair(false, HttpStatusCode::OK_200);
 }
 
+// bodyにステータスコードを入れて管理してるけど、
+// bodyを返す関数が上書きする可能性あり、
 Response ResponseGenerator::generate_response() {
   Body body;
   body.status_code_ = _response_info_.status_code_;
@@ -71,6 +73,7 @@ Response ResponseGenerator::generate_response() {
     body = _create_status_code_body(_response_info_.request_info_,
                                     body.status_code_);
   }
+  // error_pageのfdがセットされた後、readされない。
 
   if (!body.has_content_) {
     body.content_ = _create_default_body_content(body.status_code_);
