@@ -69,7 +69,6 @@ TEST(request_parse_test, normal_post) {
   EXPECT_EQ(request_info.request_line_.absolute_path_, "/target");
   EXPECT_EQ(request_info.request_line_.http_version_, "HTTP/1.1");
   EXPECT_EQ(request_info.host_, "127.0.0.1");
-  EXPECT_EQ(request_info.content_type_, "application/x-www-form-urlencoded");
   EXPECT_EQ(request_info.connection_close_, true);
   EXPECT_EQ(request_info.content_length_, static_cast<std::size_t>(18));
 }

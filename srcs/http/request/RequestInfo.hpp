@@ -46,7 +46,6 @@ public:
   std::size_t     content_length_;
   Config          config_;
   const Location *location_;
-  std::string     content_type_;
 
 public:
   RequestInfo()

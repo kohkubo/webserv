@@ -27,7 +27,6 @@ create_environ_map(const RequestInfo &request_info,
 
   if (request_info.has_body()) {
     environ_map["CONTENT_LENGTH"] = to_string(request_info.body_.size());
-    environ_map["CONTENT_TYPE"]   = request_info.content_type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
   environ_map["PATH_INFO"]         = get_realpath(target_path);

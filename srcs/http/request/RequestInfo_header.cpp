@@ -75,10 +75,6 @@ void RequestInfo::parse_request_header(
   if (itr != header_field_map.end()) {
     is_chunked_ = parse_request_transfer_encoding(itr->second);
   }
-  itr = header_field_map.find("Content-Type");
-  if (itr != header_field_map.end()) {
-    content_type_ = itr->second;
-  }
 }
 
 // TODO: フィールド追加
