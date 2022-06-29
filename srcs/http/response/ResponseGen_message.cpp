@@ -112,7 +112,7 @@ create_response_header(const RequestInfo         &request_info,
     response += location_header(it->second);
   }
   if (HttpStatusCode::Created_201 == status_code) {
-    response += location_header("target_path");
+    response += location_header(request_info.request_line_.absolute_path_);
   }
   return response;
 }
