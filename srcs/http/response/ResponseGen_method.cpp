@@ -26,10 +26,6 @@ check_filepath_status(const RequestInfo &request_info,
     ERROR_LOG("check_filepath_status: file not found");
     return HttpStatusCode::NOT_FOUND_404;
   }
-  if (!is_accessible(target_path, R_OK)) {
-    // TODO: Permission error が 403なのか確かめてない
-    return HttpStatusCode::FORBIDDEN_403;
-  }
   return HttpStatusCode::OK_200;
 }
 
@@ -38,10 +34,6 @@ delete_target_file(const std::string &target_path) {
   if (!is_file_exists(target_path)) {
     ERROR_LOG("target file is not found");
     return HttpStatusCode::NOT_FOUND_404;
-  }
-  if (!is_accessible(target_path, W_OK)) {
-    ERROR_LOG("process can not delete target file");
-    return HttpStatusCode::FORBIDDEN_403;
   }
   if (!remove_file(target_path)) {
     ERROR_LOG("unknown error while deleting file");
