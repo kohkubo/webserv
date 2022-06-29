@@ -84,10 +84,20 @@ ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
       request_info.config_.error_pages_.find(body.status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
-    Result<int> result    = open_file(file_path);
+    if (!is_file_exists(file_path)) {
+      if (body.status_code_ == HttpStatusCode::NOT_FOUND_404) {
+        return body;
+      }
+      return _create_status_code_body(request_info,
+                                      HttpStatusCode::NOT_FOUND_404);
+    }
+    Result<int> result = open_file(file_path);
     if (result.is_err_) {
-      body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
-      return body;
+      if (body.status_code_ == HttpStatusCode::INTERNAL_SERVER_ERROR_500) {
+        return body;
+      }
+      return _create_status_code_body(
+          request_info, HttpStatusCode::INTERNAL_SERVER_ERROR_500);
     }
     body.fd_ = result.object_;
   }
