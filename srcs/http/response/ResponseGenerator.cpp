@@ -15,66 +15,63 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
-static std::pair<bool, HttpStatusCode::StatusCode>
-check_location(const Location *location) {
-  if (location == NULL) {
-    return std::make_pair(true, HttpStatusCode::NOT_FOUND_404);
+ResponseGenerator::ResponseGenerator(const RequestInfo         &request_info,
+                                     HttpStatusCode::StatusCode status_code)
+    : _request_info_(request_info)
+    , _status_code_(status_code)
+    , _is_connection_close_(_request_info_.connection_close_ ||
+                            _status_code_ == HttpStatusCode::BAD_REQUEST_400 ||
+                            _status_code_ ==
+                                HttpStatusCode::ENTITY_TOO_LARGE_413) {
+  if (_is_error_status_code(_status_code_)) {
+    return;
   }
-  if (location->return_map_.size() != 0) {
-    return std::make_pair(true, static_cast<HttpStatusCode::StatusCode>(
-                                    location->return_map_.begin()->first));
+  if (_request_info_.location_ == NULL) {
+    _status_code_ = HttpStatusCode::NOT_FOUND_404;
+    return;
   }
-  return std::make_pair(false, HttpStatusCode::OK_200);
+  if (_request_info_.location_->return_map_.size() != 0) {
+    _status_code_ = static_cast<HttpStatusCode::StatusCode>(
+        _request_info_.location_->return_map_.begin()->first);
+    return;
+  }
+  _body_ = _handle_method(_request_info_);
 }
 
 Response ResponseGenerator::generate_response() {
-  Body body;
-  body.status_code_ = _response_info_.status_code_;
-  if (!_is_error_status_code(body.status_code_)) {
-    std::pair<bool, HttpStatusCode::StatusCode> pair =
-        check_location(_response_info_.request_info_.location_);
-    if (pair.first) {
-      body.status_code_ = pair.second;
+  if (_body_.has_fd() && _body_.action_ == Body::WRITE) {
+    if (write(_body_.fd_, _body_.content_.c_str(), _body_.content_.size()) ==
+        -1) {
+      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
     }
+    _body_.has_content_ = false;
   }
-  if (!_is_error_status_code(body.status_code_) &&
-      body.status_code_ != HttpStatusCode::MOVED_PERMANENTLY_301) {
-    body = _handle_method(_response_info_.request_info_);
-  }
-  if (body.has_fd() && body.action_ == Body::WRITE) {
-    if (write(body.fd_, body.content_.c_str(), body.content_.size()) == -1) {
-      body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
-    }
-    body.has_content_ = false;
-  }
-  if (body.has_fd() && body.action_ == Body::READ) {
-    Result<std::string> result = read_fd(body.fd_);
+  if (_body_.has_fd() && _body_.action_ == Body::READ) {
+    Result<std::string> result = read_fd(_body_.fd_);
     if (result.is_err_) {
-      body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
     } else {
-      body.content_     = result.object_;
-      body.has_content_ = true;
+      _body_.content_     = result.object_;
+      _body_.has_content_ = true;
     }
   }
-  if (_is_error_status_code(body.status_code_) ||
-      body.status_code_ == HttpStatusCode::MOVED_PERMANENTLY_301) {
-    body = _create_status_code_body(_response_info_.request_info_,
-                                    body.status_code_);
+  if (_is_error_status_code(_status_code_) ||
+      _status_code_ == HttpStatusCode::MOVED_PERMANENTLY_301) {
+    _body_ = _create_status_code_body(_request_info_);
   }
-  if (!body.has_content_ && body.has_fd()) {
-    Result<std::string> result = read_fd(body.fd_);
+  if (!_body_.has_content_ && _body_.has_fd()) {
+    Result<std::string> result = read_fd(_body_.fd_);
     if (!result.is_err_) {
-      body.content_     = result.object_;
-      body.has_content_ = true;
+      _body_.content_     = result.object_;
+      _body_.has_content_ = true;
     }
   }
 
-  if (!body.has_content_) {
-    body.content_ = _create_default_body_content(body.status_code_);
+  if (!_body_.has_content_) {
+    _body_.content_ = _create_default_body_content(_status_code_);
   }
-  // LOG("status_code: " << body.status_code_);
+  // LOG("status_code: " << _status_code_);
   std::string response = _create_response_message(
-      _response_info_.request_info_, _response_info_.is_connection_close_,
-      body.status_code_, body.content_);
-  return Response(response, _response_info_.is_connection_close_);
+      _request_info_, _is_connection_close_, _status_code_, _body_.content_);
+  return Response(response, _is_connection_close_);
 }

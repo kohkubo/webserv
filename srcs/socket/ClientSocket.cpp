@@ -89,6 +89,7 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       //} else {
       ResponseGenerator response_generator(_request_.request_info());
+      // cgi or file or nothing
       _response_queue_.push_back(response_generator.generate_response());
       //}
       _request_ = Request();

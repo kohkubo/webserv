@@ -1,5 +1,6 @@
 #include "utils/file_io_utils.hpp"
 
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -74,4 +75,22 @@ Result<std::string> read_fd(int fd) {
     buffer << std::string(buf, read_size);
   }
   return Ok<std::string>(buffer.str());
+}
+
+Result<int> open_read_file(const std::string &target_path) {
+  int fd = open(target_path.c_str(), O_RDONLY);
+  if (fd < 0) {
+    ERROR_LOG("open error: " << target_path);
+    return Error<int>();
+  }
+  return Ok<int>(fd);
+}
+
+Result<int> open_write_file(const std::string &target_path) {
+  int fd = open(target_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
+  if (fd < 0) {
+    ERROR_LOG("open error: " << target_path);
+    return Error<int>();
+  }
+  return Ok<int>(fd);
 }
