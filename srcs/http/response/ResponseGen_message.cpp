@@ -67,7 +67,7 @@ std::string ResponseGenerator::_create_default_body_content(
          "</html>";
 }
 
-static Result<int> try_open_file(const std::string &target_path) {
+static Result<int> open_file(const std::string &target_path) {
   int fd = open(target_path.c_str(), O_RDONLY);
   if (fd < 0) {
     ERROR_LOG("open error: " << target_path);
@@ -84,8 +84,9 @@ ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
       request_info.config_.error_pages_.find(body.status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
-    Result<int> result    = try_open_file(file_path);
+    Result<int> result    = open_file(file_path);
     if (result.is_err_) {
+      body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
       return body;
     }
     body.fd_ = result.object_;

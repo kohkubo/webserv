@@ -68,7 +68,8 @@ static std::string dirlisting_lines(const std::string &path) {
 }
 
 std::string
-ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info) {
+ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info,
+                                          const std::string &target_path) {
   // LOG("create autoindex body");
   std::stringstream buff;
   // clang-format off
@@ -80,7 +81,7 @@ ResponseGenerator::_create_autoindex_body(const RequestInfo &request_info) {
        << "   <body>\n"
        << "      <h1>Index of " << request_info.request_line_.absolute_path_ << "</h1>\n"
        << "      <ul style=\"list-style:none\">\n"
-       <<          dirlisting_lines(request_info.target_path_)
+       <<          dirlisting_lines(target_path)
        << "    </ul>\n"
        << "   </body>\n"
        << "</html>";

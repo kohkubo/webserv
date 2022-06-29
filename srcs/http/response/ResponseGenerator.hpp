@@ -58,10 +58,12 @@ private:
   static std::string
   _create_default_body_content(HttpStatusCode::StatusCode status_code);
   static Result<std::string>
-                     _read_file_to_str_cgi(const RequestInfo &request_info);
+                     _read_file_to_str_cgi(const RequestInfo &request_info,
+                                           const std::string &target_path);
   static Body        _create_body(const RequestInfo               &request_info,
                                   const HttpStatusCode::StatusCode status_code);
-  static std::string _create_autoindex_body(const RequestInfo &request_info);
+  static std::string _create_autoindex_body(const RequestInfo &request_info,
+                                            const std::string &target_path);
   static ResponseGenerator::Body
   _handle_method(const RequestInfo &request_info);
   static HttpStatusCode::StatusCode
