@@ -139,9 +139,9 @@ POSTリクエストを正常に処理した結果、
     if (_is_error_status_code(body.status_code_)) {
       return body;
     }
-    // ファイル書き込み
-    // fdを書き込み, appendありで開く
-    // エラー -> 500
+    body.content_ = request_info.body_;
+    body          = _open_write_fd(body, target_path);
+    return body;
   } else if ("DELETE" == request_info.request_line_.method_) {
     body.status_code_ = delete_target_file(target_path);
   } else {

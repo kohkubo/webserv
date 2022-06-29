@@ -24,15 +24,18 @@ ResponseGenerator::_open_fd(const std::string &target_path) {
 }
 
 ResponseGenerator::Body
-ResponseGenerator::_open_write_fd(const std::string &target_path) {
+ResponseGenerator::_open_write_fd(const ResponseGenerator::Body &body,
+                                  const std::string             &target_path) {
   int fd = open(target_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
   //適切な権限(644)はわからない rakiyama
-  Body body;
+  Body new_body;
   if (fd < 0) {
     ERROR_LOG("open error: " << target_path);
-    body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+    new_body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
   } else {
-    body.fd_ = fd;
+    new_body.fd_          = fd;
+    new_body.status_code_ = body.status_code_;
+    new_body.content_     = body.content_
   }
-  return body;
+  return new_body;
 }
