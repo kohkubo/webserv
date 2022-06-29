@@ -26,6 +26,7 @@ func NormalTests() T {
 		testServerName,
 		testReturn,
 		testKeepAlive,
+		testErrorPage,
 	}
 	return s
 }

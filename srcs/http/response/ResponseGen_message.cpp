@@ -2,6 +2,10 @@
 
 #include <fcntl.h>
 
+#include "http/const/const_delimiter.hpp"
+#include "http/const/const_status_phrase.hpp"
+#include "utils/file_io_utils.hpp"
+
 std::map<int, std::string> init_response_status_phrase_map() {
   std::map<int, std::string> res;
   res[200] = STATUS_200_PHRASE;
@@ -47,38 +51,58 @@ std::map<int, std::string> init_response_status_phrase_map() {
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
-// TODO: config.error_page validate
-ResponseGenerator::Body ResponseGenerator::_body_of_status_code(
-    const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
-  ResponseGenerator::Body      body;
-  errorPageMap::const_iterator it =
-      request_info.config_.error_pages_.find(status_code);
-  if (it != request_info.config_.error_pages_.end() &&
-      request_info.location_ != NULL) {
-    std::string file_path = request_info.location_->root_ + it->second;
-    int         fd        = open(file_path.c_str(), O_RDONLY);
-    if (fd < 0) {
-      ERROR_LOG("open error: " << file_path);
-      status_code = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
-    } else {
-      body.fd_ = fd;
-      return body;
-    }
+std::string ResponseGenerator::_create_default_body_content(
+    HttpStatusCode::StatusCode status_code) {
+  return "<!DOCTYPE html>\n"
+         "<html>\n"
+         "    <head>\n"
+         "        <title>" +
+         to_string(status_code) +
+         "</title>\n"
+         "    </head>\n"
+         "    <body>\n"
+         "<h2>" +
+         g_response_status_phrase_map[status_code] +
+         "</h2>\n"
+         "provided by webserv\n"
+         "    </body>\n"
+         "</html>";
+}
+
+static Result<int> open_file(const std::string &target_path) {
+  int fd = open(target_path.c_str(), O_RDONLY);
+  if (fd < 0) {
+    ERROR_LOG("open error: " << target_path);
+    return Error<int>();
   }
-  body.content_ = "<!DOCTYPE html>\n"
-                  "<html>\n"
-                  "    <head>\n"
-                  "        <title>" +
-                  to_string(status_code) +
-                  "</title>\n"
-                  "    </head>\n"
-                  "    <body>\n"
-                  "<h2>" +
-                  g_response_status_phrase_map[status_code] +
-                  "</h2>\n"
-                  "provided by webserv\n"
-                  "    </body>\n"
-                  "</html>";
+  return Ok<int>(fd);
+}
+
+ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
+    const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
+  ResponseGenerator::Body body;
+  body.status_code_ = status_code;
+  errorPageMap::const_iterator it =
+      request_info.config_.error_pages_.find(body.status_code_);
+  if (it != request_info.config_.error_pages_.end()) {
+    std::string file_path = request_info.location_->root_ + it->second;
+    if (!is_file_exists(file_path)) {
+      if (body.status_code_ == HttpStatusCode::NOT_FOUND_404) {
+        return body;
+      }
+      return _create_status_code_body(request_info,
+                                      HttpStatusCode::NOT_FOUND_404);
+    }
+    Result<int> result = open_file(file_path);
+    if (result.is_err_) {
+      if (body.status_code_ == HttpStatusCode::INTERNAL_SERVER_ERROR_500) {
+        return body;
+      }
+      return _create_status_code_body(
+          request_info, HttpStatusCode::INTERNAL_SERVER_ERROR_500);
+    }
+    body.fd_ = result.object_;
+  }
   return body;
 }
 
