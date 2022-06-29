@@ -1,4 +1,5 @@
 set -x
+
 export confpath="./conf/nginx.conf"
 docker-compose up -d
 curl localhost:8080 -v
@@ -31,6 +32,7 @@ rm -r postdir
 
 export confpath="./conf/autoindex.conf"
 mkdir -p autoindexdir/dir1/dir2
+mkdir autoindexdir/notallow
 echo "in autoindexdir/" > autoindexdir/test.html
 echo "in autoindexdir/dir1/" > autoindexdir/dir1/index.html
 echo "in autoindexdir/dir1/dir2/" > autoindexdir/dir1/dir2/test.html
@@ -40,4 +42,12 @@ curl localhost:8080/autoindexdir -v
 curl localhost:8080/autoindexdir/ -v
 curl localhost:8080/autoindexdir/dir1/ -v
 curl localhost:8080/autoindexdir/dir1/dir2/ -v
+curl localhost:8080/autoindexdir/notallow/ -v
 rm -r autoindexdir
+
+export confpath="./conf/errpage.conf"
+touch html/000.html
+chmod 000 html/000.html
+docker-compose up -d
+curl localhost:8080/000.html -v
+rm -r html/000.html

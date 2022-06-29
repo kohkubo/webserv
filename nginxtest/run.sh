@@ -1,1 +1,1 @@
-zsh test.sh &> log
+sudo zsh test.sh &> log
