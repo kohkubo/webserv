@@ -27,9 +27,7 @@ ResponseGenerator::_open_read_fd(const std::string &target_path) {
 ResponseGenerator::Body
 ResponseGenerator::_open_write_fd(const ResponseGenerator::Body &body,
                                   const std::string             &target_path) {
-  int fd = open(target_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-  //適切な権限(644)はわからない rakiyama
-  // nginxのファイル権限を確認する
+  int  fd = open(target_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
   Body new_body;
   if (fd < 0) {
     ERROR_LOG("open error: " << target_path);
