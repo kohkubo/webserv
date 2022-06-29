@@ -67,55 +67,49 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
-ResponseGenerator::Body
-ResponseGenerator::_handle_method(const RequestInfo &request_info) {
-  Body body;
-  // TODO: 501が必要？ kohkubo
+static std::string create_target_path(const RequestInfo &request_info) {
+  return request_info.location_->root_ +
+         request_info.request_line_.absolute_path_;
+}
+
+void ResponseGenerator::_method_get(const RequestInfo &request_info,
+                                    std::string        target_path) {
+  if (has_suffix(target_path, "/") &&
+      is_file_exists(target_path + request_info.location_->index_)) {
+    target_path += request_info.location_->index_;
+  }
+  _status_code_ = check_filepath_status(request_info, target_path);
+  if (_status_code_.is_error_status_code()) {
+    return;
+  }
+  if (has_suffix(target_path, ".py")) {
+    Result<std::string> result =
+        _read_file_to_str_cgi(request_info, target_path);
+    if (!result.is_err_) {
+      _body_.content_     = result.object_;
+      _body_.has_content_ = true;
+      return;
+    }
+    _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+    return;
+  }
+  if (has_suffix(target_path, "/")) {
+    _body_.content_     = _create_autoindex_body(request_info, target_path);
+    _body_.has_content_ = true;
+    return;
+  }
+  Result<int> result = open_read_file(target_path);
+  if (result.is_err_) {
+    _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+  } else {
+    _body_.action_ = Body::READ;
+    _body_.fd_     = result.object_;
+  }
+}
+
+void ResponseGenerator::_method_post(const RequestInfo &request_info,
+                                     std::string        target_path) {
   /*
-  RFC 9110
-  9.1. Overview
-  An origin server that receives a request method that is unrecognized or not
-  implemented SHOULD respond with the 501 (Not Implemented) status code.
-  認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
-  */
-  std::string target_path =
-      request_info.location_->root_ + request_info.request_line_.absolute_path_;
-  if (!is_available_methods(request_info)) {
-    _status_code_ = HttpStatusCode::S_405_NOT_ALLOWED;
-  } else if ("GET" == request_info.request_line_.method_) {
-    if (has_suffix(target_path, "/") &&
-        is_file_exists(target_path + request_info.location_->index_)) {
-      target_path += request_info.location_->index_;
-    }
-    _status_code_ = check_filepath_status(request_info, target_path);
-    if (_status_code_.is_error_status_code()) {
-      return body;
-    }
-    if (has_suffix(target_path, ".py")) {
-      Result<std::string> result =
-          _read_file_to_str_cgi(request_info, target_path);
-      if (!result.is_err_) {
-        body.content_     = result.object_;
-        body.has_content_ = true;
-        return body;
-      }
-      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-      return body;
-    }
-    if (has_suffix(target_path, "/")) {
-      body.content_     = _create_autoindex_body(request_info, target_path);
-      body.has_content_ = true;
-      return body;
-    }
-    Result<int> result = open_read_file(target_path);
-    if (result.is_err_) {
-      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-    } else {
-      body.action_ = Body::READ;
-      body.fd_     = result.object_;
-    }
-  } else if ("POST" == request_info.request_line_.method_) {
-    /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
 9.3.3. POST
@@ -130,24 +124,45 @@ POSTリクエストを正常に処理した結果、
 オリジンサーバーは、作成されたプライマリリソースの識別子を提供するLocationヘッダーフィールドを含む201（作成済み）応答を送信する必要があります（セクション10.2）。
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
-    _status_code_ = check_postfile_status(request_info, target_path);
-    if (_status_code_.is_error_status_code()) {
-      return body;
-    }
-    Result<int> result = open_write_file(target_path);
-    if (result.is_err_) {
-      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-    } else {
-      body.action_      = Body::WRITE;
-      body.fd_          = result.object_;
-      body.content_     = request_info.body_;
-      body.has_content_ = true;
-    }
+  _status_code_ = check_post_file_status(request_info, target_path);
+  if (_status_code_.is_error_status_code()) {
+    return;
+  }
+  Result<int> result = open_write_file(target_path);
+  if (result.is_err_) {
+    _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+  } else {
+    _body_.action_      = Body::WRITE;
+    _body_.fd_          = result.object_;
+    _body_.content_     = request_info.body_;
+    _body_.has_content_ = true;
+  }
+}
+
+void ResponseGenerator::_method_delete(const std::string &target_path) {
+  _status_code_ = delete_target_file(target_path);
+}
+
+void ResponseGenerator::_handle_method(const RequestInfo &request_info) {
+  // TODO: 501が必要？ kohkubo
+  /*
+  RFC 9110
+  9.1. Overview
+  An origin server that receives a request method that is unrecognized or not
+  implemented SHOULD respond with the 501 (Not Implemented) status code.
+  認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
+  */
+  std::string target_path = create_target_path(request_info);
+  if (!is_available_methods(request_info)) {
+    _status_code_ = HttpStatusCode::S_405_NOT_ALLOWED;
+  } else if ("GET" == request_info.request_line_.method_) {
+    _method_get(request_info, target_path);
+  } else if ("POST" == request_info.request_line_.method_) {
+    _method_post(request_info, target_path);
   } else if ("DELETE" == request_info.request_line_.method_) {
-    _status_code_ = delete_target_file(target_path);
+    _method_delete(target_path);
   } else {
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
     _status_code_ = HttpStatusCode::S_501_NOT_IMPLEMENTED;
   }
-  return body;
 }
