@@ -55,7 +55,9 @@ public:
 private:
   static bool _is_error_status_code(HttpStatusCode::StatusCode status_code);
   static ResponseGenerator::Body _open_fd(const std::string &target_path);
-  static ResponseGenerator::Body _open_write_fd(const std::string &target_path);
+  static ResponseGenerator::Body
+  _open_write_fd(const ResponseGenerator::Body &body,
+                 const std::string             &target_path);
   static std::string
   _create_default_body_content(HttpStatusCode::StatusCode status_code);
   static Result<std::string>
