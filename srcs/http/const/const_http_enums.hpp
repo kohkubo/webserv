@@ -12,6 +12,7 @@ enum StatusCode {
   FORBIDDEN_403             = 403,
   NOT_FOUND_404             = 404,
   NOT_ALLOWED_405           = 405,
+  Conflict_409              = 409,
   ENTITY_TOO_LARGE_413      = 413,
   INTERNAL_SERVER_ERROR_500 = 500,
   NOT_IMPLEMENTED_501       = 501,
