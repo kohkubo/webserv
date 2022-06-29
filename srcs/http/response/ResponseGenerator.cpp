@@ -43,7 +43,12 @@ Response ResponseGenerator::generate_response() {
     body = _handle_method(_response_info_.request_info_);
     // LOG("_handle_method status_code: " << body.status_code_);
   }
-  if (body.has_fd()) {
+  if (body.has_fd() && body.action_ == Body::WRITE) {
+    if (write(body.fd_, body.content_.c_str(), sizeof(body.content_.c_str())) ==
+        -1)
+      body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+  }
+  if (body.has_fd() && body.action_ == Body::READ) {
     Result<std::string> result = read_fd(body.fd_);
     if (result.is_err_) {
       body.status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
