@@ -23,37 +23,34 @@ public:
   };
 
 private:
-  const RequestInfo         &_request_info_;
-  HttpStatusCode::StatusCode _status_code_;
-  bool                       _is_connection_close_;
-  Body                       _body_;
+  const RequestInfo &_request_info_;
+  HttpStatusCode     _status_code_;
+  bool               _is_connection_close_;
+  Body               _body_;
 
 public:
-  ResponseGenerator(
-      const RequestInfo         &request_info,
-      HttpStatusCode::StatusCode status_code = HttpStatusCode::OK_200);
+  ResponseGenerator(const RequestInfo &request_info,
+                    HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response generate_response();
 
 private:
-  static bool _is_error_status_code(HttpStatusCode::StatusCode status_code);
-  static std::string
-  _create_default_body_content(HttpStatusCode::StatusCode status_code);
+  static std::string _create_default_body_content(HttpStatusCode status_code);
   static Result<std::string>
                      _read_file_to_str_cgi(const RequestInfo &request_info,
                                            const std::string &target_path);
-  static Body        _create_body(const RequestInfo               &request_info,
-                                  const HttpStatusCode::StatusCode status_code);
+  static Body        _create_body(const RequestInfo   &request_info,
+                                  const HttpStatusCode status_code);
   static std::string _create_autoindex_body(const RequestInfo &request_info,
                                             const std::string &target_path);
   ResponseGenerator::Body _handle_method(const RequestInfo &request_info);
-  static HttpStatusCode::StatusCode
-                     _get_status_code(const RequestInfo         &request_info,
-                                      HttpStatusCode::StatusCode status_code);
-  static std::string _create_response_message(
-      const RequestInfo &request_info, const bool is_connection_close,
-      HttpStatusCode::StatusCode status_code, const std::string &body);
-  Body _create_status_code_body(const RequestInfo &request_info);
+  static HttpStatusCode   _get_status_code(const RequestInfo &request_info,
+                                           HttpStatusCode     status_code);
+  static std::string _create_response_message(const RequestInfo &request_info,
+                                              const bool is_connection_close,
+                                              HttpStatusCode     status_code,
+                                              const std::string &body);
+  Body               _create_status_code_body(const RequestInfo &request_info);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

@@ -10,52 +10,49 @@
 #include "utils/file_io_utils.hpp"
 
 // TODO: リンクやその他のファイルシステムの時どうするか
-static HttpStatusCode::StatusCode
-check_filepath_status(const RequestInfo &request_info,
-                      const std::string &target_path) {
+static HttpStatusCode check_filepath_status(const RequestInfo &request_info,
+                                            const std::string &target_path) {
   if (has_suffix(target_path, "/")) {
     if (is_dir_exists(target_path)) {
       if (!request_info.location_->autoindex_) {
-        return HttpStatusCode::FORBIDDEN_403;
+        return HttpStatusCode::S_403_FORBIDDEN;
       }
-      return HttpStatusCode::OK_200;
+      return HttpStatusCode::S_200_OK;
     }
-    return HttpStatusCode::NOT_FOUND_404;
+    return HttpStatusCode::S_404_NOT_FOUND;
   }
   if (!is_file_exists(target_path)) {
     ERROR_LOG("check_filepath_status: file not found");
-    return HttpStatusCode::NOT_FOUND_404;
+    return HttpStatusCode::S_404_NOT_FOUND;
   }
-  return HttpStatusCode::OK_200;
+  return HttpStatusCode::S_200_OK;
 }
 
 // ファイルが既に存在 -> 上書き
 // ファイルパス中のディレクトリがない -> ファイル作成過程で500
-static HttpStatusCode::StatusCode
-check_postfile_status(const RequestInfo &request_info,
-                      const std::string &target_path) {
+static HttpStatusCode check_postfile_status(const RequestInfo &request_info,
+                                            const std::string &target_path) {
   if (!request_info.location_->upload_file_ || has_suffix(target_path, "/")) {
-    return HttpStatusCode::FORBIDDEN_403;
+    return HttpStatusCode::S_403_FORBIDDEN;
   }
-  return HttpStatusCode::Created_201;
+  return HttpStatusCode::S_201_CREATED;
 }
 
-static HttpStatusCode::StatusCode
-delete_target_file(const std::string &target_path) {
+static HttpStatusCode delete_target_file(const std::string &target_path) {
   if (!is_file_exists(target_path)) {
     ERROR_LOG("target file is not found");
-    return HttpStatusCode::NOT_FOUND_404;
+    return HttpStatusCode::S_404_NOT_FOUND;
   }
   if (!is_accessible(target_path, W_OK)) {
     ERROR_LOG("process can not delete target file");
-    return HttpStatusCode::FORBIDDEN_403;
+    return HttpStatusCode::S_403_FORBIDDEN;
   }
   if (!remove_file(target_path)) {
     ERROR_LOG("unknown error while deleting file");
-    return HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+    return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
   }
   ERROR_LOG("deleted file successfully");
-  return HttpStatusCode::NO_CONTENT_204;
+  return HttpStatusCode::S_204_NO_CONTENT;
 }
 
 // RFC 9110
@@ -84,14 +81,14 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   std::string target_path =
       request_info.location_->root_ + request_info.request_line_.absolute_path_;
   if (!is_available_methods(request_info)) {
-    _status_code_ = HttpStatusCode::NOT_ALLOWED_405;
+    _status_code_ = HttpStatusCode::S_405_NOT_ALLOWED;
   } else if ("GET" == request_info.request_line_.method_) {
     if (has_suffix(target_path, "/") &&
         is_file_exists(target_path + request_info.location_->index_)) {
       target_path += request_info.location_->index_;
     }
     _status_code_ = check_filepath_status(request_info, target_path);
-    if (_is_error_status_code(_status_code_)) {
+    if (_status_code_.is_error_status_code()) {
       return body;
     }
     if (has_suffix(target_path, ".py")) {
@@ -102,7 +99,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
         body.has_content_ = true;
         return body;
       }
-      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
       return body;
     }
     if (has_suffix(target_path, "/")) {
@@ -112,7 +109,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
     }
     Result<int> result = open_read_file(target_path);
     if (result.is_err_) {
-      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
     } else {
       body.action_ = Body::READ;
       body.fd_     = result.object_;
@@ -134,12 +131,12 @@ POSTリクエストを正常に処理した結果、
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
     _status_code_ = check_postfile_status(request_info, target_path);
-    if (_is_error_status_code(_status_code_)) {
+    if (_status_code_.is_error_status_code()) {
       return body;
     }
     Result<int> result = open_write_file(target_path);
     if (result.is_err_) {
-      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
     } else {
       body.action_      = Body::WRITE;
       body.fd_          = result.object_;
@@ -150,7 +147,7 @@ POSTリクエストを正常に処理した結果、
     _status_code_ = delete_target_file(target_path);
   } else {
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
-    _status_code_ = HttpStatusCode::NOT_IMPLEMENTED_501;
+    _status_code_ = HttpStatusCode::S_501_NOT_IMPLEMENTED;
   }
   return body;
 }

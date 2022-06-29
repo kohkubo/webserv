@@ -8,7 +8,7 @@ void Request::_check_max_client_body_size_exception(
   if (actual_body_size > max_body_size) {
     ERROR_LOG("max_client_body_size exceeded");
     throw RequestInfo::BadRequestException(
-        HttpStatusCode::ENTITY_TOO_LARGE_413);
+        HttpStatusCode::S_413_ENTITY_TOO_LARGE);
   }
 }
 
