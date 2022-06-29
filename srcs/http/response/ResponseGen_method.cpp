@@ -33,22 +33,14 @@ check_filepath_status(const RequestInfo &request_info,
   return HttpStatusCode::OK_200;
 }
 
-// nginxのPUTの挙動に合わせた
+// ファイルが既に存在 -> 上書き
+// ファイルパス中のディレクトリがない -> ファイル作成過程で500
 static HttpStatusCode::StatusCode
 check_postfile_status(const RequestInfo &request_info,
                       const std::string &target_path) {
-  if (!request_info.location_->upload_file_) {
-    return HttpStatusCode::NOT_ALLOWED_405;
+  if (!request_info.location_->upload_file_ || has_suffix(target_path, "/")) {
+    return HttpStatusCode::FORBIDDEN_403;
   }
-  if (has_suffix(target_path, "/")) {
-    return HttpStatusCode::Conflict_409;
-  }
-  if (is_file_exists(target_path)) {
-    return HttpStatusCode::NO_CONTENT_204; //上書き
-  }
-  // パス途中のディレクトリが存在しないorアクセス権限がない場合は
-  // ファイルを作成する過程のエラーを拾って500返せば良いと思っている
-  // rakiyama
   return HttpStatusCode::Created_201;
 }
 
@@ -122,7 +114,7 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
       body.has_content_ = true;
       return body;
     }
-    body = _open_fd(target_path);
+    body = _open_read_fd(target_path);
   } else if ("POST" == request_info.request_line_.method_) {
     /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
@@ -155,8 +147,9 @@ even when the value is 0 (indicating empty content). >
     if (_is_error_status_code(body.status_code_)) {
       return body;
     }
-    body.content_ = request_info.body_;
-    body          = _open_write_fd(body, target_path);
+    body              = _open_write_fd(body, target_path);
+    body.content_     = request_info.body_;
+    body.has_content_ = true;
     return body;
   } else if ("DELETE" == request_info.request_line_.method_) {
     body.status_code_ = delete_target_file(target_path);
