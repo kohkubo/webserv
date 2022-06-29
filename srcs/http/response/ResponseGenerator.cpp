@@ -28,8 +28,6 @@ check_location(const Location *location) {
   return std::make_pair(false, HttpStatusCode::OK_200);
 }
 
-// bodyにステータスコードを入れて管理してるけど、
-// bodyを返す関数が上書きする可能性あり、
 Response ResponseGenerator::generate_response() {
   Body body;
   body.status_code_ = _response_info_.status_code_;
@@ -43,11 +41,8 @@ Response ResponseGenerator::generate_response() {
   if (!_is_error_status_code(body.status_code_) &&
       body.status_code_ != HttpStatusCode::MOVED_PERMANENTLY_301) {
     body = _handle_method(_response_info_.request_info_);
-    // LOG("_handle_method status_code: " << body.status_code_);
   }
 
-  // handle_methodの結果、ファイルを読み込むとき
-  // errorのときステータスコードが更新される。（コンテンツは更新されない）
   if (body.has_fd()) {
     Result<std::string> result = read_fd(body.fd_);
     if (result.is_err_) {
@@ -57,16 +52,11 @@ Response ResponseGenerator::generate_response() {
       body.has_content_ = true;
     }
   }
-  // has_contentがtrue->読み込み成功
-
-  // もしステータスコードがエラーor301の時、エラーページに指定されたコンテンツがあるか確認。
-  // もし設定されていた場合、Open成功fd→true、失敗→デフォルトコンテンツ使いたいのでそのまま。
   if (_is_error_status_code(body.status_code_) ||
       body.status_code_ == HttpStatusCode::MOVED_PERMANENTLY_301) {
     body = _create_status_code_body(_response_info_.request_info_,
                                     body.status_code_);
   }
-  // error_pageのfdがセットされた後、readする必要あり。
   if (!body.has_content_ && body.has_fd()) {
     Result<std::string> result = read_fd(body.fd_);
     if (!result.is_err_) {

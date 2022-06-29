@@ -76,7 +76,6 @@ static Result<int> try_open_file(const std::string &target_path) {
   return Ok<int>(fd);
 }
 
-// TODO: config.error_page validate
 ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
     const RequestInfo &request_info, HttpStatusCode::StatusCode status_code) {
   ResponseGenerator::Body body;
@@ -87,7 +86,6 @@ ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
     std::string file_path = request_info.location_->root_ + it->second;
     Result<int> result    = try_open_file(file_path);
     if (result.is_err_) {
-      // error_pageが開けない→デフォルトのエラーコンテンツ使いたい。
       return body;
     }
     body.fd_ = result.object_;
