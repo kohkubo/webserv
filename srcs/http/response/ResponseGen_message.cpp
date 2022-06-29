@@ -74,7 +74,7 @@ ResponseGenerator::Body ResponseGenerator::_create_status_code_body(
       request_info.config_.error_pages_.find(body.status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
-    body                  = _open_fd(request_info.target_path_);
+    body                  = _open_fd(file_path);
   }
   return body;
 }
