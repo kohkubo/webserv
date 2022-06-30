@@ -3,73 +3,40 @@
 #include <unistd.h>
 
 #include <algorithm>
-#include <iostream>
 
-#include "http/const/const_status_phrase.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 
-// TODO: リンクやその他のファイルシステムの時どうするか
-static HttpStatusCode check_filepath_status(const RequestInfo &request_info,
-                                            const std::string &target_path) {
-  if (has_suffix(target_path, "/")) {
-    if (is_dir_exists(target_path)) {
-      if (!request_info.location_->autoindex_) {
-        return HttpStatusCode::S_403_FORBIDDEN;
-      }
-      return HttpStatusCode::S_200_OK;
-    }
+HttpStatusCode
+ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
+                                   const std::string &target_path) {
+  if (!is_dir_exists(target_path)) {
     return HttpStatusCode::S_404_NOT_FOUND;
   }
-  if (!is_file_exists(target_path)) {
-    ERROR_LOG("check_filepath_status: file not found");
-    return HttpStatusCode::S_404_NOT_FOUND;
+  if (!request_info.location_->autoindex_) {
+    return HttpStatusCode::S_403_FORBIDDEN;
   }
+  _body_.content_     = _create_autoindex_body(request_info, target_path);
+  _body_.has_content_ = true;
   return HttpStatusCode::S_200_OK;
 }
 
-// RFC 9110
-// 9.1. Overview
-// An origin server that receives a request method that is recognized and
-// implemented, but not allowed for the target resource, SHOULD respond with the
-// 405 (Method Not Allowed) status code.
-static bool is_available_methods(const RequestInfo &request_info) {
-  return std::find(request_info.location_->available_methods_.begin(),
-                   request_info.location_->available_methods_.end(),
-                   request_info.request_line_.method_) !=
-         request_info.location_->available_methods_.end();
-}
-
-static std::string create_target_path(const RequestInfo &request_info) {
-  return request_info.location_->root_ +
-         request_info.request_line_.absolute_path_;
-}
-
-HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info,
-                                              std::string        target_path) {
-  HttpStatusCode status_code;
-  if (has_suffix(target_path, "/") &&
-      is_file_exists(target_path + request_info.location_->index_)) {
-    target_path += request_info.location_->index_;
-  }
-  status_code = check_filepath_status(request_info, target_path);
-  if (status_code.is_error_status_code()) {
-    return status_code;
+HttpStatusCode
+ResponseGenerator::_method_get_file(const RequestInfo &request_info,
+                                    const std::string &target_path) {
+  if (!is_file_exists(target_path)) {
+    ERROR_LOG("_method_get_file: file not found");
+    return HttpStatusCode::S_404_NOT_FOUND;
   }
   if (has_suffix(target_path, ".py")) {
     Result<std::string> result =
         _read_file_to_str_cgi(request_info, target_path);
-    if (!result.is_err_) {
-      _body_.content_     = result.object_;
-      _body_.has_content_ = true;
-      return status_code;
+    if (result.is_err_) {
+      return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
     }
-    return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-  }
-  if (has_suffix(target_path, "/")) {
-    _body_.content_     = _create_autoindex_body(request_info, target_path);
+    _body_.content_     = result.object_;
     _body_.has_content_ = true;
-    return status_code;
+    return HttpStatusCode::S_200_OK;
   }
   Result<int> result = open_read_file(target_path);
   if (result.is_err_) {
@@ -77,12 +44,30 @@ HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info,
   }
   _body_.action_ = Body::READ;
   _body_.fd_     = result.object_;
-
-  return status_code;
+  return HttpStatusCode::S_200_OK;
 }
 
-HttpStatusCode ResponseGenerator::_method_post(const RequestInfo &request_info,
-                                               std::string        target_path) {
+static std::string create_default_target_path(const RequestInfo &request_info) {
+  return request_info.location_->root_ +
+         request_info.request_line_.absolute_path_;
+}
+
+HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info) {
+  std::string target_path = create_default_target_path(request_info);
+  if (has_suffix(target_path, "/")) {
+    std::string path_add_index = target_path + request_info.location_->index_;
+    HttpStatusCode status_code = _method_get_file(request_info, path_add_index);
+    if (HttpStatusCode::S_404_NOT_FOUND == status_code) {
+      return _method_get_dir(request_info, target_path);
+    }
+    return status_code;
+  }
+  return _method_get_file(request_info, target_path);
+}
+
+HttpStatusCode
+ResponseGenerator::_method_post(const RequestInfo &request_info) {
+  std::string target_path = create_default_target_path(request_info);
   /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -114,7 +99,8 @@ POSTリクエストを正常に処理した結果、
 }
 
 HttpStatusCode
-ResponseGenerator::_method_delete(const std::string &target_path) {
+ResponseGenerator::_method_delete(const RequestInfo &request_info) {
+  std::string target_path = create_default_target_path(request_info);
   if (!is_file_exists(target_path)) {
     ERROR_LOG("target file is not found");
     return HttpStatusCode::S_404_NOT_FOUND;
@@ -131,6 +117,18 @@ ResponseGenerator::_method_delete(const std::string &target_path) {
   return HttpStatusCode::S_204_NO_CONTENT;
 }
 
+// RFC 9110
+// 9.1. Overview
+// An origin server that receives a request method that is recognized and
+// implemented, but not allowed for the target resource, SHOULD respond with the
+// 405 (Method Not Allowed) status code.
+static bool is_available_methods(const RequestInfo &request_info) {
+  return std::find(request_info.location_->available_methods_.begin(),
+                   request_info.location_->available_methods_.end(),
+                   request_info.request_line_.method_) !=
+         request_info.location_->available_methods_.end();
+}
+
 HttpStatusCode
 ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   // TODO: 501が必要？ kohkubo
@@ -144,15 +142,14 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   if (!is_available_methods(request_info)) {
     return HttpStatusCode::S_405_NOT_ALLOWED;
   }
-  std::string target_path = create_target_path(request_info);
   if ("GET" == request_info.request_line_.method_) {
-    return _method_get(request_info, target_path);
+    return _method_get(request_info);
   }
   if ("POST" == request_info.request_line_.method_) {
-    return _method_post(request_info, target_path);
+    return _method_post(request_info);
   }
   if ("DELETE" == request_info.request_line_.method_) {
-    return _method_delete(target_path);
+    return _method_delete(request_info);
   }
   ERROR_LOG("unknown method: " << request_info.request_line_.method_);
   return HttpStatusCode::S_501_NOT_IMPLEMENTED;
