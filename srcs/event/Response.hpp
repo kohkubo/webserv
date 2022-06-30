@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "utils/utils.hpp"
+
 typedef int connFd;
 
 class Response {
@@ -48,6 +50,11 @@ public:
       _state_ = COMPLETE;
     }
     return _state_;
+  }
+  void set_response_message_and_sending(const std::string &response_message) {
+    LOG("set_response_message_and_sending");
+    _state_            = SENDING;
+    _response_message_ = response_message;
   }
 };
 

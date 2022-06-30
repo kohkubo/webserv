@@ -5,6 +5,7 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
+#include "socket/FileSocket.hpp"
 
 namespace ns_socket {
 
@@ -36,13 +37,13 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
     return socket_map_actions;
   }
   if ((revents & POLLIN) != 0) {
-    // LOG("got POLLIN  event of fd " << _socket_fd_);
+    LOG("got POLLIN  event of fd " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close)
       return socket_map_actions;
   }
   if ((revents & POLLOUT) != 0) {
-    // LOG("got POLLOUT event of fd " << _socket_fd_);
+    LOG("got POLLOUT event of fd " << _socket_fd_);
     _handle_send_event();
   }
   return socket_map_actions;
@@ -95,12 +96,13 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       response_generator::ResponseGenerator response_generator(
           _request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      // if (response_generator.has_fd()) {
-      //   SocketBase *file_socket =
-      //       new FileSocket(response_generator.fd(), _response_queue_.back());
-      // }
-      // cgi or file or nothing
-      //}
+      if (response_generator.has_fd()) {
+        LOG("fd: " << response_generator.fd());
+        SocketBase *file_socket =
+            new FileSocket(_response_queue_.back(), response_generator);
+        socket_map_actions.add_socket_map_action(SocketMapAction(
+            SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
+      }
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {

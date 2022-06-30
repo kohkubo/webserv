@@ -25,16 +25,20 @@ public:
   };
 
 private:
-  const RequestInfo &_request_info_;
-  HttpStatusCode     _status_code_;
-  bool               _is_connection_close_;
-  Body               _body_;
+  const RequestInfo _request_info_;
+  HttpStatusCode    _status_code_;
+  bool              _is_connection_close_;
+  Body              _body_;
 
 public:
   ResponseGenerator(const RequestInfo &request_info,
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
-  Response generate_response();
+  Response    generate_response();
+  bool        has_fd() const { return _body_.has_fd(); }
+  int         fd() const { return _body_.fd_; }
+  std::string create_response_message(const std::string &body);
+  std::string create_response_message(HttpStatusCode status_code);
 
 private:
   static Result<std::string>
@@ -54,10 +58,6 @@ private:
 std::string create_autoindex_body(const RequestInfo &request_info,
                                   const std::string &target_path);
 std::string create_default_body_content(const HttpStatusCode &status_code);
-std::string create_response_message(const RequestInfo    &request_info,
-                                    const bool            is_connection_close,
-                                    const HttpStatusCode &status_code,
-                                    const std::string    &body);
 
 } // namespace response_generator
 
