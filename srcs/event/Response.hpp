@@ -14,8 +14,7 @@ public:
     SENDING,  // おくってないか、送信中
     CLOSING,  // クライアントからのclose待ち
     COMPLETE, // 送信終了
-    CGI,      // CGIのレスポンス待ち
-    FILE,     // fileのリード待ち
+    WAITING,  // CGI,FILE待ち
   };
 
 private:
@@ -26,13 +25,13 @@ private:
 
 private:
   inline bool _is_send_all() const {
-    return _send_count_ == static_cast<ssize_t>(_response_.size());
+    return _send_count_ == static_cast<ssize_t>(_response_message_.size());
   }
 
 public:
   Response(std::string response_message, bool is_close)
       : _state_(SENDING)
-      , _response_(response_message)
+      , _response_message_(response_message)
       , _is_last_response_(is_close)
       , _send_count_(0) {}
   ~Response() {}
