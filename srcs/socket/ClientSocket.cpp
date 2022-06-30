@@ -61,8 +61,8 @@ bool ClientSocket::handle_receive_event() {
 }
 
 void ClientSocket::handle_send_event() {
-  Response::FdState response_state = _response_queue_.front().send(_socket_fd_);
-  if (response_state == Response::COMPLETE) {
+  Response::FdState fd_state = _response_queue_.front().send(_socket_fd_);
+  if (fd_state == Response::COMPLETE) {
     _response_queue_.pop_front();
   }
 }
