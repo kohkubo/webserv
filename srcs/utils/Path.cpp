@@ -13,7 +13,7 @@
 Path::Path(const std::string &path)
     : _path_(path) {}
 
-bool Path::is_file_exists() {
+bool Path::is_file_exists() const {
   struct stat file_info = {};
 
   if (stat(_path_.c_str(), &file_info) == -1) {
@@ -23,7 +23,7 @@ bool Path::is_file_exists() {
   return ((file_info.st_mode & S_IFMT) == S_IFREG);
 }
 
-bool Path::is_dir_exists() {
+bool Path::is_dir_exists() const {
   struct stat file_info = {};
 
   if (stat(_path_.c_str(), &file_info) == -1) {
@@ -63,13 +63,11 @@ bool Path::is_minus_depth() {
   return false;
 }
 
-Path Path::operator+(const Path &rhs) const {
-  return Path(path() + rhs.path());
-}
+Path Path::operator+(const Path &rhs) const { return Path(str() + rhs.str()); }
 
-const std::string &Path::path() const { return _path_; }
+const std::string &Path::str() const { return _path_; }
 
 std::ostream &operator<<(std::ostream &os, const Path &path) {
-  os << path.path();
+  os << path.str();
   return os;
 }

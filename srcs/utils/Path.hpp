@@ -11,14 +11,14 @@ private:
 
 public:
   Path(const std::string &path);
-  bool                is_file_exists();
-  bool                is_dir_exists();
+  bool                is_file_exists() const;
+  bool                is_dir_exists() const;
   bool                is_accessible(int mode);
   bool                is_minus_depth();
   Result<std::string> get_realpath();
   Path                operator+(const Path &rhs) const;
   // tmp
-  const std::string &path() const;
+  const std::string &str() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const Path &path);
