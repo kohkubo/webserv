@@ -3,6 +3,7 @@
 #include <poll.h>
 
 #include "SocketMapActions.hpp"
+#include "http/response/ResponseGenerator.hpp"
 
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
@@ -64,15 +65,6 @@ void ClientSocket::handle_send_event() {
   }
 }
 
-// typedef int filefd;
-
-// struct ResultOfMethodHandle {
-//   bool has_read_file_;
-// };
-
-// static Result<int> open_read_file_if_needed(const RequestInfo &request_info)
-// {}
-
 void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
   (void)socket_map_actions;
   try {
@@ -83,24 +75,28 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
         break;
       }
       // fileを読むか、handle_methodやるところまで -> http status code
-      //// 結果Result<openされたfd>が返ってくる。
-      // ResultOfMethodHandle result =
-      //     open_read_file_if_needed(_request_.request_info());
+      // 結果Result<openされたfd>が返ってくる。
+      // ResponseGenerator::Body body = ResponseGenerator::create_fd_or_body(
+      //     _request_.request_info(), HttpStatusCode::S_200_OK);
+      // if (body.has_fd()) {
+      //   SocketBase *file_socket =
+      //       new FileSocket(body.fd_, _response_queue_.back());
+      // }
       // if (result.has_read_file_) {
       //  SocketBase *file_socket =
       //      new FileSocket(result.object_, _response_queue_.back());
       //  socket_map_actions.add_socket_map_action(SocketMapAction(
       //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       //} else {
-      _response_queue_.push_back(ResponseGenerator::generate_response(
-          _request_.request_info(),
-          _request_.request_info().connection_close_));
+      ResponseGenerator response_generator(_request_.request_info());
+      // cgi or file or nothing
+      _response_queue_.push_back(response_generator.generate_response());
       //}
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    _response_queue_.push_back(ResponseGenerator::generate_response(
-        _request_.request_info(), true, e.status()));
+    ResponseGenerator response_generator(_request_.request_info(), e.status());
+    _response_queue_.push_back(response_generator.generate_response());
     _request_ = Request();
   }
 }

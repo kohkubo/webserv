@@ -27,7 +27,8 @@ static std::string get_script_name(const std::string &absolute_path) {
 }
 
 static std::map<std::string, std::string>
-create_environ_map(const RequestInfo &request_info) {
+create_environ_map(const RequestInfo &request_info,
+                   const std::string &target_path) {
   std::map<std::string, std::string> environ_map;
 
   if (request_info.has_body()) {
@@ -35,8 +36,8 @@ create_environ_map(const RequestInfo &request_info) {
     environ_map["CONTENT_TYPE"]   = request_info.content_type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-  environ_map["PATH_INFO"]         = get_realpath(request_info.target_path_);
-  environ_map["PATH_TRANSLATED"]   = get_realpath(request_info.target_path_);
+  environ_map["PATH_INFO"]         = get_realpath(target_path);
+  environ_map["PATH_TRANSLATED"]   = get_realpath(target_path);
   // クライアントのネットワークアドレス sockfdからgetpeername
   // clientSocketからsockfd渡す
   environ_map["REMOTE_ADDR"]       = "";
@@ -67,9 +68,10 @@ create_cgi_environ(const std::map<std::string, std::string> &environ_map) {
   return cgi_environ;
 }
 
-CgiEnviron::CgiEnviron(const RequestInfo &request_info) {
+CgiEnviron::CgiEnviron(const RequestInfo &request_info,
+                       const std::string &target_path) {
   std::map<std::string, std::string> environ_map =
-      create_environ_map(request_info);
+      create_environ_map(request_info, target_path);
   _environ_ = create_cgi_environ(environ_map);
 }
 
