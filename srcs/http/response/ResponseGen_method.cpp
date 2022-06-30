@@ -40,13 +40,13 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
-static std::string create_target_path(const RequestInfo &request_info) {
+static std::string create_default_target_path(const RequestInfo &request_info) {
   return request_info.location_->root_ +
          request_info.request_line_.absolute_path_;
 }
 
-HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info,
-                                              std::string        target_path) {
+HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info) {
+  std::string    target_path = create_default_target_path(request_info);
   HttpStatusCode status_code;
   if (has_suffix(target_path, "/") &&
       is_file_exists(target_path + request_info.location_->index_)) {
@@ -81,8 +81,9 @@ HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info,
   return status_code;
 }
 
-HttpStatusCode ResponseGenerator::_method_post(const RequestInfo &request_info,
-                                               std::string        target_path) {
+HttpStatusCode
+ResponseGenerator::_method_post(const RequestInfo &request_info) {
+  std::string target_path = create_default_target_path(request_info);
   /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -114,7 +115,8 @@ POSTリクエストを正常に処理した結果、
 }
 
 HttpStatusCode
-ResponseGenerator::_method_delete(const std::string &target_path) {
+ResponseGenerator::_method_delete(const RequestInfo &request_info) {
+  std::string target_path = create_default_target_path(request_info);
   if (!is_file_exists(target_path)) {
     ERROR_LOG("target file is not found");
     return HttpStatusCode::S_404_NOT_FOUND;
@@ -144,15 +146,14 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   if (!is_available_methods(request_info)) {
     return HttpStatusCode::S_405_NOT_ALLOWED;
   }
-  std::string target_path = create_target_path(request_info);
   if ("GET" == request_info.request_line_.method_) {
-    return _method_get(request_info, target_path);
+    return _method_get(request_info);
   }
   if ("POST" == request_info.request_line_.method_) {
-    return _method_post(request_info, target_path);
+    return _method_post(request_info);
   }
   if ("DELETE" == request_info.request_line_.method_) {
-    return _method_delete(target_path);
+    return _method_delete(request_info);
   }
   ERROR_LOG("unknown method: " << request_info.request_line_.method_);
   return HttpStatusCode::S_501_NOT_IMPLEMENTED;
