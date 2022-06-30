@@ -10,7 +10,7 @@ typedef int connFd;
 
 class Response {
 public:
-  enum ResponseState {
+  enum FdState {
     SENDING,  // おくってないか、送信中
     CLOSING,  // クライアントからのclose待ち
     COMPLETE, // 送信終了
@@ -19,10 +19,10 @@ public:
   };
 
 private:
-  ResponseState _state_;
-  std::string   _response_;
-  bool          _is_last_response_;
-  ssize_t       _send_count_;
+  FdState     _state_;
+  std::string _response_;
+  bool        _is_last_response_;
+  ssize_t     _send_count_;
 
 private:
   inline bool _is_send_all() const {
@@ -37,8 +37,8 @@ public:
       , _send_count_(0) {}
   ~Response() {}
 
-  bool          is_sending() const { return _state_ == SENDING; }
-  ResponseState send(connFd conn_fd) {
+  bool    is_sending() const { return _state_ == SENDING; }
+  FdState send(connFd conn_fd) {
     const char *rest_str   = _response_.c_str() + _send_count_;
     size_t      rest_count = _response_.size() - _send_count_;
     _send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
