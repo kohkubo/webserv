@@ -5,6 +5,7 @@
 
 // clang-format off
 /*
+rfc 3875 6. CGI Response
   CGI-Response = document-response | local-redir-response | client-redir-response | client-redirdoc-response
 
   document-response = Content-Type [ Status ] *other-field NL response-body
@@ -36,6 +37,16 @@
     NL = LF or CRLF
  */
 // clang-format on
+
+/*
+document-response
+Content-Type: text/html
+Status: 200
+~~~
+~~~
+NL
+hogehoge
+ */
 
 class CgiParser {
 private:
