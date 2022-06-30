@@ -51,6 +51,8 @@ private:
   HttpStatusCode     _method_get(const RequestInfo &request_info);
   HttpStatusCode     _method_get_dir(const RequestInfo &request_info,
                                      const std::string &target_path);
+  HttpStatusCode     _method_get_file(const RequestInfo &request_info,
+                                      const std::string &target_path);
   HttpStatusCode     _method_post(const RequestInfo &request_info);
   static HttpStatusCode _method_delete(const RequestInfo &request_info);
 };
