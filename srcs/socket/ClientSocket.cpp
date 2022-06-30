@@ -87,14 +87,16 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       //  socket_map_actions.add_socket_map_action(SocketMapAction(
       //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       //} else {
-      ResponseGenerator response_generator(_request_.request_info());
+      response_generator::ResponseGenerator response_generator(
+          _request_.request_info());
       // cgi or file or nothing
       _response_queue_.push_back(response_generator.generate_response());
       //}
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    ResponseGenerator response_generator(_request_.request_info(), e.status());
+    response_generator::ResponseGenerator response_generator(
+        _request_.request_info(), e.status());
     _response_queue_.push_back(response_generator.generate_response());
     _request_ = Request();
   }
