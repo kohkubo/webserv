@@ -5,6 +5,8 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 
+namespace socket_base {
+
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
     , _config_group_(config_group)
@@ -116,3 +118,5 @@ bool ClientSocket::append_receive_buffer() {
   _buffer_.append(buf, rc);
   return false;
 }
+
+} // namespace socket_base

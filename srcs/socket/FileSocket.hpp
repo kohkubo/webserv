@@ -6,6 +6,8 @@
 #include "http/HttpStatusCode.hpp"
 #include "socket/SocketBase.hpp"
 
+namespace socket_base {
+
 class FileSocket : public SocketBase {
 private:
   // 何を持つべきか考える
@@ -16,5 +18,7 @@ public:
   FileSocket();
   ~FileSocket();
 };
+
+} // namespace socket_base
 
 #endif /* SRCS_SOCKET_FILESOCKET_HPP */
