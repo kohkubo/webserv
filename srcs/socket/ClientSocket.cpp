@@ -27,36 +27,37 @@ bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 // std::vector<SocketMapAction> SocketMapActions.add(socket_map_action)
 
 SocketMapActions ClientSocket::handle_event(short int revents) {
+  SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
     LOG("connection was closed by client.");
-    _socket_map_actions_.add_socket_map_action(
+    socket_map_actions.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
-    return _socket_map_actions_;
+    return socket_map_actions;
   }
   if ((revents & POLLIN) != 0) {
     // LOG("got POLLIN  event of fd " << _socket_fd_);
-    bool is_close = _handle_receive_event();
+    bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close)
-      return _socket_map_actions_;
+      return socket_map_actions;
   }
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of fd " << _socket_fd_);
     _handle_send_event();
   }
-  return _socket_map_actions_;
+  return socket_map_actions;
 }
 
-bool ClientSocket::_handle_receive_event() {
+bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
   if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
-    _socket_map_actions_.add_socket_map_action(
+    socket_map_actions.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
     return true;
   }
   _buffer_ += receive_result.str_;
-  _parse_buffer();
+  _parse_buffer(socket_map_actions);
   return false;
 }
 
@@ -68,7 +69,7 @@ void ClientSocket::_handle_send_event() {
   }
 }
 
-void ClientSocket::_parse_buffer() {
+void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   try {
     for (;;) {
       Request::RequestState request_state =
@@ -87,7 +88,7 @@ void ClientSocket::_parse_buffer() {
       // if (result.has_read_file_) {
       //  SocketBase *file_socket =
       //      new FileSocket(result.object_, _response_queue_.back());
-      //  _socket_map_actions_.add_socket_map_action(SocketMapAction(
+      //  socket_map_actions.add_socket_map_action(SocketMapAction(
       //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       //} else {
       response_generator::ResponseGenerator response_generator(

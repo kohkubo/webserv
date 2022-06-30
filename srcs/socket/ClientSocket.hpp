@@ -29,9 +29,9 @@ private:
   static const size_t HTTP_BUFFER_SIZE_     = 4096;
 
 private:
-  void _parse_buffer();
+  void _parse_buffer(SocketMapActions &socket_map_actions);
   void _handle_send_event();
-  bool _handle_receive_event();
+  bool _handle_receive_event(SocketMapActions &socket_map_actions);
 
 public:
   ClientSocket(int client_fd, const ConfigGroup &config_group);
