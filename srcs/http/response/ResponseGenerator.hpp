@@ -2,7 +2,7 @@
 #define SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP
 
 #include "config/Config.hpp"
-#include "event/SendResponse.hpp"
+#include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
 
 typedef int fileFd;
@@ -34,7 +34,7 @@ public:
   ResponseGenerator(const RequestInfo &request_info,
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
-  SendResponse generate_response();
+  Response generate_response();
 
 private:
   static Result<std::string>

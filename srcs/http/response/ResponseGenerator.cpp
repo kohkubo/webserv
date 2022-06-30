@@ -9,7 +9,7 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "event/SendResponse.hpp"
+#include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
@@ -39,7 +39,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
   _status_code_ = _handle_method(_request_info_);
 }
 
-SendResponse ResponseGenerator::generate_response() {
+Response ResponseGenerator::generate_response() {
   if (_body_.has_fd() && _body_.action_ == Body::WRITE) {
     if (write(_body_.fd_, _body_.content_.c_str(), _body_.content_.size()) ==
         -1) {
@@ -73,7 +73,7 @@ SendResponse ResponseGenerator::generate_response() {
   // LOG("status_code: " << _status_code_);
   std::string response = create_response_message(
       _request_info_, _is_connection_close_, _status_code_, _body_.content_);
-  return SendResponse(response, _is_connection_close_);
+  return Response(response, _is_connection_close_);
 }
 
 } // namespace response_generator
