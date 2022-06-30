@@ -55,7 +55,8 @@ bool        has_suffix(const std::string &str, const std::string &suffix);
 bool        has_prefix(const std::string &str, const std::string &prefix);
 std::string trim(std::string str, std::string cutset);
 std::string tolower(const std::string &str);
-bool        getline(std::string &source, std::string &line);
+bool        getline(std::string &source, std::string &line,
+                    const std::string &delim = "\r\n");
 
 template <typename T>
 std::string to_string(T val) {

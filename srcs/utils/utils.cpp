@@ -41,8 +41,8 @@ std::string tolower(const std::string &str) {
   return lower;
 }
 
-bool getline(std::string &source, std::string &line) {
-  std::size_t pos = source.find("\r\n");
+bool getline(std::string &source, std::string &line, const std::string &delim) {
+  std::size_t pos = source.find(delim);
   if (pos == std::string::npos)
     return false;
   line = source.substr(0, pos);
