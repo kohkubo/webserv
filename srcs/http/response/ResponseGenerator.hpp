@@ -42,11 +42,13 @@ private:
                                        const std::string &target_path);
   Body           _create_status_code_body(const RequestInfo &request_info);
   HttpStatusCode _handle_method(const RequestInfo &request_info);
-  HttpStatusCode _method_get(const RequestInfo &request_info,
-                             std::string        target_path);
-  HttpStatusCode _method_post(const RequestInfo &request_info,
-                              std::string        target_path);
-  static HttpStatusCode _method_delete(const std::string &target_path);
+  HttpStatusCode _method_get(const RequestInfo &request_info);
+  HttpStatusCode _method_get_dir(const RequestInfo &request_info,
+                                 const std::string &target_path);
+  HttpStatusCode _method_get_file(const RequestInfo &request_info,
+                                  const std::string &target_path);
+  HttpStatusCode _method_post(const RequestInfo &request_info);
+  static HttpStatusCode _method_delete(const RequestInfo &request_info);
 };
 
 std::string create_autoindex_body(const RequestInfo &request_info,

@@ -48,21 +48,22 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
 }
 
 bool ClientSocket::_handle_receive_event() {
-  Result<std::string> result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
-  if (result.is_err_) {
+  ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
+  if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
     _socket_map_actions_.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
     return true;
   }
-  _buffer_ += result.object_;
+  _buffer_ += receive_result.str_;
   _parse_buffer();
   return false;
 }
 
 void ClientSocket::_handle_send_event() {
-  Response::FdState fd_state = _response_queue_.front().send(_socket_fd_);
-  if (fd_state == Response::COMPLETE) {
+  Response::ResponseState response_state =
+      _response_queue_.front().send(_socket_fd_);
+  if (response_state == Response::COMPLETE) {
     _response_queue_.pop_front();
   }
 }
