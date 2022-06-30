@@ -12,7 +12,7 @@
 #include "socket/SocketMapActions.hpp"
 #include "socket/Timeout.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 class ClientSocket : public SocketBase {
 private:
@@ -41,6 +41,6 @@ public:
   virtual bool             is_timed_out();
 };
 
-} // namespace socket_base
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_CLIENTSOCKET_HPP */

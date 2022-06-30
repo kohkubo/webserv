@@ -3,7 +3,7 @@
 
 #include <ctime>
 
-namespace socket_base {
+namespace ns_socket {
 
 class Timeout {
 private:
@@ -27,6 +27,6 @@ public:
   }
 };
 
-} // namespace socket_base
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_TIMEOUT_HPP */

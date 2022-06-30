@@ -6,7 +6,7 @@
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
@@ -111,4 +111,4 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   }
 }
 
-} // namespace socket_base
+} // namespace ns_socket

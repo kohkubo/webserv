@@ -3,7 +3,7 @@
 #include "socket.hpp"
 #include "utils/utils.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 ReceiveResult receive(int socket_fd, size_t size) {
   char    buffer[size];
@@ -19,4 +19,4 @@ ReceiveResult receive(int socket_fd, size_t size) {
   return ReceiveResult(n, std::string(buffer, n));
 }
 
-} // namespace socket_base
+} // namespace ns_socket

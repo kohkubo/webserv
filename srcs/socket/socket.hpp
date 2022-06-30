@@ -5,7 +5,7 @@
 
 #include "utils/Result.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 struct ReceiveResult {
   ssize_t     rc_;
@@ -18,5 +18,5 @@ struct ReceiveResult {
 
 ReceiveResult receive(int socket_fd, std::size_t size);
 
-} // namespace socket_base
+} // namespace ns_socket
 #endif /* SRCS_SOCKET_SOCKET_HPP */

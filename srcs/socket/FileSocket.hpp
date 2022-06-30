@@ -6,7 +6,7 @@
 #include "http/HttpStatusCode.hpp"
 #include "socket/SocketBase.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 class FileSocket : public SocketBase {
 private:
@@ -19,6 +19,6 @@ public:
   ~FileSocket();
 };
 
-} // namespace socket_base
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_FILESOCKET_HPP */
