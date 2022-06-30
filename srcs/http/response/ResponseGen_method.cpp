@@ -18,7 +18,7 @@ ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
   if (!request_info.location_->autoindex_) {
     return HttpStatusCode::S_403_FORBIDDEN;
   }
-  _body_.content_     = _create_autoindex_body(request_info, target_path);
+  _body_.content_     = create_autoindex_body(request_info, target_path);
   _body_.has_content_ = true;
   return HttpStatusCode::S_200_OK;
 }
