@@ -4,6 +4,7 @@
 
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "socket.hpp"
 
 namespace socket_base {
 
@@ -48,13 +49,14 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
 }
 
 bool ClientSocket::handle_receive_event(SocketMapActions &socket_map_actions) {
-  bool is_socket_closed_from_client = append_receive_buffer();
-  if (is_socket_closed_from_client) {
+  ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
+  if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
     socket_map_actions.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
     return true;
   }
+  _buffer_ += receive_result.str_;
   parse_buffer(socket_map_actions);
   return false;
 }
@@ -92,8 +94,12 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       //} else {
       response_generator::ResponseGenerator response_generator(
           _request_.request_info());
-      // cgi or file or nothing
       _response_queue_.push_back(response_generator.generate_response());
+      // if (response_generator.has_fd()) {
+      //   SocketBase *file_socket =
+      //       new FileSocket(response_generator.fd(), _response_queue_.back());
+      // }
+      // cgi or file or nothing
       //}
       _request_ = Request();
     }
@@ -103,21 +109,6 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
     _response_queue_.push_back(response_generator.generate_response());
     _request_ = Request();
   }
-}
-
-bool ClientSocket::append_receive_buffer() {
-  char    buf[HTTP_BUFFER_SIZE_] = {};
-  ssize_t rc = recv(_socket_fd_, buf, HTTP_BUFFER_SIZE_, MSG_DONTWAIT);
-  if (rc == -1) {
-    ERROR_LOG("recv error.");
-    return false;
-  }
-  // fin from client
-  if (rc == 0) {
-    return true;
-  }
-  _buffer_.append(buf, rc);
-  return false;
 }
 
 } // namespace socket_base
