@@ -19,8 +19,7 @@ public:
     S_520_UNKNOWN_ERROR         = 520,
   };
 
-private:
-  StatusCode _status_code_;
+  StatusCode status_code_;
 
 public:
   HttpStatusCode(StatusCode status_code = S_200_OK);
@@ -29,8 +28,6 @@ public:
   HttpStatusCode &operator=(const int num);
   bool            is_error_status_code() const;
   bool            has_default_content() const;
-  StatusCode      status_code() const;
-  void            set_status(StatusCode status_code);
                   operator StatusCode() const;
 };
 

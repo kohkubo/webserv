@@ -49,8 +49,8 @@ std::map<int, std::string> init_response_status_phrase_map() {
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
-std::string
-ResponseGenerator::_create_default_body_content(HttpStatusCode status_code) {
+std::string ResponseGenerator::_create_default_body_content(
+    const HttpStatusCode &status_code) {
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"
@@ -60,7 +60,7 @@ ResponseGenerator::_create_default_body_content(HttpStatusCode status_code) {
          "    </head>\n"
          "    <body>\n"
          "<h2>" +
-         g_response_status_phrase_map[status_code.status_code()] +
+         g_response_status_phrase_map[status_code] +
          "</h2>\n"
          "provided by webserv\n"
          "    </body>\n"
@@ -71,7 +71,7 @@ ResponseGenerator::Body
 ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
   ResponseGenerator::Body      body;
   errorPageMap::const_iterator it =
-      request_info.config_.error_pages_.find(_status_code_.status_code());
+      request_info.config_.error_pages_.find(_status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
     if (!is_file_exists(file_path)) {
@@ -134,7 +134,7 @@ static std::string create_response_header(const RequestInfo &request_info,
 
 std::string ResponseGenerator::_create_response_message(
     const RequestInfo &request_info, const bool is_connection_close,
-    HttpStatusCode status_code, const std::string &body) {
+    const HttpStatusCode &status_code, const std::string &body) {
   std::string response =
       create_response_header(request_info, is_connection_close, status_code);
   response += entity_header_and_body(body);
