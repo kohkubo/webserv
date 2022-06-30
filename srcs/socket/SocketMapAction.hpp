@@ -3,6 +3,8 @@
 
 #include <cstddef>
 
+namespace socket_base {
+
 class SocketBase;
 
 struct SocketMapAction {
@@ -26,5 +28,7 @@ struct SocketMapAction {
       , socket_fd_(socket_fd)
       , target_(target) {}
 };
+
+} // namespace socket_base
 
 #endif /* SRCS_SOCKET_SOCKETMAPACTION_HPP */

@@ -8,6 +8,8 @@
 #include "socket/ListenSocket.hpp"
 #include "socket/SocketMapActions.hpp"
 
+namespace socket_base {
+
 SocketMap::SocketMap(const std::vector<ConfigGroup> &config_groups) {
   std::vector<ConfigGroup>::const_iterator it = config_groups.begin();
   for (; it != config_groups.end(); it++) {
@@ -68,3 +70,5 @@ void SocketMap::close_timedout_socket() {
     }
   }
 }
+
+} // namespace socket_base

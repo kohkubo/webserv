@@ -4,6 +4,8 @@
 #include "http/const/const_status_phrase.hpp"
 #include "utils/file_io_utils.hpp"
 
+namespace response_generator {
+
 std::map<int, std::string> init_response_status_phrase_map() {
   std::map<int, std::string> res;
   res[200] = STATUS_200_PHRASE;
@@ -49,8 +51,7 @@ std::map<int, std::string> init_response_status_phrase_map() {
 std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
-std::string ResponseGenerator::_create_default_body_content(
-    const HttpStatusCode &status_code) {
+std::string create_default_body_content(const HttpStatusCode &status_code) {
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"
@@ -95,7 +96,7 @@ ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
   return body;
 }
 
-static std::string start_line(const HttpStatusCode status_code) {
+static std::string start_line(const HttpStatusCode &status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
@@ -111,8 +112,8 @@ static std::string entity_header_and_body(const std::string &body) {
 }
 
 static std::string create_response_header(const RequestInfo &request_info,
-                                          const bool     is_connection_close,
-                                          HttpStatusCode status_code) {
+                                          const bool is_connection_close,
+                                          const HttpStatusCode &status_code) {
   // LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   if (is_connection_close) {
@@ -132,11 +133,14 @@ static std::string create_response_header(const RequestInfo &request_info,
   return response;
 }
 
-std::string ResponseGenerator::_create_response_message(
-    const RequestInfo &request_info, const bool is_connection_close,
-    const HttpStatusCode &status_code, const std::string &body) {
+std::string create_response_message(const RequestInfo    &request_info,
+                                    const bool            is_connection_close,
+                                    const HttpStatusCode &status_code,
+                                    const std::string    &body) {
   std::string response =
       create_response_header(request_info, is_connection_close, status_code);
   response += entity_header_and_body(body);
   return response;
 };
+
+} // namespace response_generator

@@ -15,6 +15,8 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
+namespace response_generator {
+
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      HttpStatusCode     status_code)
     : _request_info_(request_info)
@@ -66,10 +68,12 @@ Response ResponseGenerator::generate_response() {
   }
 
   if (!_body_.has_content_) {
-    _body_.content_ = _create_default_body_content(_status_code_);
+    _body_.content_ = create_default_body_content(_status_code_);
   }
   // LOG("status_code: " << _status_code_);
-  std::string response = _create_response_message(
+  std::string response = create_response_message(
       _request_info_, _is_connection_close_, _status_code_, _body_.content_);
   return Response(response, _is_connection_close_);
 }
+
+} // namespace response_generator
