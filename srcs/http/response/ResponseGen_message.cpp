@@ -50,7 +50,7 @@ std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
 std::string ResponseGenerator::_create_default_body_content(
-    HttpStatusCode::StatusCode status_code) {
+    const HttpStatusCode &status_code) {
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"
@@ -75,18 +75,18 @@ ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
     if (!is_file_exists(file_path)) {
-      if (_status_code_ == HttpStatusCode::NOT_FOUND_404) {
+      if (_status_code_ == HttpStatusCode::S_404_NOT_FOUND) {
         return body;
       }
-      _status_code_ = HttpStatusCode::NOT_FOUND_404;
+      _status_code_ = HttpStatusCode::S_404_NOT_FOUND;
       return _create_status_code_body(request_info);
     }
     Result<int> result = open_read_file(file_path);
     if (result.is_err_) {
-      if (_status_code_ == HttpStatusCode::INTERNAL_SERVER_ERROR_500) {
+      if (_status_code_ == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
         return body;
       }
-      _status_code_ = HttpStatusCode::INTERNAL_SERVER_ERROR_500;
+      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
       return _create_status_code_body(request_info);
     }
     body.action_ = Body::READ;
@@ -95,7 +95,7 @@ ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
   return body;
 }
 
-static std::string start_line(const HttpStatusCode::StatusCode status_code) {
+static std::string start_line(const HttpStatusCode status_code) {
   return "HTTP/1.1" + SP + g_response_status_phrase_map[status_code] + CRLF;
 }
 
@@ -110,24 +110,23 @@ static std::string entity_header_and_body(const std::string &body) {
          "Content-Type: text/html" + CRLF + CRLF + body;
 }
 
-static std::string
-create_response_header(const RequestInfo         &request_info,
-                       const bool                 is_connection_close,
-                       HttpStatusCode::StatusCode status_code) {
+static std::string create_response_header(const RequestInfo &request_info,
+                                          const bool     is_connection_close,
+                                          HttpStatusCode status_code) {
   // LOG("status_code: " << status_code);
   std::string response = start_line(status_code);
   if (is_connection_close) {
     response += connection_header();
   }
-  if (HttpStatusCode::NO_CONTENT_204 == status_code) {
+  if (HttpStatusCode::S_204_NO_CONTENT == status_code) {
     return response + CRLF;
   }
-  if (HttpStatusCode::MOVED_PERMANENTLY_301 == status_code) {
+  if (HttpStatusCode::S_301_MOVED_PERMANENTLY == status_code) {
     returnMap::const_iterator it =
         request_info.location_->return_map_.find(status_code);
     response += location_header(it->second);
   }
-  if (HttpStatusCode::Created_201 == status_code) {
+  if (HttpStatusCode::S_201_CREATED == status_code) {
     response += location_header(request_info.request_line_.absolute_path_);
   }
   return response;
@@ -135,7 +134,7 @@ create_response_header(const RequestInfo         &request_info,
 
 std::string ResponseGenerator::_create_response_message(
     const RequestInfo &request_info, const bool is_connection_close,
-    HttpStatusCode::StatusCode status_code, const std::string &body) {
+    const HttpStatusCode &status_code, const std::string &body) {
   std::string response =
       create_response_header(request_info, is_connection_close, status_code);
   response += entity_header_and_body(body);
