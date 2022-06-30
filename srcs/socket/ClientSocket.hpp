@@ -8,7 +8,7 @@
 
 #include "config/ConfigGroup.hpp"
 #include "event/Request.hpp"
-#include "event/Response.hpp"
+#include "event/SendResponse.hpp"
 #include "socket/SocketBase.hpp"
 #include "socket/Timeout.hpp"
 
@@ -18,7 +18,7 @@ class ClientSocket : public SocketBase {
 private:
   const ConfigGroup       &_config_group_;
   Request                  _request_;
-  std::deque<Response>     _response_queue_;
+  std::deque<SendResponse> _response_queue_;
   std::string              _buffer_;
   Timeout                  _timeout_;
   static const std::time_t TIMEOUT_SECONDS_ = 60;
