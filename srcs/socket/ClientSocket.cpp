@@ -49,14 +49,14 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
 }
 
 bool ClientSocket::handle_receive_event(SocketMapActions &socket_map_actions) {
-  Result<std::string> result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
-  if (result.is_err_) {
+  ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
+  if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
     socket_map_actions.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
     return true;
   }
-  _buffer_ += result.object_;
+  _buffer_ += receive_result.str_;
   parse_buffer(socket_map_actions);
   return false;
 }
