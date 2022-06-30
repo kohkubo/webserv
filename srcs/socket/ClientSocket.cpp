@@ -1,6 +1,7 @@
 #include "socket/ClientSocket.hpp"
 
 #include <poll.h>
+#include <sys/socket.h>
 
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
@@ -8,7 +9,12 @@
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
     , _config_group_(config_group)
-    , _timeout_(TIMEOUT_SECONDS_) {}
+    , _timeout_(TIMEOUT_SECONDS_) {
+  struct sockaddr_in perr_addr;
+  socklen_t          serv_len = sizeof(perr_addr);
+  getpeername(_socket_fd_, (struct sockaddr *)&perr_addr, &serv_len);
+  _peer_name_ = inet_ntoa(perr_addr.sin_addr);
+}
 
 struct pollfd ClientSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};

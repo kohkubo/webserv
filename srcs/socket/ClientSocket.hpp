@@ -19,6 +19,7 @@ private:
   std::deque<Response>     _response_queue_;
   std::string              _buffer_;
   Timeout                  _timeout_;
+  std::string              _peer_name_;
   static const std::time_t TIMEOUT_SECONDS_ = 60;
   // #define NGX_HTTP_LINGERING_BUFFER_SIZE     4096
   // TODO: lingering の意味調べる

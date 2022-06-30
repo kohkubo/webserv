@@ -38,11 +38,9 @@ create_environ_map(const RequestInfo &request_info,
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
   environ_map["PATH_INFO"]         = get_realpath(target_path);
   environ_map["PATH_TRANSLATED"]   = get_realpath(target_path);
-  // クライアントのネットワークアドレス sockfdからgetpeername
   // clientSocketからsockfd渡す
   environ_map["REMOTE_ADDR"]       = "";
-  // REMOTE_ADDRを名前解決
-  environ_map["REMOTE_HOST"]       = "";
+  environ_map["REMOTE_HOST"]       = environ_map["REMOTE_ADDR"];
   environ_map["QUERY_STRING"]      = request_info.request_line_.query_;
   environ_map["REQUEST_METHOD"]    = request_info.request_line_.method_;
   environ_map["SCRIPT_NAME"] =
