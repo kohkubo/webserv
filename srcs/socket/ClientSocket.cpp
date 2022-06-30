@@ -36,18 +36,18 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
   }
   if ((revents & POLLIN) != 0) {
     // LOG("got POLLIN  event of fd " << _socket_fd_);
-    bool is_close = handle_receive_event();
+    bool is_close = _handle_receive_event();
     if (is_close)
       return _socket_map_actions_;
   }
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of fd " << _socket_fd_);
-    handle_send_event();
+    _handle_send_event();
   }
   return _socket_map_actions_;
 }
 
-bool ClientSocket::handle_receive_event() {
+bool ClientSocket::_handle_receive_event() {
   Result<std::string> result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
   if (result.is_err_) {
     // LOG("got FIN from connection");
@@ -56,22 +56,22 @@ bool ClientSocket::handle_receive_event() {
     return true;
   }
   _buffer_ += result.object_;
-  parse_buffer(_buffer_);
+  _parse_buffer();
   return false;
 }
 
-void ClientSocket::handle_send_event() {
+void ClientSocket::_handle_send_event() {
   Response::FdState fd_state = _response_queue_.front().send(_socket_fd_);
   if (fd_state == Response::COMPLETE) {
     _response_queue_.pop_front();
   }
 }
 
-void ClientSocket::parse_buffer(std::string &buffer) {
+void ClientSocket::_parse_buffer() {
   try {
     for (;;) {
       Request::RequestState request_state =
-          _request_.handle_request(buffer, _config_group_);
+          _request_.handle_request(_buffer_, _config_group_);
       if (request_state != Request::SUCCESS) {
         break;
       }

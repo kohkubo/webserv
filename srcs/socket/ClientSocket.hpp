@@ -28,16 +28,17 @@ private:
   // TODO: 4096の根拠を調べる
   static const size_t HTTP_BUFFER_SIZE_     = 4096;
 
+private:
+  void _parse_buffer();
+  void _handle_send_event();
+  bool _handle_receive_event();
+
 public:
   ClientSocket(int client_fd, const ConfigGroup &config_group);
   virtual ~ClientSocket() {}
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
-
-  bool handle_receive_event();
-  void handle_send_event();
-  void parse_buffer(std::string &buffer);
 };
 
 } // namespace socket_base
