@@ -141,19 +141,19 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   implemented SHOULD respond with the 501 (Not Implemented) status code.
   認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
   */
-  HttpStatusCode status_code;
-  std::string    target_path = create_target_path(request_info);
+  std::string target_path = create_target_path(request_info);
   if (!is_available_methods(request_info)) {
-    status_code = HttpStatusCode::S_405_NOT_ALLOWED;
-  } else if ("GET" == request_info.request_line_.method_) {
-    _method_get(request_info, target_path);
-  } else if ("POST" == request_info.request_line_.method_) {
-    _method_post(request_info, target_path);
-  } else if ("DELETE" == request_info.request_line_.method_) {
-    _method_delete(target_path);
-  } else {
-    ERROR_LOG("unknown method: " << request_info.request_line_.method_);
-    status_code = HttpStatusCode::S_501_NOT_IMPLEMENTED;
+    return HttpStatusCode::S_405_NOT_ALLOWED;
   }
-  return status_code;
+  if ("GET" == request_info.request_line_.method_) {
+    return _method_get(request_info, target_path);
+  }
+  if ("POST" == request_info.request_line_.method_) {
+    return _method_post(request_info, target_path);
+  }
+  if ("DELETE" == request_info.request_line_.method_) {
+    return _method_delete(target_path);
+  }
+  ERROR_LOG("unknown method: " << request_info.request_line_.method_);
+  return HttpStatusCode::S_501_NOT_IMPLEMENTED;
 }
