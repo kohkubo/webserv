@@ -42,12 +42,15 @@ private:
                                            const std::string &target_path);
   static std::string _create_autoindex_body(const RequestInfo &request_info,
                                             const std::string &target_path);
-  ResponseGenerator::Body _handle_method(const RequestInfo &request_info);
   static std::string _create_response_message(const RequestInfo &request_info,
                                               const bool is_connection_close,
                                               const HttpStatusCode &status_code,
                                               const std::string    &body);
   Body               _create_status_code_body(const RequestInfo &request_info);
+  void               _handle_method(const RequestInfo &request_info);
+  void _method_get(const RequestInfo &request_info, std::string target_path);
+  void _method_post(const RequestInfo &request_info, std::string target_path);
+  void _method_delete(const std::string &target_path);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
