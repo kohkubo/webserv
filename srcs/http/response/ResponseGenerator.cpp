@@ -48,12 +48,12 @@ Response ResponseGenerator::generate_response() {
   //   _body_.has_content_ = false;
   // }
   if (has_fd()) {
-    return Response("", _is_connection_close_);
+    return Response("", _is_connection_close_, Response::WAITING);
   }
   if (_status_code_.has_default_content()) {
     _body_ = _create_status_code_body(_request_info_); // status_code or fd
     if (has_fd()) {
-      return Response("", _is_connection_close_);
+      return Response("", _is_connection_close_, Response::WAITING);
     }
   }
   return Response(create_default_body_content(_status_code_),

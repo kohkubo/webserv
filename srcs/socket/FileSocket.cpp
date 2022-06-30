@@ -19,6 +19,7 @@ struct pollfd FileSocket::pollfd() {
 }
 
 SocketMapActions FileSocket::handle_event(short int revents) {
+  LOG("got POLLIN  event of fd " << _socket_fd_);
   (void)revents;
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();

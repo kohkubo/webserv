@@ -31,8 +31,9 @@ private:
   }
 
 public:
-  Response(std::string response_message, bool is_close)
-      : _state_(SENDING)
+  Response(std::string response_message, bool is_close,
+           ResponseState state = SENDING)
+      : _state_(state)
       , _response_message_(response_message)
       , _is_last_response_(is_close)
       , _send_count_(0) {}

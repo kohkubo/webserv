@@ -97,7 +97,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
           _request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
       if (response_generator.has_fd()) {
-        LOG("fd: " << response_generator.fd());
+        // LOG("fd: " << response_generator.fd());
         SocketBase *file_socket =
             new FileSocket(_response_queue_.back(), response_generator);
         socket_map_actions.add_socket_map_action(SocketMapAction(
