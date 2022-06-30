@@ -59,12 +59,14 @@ private:
 
   ResponseType _response_type_;
   std::string  _new_line_delim_;
+  std::string  _content_type_;
 
 private:
   CgiParser();
+  bool _parse_content_type(std::string &cgi_response);
 
 public:
-  CgiParser(const std::string &cgi_response);
+  CgiParser(std::string &cgi_response);
   ~CgiParser();
 };
 
