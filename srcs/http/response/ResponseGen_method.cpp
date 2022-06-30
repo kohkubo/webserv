@@ -9,6 +9,8 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 
+namespace response_generator {
+
 // TODO: リンクやその他のファイルシステムの時どうするか
 static HttpStatusCode check_filepath_status(const RequestInfo &request_info,
                                             const std::string &target_path) {
@@ -67,7 +69,7 @@ HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info,
     return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
   }
   if (has_suffix(target_path, "/")) {
-    _body_.content_     = _create_autoindex_body(request_info, target_path);
+    _body_.content_     = create_autoindex_body(request_info, target_path);
     _body_.has_content_ = true;
     return status_code;
   }
@@ -157,3 +159,5 @@ ResponseGenerator::_handle_method(const RequestInfo &request_info) {
   ERROR_LOG("unknown method: " << request_info.request_line_.method_);
   return HttpStatusCode::S_501_NOT_IMPLEMENTED;
 }
+
+} // namespace response_generator

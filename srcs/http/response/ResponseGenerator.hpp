@@ -7,6 +7,8 @@
 
 typedef int fileFd;
 
+namespace response_generator {
+
 class ResponseGenerator {
 public:
   struct Body {
@@ -35,24 +37,26 @@ public:
   Response generate_response();
 
 private:
-  static std::string
-  _create_default_body_content(const HttpStatusCode &status_code);
   static Result<std::string>
-                     _read_file_to_str_cgi(const RequestInfo &request_info,
-                                           const std::string &target_path);
-  static std::string _create_autoindex_body(const RequestInfo &request_info,
-                                            const std::string &target_path);
-  static std::string _create_response_message(const RequestInfo &request_info,
-                                              const bool is_connection_close,
-                                              const HttpStatusCode &status_code,
-                                              const std::string    &body);
-  Body               _create_status_code_body(const RequestInfo &request_info);
-  HttpStatusCode     _handle_method(const RequestInfo &request_info);
-  HttpStatusCode     _method_get(const RequestInfo &request_info,
-                                 std::string        target_path);
-  HttpStatusCode     _method_post(const RequestInfo &request_info,
-                                  std::string        target_path);
+                 _read_file_to_str_cgi(const RequestInfo &request_info,
+                                       const std::string &target_path);
+  Body           _create_status_code_body(const RequestInfo &request_info);
+  HttpStatusCode _handle_method(const RequestInfo &request_info);
+  HttpStatusCode _method_get(const RequestInfo &request_info,
+                             std::string        target_path);
+  HttpStatusCode _method_post(const RequestInfo &request_info,
+                              std::string        target_path);
   static HttpStatusCode _method_delete(const std::string &target_path);
 };
+
+std::string create_autoindex_body(const RequestInfo &request_info,
+                                  const std::string &target_path);
+std::string create_default_body_content(const HttpStatusCode &status_code);
+std::string create_response_message(const RequestInfo    &request_info,
+                                    const bool            is_connection_close,
+                                    const HttpStatusCode &status_code,
+                                    const std::string    &body);
+
+} // namespace response_generator
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

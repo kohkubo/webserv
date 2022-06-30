@@ -11,6 +11,8 @@
 #include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
+namespace response_generator {
+
 #define READ_FD  0
 #define WRITE_FD 1
 
@@ -72,3 +74,5 @@ ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info,
   }
   return Ok<std::string>(str);
 }
+
+} // namespace response_generator
