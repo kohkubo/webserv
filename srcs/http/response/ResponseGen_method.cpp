@@ -10,15 +10,18 @@
 #include "utils/file_io_utils.hpp"
 
 // TODO: リンクやその他のファイルシステムの時どうするか
-static HttpStatusCode check_dirpath_status(const RequestInfo &request_info,
-                                           const std::string &target_path) {
-  if (is_dir_exists(target_path)) {
-    if (request_info.location_->autoindex_) {
-      return HttpStatusCode::S_200_OK;
-    }
+HttpStatusCode
+ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
+                                   const std::string &target_path) {
+  if (!is_dir_exists(target_path)) {
+    return HttpStatusCode::S_404_NOT_FOUND;
+  }
+  if (!request_info.location_->autoindex_) {
     return HttpStatusCode::S_403_FORBIDDEN;
   }
-  return HttpStatusCode::S_404_NOT_FOUND;
+  _body_.content_     = _create_autoindex_body(request_info, target_path);
+  _body_.has_content_ = true;
+  return HttpStatusCode::S_200_OK;
 }
 
 // TODO: リンクやその他のファイルシステムの時どうするか
@@ -56,7 +59,7 @@ HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info) {
         HttpStatusCode::S_200_OK) {
       target_path = path_add_index;
     } else {
-      status_code = check_dirpath_status(request_info, target_path);
+      return _method_get_dir(request_info, target_path);
     }
   } else {
     status_code = check_filepath_status(target_path);
@@ -73,11 +76,6 @@ HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info) {
       return status_code;
     }
     return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-  }
-  if (has_suffix(target_path, "/")) {
-    _body_.content_     = _create_autoindex_body(request_info, target_path);
-    _body_.has_content_ = true;
-    return status_code;
   }
   Result<int> result = open_read_file(target_path);
   if (result.is_err_) {
