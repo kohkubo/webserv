@@ -17,6 +17,7 @@ public:
   bool                is_file_exists();
   bool                is_dir_exists();
   bool                is_accessible(int mode);
+  bool                is_minus_depth();
   Result<std::string> get_realpath();
 };
 

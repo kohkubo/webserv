@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "tokenize.hpp"
 #include "utils/utils.hpp"
 
 Path::Path(const std::string &path)
@@ -47,4 +48,21 @@ Result<std::string> Path::get_realpath() {
   std::string res = std::string(abs_path);
   free(abs_path);
   return Ok<std::string>(res);
+}
+
+bool Path::is_minus_depth() {
+  tokenVector   tokens = tokenize(_path_, "/", "/");
+  tokenIterator it     = tokens.begin();
+
+  for (long depth = 0; it != tokens.end(); it++) {
+    if (*it == "..") {
+      depth--;
+    } else if (*it != ".") {
+      depth++;
+    }
+    if (depth < 0) {
+      return true;
+    }
+  }
+  return false;
 }
