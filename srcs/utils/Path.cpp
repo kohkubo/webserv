@@ -5,17 +5,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <iostream>
+
 #include "tokenize.hpp"
 #include "utils/utils.hpp"
 
 Path::Path(const std::string &path)
-    : _path_(_normalize_path(path)) {}
-
-// pathの正規化
-std::string Path::_normalize_path(const std::string &path) {
-  std::string normalized_path = path;
-  return normalized_path;
-}
+    : _path_(path) {}
 
 bool Path::is_file_exists() {
   struct stat file_info = {};
@@ -65,4 +61,11 @@ bool Path::is_minus_depth() {
     }
   }
   return false;
+}
+
+const std::string &Path::path() const { return _path_; }
+
+std::ostream &operator<<(std::ostream &os, const Path &path) {
+  os << path.path();
+  return os;
 }

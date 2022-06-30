@@ -9,9 +9,6 @@ class Path {
 private:
   std::string _path_;
 
-private:
-  static std::string _normalize_path(const std::string &path);
-
 public:
   Path(const std::string &path);
   bool                is_file_exists();
@@ -19,6 +16,10 @@ public:
   bool                is_accessible(int mode);
   bool                is_minus_depth();
   Result<std::string> get_realpath();
+  // tmp
+  const std::string &path() const;
 };
+
+std::ostream &operator<<(std::ostream &os, const Path &path);
 
 #endif /* SRCS_UTILS_PATH_HPP */
