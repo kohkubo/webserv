@@ -63,6 +63,10 @@ bool Path::is_minus_depth() {
   return false;
 }
 
+Path Path::operator+(const Path &rhs) const {
+  return Path(path() + rhs.path());
+}
+
 const std::string &Path::path() const { return _path_; }
 
 std::ostream &operator<<(std::ostream &os, const Path &path) {

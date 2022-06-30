@@ -16,6 +16,7 @@ public:
   bool                is_accessible(int mode);
   bool                is_minus_depth();
   Result<std::string> get_realpath();
+  Path                operator+(const Path &rhs) const;
   // tmp
   const std::string &path() const;
 };
