@@ -37,9 +37,7 @@ public:
 
   bool handle_receive_event();
   void handle_send_event();
-
-  void parse_buffer();
-  bool append_receive_buffer();
+  void parse_buffer(std::string &buffer);
 };
 
 } // namespace socket_base

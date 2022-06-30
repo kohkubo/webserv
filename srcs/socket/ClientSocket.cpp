@@ -56,7 +56,7 @@ bool ClientSocket::handle_receive_event() {
     return true;
   }
   _buffer_ += result.object_;
-  parse_buffer();
+  parse_buffer(_buffer_);
   return false;
 }
 
@@ -67,11 +67,11 @@ void ClientSocket::handle_send_event() {
   }
 }
 
-void ClientSocket::parse_buffer() {
+void ClientSocket::parse_buffer(std::string &buffer) {
   try {
     for (;;) {
       Request::RequestState request_state =
-          _request_.handle_request(_buffer_, _config_group_);
+          _request_.handle_request(buffer, _config_group_);
       if (request_state != Request::SUCCESS) {
         break;
       }
