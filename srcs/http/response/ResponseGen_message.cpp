@@ -52,6 +52,7 @@ std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
 std::string create_default_body_content(const HttpStatusCode &status_code) {
+  LOG("create_default_body_content");
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"
