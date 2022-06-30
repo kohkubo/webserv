@@ -46,7 +46,7 @@ bool getline(std::string &source, std::string &line, const std::string &delim) {
   if (pos == std::string::npos)
     return false;
   line = source.substr(0, pos);
-  source.erase(0, pos + 2);
+  source.erase(0, pos + delim.size());
   return true;
 }
 
