@@ -9,7 +9,7 @@
 #include "config/ConfigGroup.hpp"
 #include "event/Request.hpp"
 #include "event/Response.hpp"
-#include "socket/SocketBase.hpp"
+#include "socket/SocketMapActions.hpp"
 #include "socket/Timeout.hpp"
 
 namespace socket_base {
@@ -21,6 +21,7 @@ private:
   std::deque<Response>     _response_queue_;
   std::string              _buffer_;
   Timeout                  _timeout_;
+  SocketMapActions         _socket_map_actions_;
   static const std::time_t TIMEOUT_SECONDS_ = 60;
   // #define NGX_HTTP_LINGERING_BUFFER_SIZE     4096
   // TODO: lingering の意味調べる
@@ -34,10 +35,10 @@ public:
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
 
-  bool handle_receive_event(SocketMapActions &socket_map_actions);
+  bool handle_receive_event();
   void handle_send_event();
 
-  void parse_buffer(SocketMapActions &socket_map_actions);
+  void parse_buffer();
   bool append_receive_buffer();
 };
 
