@@ -34,7 +34,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     _status_code_ = _request_info_.location_->return_map_.begin()->first;
     return;
   }
-  _handle_method(_request_info_);
+  _status_code_ = _handle_method(_request_info_);
 }
 
 Response ResponseGenerator::generate_response() {
