@@ -7,23 +7,6 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/file_io_utils.hpp"
 
-// RFC 9110
-// 9.1. Overview
-// An origin server that receives a request method that is recognized and
-// implemented, but not allowed for the target resource, SHOULD respond with the
-// 405 (Method Not Allowed) status code.
-static bool is_available_methods(const RequestInfo &request_info) {
-  return std::find(request_info.location_->available_methods_.begin(),
-                   request_info.location_->available_methods_.end(),
-                   request_info.request_line_.method_) !=
-         request_info.location_->available_methods_.end();
-}
-
-static std::string create_default_target_path(const RequestInfo &request_info) {
-  return request_info.location_->root_ +
-         request_info.request_line_.absolute_path_;
-}
-
 HttpStatusCode
 ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
                                    const std::string &target_path) {
@@ -62,6 +45,11 @@ ResponseGenerator::_method_get_file(const RequestInfo &request_info,
   _body_.action_ = Body::READ;
   _body_.fd_     = result.object_;
   return HttpStatusCode::S_200_OK;
+}
+
+static std::string create_default_target_path(const RequestInfo &request_info) {
+  return request_info.location_->root_ +
+         request_info.request_line_.absolute_path_;
 }
 
 HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info) {
@@ -127,6 +115,18 @@ ResponseGenerator::_method_delete(const RequestInfo &request_info) {
   }
   ERROR_LOG("deleted file successfully");
   return HttpStatusCode::S_204_NO_CONTENT;
+}
+
+// RFC 9110
+// 9.1. Overview
+// An origin server that receives a request method that is recognized and
+// implemented, but not allowed for the target resource, SHOULD respond with the
+// 405 (Method Not Allowed) status code.
+static bool is_available_methods(const RequestInfo &request_info) {
+  return std::find(request_info.location_->available_methods_.begin(),
+                   request_info.location_->available_methods_.end(),
+                   request_info.request_line_.method_) !=
+         request_info.location_->available_methods_.end();
 }
 
 HttpStatusCode
