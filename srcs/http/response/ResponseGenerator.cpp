@@ -56,8 +56,8 @@ Response ResponseGenerator::generate_response() {
       return Response("", _is_connection_close_, Response::WAITING);
     }
   }
-  return Response(create_default_body_content(_status_code_),
-                  _is_connection_close_);
+  std::string body = create_default_body_content(_status_code_);
+  return Response(create_response_message(body), _is_connection_close_);
 }
 
 } // namespace response_generator
