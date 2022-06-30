@@ -12,6 +12,8 @@
 #include "socket/SocketBase.hpp"
 #include "socket/Timeout.hpp"
 
+namespace socket_base {
+
 class ClientSocket : public SocketBase {
 private:
   const ConfigGroup       &_config_group_;
@@ -38,5 +40,7 @@ public:
   void parse_buffer(SocketMapActions &socket_map_actions);
   bool append_receive_buffer();
 };
+
+} // namespace socket_base
 
 #endif /* SRCS_SOCKET_CLIENTSOCKET_HPP */

@@ -6,6 +6,8 @@
 
 #include <vector>
 
+namespace socket_base {
+
 class SocketMapActions {
 private:
   std::vector<SocketMapAction> _socket_map_action_vector_;
@@ -28,5 +30,7 @@ public:
     }
   }
 };
+
+} // namespace socket_base
 
 #endif /* SRCS_SOCKET_SOCKETMAPACTIONS_HPP */

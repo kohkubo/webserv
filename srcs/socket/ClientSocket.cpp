@@ -5,6 +5,8 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 
+namespace socket_base {
+
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
     , _config_group_(config_group)
@@ -103,17 +105,4 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
   }
 }
 
-bool ClientSocket::append_receive_buffer() {
-  char    buf[HTTP_BUFFER_SIZE_] = {};
-  ssize_t rc = recv(_socket_fd_, buf, HTTP_BUFFER_SIZE_, MSG_DONTWAIT);
-  if (rc == -1) {
-    ERROR_LOG("recv error.");
-    return false;
-  }
-  // fin from client
-  if (rc == 0) {
-    return true;
-  }
-  _buffer_.append(buf, rc);
-  return false;
-}
+} // namespace socket_base
