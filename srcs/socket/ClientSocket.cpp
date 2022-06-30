@@ -70,6 +70,7 @@ void ClientSocket::_handle_send_event() {
 }
 
 void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
+  (void)socket_map_actions;
   try {
     for (;;) {
       Request::RequestState request_state =
