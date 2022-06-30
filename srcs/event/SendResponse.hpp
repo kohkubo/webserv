@@ -8,7 +8,7 @@
 
 typedef int connFd;
 
-class Response {
+class SendResponse {
 public:
   enum FdState {
     SENDING,  // おくってないか、送信中
@@ -30,12 +30,12 @@ private:
   }
 
 public:
-  Response(std::string response_message, bool is_close)
+  SendResponse(std::string response_message, bool is_close)
       : _state_(SENDING)
       , _response_(response_message)
       , _is_last_response_(is_close)
       , _send_count_(0) {}
-  ~Response() {}
+  ~SendResponse() {}
 
   bool    is_sending() const { return _state_ == SENDING; }
   FdState send(connFd conn_fd) {
