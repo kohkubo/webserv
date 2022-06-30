@@ -10,22 +10,24 @@
 #include "utils/file_io_utils.hpp"
 
 // TODO: リンクやその他のファイルシステムの時どうするか
-static HttpStatusCode check_filepath_status(const RequestInfo &request_info,
-                                            const std::string &target_path) {
-  if (has_suffix(target_path, "/")) {
-    if (is_dir_exists(target_path)) {
-      if (!request_info.location_->autoindex_) {
-        return HttpStatusCode::S_403_FORBIDDEN;
-      }
+static HttpStatusCode check_dirpath_status(const RequestInfo &request_info,
+                                           const std::string &target_path) {
+  if (is_dir_exists(target_path)) {
+    if (request_info.location_->autoindex_) {
       return HttpStatusCode::S_200_OK;
     }
-    return HttpStatusCode::S_404_NOT_FOUND;
+    return HttpStatusCode::S_403_FORBIDDEN;
   }
-  if (!is_file_exists(target_path)) {
-    ERROR_LOG("check_filepath_status: file not found");
-    return HttpStatusCode::S_404_NOT_FOUND;
+  return HttpStatusCode::S_404_NOT_FOUND;
+}
+
+// TODO: リンクやその他のファイルシステムの時どうするか
+static HttpStatusCode check_filepath_status(const std::string &target_path) {
+  if (is_file_exists(target_path)) {
+    return HttpStatusCode::S_200_OK;
   }
-  return HttpStatusCode::S_200_OK;
+  ERROR_LOG("check_filepath_status: file not found");
+  return HttpStatusCode::S_404_NOT_FOUND;
 }
 
 // RFC 9110
@@ -48,11 +50,17 @@ static std::string create_default_target_path(const RequestInfo &request_info) {
 HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info) {
   std::string    target_path = create_default_target_path(request_info);
   HttpStatusCode status_code;
-  if (has_suffix(target_path, "/") &&
-      is_file_exists(target_path + request_info.location_->index_)) {
-    target_path += request_info.location_->index_;
+  if (has_suffix(target_path, "/")) {
+    std::string path_add_index = target_path + request_info.location_->index_;
+    if ((status_code = check_filepath_status(path_add_index)) ==
+        HttpStatusCode::S_200_OK) {
+      target_path = path_add_index;
+    } else {
+      status_code = check_dirpath_status(request_info, target_path);
+    }
+  } else {
+    status_code = check_filepath_status(target_path);
   }
-  status_code = check_filepath_status(request_info, target_path);
   if (status_code.is_error_status_code()) {
     return status_code;
   }
