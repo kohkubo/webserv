@@ -13,13 +13,14 @@ namespace response_generator {
 class ResponseGenerator {
 public:
   struct Body {
-    enum Action { READ, WRITE, USE_CONTENT };
+    enum Action { NONE, READ, WRITE, USE_CONTENT };
     Action      action_;
     fileFd      fd_;
     std::string content_;
 
     Body()
-        : fd_(-1) {}
+        : action_(NONE)
+        , fd_(-1) {}
     bool has_fd() const { return fd_ != -1; }
   };
 
