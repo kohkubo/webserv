@@ -42,19 +42,6 @@ TEST(util_test, test_to_string) {
   EXPECT_EQ(to_string(SIZE_MAX + 1), "0");
 }
 
-TEST(util_test, is_minus_depth_test) {
-  EXPECT_TRUE(is_minus_depth("../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("/../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("hoge/../../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("/hoge/../../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("hoge/../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("/hoge/../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("hoge/../hoge/../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
-}
-
 TEST(util_test, test_hexstr_to_size) {
   EXPECT_EQ(hexstr_to_size("0").object_, (std::size_t)0);
   EXPECT_EQ(hexstr_to_size("1").object_, (std::size_t)1);
