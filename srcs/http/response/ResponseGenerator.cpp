@@ -40,7 +40,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 Response ResponseGenerator::generate_response() {
-  if (has_fd() && content_.action_ == Content::WRITE) {
+  if (has_fd() && content_.content_state_ == Content::WRITE) {
     if (write(content_.fd_, content_.str_.c_str(), content_.str_.size()) ==
         -1) {
       _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
@@ -48,7 +48,7 @@ Response ResponseGenerator::generate_response() {
     content_.fd_ =
         -1; // writeが成功してもfd=-1にして_create_status_code_body()を使うようにする
   }
-  if (content_.action_ == Content::CREATED) {
+  if (content_.content_state_ == Content::CREATED) {
     // bodyのcontent自体をレスポンスとして使いたい場合
     return Response(create_response_message(content_.str_),
                     _is_connection_close_);

@@ -12,10 +12,10 @@ namespace response_generator {
 class ResponseGenerator {
 public:
   struct Content {
-    enum Action { READ, WRITE, CREATED };
-    Action      action_;
-    fileFd      fd_;
-    std::string str_;
+    enum ContentState { READ, WRITE, CREATED };
+    ContentState content_state_;
+    fileFd       fd_;
+    std::string  str_;
 
     Content()
         : fd_(-1) {}

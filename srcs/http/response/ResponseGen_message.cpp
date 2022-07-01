@@ -91,8 +91,8 @@ ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
       _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
       return _create_status_code_body(request_info);
     }
-    body.action_ = Content::READ;
-    body.fd_     = result.object_;
+    body.content_state_ = Content::READ;
+    body.fd_            = result.object_;
   }
   return body;
 }
