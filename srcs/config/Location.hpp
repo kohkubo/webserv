@@ -11,8 +11,8 @@ typedef std::map<int, std::string> returnMap;
 
 struct Location {
   Path                     location_path_;
-  std::string              root_;
-  std::string              index_;
+  Path                     root_;
+  Path                     index_;
   bool                     autoindex_;
   bool                     cgi_extension_;
   bool                     upload_file_;

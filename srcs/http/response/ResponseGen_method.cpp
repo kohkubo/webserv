@@ -49,7 +49,7 @@ ResponseGenerator::_method_get_file(const RequestInfo &request_info,
   return HttpStatusCode::S_200_OK;
 }
 
-static std::string create_default_target_path(const RequestInfo &request_info) {
+static Path create_default_target_path(const RequestInfo &request_info) {
   return request_info.location_->root_ +
          request_info.request_line_.absolute_path_;
 }

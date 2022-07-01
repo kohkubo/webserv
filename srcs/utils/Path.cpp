@@ -59,7 +59,22 @@ Result<std::string> Path::get_realpath() const {
   return Ok<std::string>(res);
 }
 
-bool Path::is_minus_depth() { return ::is_minus_depth(_path_); }
+bool Path::is_minus_depth() {
+  tokenVector   tokens = tokenize(_path_, "/", "/");
+  tokenIterator it     = tokens.begin();
+
+  for (long depth = 0; it != tokens.end(); it++) {
+    if (*it == "..") {
+      depth--;
+    } else if (*it != ".") {
+      depth++;
+    }
+    if (depth < 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 bool Path::remove_file() {
   int ret = std::remove(_path_.c_str());
