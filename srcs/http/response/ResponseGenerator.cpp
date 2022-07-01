@@ -48,7 +48,7 @@ Response ResponseGenerator::generate_response() {
     content_action_.fd_ =
         -1; // writeが成功してもfd=-1にして_create_status_code_body()を使うようにする
   }
-  if (content_action_.action_ == ContentAction::USE_CONTENT) {
+  if (content_action_.action_ == ContentAction::CREATED) {
     // bodyのcontent自体をレスポンスとして使いたい場合
     return Response(create_response_message(content_action_.content_),
                     _is_connection_close_);

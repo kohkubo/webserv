@@ -18,7 +18,7 @@ ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
   if (!request_info.location_->autoindex_) {
     return HttpStatusCode::S_403_FORBIDDEN;
   }
-  content_action_.action_  = ContentAction::USE_CONTENT;
+  content_action_.action_  = ContentAction::CREATED;
   content_action_.content_ = create_autoindex_body(request_info, target_path);
   return HttpStatusCode::S_200_OK;
 }
@@ -36,7 +36,7 @@ ResponseGenerator::_method_get_file(const RequestInfo &request_info,
     if (result.is_err_) {
       return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
     }
-    content_action_.action_  = ContentAction::USE_CONTENT;
+    content_action_.action_  = ContentAction::CREATED;
     content_action_.content_ = result.object_;
     return HttpStatusCode::S_200_OK;
   }
