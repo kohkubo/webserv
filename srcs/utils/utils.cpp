@@ -80,14 +80,6 @@ Result<std::size_t> hexstr_to_size(const std::string &str) {
   return Ok<std::size_t>(result);
 }
 
-bool is_dir(const std::string &filepath) {
-  struct stat st = {};
-  if (stat(filepath.c_str(), &st) == 0) {
-    return S_ISDIR(st.st_mode);
-  }
-  return false;
-}
-
 bool is_minus_depth(const std::string &filepath) {
   tokenVector   tokens = tokenize(filepath, "/", "/");
   tokenIterator it     = tokens.begin();
