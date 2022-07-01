@@ -11,17 +11,17 @@ namespace response_generator {
 
 class ResponseGenerator {
 public:
-  struct ContentAction {
+  struct Content {
     enum Action { READ, WRITE, CREATED };
     Action      action_;
     fileFd      fd_;
-    std::string content_;
+    std::string str_;
 
-    ContentAction()
+    Content()
         : fd_(-1) {}
     bool has_fd() const { return fd_ != -1; }
   };
-  ContentAction content_action_;
+  Content content_;
 
 private:
   const RequestInfo _request_info_;
@@ -33,8 +33,8 @@ public:
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response    generate_response();
-  bool        has_fd() const { return content_action_.has_fd(); }
-  int         fd() const { return content_action_.fd_; }
+  bool        has_fd() const { return content_.has_fd(); }
+  int         fd() const { return content_.fd_; }
   std::string create_response_message(const std::string &body);
   std::string create_response_message(HttpStatusCode status_code);
 
@@ -42,7 +42,7 @@ private:
   static Result<std::string>
                  _read_file_to_str_cgi(const RequestInfo &request_info,
                                        const std::string &target_path);
-  ContentAction  _create_status_code_body(const RequestInfo &request_info);
+  Content        _create_status_code_body(const RequestInfo &request_info);
   HttpStatusCode _handle_method(const RequestInfo &request_info);
   HttpStatusCode _method_get(const RequestInfo &request_info);
   HttpStatusCode _method_get_dir(const RequestInfo &request_info,

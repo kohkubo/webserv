@@ -69,10 +69,10 @@ std::string create_default_body_content(const HttpStatusCode &status_code) {
          "</html>";
 }
 
-ResponseGenerator::ContentAction
+ResponseGenerator::Content
 ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
-  ResponseGenerator::ContentAction body;
-  errorPageMap::const_iterator     it =
+  ResponseGenerator::Content   body;
+  errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(_status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
@@ -91,7 +91,7 @@ ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
       _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
       return _create_status_code_body(request_info);
     }
-    body.action_ = ContentAction::READ;
+    body.action_ = Content::READ;
     body.fd_     = result.object_;
   }
   return body;
