@@ -44,11 +44,14 @@ Response ResponseGenerator::generate_response() {
     if (write(_body_.fd_, _body_.content_.c_str(), _body_.content_.size()) ==
         -1) {
       _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-      _body_.fd_    = -1;
-    } else {
-      return Response(create_response_message(_body_.content_),
-                      _is_connection_close_);
     }
+    _body_.fd_ =
+        -1; // writeが成功してもfd=-1にして_create_status_code_body()を使うようにする
+  }
+  if (_body_.action_ == Body::USE_CONTENT) {
+    // bodyのcontent自体をレスポンスとして使いたい場合
+    return Response(create_response_message(_body_.content_),
+                    _is_connection_close_);
   }
   if (has_fd()) {
     return Response("", _is_connection_close_, Response::WAITING);
