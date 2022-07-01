@@ -69,32 +69,32 @@ std::string create_default_body_content(const HttpStatusCode &status_code) {
          "</html>";
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
-  ResponseGenerator::Content   body;
+ResponseGenerator::Content ResponseGenerator::_create_status_code_content(
+    const RequestInfo &request_info) {
+  ResponseGenerator::Content   content;
   errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(_status_code_);
   if (it != request_info.config_.error_pages_.end()) {
     std::string file_path = request_info.location_->root_ + it->second;
     if (!is_file_exists(file_path)) {
       if (_status_code_ == HttpStatusCode::S_404_NOT_FOUND) {
-        return body;
+        return content;
       }
       _status_code_ = HttpStatusCode::S_404_NOT_FOUND;
-      return _create_status_code_body(request_info);
+      return _create_status_code_content(request_info);
     }
     Result<int> result = open_read_file(file_path);
     if (result.is_err_) {
       if (_status_code_ == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
-        return body;
+        return content;
       }
       _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-      return _create_status_code_body(request_info);
+      return _create_status_code_content(request_info);
     }
-    body.content_state_ = Content::READ;
-    body.fd_            = result.object_;
+    content.content_state_ = Content::READ;
+    content.fd_            = result.object_;
   }
-  return body;
+  return content;
 }
 
 static std::string start_line(const HttpStatusCode &status_code) {
@@ -107,9 +107,9 @@ static std::string location_header(const std::string &path) {
   return "Location: " + path + CRLF;
 }
 
-static std::string entity_header_and_body(const std::string &body) {
-  return "Content-Length: " + to_string(body.size()) + CRLF +
-         "Content-Type: text/html" + CRLF + CRLF + body;
+static std::string entity_header_and_body(const std::string &content) {
+  return "Content-Length: " + to_string(content.size()) + CRLF +
+         "Content-Type: text/html" + CRLF + CRLF + content;
 }
 
 static std::string create_response_header(const RequestInfo &request_info,
@@ -135,10 +135,10 @@ static std::string create_response_header(const RequestInfo &request_info,
 }
 
 std::string
-ResponseGenerator::create_response_message(const std::string &body) {
+ResponseGenerator::create_response_message(const std::string &content) {
   std::string response = create_response_header(
       _request_info_, _is_connection_close_, _status_code_);
-  response += entity_header_and_body(body);
+  response += entity_header_and_body(content);
   return response;
 };
 

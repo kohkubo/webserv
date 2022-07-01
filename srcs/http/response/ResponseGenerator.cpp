@@ -57,13 +57,13 @@ Response ResponseGenerator::generate_response() {
     return Response("", _is_connection_close_, Response::READING);
   }
   if (_status_code_.has_default_content()) {
-    content_ = _create_status_code_body(_request_info_); // status_code or fd
+    content_ = _create_status_code_content(_request_info_); // status_code or fd
     if (has_fd()) {
       return Response("", _is_connection_close_, Response::READING);
     }
   }
-  std::string body = create_default_body_content(_status_code_);
-  return Response(create_response_message(body), _is_connection_close_);
+  std::string content = create_default_body_content(_status_code_);
+  return Response(create_response_message(content), _is_connection_close_);
 }
 
 } // namespace response_generator
