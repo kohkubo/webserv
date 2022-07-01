@@ -8,7 +8,6 @@
 #include <string>
 
 #include "http/response/CgiEnviron.hpp"
-#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 namespace response_generator {
