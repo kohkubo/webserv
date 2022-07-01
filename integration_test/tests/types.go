@@ -26,19 +26,21 @@ func (c testCatergory) runTests() {
 		webserv.ExitWithKill(fmt.Errorf("emtpy config"))
 	}
 	fmt.Println()
+	fmt.Println("============================================================")
 	fmt.Println("Category:", c.categoryName)
 	fmt.Println("Config  :", c.config)
+	fmt.Println("============================================================")
 	if err := webserv.Restart(c.config); err != nil {
 		webserv.ExitWithKill(fmt.Errorf("could not start webserv: %v\n", err))
 		return
 	}
 	for _, t := range c.testCases {
-		fmt.Println("[ RUN ] " + t.caseName)
+		fmt.Println("[ RUN      ] ------->" + t.caseName + "<-------")
 		switch ok := t.test(); {
 		case ok:
-			colorprint.Stdout("[ OK  ] " + t.caseName)
+			colorprint.Stdout("[ OK       ] " + t.caseName)
 		default:
-			colorprint.Stderr("[ KO  ] " + t.caseName)
+			colorprint.Stderr("[ KO       ] " + t.caseName)
 			countTestFail++
 		}
 	}
