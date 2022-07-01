@@ -9,7 +9,6 @@ typedef int connFd;
 
 connFd         xaccept(listenFd listen_fd);
 int            xpoll(struct pollfd *fds, nfds_t nfds, int timeout);
-DIR           *xopendir(const char *name);
 struct dirent *xreaddir(DIR *dir);
 void           xclosedir(DIR *dir);
 

@@ -4,6 +4,7 @@
 #include "config/Config.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "utils/Path.hpp"
 
 typedef int fileFd;
 
@@ -49,15 +50,15 @@ private:
   HttpStatusCode _handle_method(const RequestInfo &request_info);
   HttpStatusCode _method_get(const RequestInfo &request_info);
   HttpStatusCode _method_get_dir(const RequestInfo &request_info,
-                                 const std::string &target_path);
+                                 const Path        &target_path);
   HttpStatusCode _method_get_file(const RequestInfo &request_info,
-                                  const std::string &target_path);
+                                  const Path        &target_path);
   HttpStatusCode _method_post(const RequestInfo &request_info);
   static HttpStatusCode _method_delete(const RequestInfo &request_info);
 };
 
 std::string create_autoindex_body(const RequestInfo &request_info,
-                                  const std::string &target_path);
+                                  const Path        &target_path);
 std::string create_default_body_content(const HttpStatusCode &status_code);
 
 } // namespace response_generator
