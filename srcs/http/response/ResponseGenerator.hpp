@@ -4,6 +4,7 @@
 #include "config/Config.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "utils/Path.hpp"
 
 typedef int fileFd;
 
@@ -12,13 +13,14 @@ namespace response_generator {
 class ResponseGenerator {
 public:
   struct Body {
-    enum Action { READ, WRITE, USE_CONTENT };
+    enum Action { NONE, READ, WRITE, USE_CONTENT };
     Action      action_;
     fileFd      fd_;
     std::string content_;
 
     Body()
-        : fd_(-1) {}
+        : action_(NONE)
+        , fd_(-1) {}
     bool has_fd() const { return fd_ != -1; }
   };
 
@@ -41,20 +43,20 @@ public:
 private:
   static Result<std::string>
                  _read_file_to_str_cgi(const RequestInfo &request_info,
-                                       const std::string &target_path);
+                                       const Path        &target_path);
   Body           _create_status_code_body(const RequestInfo &request_info);
   HttpStatusCode _handle_method(const RequestInfo &request_info);
   HttpStatusCode _method_get(const RequestInfo &request_info);
   HttpStatusCode _method_get_dir(const RequestInfo &request_info,
-                                 const std::string &target_path);
+                                 const Path        &target_path);
   HttpStatusCode _method_get_file(const RequestInfo &request_info,
-                                  const std::string &target_path);
+                                  const Path        &target_path);
   HttpStatusCode _method_post(const RequestInfo &request_info);
   static HttpStatusCode _method_delete(const RequestInfo &request_info);
 };
 
 std::string create_autoindex_body(const RequestInfo &request_info,
-                                  const std::string &target_path);
+                                  const Path        &target_path);
 std::string create_default_body_content(const HttpStatusCode &status_code);
 
 } // namespace response_generator

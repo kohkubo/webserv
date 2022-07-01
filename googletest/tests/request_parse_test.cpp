@@ -21,7 +21,7 @@ TEST(request_parse_test, normal) {
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "GET");
-  EXPECT_EQ(request_info.request_line_.absolute_path_, "/");
+  EXPECT_EQ(request_info.request_line_.absolute_path_.str(), "/");
   EXPECT_EQ(request_info.request_line_.http_version_, "HTTP/1.1");
   EXPECT_EQ(request_info.host_, "127.0.0.1");
   EXPECT_EQ(request_info.connection_close_, true);
@@ -42,7 +42,8 @@ TEST(request_parse_test, normal_delete) {
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "DELETE");
-  EXPECT_EQ(request_info.request_line_.absolute_path_, "/delete_target.tmp");
+  EXPECT_EQ(request_info.request_line_.absolute_path_.str(),
+            "/delete_target.tmp");
   EXPECT_EQ(request_info.request_line_.http_version_, "HTTP/1.1");
   EXPECT_EQ(request_info.host_, "127.0.0.1");
   EXPECT_EQ(request_info.connection_close_, true);
@@ -66,7 +67,7 @@ TEST(request_parse_test, normal_post) {
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "POST");
-  EXPECT_EQ(request_info.request_line_.absolute_path_, "/target");
+  EXPECT_EQ(request_info.request_line_.absolute_path_.str(), "/target");
   EXPECT_EQ(request_info.request_line_.http_version_, "HTTP/1.1");
   EXPECT_EQ(request_info.host_, "127.0.0.1");
   EXPECT_EQ(request_info.content_type_, "application/x-www-form-urlencoded");
@@ -89,6 +90,6 @@ TEST(request_parse_test, query_string) {
   const RequestInfo &request_info = request.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "GET");
-  EXPECT_EQ(request_info.request_line_.absolute_path_, "/hoge.cgi");
+  EXPECT_EQ(request_info.request_line_.absolute_path_.str(), "/hoge.cgi");
   EXPECT_EQ(request_info.request_line_.query_, "name=taro&age=15");
 }
