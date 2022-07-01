@@ -19,7 +19,6 @@ public:
 
     Content()
         : fd_(-1) {}
-    bool has_fd() const { return fd_ != -1; }
   };
   Content content_;
 
@@ -33,8 +32,7 @@ public:
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response    generate_response();
-  bool        has_fd() const { return content_.has_fd(); }
-  int         fd() const { return content_.fd_; }
+  bool        has_fd() const { return content_.fd_ != -1; }
   std::string create_response_message(const std::string &body);
   std::string create_response_message(HttpStatusCode status_code);
 

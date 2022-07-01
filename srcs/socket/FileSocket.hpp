@@ -23,7 +23,7 @@ private:
 
 public:
   FileSocket(Response &response, ResponseGenerator response_generator)
-      : SocketBase(response_generator.fd())
+      : SocketBase(response_generator.content_.fd_)
       , _timeout_(TIMEOUT_SECONDS_)
       , _response_(response)
       , _response_generator_(response_generator){};
