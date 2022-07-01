@@ -9,12 +9,17 @@
 #include <unistd.h>
 
 #include <cstdio>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "tokenize.hpp"
 #include "utils/utils.hpp"
 
 Path::Path(const std::string &path)
+    : _path_(path) {}
+
+Path::Path(const char *path)
     : _path_(path) {}
 
 bool Path::is_file_exists() const {
@@ -91,6 +96,17 @@ Result<DIR *> Path::open_dir() const {
     return Error<DIR *>();
   }
   return Ok<DIR *>(dir);
+}
+
+Result<std::string> Path::read_file_to_str() const {
+  std::ifstream file(_path_.c_str());
+  if (file.fail()) {
+    return Error<std::string>();
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  file.close();
+  return Ok<std::string>(buffer.str());
 }
 
 Path Path::operator+(const Path &rhs) const { return Path(str() + rhs.str()); }

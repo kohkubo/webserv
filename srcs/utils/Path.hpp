@@ -14,6 +14,7 @@ private:
 
 public:
   Path(const std::string &path);
+  Path(char const *path);
   bool                is_file_exists() const;
   bool                is_dir_exists() const;
   bool                is_accessible(int mode);
@@ -24,6 +25,7 @@ public:
   Result<int>         open_read_file() const;
   Result<int>         open_write_file() const;
   Result<DIR *>       open_dir() const;
+  Result<std::string> read_file_to_str() const;
   Path                operator+(const Path &rhs) const;
   // tmp
   const std::string &str() const;
