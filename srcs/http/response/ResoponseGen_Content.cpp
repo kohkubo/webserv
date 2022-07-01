@@ -1,7 +1,5 @@
 #include "http/response/ResponseGenerator.hpp"
 
-#include "utils/file_io_utils.hpp"
-
 namespace response_generator {
 
 ResponseGenerator::Body
@@ -10,15 +8,15 @@ ResponseGenerator::_create_status_code_body(const RequestInfo &request_info) {
   errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(_status_code_);
   if (it != request_info.config_.error_pages_.end()) {
-    std::string file_path = request_info.location_->root_ + it->second;
-    if (!is_file_exists(file_path)) {
+    Path file_path = request_info.location_->root_ + it->second;
+    if (!file_path.is_file_exists()) {
       if (_status_code_ == HttpStatusCode::S_404_NOT_FOUND) {
         return body;
       }
       _status_code_ = HttpStatusCode::S_404_NOT_FOUND;
       return _create_status_code_body(request_info);
     }
-    Result<int> result = open_read_file(file_path);
+    Result<int> result = file_path.open_read_file();
     if (result.is_err_) {
       if (_status_code_ == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
         return body;
