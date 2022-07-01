@@ -5,12 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "utils/Path.hpp"
+
 typedef std::map<int, std::string> returnMap;
 
 struct Location {
-  std::string              location_path_;
-  std::string              root_;
-  std::string              index_;
+  Path                     location_path_;
+  Path                     root_;
+  Path                     index_;
   bool                     autoindex_;
   bool                     cgi_extension_;
   bool                     upload_file_;

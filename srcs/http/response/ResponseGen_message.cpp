@@ -1,6 +1,7 @@
 #include "http/response/ResponseGenerator.hpp"
 
 #include "http/const/const_delimiter.hpp"
+#include "utils/Path.hpp"
 
 namespace response_generator {
 
@@ -54,7 +55,8 @@ static std::string create_response_header(const RequestInfo &request_info,
     response += location_header(it->second);
   }
   if (HttpStatusCode::S_201_CREATED == status_code) {
-    response += location_header(request_info.request_line_.absolute_path_);
+    response +=
+        location_header(request_info.request_line_.absolute_path_.str());
   }
   return response;
 }

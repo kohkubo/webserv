@@ -16,7 +16,7 @@ public:
   Locations() {}
   ~Locations(){};
   void            add_or_exit(const Location &location);
-  const Location *select_location(const std::string &request_target) const;
+  const Location *select_location(const Path &request_target) const;
   bool            empty() const { return _location_vector_.empty(); }
 };
 

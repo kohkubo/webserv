@@ -1,6 +1,6 @@
 #include "http/response/ResponseGenerator.hpp"
 
-#include "utils/file_io_utils.hpp"
+#include "utils/Path.hpp"
 
 namespace response_generator {
 
@@ -11,8 +11,8 @@ create_status_code_content(const RequestInfo    &request_info,
   errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(status_code);
   if (it != request_info.config_.error_pages_.end()) {
-    std::string file_path = request_info.location_->root_ + it->second;
-    if (!is_file_exists(file_path)) {
+    Path file_path = request_info.location_->root_ + it->second;
+    if (!file_path.is_file_exists()) {
       if (status_code == HttpStatusCode::S_404_NOT_FOUND) {
         content.str_   = create_default_body_content(status_code);
         content.state_ = ResponseGenerator::Content::CREATED;
@@ -21,7 +21,7 @@ create_status_code_content(const RequestInfo    &request_info,
       return create_status_code_content(request_info,
                                         HttpStatusCode::S_404_NOT_FOUND);
     }
-    Result<int> result = open_read_file(file_path);
+    Result<int> result = file_path.open_read_file();
     if (result.is_err_) {
       if (status_code == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
         content.str_   = create_default_body_content(status_code);

@@ -5,13 +5,13 @@
 #include <algorithm>
 
 #include "http/request/RequestInfo.hpp"
-#include "utils/file_io_utils.hpp"
+#include "utils/Path.hpp"
 
 namespace response_generator {
 
 ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
-                                          const std::string &target_path) {
-  if (!is_dir_exists(target_path)) {
+                                          const Path        &target_path) {
+  if (!target_path.is_dir_exists()) {
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
   }
@@ -26,13 +26,13 @@ ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
 }
 
 ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
-                                           const std::string &target_path) {
-  if (!is_file_exists(target_path)) {
+                                           const Path        &target_path) {
+  if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
   }
-  if (has_suffix(target_path, ".py")) {
+  if (target_path.has_suffix(".py")) {
     Result<std::string> result =
         read_file_to_str_cgi(request_info, target_path);
     if (result.is_err_) {
@@ -45,7 +45,7 @@ ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
     content.str_   = result.object_;
     return content;
   }
-  Result<int> result = open_read_file(target_path);
+  Result<int> result = target_path.open_read_file();
   if (result.is_err_) {
     ERROR_LOG("method_get_file: open file failed");
     return create_status_code_content(
@@ -57,16 +57,16 @@ ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
   return content;
 }
 
-static std::string create_default_target_path(const RequestInfo &request_info) {
+static Path create_default_target_path(const RequestInfo &request_info) {
   return request_info.location_->root_ +
          request_info.request_line_.absolute_path_;
 }
 
 ResponseGenerator::Content method_get(const RequestInfo &request_info) {
-  std::string target_path = create_default_target_path(request_info);
-  if (has_suffix(target_path, "/")) {
-    std::string path_add_index = target_path + request_info.location_->index_;
-    if (!is_file_exists(path_add_index)) {
+  Path target_path = create_default_target_path(request_info);
+  if (target_path.has_suffix("/")) {
+    Path path_add_index = target_path + request_info.location_->index_;
+    if (!path_add_index.is_file_exists()) {
       return method_get_dir(request_info, target_path);
     }
     target_path = path_add_index;
@@ -75,7 +75,7 @@ ResponseGenerator::Content method_get(const RequestInfo &request_info) {
 }
 
 ResponseGenerator::Content method_post(const RequestInfo &request_info) {
-  std::string target_path = create_default_target_path(request_info);
+  Path target_path = create_default_target_path(request_info);
   /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -91,11 +91,11 @@ POSTリクエストを正常に処理した結果、
 オリジンサーバーは、作成されたプライマリリソースの識別子を提供するLocationヘッダーフィールドを含む201（作成済み）応答を送信する必要があります（セクション10.2）。
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
-  if (!request_info.location_->upload_file_ || has_suffix(target_path, "/")) {
+  if (!request_info.location_->upload_file_ || target_path.has_suffix("/")) {
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_403_FORBIDDEN);
   }
-  Result<int> result = open_write_file(target_path);
+  Result<int> result = target_path.open_write_file();
   if (result.is_err_) {
     ERROR_LOG("method_post: open file failed");
     return create_status_code_content(
@@ -111,14 +111,14 @@ POSTリクエストを正常に処理した結果、
 
 ResponseGenerator::Content method_delete(const RequestInfo &request_info) {
   HttpStatusCode status_code;
-  std::string    target_path = create_default_target_path(request_info);
-  if (!is_file_exists(target_path)) {
+  Path           target_path = create_default_target_path(request_info);
+  if (!target_path.is_file_exists()) {
     ERROR_LOG("target file is not found");
     status_code = HttpStatusCode::S_404_NOT_FOUND;
-  } else if (!is_accessible(target_path, W_OK)) {
+  } else if (!target_path.is_accessible(W_OK)) {
     ERROR_LOG("process can not delete target file");
     status_code = HttpStatusCode::S_403_FORBIDDEN;
-  } else if (!remove_file(target_path)) {
+  } else if (!target_path.remove_file()) {
     ERROR_LOG("unknown error while deleting file");
     status_code = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
   } else {

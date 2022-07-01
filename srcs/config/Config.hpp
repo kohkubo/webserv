@@ -67,6 +67,9 @@ private:
                                                std::string  &value,
                                                tokenIterator pos,
                                                tokenIterator end);
+  static tokenIterator _parse_path_directive(std::string key, Path &value,
+                                             tokenIterator pos,
+                                             tokenIterator end);
   static tokenIterator _parse_size_directive(std::string key, size_t &value,
                                              tokenIterator pos,
                                              tokenIterator end);

@@ -4,6 +4,7 @@
 #include "config/Config.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "utils/Path.hpp"
 
 typedef int fileFd;
 
@@ -43,9 +44,9 @@ public:
 };
 
 Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,
-                                         const std::string &target_path);
+                                         const Path        &target_path);
 std::string         create_autoindex_body(const RequestInfo &request_info,
-                                          const std::string &target_path);
+                                          const Path        &target_path);
 std::string create_default_body_content(const HttpStatusCode &status_code);
 ResponseGenerator::Content
 create_status_code_content(const RequestInfo    &request_info,
@@ -55,9 +56,9 @@ ResponseGenerator::Content method_post(const RequestInfo &request_info);
 ResponseGenerator::Content method_get(const RequestInfo &request_info);
 ResponseGenerator::Content method_delete(const RequestInfo &request_info);
 ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
-                                           const std::string &target_path);
+                                           const Path        &target_path);
 ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
-                                          const std::string &target_path);
+                                          const Path        &target_path);
 } // namespace response_generator
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
