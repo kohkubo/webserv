@@ -13,7 +13,7 @@ namespace ns_socket {
 
 typedef response_generator::ResponseGenerator ResponseGenerator;
 
-class FileSocket : public SocketBase {
+class FileReadSocket : public SocketBase {
 private:
   Timeout                  _timeout_;
   Response                &_response_;
@@ -22,12 +22,12 @@ private:
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
 public:
-  FileSocket(Response &response, ResponseGenerator response_generator)
+  FileReadSocket(Response &response, ResponseGenerator response_generator)
       : SocketBase(response_generator.content_.fd_)
       , _timeout_(TIMEOUT_SECONDS_)
       , _response_(response)
       , _response_generator_(response_generator){};
-  ~FileSocket(){};
+  ~FileReadSocket(){};
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out() { return _timeout_.is_timed_out(); }

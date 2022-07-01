@@ -5,7 +5,7 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
-#include "socket/FileSocket.hpp"
+#include "socket/FileReadSocket.hpp"
 
 namespace ns_socket {
 
@@ -88,11 +88,11 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       //     _request_.request_info(), HttpStatusCode::S_200_OK);
       // if (body.has_fd()) {
       //   SocketBase *file_socket =
-      //       new FileSocket(body.fd_, _response_queue_.back());
+      //       new FileReadSocket(body.fd_, _response_queue_.back());
       // }
       // if (result.has_read_file_) {
       //  SocketBase *file_socket =
-      //      new FileSocket(result.object_, _response_queue_.back());
+      //      new FileReadSocket(result.object_, _response_queue_.back());
       //  socket_map_actions.add_socket_map_action(SocketMapAction(
       //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       //} else {
@@ -101,7 +101,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       if (response_generator.content_state() ==
           ResponseGenerator::Content::READ) {
         SocketBase *file_socket =
-            new FileSocket(_response_queue_.back(), response_generator);
+            new FileReadSocket(_response_queue_.back(), response_generator);
         socket_map_actions.add_socket_map_action(SocketMapAction(
             SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       }
