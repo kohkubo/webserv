@@ -4,7 +4,6 @@
 
 #include "config/ConfGroupGen.hpp"
 #include "event/Server.hpp"
-#include "utils/Path.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 
