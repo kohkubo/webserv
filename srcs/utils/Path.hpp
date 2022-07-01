@@ -15,6 +15,7 @@ public:
   bool                is_dir_exists() const;
   bool                is_accessible(int mode);
   bool                is_minus_depth();
+  bool                has_suffix(const std::string &suffix) const;
   Result<std::string> get_realpath();
   Path                operator+(const Path &rhs) const;
   // tmp

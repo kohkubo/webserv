@@ -33,6 +33,10 @@ bool Path::is_dir_exists() const {
   return ((file_info.st_mode & S_IFMT) == S_IFDIR);
 }
 
+bool Path::has_suffix(const std::string &suffix) const {
+  return ::has_suffix(_path_, suffix);
+}
+
 bool Path::is_accessible(int mode) { return access(_path_.c_str(), mode) == 0; }
 
 Result<std::string> Path::get_realpath() {

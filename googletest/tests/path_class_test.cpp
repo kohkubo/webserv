@@ -15,11 +15,11 @@
 TEST(path_class_test, constructor) {
   {
     Path path("hogehoge/hoge");
-    EXPECT_EQ(path.path(), "hogehoge/hoge");
+    EXPECT_EQ(path.str(), "hogehoge/hoge");
   }
   {
     Path path("hogehoge/../hoge");
-    EXPECT_EQ(path.path(), "hogehoge/../hoge");
+    EXPECT_EQ(path.str(), "hogehoge/../hoge");
   }
 }
 
@@ -67,4 +67,11 @@ TEST(path_class_test, is_accessible) {
   EXPECT_FALSE(Path(TEST_FILE).is_accessible(W_OK));
   EXPECT_TRUE(Path(TEST_FILE).is_accessible(R_OK));
   system("chmod 644 html/test.txt");
+}
+
+TEST(path_class_test, test_has_suffix) {
+  EXPECT_TRUE(Path("hoge/test/").has_suffix("/"));
+  EXPECT_FALSE(Path("hoge/test").has_suffix("/"));
+  EXPECT_TRUE(Path("hoge/test.py").has_suffix(".py"));
+  EXPECT_FALSE(Path("hoge/test").has_suffix(".py"));
 }
