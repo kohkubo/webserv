@@ -33,9 +33,9 @@ static std::string location_header(const std::string &path) {
   return "Location: " + path + CRLF;
 }
 
-static std::string entity_header_and_body(const std::string &body) {
-  return "Content-Length: " + to_string(body.size()) + CRLF +
-         "Content-Type: text/html" + CRLF + CRLF + body;
+static std::string entity_header_and_body(const std::string &content) {
+  return "Content-Length: " + to_string(content.size()) + CRLF +
+         "Content-Type: text/html" + CRLF + CRLF + content;
 }
 
 static std::string create_response_header(const RequestInfo &request_info,
@@ -62,10 +62,10 @@ static std::string create_response_header(const RequestInfo &request_info,
 }
 
 std::string
-ResponseGenerator::create_response_message(const std::string &body) {
+ResponseGenerator::create_response_message(const std::string &content) {
   std::string response = create_response_header(
       _request_info_, _is_connection_close_, _status_code_);
-  response += entity_header_and_body(body);
+  response += entity_header_and_body(content);
   return response;
 };
 

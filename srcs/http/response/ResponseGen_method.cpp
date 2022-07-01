@@ -18,8 +18,8 @@ ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
   if (!request_info.location_->autoindex_) {
     return HttpStatusCode::S_403_FORBIDDEN;
   }
-  _body_.action_  = Body::USE_CONTENT;
-  _body_.content_ = create_autoindex_body(request_info, target_path);
+  content_.action_ = Content::CREATED;
+  content_.str_    = create_autoindex_body(request_info, target_path);
   return HttpStatusCode::S_200_OK;
 }
 
@@ -36,16 +36,16 @@ ResponseGenerator::_method_get_file(const RequestInfo &request_info,
     if (result.is_err_) {
       return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
     }
-    _body_.action_  = Body::USE_CONTENT;
-    _body_.content_ = result.object_;
+    content_.action_ = Content::CREATED;
+    content_.str_    = result.object_;
     return HttpStatusCode::S_200_OK;
   }
   Result<int> result = target_path.open_read_file();
   if (result.is_err_) {
     return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
   }
-  _body_.action_ = Body::READ;
-  _body_.fd_     = result.object_;
+  content_.action_ = Content::READ;
+  content_.fd_     = result.object_;
   return HttpStatusCode::S_200_OK;
 }
 
@@ -92,9 +92,9 @@ POSTリクエストを正常に処理した結果、
   if (result.is_err_) {
     return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
   }
-  _body_.action_  = Body::WRITE;
-  _body_.fd_      = result.object_;
-  _body_.content_ = request_info.body_;
+  content_.action_ = Content::WRITE;
+  content_.fd_     = result.object_;
+  content_.str_    = request_info.body_;
 
   return HttpStatusCode::S_201_CREATED;
 }

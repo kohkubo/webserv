@@ -16,7 +16,8 @@ public:
     SENDING,  // おくってないか、送信中
     CLOSING,  // クライアントからのclose待ち
     COMPLETE, // 送信終了
-    WAITING,  // CGI,FILE待ち
+    READING,  // CGI,FILE待ち
+    WRITING,  // ファイル書き込み
   };
 
 private:

@@ -1,4 +1,4 @@
-#include "socket/FileSocket.hpp"
+#include "socket/FileReadSocket.hpp"
 
 #include <poll.h>
 #include <sys/types.h>
@@ -12,12 +12,12 @@ namespace ns_socket {
 
 typedef response_generator::ResponseGenerator ResponseGenerator;
 
-struct pollfd FileSocket::pollfd() {
+struct pollfd FileReadSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
   return pfd;
 }
 
-SocketMapActions FileSocket::handle_event(short int revents) {
+SocketMapActions FileReadSocket::handle_event(short int revents) {
   // LOG("got POLLIN  event of fd " << _socket_fd_);
   (void)revents;
   SocketMapActions socket_map_actions;
@@ -26,6 +26,7 @@ SocketMapActions FileSocket::handle_event(short int revents) {
   ssize_t read_size = read(_socket_fd_, buf, 1024);
   if (read_size == -1) {
     LOG("read error");
+    // TODO: 500をセットしてFileReadSocketを作成する
     socket_map_actions.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
     return socket_map_actions;

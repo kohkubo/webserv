@@ -5,7 +5,7 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
-#include "socket/FileSocket.hpp"
+#include "socket/FileReadSocket.hpp"
 
 namespace ns_socket {
 
@@ -70,6 +70,8 @@ void ClientSocket::_handle_send_event() {
   }
 }
 
+typedef response_generator::ResponseGenerator ResponseGenerator;
+
 void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   (void)socket_map_actions;
   try {
@@ -81,33 +83,33 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       }
       // fileを読むか、handle_methodやるところまで -> http status code
       // 結果Result<openされたfd>が返ってくる。
-      // ResponseGenerator::Body body = ResponseGenerator::create_fd_or_body(
+      // ResponseGenerator::Content body =
+      // ResponseGenerator::create_fd_or_body(
       //     _request_.request_info(), HttpStatusCode::S_200_OK);
       // if (body.has_fd()) {
       //   SocketBase *file_socket =
-      //       new FileSocket(body.fd_, _response_queue_.back());
+      //       new FileReadSocket(body.fd_, _response_queue_.back());
       // }
       // if (result.has_read_file_) {
       //  SocketBase *file_socket =
-      //      new FileSocket(result.object_, _response_queue_.back());
+      //      new FileReadSocket(result.object_, _response_queue_.back());
       //  socket_map_actions.add_socket_map_action(SocketMapAction(
       //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       //} else {
-      response_generator::ResponseGenerator response_generator(
-          _request_.request_info());
+      ResponseGenerator response_generator(_request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      if (response_generator.has_fd()) {
-        // LOG("fd: " << response_generator.fd());
+      if (response_generator.content_state() ==
+          ResponseGenerator::Content::READ) {
         SocketBase *file_socket =
-            new FileSocket(_response_queue_.back(), response_generator);
+            new FileReadSocket(_response_queue_.back(), response_generator);
         socket_map_actions.add_socket_map_action(SocketMapAction(
             SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       }
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    response_generator::ResponseGenerator response_generator(
-        _request_.request_info(), e.status());
+    // TODO: Fdを開く部分が書けていない
+    ResponseGenerator response_generator(_request_.request_info(), e.status());
     _response_queue_.push_back(response_generator.generate_response());
     _request_ = Request();
   }
