@@ -24,8 +24,8 @@ ResponseGenerator::Content ResponseGenerator::_create_status_code_content(
       _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
       return _create_status_code_content(request_info);
     }
-    content.state_ = Content::READ;
-    content.fd_    = result.object_;
+    content.action_ = Content::READ;
+    content.fd_     = result.object_;
   }
   return content;
 }
