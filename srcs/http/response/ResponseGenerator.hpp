@@ -12,7 +12,7 @@ namespace response_generator {
 class ResponseGenerator {
 public:
   struct Body {
-    enum Action { READ, WRITE };
+    enum Action { READ, WRITE, USE_CONTENT };
     Action      action_;
     fileFd      fd_;
     bool        has_content_;
