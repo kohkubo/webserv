@@ -40,40 +40,30 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 Response ResponseGenerator::generate_response() {
-  if (_body_.has_fd() && _body_.action_ == Body::WRITE) {
+  if (has_fd() && _body_.action_ == Body::WRITE) {
     if (write(_body_.fd_, _body_.content_.c_str(), _body_.content_.size()) ==
         -1) {
       _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
     }
-    _body_.has_content_ = false;
+    _body_.fd_ =
+        -1; // writeが成功してもfd=-1にして_create_status_code_body()を使うようにする
   }
-  if (_body_.has_fd() && _body_.action_ == Body::READ) {
-    Result<std::string> result = read_fd(_body_.fd_);
-    if (result.is_err_) {
-      _status_code_ = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
-    } else {
-      _body_.content_     = result.object_;
-      _body_.has_content_ = true;
-    }
+  if (_body_.action_ == Body::USE_CONTENT) {
+    // bodyのcontent自体をレスポンスとして使いたい場合
+    return Response(create_response_message(_body_.content_),
+                    _is_connection_close_);
+  }
+  if (has_fd()) {
+    return Response("", _is_connection_close_, Response::WAITING);
   }
   if (_status_code_.has_default_content()) {
-    _body_ = _create_status_code_body(_request_info_);
-  }
-  if (!_body_.has_content_ && _body_.has_fd()) {
-    Result<std::string> result = read_fd(_body_.fd_);
-    if (!result.is_err_) {
-      _body_.content_     = result.object_;
-      _body_.has_content_ = true;
+    _body_ = _create_status_code_body(_request_info_); // status_code or fd
+    if (has_fd()) {
+      return Response("", _is_connection_close_, Response::WAITING);
     }
   }
-
-  if (!_body_.has_content_) {
-    _body_.content_ = create_default_body_content(_status_code_);
-  }
-  // LOG("status_code: " << _status_code_);
-  std::string response = create_response_message(
-      _request_info_, _is_connection_close_, _status_code_, _body_.content_);
-  return Response(response, _is_connection_close_);
+  std::string body = create_default_body_content(_status_code_);
+  return Response(create_response_message(body), _is_connection_close_);
 }
 
 } // namespace response_generator

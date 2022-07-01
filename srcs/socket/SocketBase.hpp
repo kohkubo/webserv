@@ -7,7 +7,7 @@
 
 #include "utils/utils.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 class SocketMapActions;
 
@@ -30,6 +30,6 @@ public:
   int                      socket_fd() const { return _socket_fd_; }
 };
 
-} // namespace socket_base
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_SOCKETBASE_HPP */

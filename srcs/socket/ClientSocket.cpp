@@ -5,8 +5,9 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
+#include "socket/FileSocket.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
     : SocketBase(client_fd)
@@ -36,19 +37,19 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
     return socket_map_actions;
   }
   if ((revents & POLLIN) != 0) {
-    // LOG("got POLLIN  event of fd " << _socket_fd_);
-    bool is_close = handle_receive_event(socket_map_actions);
+    LOG("got POLLIN  event of fd " << _socket_fd_);
+    bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close)
       return socket_map_actions;
   }
   if ((revents & POLLOUT) != 0) {
-    // LOG("got POLLOUT event of fd " << _socket_fd_);
-    handle_send_event();
+    LOG("got POLLOUT event of fd " << _socket_fd_);
+    _handle_send_event();
   }
   return socket_map_actions;
 }
 
-bool ClientSocket::handle_receive_event(SocketMapActions &socket_map_actions) {
+bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
   if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
@@ -57,11 +58,11 @@ bool ClientSocket::handle_receive_event(SocketMapActions &socket_map_actions) {
     return true;
   }
   _buffer_ += receive_result.str_;
-  parse_buffer(socket_map_actions);
+  _parse_buffer(socket_map_actions);
   return false;
 }
 
-void ClientSocket::handle_send_event() {
+void ClientSocket::_handle_send_event() {
   Response::ResponseState response_state =
       _response_queue_.front().send(_socket_fd_);
   if (response_state == Response::COMPLETE) {
@@ -69,7 +70,7 @@ void ClientSocket::handle_send_event() {
   }
 }
 
-void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
+void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   (void)socket_map_actions;
   try {
     for (;;) {
@@ -95,12 +96,13 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
       response_generator::ResponseGenerator response_generator(
           _request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      // if (response_generator.has_fd()) {
-      //   SocketBase *file_socket =
-      //       new FileSocket(response_generator.fd(), _response_queue_.back());
-      // }
-      // cgi or file or nothing
-      //}
+      if (response_generator.has_fd()) {
+        // LOG("fd: " << response_generator.fd());
+        SocketBase *file_socket =
+            new FileSocket(_response_queue_.back(), response_generator);
+        socket_map_actions.add_socket_map_action(SocketMapAction(
+            SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
+      }
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
@@ -111,4 +113,4 @@ void ClientSocket::parse_buffer(SocketMapActions &socket_map_actions) {
   }
 }
 
-} // namespace socket_base
+} // namespace ns_socket

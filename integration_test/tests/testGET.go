@@ -63,7 +63,7 @@ var testGET = testCatergory{
 			},
 		},
 		{
-			caseName: "GET /no_such_file_404",
+			caseName: "curl localhost:50000/no_such_file_404 -v",
 			test: func() bool {
 				port := "50000"
 				expectStatusCode := 404

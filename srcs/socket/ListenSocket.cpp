@@ -14,7 +14,7 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 ListenSocket::ListenSocket(const ConfigGroup &config_group)
     : config_group_(config_group) {
@@ -78,4 +78,4 @@ SocketMapActions ListenSocket::handle_event(short int revents) {
 
 bool ListenSocket::is_timed_out() { return false; }
 
-} // namespace socket_base
+} // namespace ns_socket

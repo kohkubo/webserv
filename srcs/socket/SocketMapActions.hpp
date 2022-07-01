@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace socket_base {
+namespace ns_socket {
 
 class SocketMapActions {
 private:
@@ -31,6 +31,6 @@ public:
   }
 };
 
-} // namespace socket_base
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_SOCKETMAPACTIONS_HPP */

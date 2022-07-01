@@ -8,7 +8,7 @@
 #include "socket/ListenSocket.hpp"
 #include "socket/SocketMapActions.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 SocketMap::SocketMap(const std::vector<ConfigGroup> &config_groups) {
   std::vector<ConfigGroup>::const_iterator it = config_groups.begin();
@@ -71,4 +71,4 @@ void SocketMap::close_timedout_socket() {
   }
 }
 
-} // namespace socket_base
+} // namespace ns_socket
