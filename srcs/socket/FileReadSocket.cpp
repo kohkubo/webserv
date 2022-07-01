@@ -27,6 +27,7 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
   ssize_t read_size = read(_socket_fd_, buf, 1024);
   if (read_size == -1) {
     LOG("read error");
+    // TODO: 500をセットしてFileReadSocketを作成する
     socket_map_actions.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
     return socket_map_actions;

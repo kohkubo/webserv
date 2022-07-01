@@ -12,7 +12,11 @@ namespace response_generator {
 class ResponseGenerator {
 public:
   struct Content {
-    enum ContentState { READ, WRITE, CREATED };
+    enum ContentState {
+      READ,  // FD読み込み待ち
+      WRITE, // FD書き込み待ち
+      CREATED // contentを作成済み
+    };
     ContentState state_;
     fileFd       fd_;
     std::string  str_;
