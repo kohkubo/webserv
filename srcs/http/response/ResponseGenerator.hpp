@@ -15,12 +15,10 @@ public:
     enum Action { READ, WRITE, USE_CONTENT };
     Action      action_;
     fileFd      fd_;
-    bool        has_content_;
     std::string content_;
 
     Body()
-        : fd_(-1)
-        , has_content_(false) {}
+        : fd_(-1) {}
     bool has_fd() const { return fd_ != -1; }
   };
 
