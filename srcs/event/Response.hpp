@@ -38,7 +38,7 @@ public:
       , _is_last_response_(is_close)
       , _send_count_(0) {
     LOG("state: " << _state_);
-    // LOG(response_message);
+    LOG(response_message);
   }
   ~Response() {}
 
