@@ -62,17 +62,8 @@ static std::string create_response_header(const RequestInfo &request_info,
 std::string
 ResponseGenerator::create_response_message(const std::string &content) {
   std::string response = create_response_header(
-      _request_info_, _is_connection_close_, _status_code_);
+      _request_info_, _is_connection_close_, content_.status_code_);
   response += entity_header_and_body(content);
   return response;
 };
-
-std::string
-ResponseGenerator::create_response_message(HttpStatusCode status_code) {
-  std::string response = create_response_header(
-      _request_info_, _is_connection_close_, _status_code_);
-  response += entity_header_and_body(create_default_body_content(status_code));
-  return response;
-};
-
 } // namespace response_generator

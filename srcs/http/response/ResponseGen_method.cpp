@@ -9,44 +9,54 @@
 
 namespace response_generator {
 
-HttpStatusCode
+ResponseGenerator::Content
 ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
                                    const std::string &target_path) {
   if (!is_dir_exists(target_path)) {
-    return HttpStatusCode::S_404_NOT_FOUND;
+    return create_status_code_content(request_info,
+                                      HttpStatusCode::S_404_NOT_FOUND);
   }
   if (!request_info.location_->autoindex_) {
-    return HttpStatusCode::S_403_FORBIDDEN;
+    return create_status_code_content(request_info,
+                                      HttpStatusCode::S_403_FORBIDDEN);
   }
-  content_.state_ = Content::CREATED;
-  content_.str_   = create_autoindex_body(request_info, target_path);
-  return HttpStatusCode::S_200_OK;
+  ResponseGenerator::Content content;
+  content.state_ = ResponseGenerator::Content::CREATED;
+  content.str_   = create_autoindex_body(request_info, target_path);
+  return content;
 }
 
-HttpStatusCode
+ResponseGenerator::Content
 ResponseGenerator::_method_get_file(const RequestInfo &request_info,
                                     const std::string &target_path) {
   if (!is_file_exists(target_path)) {
     ERROR_LOG("_method_get_file: file not found");
-    return HttpStatusCode::S_404_NOT_FOUND;
+    return create_status_code_content(request_info,
+                                      HttpStatusCode::S_404_NOT_FOUND);
   }
   if (has_suffix(target_path, ".py")) {
     Result<std::string> result =
         _read_file_to_str_cgi(request_info, target_path);
     if (result.is_err_) {
-      return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+      ERROR_LOG("_method_get_file: read file failed");
+      return create_status_code_content(
+          request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     }
-    content_.state_ = Content::CREATED;
-    content_.str_   = result.object_;
-    return HttpStatusCode::S_200_OK;
+    Content content;
+    content.state_ = ResponseGenerator::Content::CREATED;
+    content.str_   = result.object_;
+    return content;
   }
   Result<int> result = open_read_file(target_path);
   if (result.is_err_) {
-    return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+    ERROR_LOG("_method_get_file: open file failed");
+    return create_status_code_content(
+        request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  content_.state_ = Content::READ;
-  content_.fd_    = result.object_;
-  return HttpStatusCode::S_200_OK;
+  Content content;
+  content.state_ = Content::READ;
+  content.fd_    = result.object_;
+  return content;
 }
 
 static std::string create_default_target_path(const RequestInfo &request_info) {
@@ -54,20 +64,20 @@ static std::string create_default_target_path(const RequestInfo &request_info) {
          request_info.request_line_.absolute_path_;
 }
 
-HttpStatusCode ResponseGenerator::_method_get(const RequestInfo &request_info) {
+ResponseGenerator::Content
+ResponseGenerator::_method_get(const RequestInfo &request_info) {
   std::string target_path = create_default_target_path(request_info);
   if (has_suffix(target_path, "/")) {
     std::string path_add_index = target_path + request_info.location_->index_;
-    HttpStatusCode status_code = _method_get_file(request_info, path_add_index);
-    if (HttpStatusCode::S_404_NOT_FOUND == status_code) {
+    if (!is_file_exists(path_add_index)) {
       return _method_get_dir(request_info, target_path);
     }
-    return status_code;
+    target_path = path_add_index;
   }
   return _method_get_file(request_info, target_path);
 }
 
-HttpStatusCode
+ResponseGenerator::Content
 ResponseGenerator::_method_post(const RequestInfo &request_info) {
   std::string target_path = create_default_target_path(request_info);
   /*
@@ -86,36 +96,41 @@ POSTリクエストを正常に処理した結果、
 .2）および新しいリソースを参照しながらリクエストのステータスを説明する表現。
 */
   if (!request_info.location_->upload_file_ || has_suffix(target_path, "/")) {
-    return HttpStatusCode::S_403_FORBIDDEN;
+    return create_status_code_content(request_info,
+                                      HttpStatusCode::S_403_FORBIDDEN);
   }
   Result<int> result = open_write_file(target_path);
   if (result.is_err_) {
-    return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+    ERROR_LOG("_method_post: open file failed");
+    return create_status_code_content(
+        request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  content_.state_ = Content::WRITE;
-  content_.fd_    = result.object_;
-  content_.str_   = request_info.body_;
-
-  return HttpStatusCode::S_201_CREATED;
+  Content content;
+  content.status_code_ = HttpStatusCode::S_201_CREATED;
+  content.state_       = Content::WRITE;
+  content.fd_          = result.object_;
+  content.str_         = request_info.body_;
+  return content;
 }
 
-HttpStatusCode
+ResponseGenerator::Content
 ResponseGenerator::_method_delete(const RequestInfo &request_info) {
-  std::string target_path = create_default_target_path(request_info);
+  HttpStatusCode status_code;
+  std::string    target_path = create_default_target_path(request_info);
   if (!is_file_exists(target_path)) {
     ERROR_LOG("target file is not found");
-    return HttpStatusCode::S_404_NOT_FOUND;
-  }
-  if (!is_accessible(target_path, W_OK)) {
+    status_code = HttpStatusCode::S_404_NOT_FOUND;
+  } else if (!is_accessible(target_path, W_OK)) {
     ERROR_LOG("process can not delete target file");
-    return HttpStatusCode::S_403_FORBIDDEN;
-  }
-  if (!remove_file(target_path)) {
+    status_code = HttpStatusCode::S_403_FORBIDDEN;
+  } else if (!remove_file(target_path)) {
     ERROR_LOG("unknown error while deleting file");
-    return HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+    status_code = HttpStatusCode::S_500_INTERNAL_SERVER_ERROR;
+  } else {
+    ERROR_LOG("deleted file successfully");
+    status_code = HttpStatusCode::S_204_NO_CONTENT;
   }
-  ERROR_LOG("deleted file successfully");
-  return HttpStatusCode::S_204_NO_CONTENT;
+  return create_status_code_content(request_info, status_code);
 }
 
 // RFC 9110
@@ -130,30 +145,22 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
-HttpStatusCode
+ResponseGenerator::Content
 ResponseGenerator::_handle_method(const RequestInfo &request_info) {
-  // TODO: 501が必要？ kohkubo
-  /*
-  RFC 9110
-  9.1. Overview
-  An origin server that receives a request method that is unrecognized or not
-  implemented SHOULD respond with the 501 (Not Implemented) status code.
-  認識されないか実装されていないリクエストメソッドを受信するオリジンサーバーは、501（実装されていない）ステータスコードで応答する必要があります。
-  */
+  HttpStatusCode status_code;
   if (!is_available_methods(request_info)) {
-    return HttpStatusCode::S_405_NOT_ALLOWED;
-  }
-  if ("GET" == request_info.request_line_.method_) {
+    status_code = HttpStatusCode::S_405_NOT_ALLOWED;
+  } else if ("GET" == request_info.request_line_.method_) {
     return _method_get(request_info);
-  }
-  if ("POST" == request_info.request_line_.method_) {
+  } else if ("POST" == request_info.request_line_.method_) {
     return _method_post(request_info);
-  }
-  if ("DELETE" == request_info.request_line_.method_) {
+  } else if ("DELETE" == request_info.request_line_.method_) {
     return _method_delete(request_info);
+  } else {
+    ERROR_LOG("unknown method: " << request_info.request_line_.method_);
+    status_code = HttpStatusCode::S_501_NOT_IMPLEMENTED;
   }
-  ERROR_LOG("unknown method: " << request_info.request_line_.method_);
-  return HttpStatusCode::S_501_NOT_IMPLEMENTED;
+  return create_status_code_content(request_info, status_code);
 }
 
 } // namespace response_generator
