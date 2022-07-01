@@ -41,27 +41,24 @@ public:
   bool                  has_fd() const { return content_.fd_ != -1; }
   Content::ContentState content_state() const { return content_.state_; }
   std::string           create_response_message(const std::string &content);
-
-private:
-  static Result<std::string>
-          _read_file_to_str_cgi(const RequestInfo &request_info,
-                                const std::string &target_path);
-  Content _method_get_file(const RequestInfo &request_info,
-                           const std::string &target_path);
-  Content _method_get_dir(const RequestInfo &request_info,
-                          const std::string &target_path);
-  Content _handle_method(const RequestInfo &request_info);
-  Content _method_get(const RequestInfo &request_info);
-  Content _method_post(const RequestInfo &request_info);
-  Content _method_delete(const RequestInfo &request_info);
 };
 
-std::string create_autoindex_body(const RequestInfo &request_info,
-                                  const std::string &target_path);
+Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,
+                                         const std::string &target_path);
+std::string         create_autoindex_body(const RequestInfo &request_info,
+                                          const std::string &target_path);
 std::string create_default_body_content(const HttpStatusCode &status_code);
 ResponseGenerator::Content
 create_status_code_content(const RequestInfo    &request_info,
                            const HttpStatusCode &status_code);
+ResponseGenerator::Content handle_method(const RequestInfo &request_info);
+ResponseGenerator::Content method_post(const RequestInfo &request_info);
+ResponseGenerator::Content method_get(const RequestInfo &request_info);
+ResponseGenerator::Content method_delete(const RequestInfo &request_info);
+ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
+                                           const std::string &target_path);
+ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
+                                          const std::string &target_path);
 } // namespace response_generator
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

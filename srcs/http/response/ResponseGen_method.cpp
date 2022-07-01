@@ -9,9 +9,8 @@
 
 namespace response_generator {
 
-ResponseGenerator::Content
-ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
-                                   const std::string &target_path) {
+ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
+                                          const std::string &target_path) {
   if (!is_dir_exists(target_path)) {
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
@@ -26,35 +25,34 @@ ResponseGenerator::_method_get_dir(const RequestInfo &request_info,
   return content;
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_get_file(const RequestInfo &request_info,
-                                    const std::string &target_path) {
+ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
+                                           const std::string &target_path) {
   if (!is_file_exists(target_path)) {
-    ERROR_LOG("_method_get_file: file not found");
+    ERROR_LOG("method_get_file: file not found");
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
   }
   if (has_suffix(target_path, ".py")) {
     Result<std::string> result =
-        _read_file_to_str_cgi(request_info, target_path);
+        read_file_to_str_cgi(request_info, target_path);
     if (result.is_err_) {
-      ERROR_LOG("_method_get_file: read file failed");
+      ERROR_LOG("method_get_file: read file failed");
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     }
-    Content content;
+    ResponseGenerator::Content content;
     content.state_ = ResponseGenerator::Content::CREATED;
     content.str_   = result.object_;
     return content;
   }
   Result<int> result = open_read_file(target_path);
   if (result.is_err_) {
-    ERROR_LOG("_method_get_file: open file failed");
+    ERROR_LOG("method_get_file: open file failed");
     return create_status_code_content(
         request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  Content content;
-  content.state_ = Content::READ;
+  ResponseGenerator::Content content;
+  content.state_ = ResponseGenerator::Content::READ;
   content.fd_    = result.object_;
   return content;
 }
@@ -64,21 +62,19 @@ static std::string create_default_target_path(const RequestInfo &request_info) {
          request_info.request_line_.absolute_path_;
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_get(const RequestInfo &request_info) {
+ResponseGenerator::Content method_get(const RequestInfo &request_info) {
   std::string target_path = create_default_target_path(request_info);
   if (has_suffix(target_path, "/")) {
     std::string path_add_index = target_path + request_info.location_->index_;
     if (!is_file_exists(path_add_index)) {
-      return _method_get_dir(request_info, target_path);
+      return method_get_dir(request_info, target_path);
     }
     target_path = path_add_index;
   }
-  return _method_get_file(request_info, target_path);
+  return method_get_file(request_info, target_path);
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_post(const RequestInfo &request_info) {
+ResponseGenerator::Content method_post(const RequestInfo &request_info) {
   std::string target_path = create_default_target_path(request_info);
   /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
@@ -101,20 +97,19 @@ POSTリクエストを正常に処理した結果、
   }
   Result<int> result = open_write_file(target_path);
   if (result.is_err_) {
-    ERROR_LOG("_method_post: open file failed");
+    ERROR_LOG("method_post: open file failed");
     return create_status_code_content(
         request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  Content content;
+  ResponseGenerator::Content content;
   content.status_code_ = HttpStatusCode::S_201_CREATED;
-  content.state_       = Content::WRITE;
+  content.state_       = ResponseGenerator::Content::WRITE;
   content.fd_          = result.object_;
   content.str_         = request_info.body_;
   return content;
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_delete(const RequestInfo &request_info) {
+ResponseGenerator::Content method_delete(const RequestInfo &request_info) {
   HttpStatusCode status_code;
   std::string    target_path = create_default_target_path(request_info);
   if (!is_file_exists(target_path)) {
@@ -145,17 +140,16 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_handle_method(const RequestInfo &request_info) {
+ResponseGenerator::Content handle_method(const RequestInfo &request_info) {
   HttpStatusCode status_code;
   if (!is_available_methods(request_info)) {
     status_code = HttpStatusCode::S_405_NOT_ALLOWED;
   } else if ("GET" == request_info.request_line_.method_) {
-    return _method_get(request_info);
+    return method_get(request_info);
   } else if ("POST" == request_info.request_line_.method_) {
-    return _method_post(request_info);
+    return method_post(request_info);
   } else if ("DELETE" == request_info.request_line_.method_) {
-    return _method_delete(request_info);
+    return method_delete(request_info);
   } else {
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
     status_code = HttpStatusCode::S_501_NOT_IMPLEMENTED;

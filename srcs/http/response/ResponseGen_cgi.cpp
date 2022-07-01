@@ -30,8 +30,7 @@ static std::string read_fd_to_str(int fd) {
 }
 
 // TODO: error処理
-Result<std::string>
-ResponseGenerator::_read_file_to_str_cgi(const RequestInfo &request_info,
+Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,
                                          const std::string &target_path) {
   int pipefd[2] = {0, 0};
   if (pipe(pipefd) == -1) {

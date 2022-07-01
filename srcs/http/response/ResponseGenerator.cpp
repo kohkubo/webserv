@@ -38,7 +38,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     content_    = create_status_code_content(_request_info_, status_code);
     return;
   }
-  content_ = _handle_method(_request_info_);
+  content_ = handle_method(_request_info_);
 }
 
 Response ResponseGenerator::generate_response() {
