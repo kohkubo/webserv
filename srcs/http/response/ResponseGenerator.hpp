@@ -31,8 +31,11 @@ public:
   ResponseGenerator(const RequestInfo &request_info,
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
-  Response    generate_response();
-  bool        has_fd() const { return content_.fd_ != -1; }
+  Response              generate_response();
+  bool                  has_fd() const { return content_.fd_ != -1; }
+  Content::ContentState content_state() const {
+    return content_.content_state_;
+  }
   std::string create_response_message(const std::string &body);
   std::string create_response_message(HttpStatusCode status_code);
 

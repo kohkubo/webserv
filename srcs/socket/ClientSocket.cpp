@@ -70,6 +70,8 @@ void ClientSocket::_handle_send_event() {
   }
 }
 
+typedef response_generator::ResponseGenerator ResponseGenerator;
+
 void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   (void)socket_map_actions;
   try {
@@ -94,10 +96,10 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       //  socket_map_actions.add_socket_map_action(SocketMapAction(
       //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       //} else {
-      response_generator::ResponseGenerator response_generator(
-          _request_.request_info());
+      ResponseGenerator response_generator(_request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      if (response_generator.has_fd()) {
+      if (response_generator.content_state() ==
+          ResponseGenerator::Content::READ) {
         SocketBase *file_socket =
             new FileSocket(_response_queue_.back(), response_generator);
         socket_map_actions.add_socket_map_action(SocketMapAction(
@@ -106,8 +108,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    response_generator::ResponseGenerator response_generator(
-        _request_.request_info(), e.status());
+    ResponseGenerator response_generator(_request_.request_info(), e.status());
     _response_queue_.push_back(response_generator.generate_response());
     _request_ = Request();
   }
