@@ -11,30 +11,30 @@ namespace response_generator {
 
 class ResponseGenerator {
 public:
-  struct Body {
+  struct ContentAction {
     enum Action { READ, WRITE, USE_CONTENT };
     Action      action_;
     fileFd      fd_;
     std::string content_;
 
-    Body()
+    ContentAction()
         : fd_(-1) {}
     bool has_fd() const { return fd_ != -1; }
   };
+  ContentAction content_action_;
 
 private:
   const RequestInfo _request_info_;
   HttpStatusCode    _status_code_;
   bool              _is_connection_close_;
-  Body              _body_;
 
 public:
   ResponseGenerator(const RequestInfo &request_info,
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response    generate_response();
-  bool        has_fd() const { return _body_.has_fd(); }
-  int         fd() const { return _body_.fd_; }
+  bool        has_fd() const { return content_action_.has_fd(); }
+  int         fd() const { return content_action_.fd_; }
   std::string create_response_message(const std::string &body);
   std::string create_response_message(HttpStatusCode status_code);
 
@@ -42,7 +42,7 @@ private:
   static Result<std::string>
                  _read_file_to_str_cgi(const RequestInfo &request_info,
                                        const std::string &target_path);
-  Body           _create_status_code_body(const RequestInfo &request_info);
+  ContentAction  _create_status_code_body(const RequestInfo &request_info);
   HttpStatusCode _handle_method(const RequestInfo &request_info);
   HttpStatusCode _method_get(const RequestInfo &request_info);
   HttpStatusCode _method_get_dir(const RequestInfo &request_info,
