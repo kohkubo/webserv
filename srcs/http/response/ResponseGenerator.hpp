@@ -13,7 +13,7 @@ class ResponseGenerator {
 public:
   struct Content {
     enum ContentState { READ, WRITE, CREATED };
-    ContentState content_state_;
+    ContentState state_;
     fileFd       fd_;
     std::string  str_;
 
@@ -33,11 +33,9 @@ public:
   ~ResponseGenerator() {}
   Response              generate_response();
   bool                  has_fd() const { return content_.fd_ != -1; }
-  Content::ContentState content_state() const {
-    return content_.content_state_;
-  }
-  std::string create_response_message(const std::string &content);
-  std::string create_response_message(HttpStatusCode status_code);
+  Content::ContentState content_state() const { return content_.state_; }
+  std::string           create_response_message(const std::string &content);
+  std::string           create_response_message(HttpStatusCode status_code);
 
 private:
   static Result<std::string>
