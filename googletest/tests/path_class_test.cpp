@@ -83,3 +83,17 @@ TEST(path_class_test, test_remove_file) {
   EXPECT_TRUE(path.remove_file());
   EXPECT_FALSE(path.is_file_exists());
 }
+
+static void read_file_to_str_test(const std::string &file_path, bool is_err,
+                                  const std::string &str) {
+  Path                path(file_path);
+  Result<std::string> result = path.read_file_to_str();
+  EXPECT_EQ(result.is_err_, is_err);
+  EXPECT_EQ(result.object_, str);
+}
+
+TEST(util_test, test_read_file_to_str) {
+  read_file_to_str_test(TEST_FILE, false, TEST_CONTENT);
+  read_file_to_str_test(EMPTY_FILE, false, "");
+  read_file_to_str_test(NO_SUCH_FILE, true, "");
+}

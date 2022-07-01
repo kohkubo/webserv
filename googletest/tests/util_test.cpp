@@ -3,7 +3,6 @@
 #include <fstream>
 #include <limits.h>
 
-#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 #define TEST_FILE          "html/test.txt"
@@ -41,19 +40,6 @@ TEST(util_test, test_to_string) {
   EXPECT_EQ(to_string(SIZE_MAX), std::to_string(SIZE_MAX));
   // SIZE_MAX を超えると0になります。
   EXPECT_EQ(to_string(SIZE_MAX + 1), "0");
-}
-
-static void read_file_to_str_test(const std::string &path, bool is_err,
-                                  const std::string &str) {
-  Result<std::string> result = read_file_to_str(path);
-  EXPECT_EQ(result.is_err_, is_err);
-  EXPECT_EQ(result.object_, str);
-}
-
-TEST(util_test, test_read_file_to_str) {
-  read_file_to_str_test(TEST_FILE, false, TEST_CONTENT);
-  read_file_to_str_test(EMPTY_FILE, false, "");
-  read_file_to_str_test(NO_SUCH_FILE, true, "");
 }
 
 TEST(util_test, is_minus_depth_test) {
