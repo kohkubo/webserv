@@ -62,6 +62,7 @@ Response ResponseGenerator::generate_response() {
     }
   }
   std::string body = create_default_body_content(_status_code_);
+  LOG("body: " << body);
   return Response(create_response_message(body), _is_connection_close_);
 }
 
