@@ -33,8 +33,5 @@ void RequestInfo::parse_request_line(const std::string &request_line) {
   } else {
     request_line_.absolute_path_ = tmp_path;
   }
-  if (request_line_.absolute_path_.is_minus_depth()) {
-    throw BadRequestException();
-  }
   request_line_.http_version_ = request_line.substr(last_sp + 1);
 }

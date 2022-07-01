@@ -18,7 +18,7 @@ struct pollfd FileSocket::pollfd() {
 }
 
 SocketMapActions FileSocket::handle_event(short int revents) {
-  LOG("got POLLIN  event of fd " << _socket_fd_);
+  // LOG("got POLLIN  event of fd " << _socket_fd_);
   (void)revents;
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
@@ -33,14 +33,14 @@ SocketMapActions FileSocket::handle_event(short int revents) {
   if (read_size == 0) {
     std::string response_message =
         _response_generator_.create_response_message(_buffer_.str());
-    LOG("response message: " << response_message);
+    // LOG("response message: " << response_message);
     _response_.set_response_message_and_sending(response_message);
     socket_map_actions.add_socket_map_action(
         SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
     return socket_map_actions;
   }
   _buffer_ << std::string(buf, read_size);
-  LOG("read_size: " << read_size);
+  // LOG("read_size: " << read_size);
   return socket_map_actions;
 }
 

@@ -16,14 +16,13 @@ void Locations::add_or_exit(const Location &location) {
   _location_vector_.push_back(location);
 }
 
-const Location *
-Locations::select_location(const std::string &request_target) const {
+const Location *Locations::select_location(const Path &request_target) const {
   const Location *location = NULL;
   std::string     path;
 
   std::vector<Location>::const_iterator it = _location_vector_.begin();
   for (; it != _location_vector_.end(); ++it) {
-    if (request_target.find(it->location_path_.str()) == 0) {
+    if (request_target.str().find(it->location_path_.str()) == 0) {
       if (path.size() < it->location_path_.str().size()) {
         path     = it->location_path_.str();
         location = &(*it);

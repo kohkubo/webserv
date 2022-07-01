@@ -39,11 +39,3 @@ TEST(request_startline_parse_test, exception_request_line_no_space) {
   EXPECT_THROW(request_info.parse_request_line(str),
                RequestInfo::BadRequestException);
 }
-
-TEST(request_startline_parse_test, exception_minus) {
-  std::string str = "GET /hoge/../../ HTTP/1.1";
-
-  RequestInfo request_info;
-  EXPECT_THROW(request_info.parse_request_line(str),
-               RequestInfo::BadRequestException);
-}
