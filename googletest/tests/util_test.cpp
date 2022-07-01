@@ -66,12 +66,12 @@ TEST(util_test, test_is_file_exists) {
 #define TEST_DIR  "html/test_dir"
 #define EMPTY_DIR "html/empty_dir"
 
-TEST(util_test, is_dir) {
-  EXPECT_TRUE(is_dir(TEST_DIR));
-  EXPECT_TRUE(is_dir(EMPTY_DIR));
-  EXPECT_FALSE(is_dir(TEST_FILE));
-  EXPECT_FALSE(is_dir(EMPTY_FILE));
-  EXPECT_FALSE(is_dir(NO_SUCH_FILE));
+TEST(util_test, is_dir_exists) {
+  EXPECT_TRUE(is_dir_exists(TEST_DIR));
+  EXPECT_TRUE(is_dir_exists(EMPTY_DIR));
+  EXPECT_FALSE(is_dir_exists(TEST_FILE));
+  EXPECT_FALSE(is_dir_exists(EMPTY_FILE));
+  EXPECT_FALSE(is_dir_exists(NO_SUCH_FILE));
 }
 
 TEST(util_test, is_minus_depth_test) {
