@@ -6,7 +6,7 @@
 #include "utils/utils.hpp"
 
 void Locations::add_or_exit(const Location &location) {
-  std::string                     location_path = location.location_path_;
+  Path                            location_path = location.location_path_.str();
   std::vector<Location>::iterator it            = _location_vector_.begin();
   for (; it != _location_vector_.end(); ++it) {
     if (it->location_path_ == location_path) {
@@ -23,9 +23,9 @@ Locations::select_location(const std::string &request_target) const {
 
   std::vector<Location>::const_iterator it = _location_vector_.begin();
   for (; it != _location_vector_.end(); ++it) {
-    if (request_target.find(it->location_path_) == 0) {
-      if (path.size() < it->location_path_.size()) {
-        path     = it->location_path_;
+    if (request_target.find(it->location_path_.str()) == 0) {
+      if (path.size() < it->location_path_.str().size()) {
+        path     = it->location_path_.str();
         location = &(*it);
       }
     }

@@ -117,3 +117,7 @@ std::ostream &operator<<(std::ostream &os, const Path &path) {
   os << path.str();
   return os;
 }
+
+bool operator==(const Path &lhs, const Path &rhs) {
+  return lhs.str() == rhs.str();
+}

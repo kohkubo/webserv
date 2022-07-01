@@ -140,7 +140,7 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
     ERROR_EXIT("index directive failed. don't add \"/\" to file path.");
   if (!has_suffix(location.root_, "/"))
     ERROR_EXIT("root directive failed. please add \"/\" to end of root dir");
-  if (is_minus_depth(location.location_path_) ||
+  if (location.location_path_.is_minus_depth() ||
       is_minus_depth(location.root_) || is_minus_depth(location.index_))
     ERROR_EXIT("minus depth path failed.");
   locations_.add_or_exit(location);

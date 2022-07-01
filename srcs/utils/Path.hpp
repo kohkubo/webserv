@@ -13,6 +13,7 @@ private:
   std::string _path_;
 
 public:
+  Path() {}
   Path(const std::string &path);
   Path(char const *path);
   bool                is_file_exists() const;
@@ -32,5 +33,7 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &os, const Path &path);
+
+bool operator==(const Path &lhs, const Path &rhs);
 
 #endif /* SRCS_UTILS_PATH_HPP */
