@@ -1,6 +1,6 @@
 #include "config/ConfGroupGen.hpp"
 
-#include "utils/file_io_utils.hpp"
+#include "utils/Path.hpp"
 
 static std::vector<ConfigGroup>::iterator
 find_joinable_config_group(const Config             &config,
@@ -13,10 +13,10 @@ find_joinable_config_group(const Config             &config,
   return it;
 }
 
-std::vector<ConfigGroup> generate_config_group(const char *config_file_path) {
+std::vector<ConfigGroup> generate_config_group(const Path config_file_path) {
   std::vector<ConfigGroup> config_groups;
 
-  Result<std::string> result = read_file_to_str(config_file_path);
+  Result<std::string> result = config_file_path.read_file_to_str();
   if (result.is_err_) {
     ERROR_EXIT(config_file_path << " is not found or can't read.");
   }

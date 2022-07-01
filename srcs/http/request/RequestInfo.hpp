@@ -8,6 +8,7 @@
 #include "config/Config.hpp"
 #include "config/Location.hpp"
 #include "http/HttpStatusCode.hpp"
+#include "utils/Path.hpp"
 #include "utils/tokenize.hpp"
 
 class RequestInfo {
@@ -33,7 +34,7 @@ public:
   */
   struct RequestLine {
     std::string method_;
-    std::string absolute_path_;
+    Path        absolute_path_;
     std::string query_;
     std::string http_version_;
   };

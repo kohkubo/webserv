@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "http/request/RequestInfo.hpp"
+#include "utils/Path.hpp"
 #include "utils/syscall_wrapper.hpp"
 
 namespace response_generator {
@@ -20,10 +21,16 @@ struct AutoindexCategory {
 // Reference of acceptable entry types:
 // nginx/ngx_http_autoindex_module.c at master · nginx/nginx
 // https://github.com/nginx/nginx/blob/master/src/http/modules/ngx_http_autoindex_module.c
-static AutoindexCategory read_dir_to_entry_category(const std::string &path) {
+static AutoindexCategory read_dir_to_entry_category(const Path &path) {
   AutoindexCategory autoindex_category;
-  DIR              *dir   = xopendir(path.c_str());
-  struct dirent    *entry = NULL;
+  autoindex_category.has_updir_ = false;
+  Result<DIR *> result          = path.open_dir();
+  if (result.is_err_) {
+    autoindex_category.dirs_.insert("couldn't read dir entry.");
+    return autoindex_category;
+  }
+  DIR           *dir   = result.object_;
+  struct dirent *entry = NULL;
   while ((entry = xreaddir(dir)) != NULL) {
     AutoindexCategory::entryName entry_name = entry->d_name;
     bool                         is_dir     = (entry->d_type & DT_DIR) != 0;
@@ -59,7 +66,7 @@ static std::string read_entry_names_to_dir_listing_lines(
   return lines;
 }
 
-static std::string dir_listing_lines(const std::string &path) {
+static std::string dir_listing_lines(const Path &path) {
   AutoindexCategory autoindex_category = read_dir_to_entry_category(path);
   std::string       lines;
   if (autoindex_category.has_updir_)
@@ -70,7 +77,7 @@ static std::string dir_listing_lines(const std::string &path) {
 }
 
 std::string create_autoindex_body(const RequestInfo &request_info,
-                                  const std::string &target_path) {
+                                  const Path        &target_path) {
   // LOG("create autoindex body");
   std::stringstream buff;
   // clang-format off

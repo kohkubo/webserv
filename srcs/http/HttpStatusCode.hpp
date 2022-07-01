@@ -1,6 +1,8 @@
 #ifndef SRCS_HTTP_HTTPSTATUSCODE_HPP
 #define SRCS_HTTP_HTTPSTATUSCODE_HPP
 
+#include <string>
+
 class HttpStatusCode {
 public:
   enum StatusCode {
@@ -28,6 +30,8 @@ public:
   HttpStatusCode &operator=(const int num);
   bool            is_error_status_code() const;
   bool            has_default_content() const;
+  std::string     status_phrase() const;
+  std::string     str() const;
                   operator StatusCode() const;
 };
 

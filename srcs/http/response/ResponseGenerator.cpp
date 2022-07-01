@@ -12,7 +12,6 @@
 #include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 namespace response_generator {

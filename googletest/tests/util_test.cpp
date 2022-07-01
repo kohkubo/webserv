@@ -3,7 +3,6 @@
 #include <fstream>
 #include <limits.h>
 
-#include "utils/file_io_utils.hpp"
 #include "utils/utils.hpp"
 
 #define TEST_FILE          "html/test.txt"
@@ -41,50 +40,6 @@ TEST(util_test, test_to_string) {
   EXPECT_EQ(to_string(SIZE_MAX), std::to_string(SIZE_MAX));
   // SIZE_MAX を超えると0になります。
   EXPECT_EQ(to_string(SIZE_MAX + 1), "0");
-}
-
-static void read_file_to_str_test(const std::string &path, bool is_err,
-                                  const std::string &str) {
-  Result<std::string> result = read_file_to_str(path);
-  EXPECT_EQ(result.is_err_, is_err);
-  EXPECT_EQ(result.object_, str);
-}
-
-TEST(util_test, test_read_file_to_str) {
-  read_file_to_str_test(TEST_FILE, false, TEST_CONTENT);
-  read_file_to_str_test(EMPTY_FILE, false, "");
-  read_file_to_str_test(NO_SUCH_FILE, true, "");
-}
-
-TEST(util_test, test_is_file_exists) {
-  EXPECT_TRUE(is_file_exists(TEST_FILE));
-  EXPECT_TRUE(is_file_exists(EMPTY_FILE));
-  EXPECT_FALSE(is_file_exists(NO_SUCH_FILE));
-  //ファイルに読み込み権限がないとtrueが返ります。
-}
-
-#define TEST_DIR  "html/test_dir"
-#define EMPTY_DIR "html/empty_dir"
-
-TEST(util_test, is_dir_exists) {
-  EXPECT_TRUE(is_dir_exists(TEST_DIR));
-  EXPECT_TRUE(is_dir_exists(EMPTY_DIR));
-  EXPECT_FALSE(is_dir_exists(TEST_FILE));
-  EXPECT_FALSE(is_dir_exists(EMPTY_FILE));
-  EXPECT_FALSE(is_dir_exists(NO_SUCH_FILE));
-}
-
-TEST(util_test, is_minus_depth_test) {
-  EXPECT_TRUE(is_minus_depth("../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("/../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("hoge/../../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("/hoge/../../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("hoge/../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("/hoge/../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("hoge/../hoge/../fuga.html"));
-  EXPECT_FALSE(is_minus_depth("/hoge/../hoge/../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("hoge/../hoge/../../fuga.html"));
-  EXPECT_TRUE(is_minus_depth("/hoge/../hoge/../../fuga.html"));
 }
 
 TEST(util_test, test_hexstr_to_size) {
