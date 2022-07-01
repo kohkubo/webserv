@@ -24,13 +24,17 @@ void RequestInfo::parse_request_line(const std::string &request_line) {
     throw BadRequestException();
   }
   request_line_.method_ = request_line.substr(0, first_sp);
-  request_line_.absolute_path_ =
+  std::string tmp_path =
       request_line.substr(first_sp + 1, last_sp - (first_sp + 1));
-  std::size_t query_pos = request_line_.absolute_path_.find('?');
+  std::size_t query_pos = tmp_path.find('?');
   if (query_pos != std::string::npos) {
-    request_line_.query_ = request_line_.absolute_path_.substr(query_pos + 1);
-    // request_line_.absolute_path_からquery_stringを削除しているので注意（いっしょに持った方がいいかも）
-    request_line_.absolute_path_.erase(query_pos);
+    request_line_.query_         = tmp_path.substr(query_pos + 1);
+    request_line_.absolute_path_ = tmp_path.erase(query_pos);
+  } else {
+    request_line_.absolute_path_ = tmp_path;
+  }
+  if (request_line_.absolute_path_.is_minus_depth()) {
+    throw BadRequestException();
   }
   request_line_.http_version_ = request_line.substr(last_sp + 1);
 }

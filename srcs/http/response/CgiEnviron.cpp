@@ -35,10 +35,10 @@ create_environ_map(const RequestInfo &request_info, const Path &target_path) {
 
   // TODO: request_targetからファイルのパスだけ取る。
   // ex) target: /hoge/test.py script_name: /test.py
-  environ_map["SCRIPT_NAME"]     = request_info.request_line_.absolute_path_;
+  environ_map["SCRIPT_NAME"] = request_info.request_line_.absolute_path_.str();
 
   // TODO: addrinfoからポートを変換
-  environ_map["SERVER_PORT"]     = "";
+  environ_map["SERVER_PORT"] = "";
 
   // なくても良さそうなもの
   // environ_map["AUTH_TYPE"] = "";
