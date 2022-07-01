@@ -39,6 +39,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 Response ResponseGenerator::generate_response() {
+  LOG("generate_response");
   if (has_fd() && _body_.action_ == Body::WRITE) {
     if (write(_body_.fd_, _body_.content_.c_str(), _body_.content_.size()) ==
         -1) {
@@ -49,20 +50,24 @@ Response ResponseGenerator::generate_response() {
   }
   if (_body_.action_ == Body::USE_CONTENT) {
     // bodyのcontent自体をレスポンスとして使いたい場合
+    LOG("return with USE_CONTENT");
     return Response(create_response_message(_body_.content_),
                     _is_connection_close_);
   }
   if (has_fd()) {
+    LOG("return with has_fd()");
     return Response("", _is_connection_close_, Response::WAITING);
   }
   if (_status_code_.has_default_content()) {
     _body_ = _create_status_code_body(_request_info_); // status_code or fd
     if (has_fd()) {
+      LOG("return with default content fd");
       return Response("", _is_connection_close_, Response::WAITING);
     }
   }
   std::string body = create_default_body_content(_status_code_);
   LOG("body: " << body);
+  LOG("return with default content");
   return Response(create_response_message(body), _is_connection_close_);
 }
 
