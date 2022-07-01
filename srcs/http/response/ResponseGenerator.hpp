@@ -23,7 +23,8 @@ public:
     std::string str_;
 
     Content()
-        : fd_(-1) {}
+        : action_(READ)
+        , fd_(-1) {}
   };
   Content content_;
 
