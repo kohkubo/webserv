@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "http/request/RequestInfo.hpp"
+#include "utils/Path.hpp"
 #include "utils/syscall_wrapper.hpp"
 
 namespace response_generator {
@@ -59,8 +60,8 @@ static std::string read_entry_names_to_dir_listing_lines(
   return lines;
 }
 
-static std::string dir_listing_lines(const std::string &path) {
-  AutoindexCategory autoindex_category = read_dir_to_entry_category(path);
+static std::string dir_listing_lines(const Path &path) {
+  AutoindexCategory autoindex_category = read_dir_to_entry_category(path.str());
   std::string       lines;
   if (autoindex_category.has_updir_)
     lines += one_dir_listing_line("../");
@@ -70,7 +71,7 @@ static std::string dir_listing_lines(const std::string &path) {
 }
 
 std::string create_autoindex_body(const RequestInfo &request_info,
-                                  const std::string &target_path) {
+                                  const Path        &target_path) {
   // LOG("create autoindex body");
   std::stringstream buff;
   // clang-format off

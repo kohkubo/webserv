@@ -16,7 +16,10 @@ public:
   bool                is_accessible(int mode);
   bool                is_minus_depth();
   bool                has_suffix(const std::string &suffix) const;
-  Result<std::string> get_realpath();
+  Result<std::string> get_realpath() const;
+  bool                remove_file();
+  Result<int>         open_read_file() const;
+  Result<int>         open_write_file() const;
   Path                operator+(const Path &rhs) const;
   // tmp
   const std::string &str() const;

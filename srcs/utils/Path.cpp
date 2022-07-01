@@ -1,10 +1,13 @@
 #include "utils/Path.hpp"
 
 #include <fcntl.h>
+#include <limits.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <cstdio>
 #include <iostream>
 
 #include "tokenize.hpp"
@@ -39,7 +42,7 @@ bool Path::has_suffix(const std::string &suffix) const {
 
 bool Path::is_accessible(int mode) { return access(_path_.c_str(), mode) == 0; }
 
-Result<std::string> Path::get_realpath() {
+Result<std::string> Path::get_realpath() const {
   char *abs_path = realpath(_path_.c_str(), NULL);
   if (abs_path == NULL) {
     ERROR_LOG("get_realpath");
@@ -50,21 +53,33 @@ Result<std::string> Path::get_realpath() {
   return Ok<std::string>(res);
 }
 
-bool Path::is_minus_depth() {
-  tokenVector   tokens = tokenize(_path_, "/", "/");
-  tokenIterator it     = tokens.begin();
+bool Path::is_minus_depth() { return ::is_minus_depth(_path_); }
 
-  for (long depth = 0; it != tokens.end(); it++) {
-    if (*it == "..") {
-      depth--;
-    } else if (*it != ".") {
-      depth++;
-    }
-    if (depth < 0) {
-      return true;
-    }
+bool Path::remove_file() {
+  int ret = std::remove(_path_.c_str());
+  if (ret == -1) {
+    ERROR_LOG_WITH_ERRNO("remove_file");
+    return false;
   }
-  return false;
+  return true;
+}
+
+Result<int> Path::open_read_file() const {
+  int fd = open(_path_.c_str(), O_RDONLY);
+  if (fd < 0) {
+    ERROR_LOG("open error: " << _path_);
+    return Error<int>();
+  }
+  return Ok<int>(fd);
+}
+
+Result<int> Path::open_write_file() const {
+  int fd = open(_path_.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
+  if (fd < 0) {
+    ERROR_LOG("open error: " << _path_);
+    return Error<int>();
+  }
+  return Ok<int>(fd);
 }
 
 Path Path::operator+(const Path &rhs) const { return Path(str() + rhs.str()); }

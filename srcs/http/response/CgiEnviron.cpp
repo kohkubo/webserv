@@ -1,28 +1,15 @@
 #include "http/response/CgiEnviron.hpp"
 
-#include <limits.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <cstring>
 #include <map>
 
+#include "utils/Path.hpp"
 #include "utils/utils.hpp"
 
-static std::string get_realpath(const std::string &file_path) {
-  char *abs_path = realpath(file_path.c_str(), NULL);
-  if (abs_path == NULL) {
-    // TODO: ここはexitで大丈夫？？ kohkubo
-    ERROR_EXIT_WITH_ERRNO("get_realpath");
-  }
-  std::string res = std::string(abs_path);
-  free(abs_path);
-  return res;
-}
-
 static std::map<std::string, std::string>
-create_environ_map(const RequestInfo &request_info,
-                   const std::string &target_path) {
+create_environ_map(const RequestInfo &request_info, const Path &target_path) {
   std::map<std::string, std::string> environ_map;
 
   if (request_info.has_body()) {
@@ -30,22 +17,28 @@ create_environ_map(const RequestInfo &request_info,
     environ_map["CONTENT_TYPE"]   = request_info.content_type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-  environ_map["PATH_INFO"]         = get_realpath(target_path);
-  environ_map["PATH_TRANSLATED"]   = get_realpath(target_path);
-  environ_map["QUERY_STRING"]      = request_info.request_line_.query_;
-  environ_map["REQUEST_METHOD"]    = request_info.request_line_.method_;
-  environ_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
-  environ_map["SERVER_SOFTWARE"]   = "webserv 0.0.0";
+
+  Result<std::string> result       = target_path.get_realpath();
+  if (result.is_err_) {
+    environ_map["PATH_INFO"] = target_path.str();
+  } else {
+    environ_map["PATH_INFO"] = result.object_;
+  }
+  environ_map["PATH_TRANSLATED"] = environ_map["PATH_INFO"];
+  environ_map["QUERY_STRING"]    = request_info.request_line_.query_;
+  environ_map["REQUEST_METHOD"]  = request_info.request_line_.method_;
+  environ_map["SERVER_PROTOCOL"] = "HTTP/1.1";
+  environ_map["SERVER_SOFTWARE"] = "webserv 0.0.0";
 
   // TODO: addrinfoからアドレスを文字列に変換
-  environ_map["REMOTE_ADDR"]       = "";
+  environ_map["REMOTE_ADDR"]     = "";
 
   // TODO: request_targetからファイルのパスだけ取る。
   // ex) target: /hoge/test.py script_name: /test.py
-  environ_map["SCRIPT_NAME"]       = request_info.request_line_.absolute_path_;
+  environ_map["SCRIPT_NAME"]     = request_info.request_line_.absolute_path_;
 
   // TODO: addrinfoからポートを変換
-  environ_map["SERVER_PORT"]       = "";
+  environ_map["SERVER_PORT"]     = "";
 
   // なくても良さそうなもの
   // environ_map["AUTH_TYPE"] = "";
@@ -69,7 +62,7 @@ create_cgi_environ(const std::map<std::string, std::string> &environ_map) {
 }
 
 CgiEnviron::CgiEnviron(const RequestInfo &request_info,
-                       const std::string &target_path) {
+                       const Path        &target_path) {
   std::map<std::string, std::string> environ_map =
       create_environ_map(request_info, target_path);
   _environ_ = create_cgi_environ(environ_map);
