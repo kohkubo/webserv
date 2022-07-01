@@ -7,7 +7,7 @@
 #include "socket/SocketBase.hpp"
 #include "socket/SocketMapAction.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 class SocketMap {
 private:
@@ -27,6 +27,6 @@ public:
   void             do_socket_map_action(const SocketMapAction &socket_map_op);
 };
 
-} // namespace socket_base
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_SOCKETMAP_HPP */

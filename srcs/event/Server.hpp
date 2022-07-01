@@ -6,7 +6,7 @@
 
 class Server {
 private:
-  socket_base::SocketMap _socket_map_;
+  ns_socket::SocketMap _socket_map_;
 
 private:
   Server() {}

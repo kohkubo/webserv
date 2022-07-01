@@ -52,6 +52,7 @@ std::map<int, std::string> g_response_status_phrase_map =
     init_response_status_phrase_map();
 
 std::string create_default_body_content(const HttpStatusCode &status_code) {
+  LOG("create_default_body_content");
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"
@@ -133,13 +134,19 @@ static std::string create_response_header(const RequestInfo &request_info,
   return response;
 }
 
-std::string create_response_message(const RequestInfo    &request_info,
-                                    const bool            is_connection_close,
-                                    const HttpStatusCode &status_code,
-                                    const std::string    &body) {
-  std::string response =
-      create_response_header(request_info, is_connection_close, status_code);
+std::string
+ResponseGenerator::create_response_message(const std::string &body) {
+  std::string response = create_response_header(
+      _request_info_, _is_connection_close_, _status_code_);
   response += entity_header_and_body(body);
+  return response;
+};
+
+std::string
+ResponseGenerator::create_response_message(HttpStatusCode status_code) {
+  std::string response = create_response_header(
+      _request_info_, _is_connection_close_, _status_code_);
+  response += entity_header_and_body(create_default_body_content(status_code));
   return response;
 };
 

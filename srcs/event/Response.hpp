@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "utils/utils.hpp"
+
 typedef int connFd;
 
 class Response {
@@ -29,11 +31,15 @@ private:
   }
 
 public:
-  Response(std::string response_message, bool is_close)
-      : _state_(SENDING)
+  Response(std::string response_message, bool is_close,
+           ResponseState state = SENDING)
+      : _state_(state)
       , _response_message_(response_message)
       , _is_last_response_(is_close)
-      , _send_count_(0) {}
+      , _send_count_(0) {
+    LOG("state: " << _state_);
+    LOG(response_message);
+  }
   ~Response() {}
 
   bool          is_sending() const { return _state_ == SENDING; }
@@ -48,6 +54,11 @@ public:
       _state_ = COMPLETE;
     }
     return _state_;
+  }
+  void set_response_message_and_sending(const std::string &response_message) {
+    LOG("set_response_message_and_sending");
+    _state_            = SENDING;
+    _response_message_ = response_message;
   }
 };
 

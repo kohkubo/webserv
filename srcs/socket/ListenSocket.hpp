@@ -9,7 +9,7 @@
 #include "config/ConfigGroup.hpp"
 #include "socket/SocketBase.hpp"
 
-namespace socket_base {
+namespace ns_socket {
 
 class ListenSocket : public SocketBase {
 public:
@@ -29,6 +29,6 @@ public:
   virtual bool             is_timed_out();
 };
 
-} // namespace socket_base
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_LISTENSOCKET_HPP */
