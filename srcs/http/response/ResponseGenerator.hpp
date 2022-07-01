@@ -45,7 +45,7 @@ public:
 private:
   static Result<std::string>
                  _read_file_to_str_cgi(const RequestInfo &request_info,
-                                       const std::string &target_path);
+                                       cconst Path       &target_path);
   Content        _create_status_code_content(const RequestInfo &request_info);
   HttpStatusCode _handle_method(const RequestInfo &request_info);
   HttpStatusCode _method_get(const RequestInfo &request_info);
