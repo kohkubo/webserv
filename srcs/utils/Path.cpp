@@ -1,5 +1,6 @@
 #include "utils/Path.hpp"
 
+#include <dirent.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -80,6 +81,16 @@ Result<int> Path::open_write_file() const {
     return Error<int>();
   }
   return Ok<int>(fd);
+}
+
+// TODO: fdの上限によるエラーに関してexitしていいか
+Result<DIR *> Path::open_dir() const {
+  DIR *dir = opendir(_path_.c_str());
+  if (dir == NULL) {
+    ERROR_LOG("opendir() failed");
+    return Error<DIR *>();
+  }
+  return Ok<DIR *>(dir);
 }
 
 Path Path::operator+(const Path &rhs) const { return Path(str() + rhs.str()); }

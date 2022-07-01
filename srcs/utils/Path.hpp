@@ -1,6 +1,9 @@
 #ifndef SRCS_UTILS_PATH_HPP
 #define SRCS_UTILS_PATH_HPP
 
+#include <dirent.h>
+#include <sys/types.h>
+
 #include <string>
 
 #include "utils/Result.hpp"
@@ -20,6 +23,7 @@ public:
   bool                remove_file();
   Result<int>         open_read_file() const;
   Result<int>         open_write_file() const;
+  Result<DIR *>       open_dir() const;
   Path                operator+(const Path &rhs) const;
   // tmp
   const std::string &str() const;
