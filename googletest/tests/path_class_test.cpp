@@ -75,3 +75,11 @@ TEST(path_class_test, test_has_suffix) {
   EXPECT_TRUE(Path("hoge/test.py").has_suffix(".py"));
   EXPECT_FALSE(Path("hoge/test").has_suffix(".py"));
 }
+
+TEST(path_class_test, test_remove_file) {
+  system("touch test_delete_target");
+  Path path("test_delete_target");
+  EXPECT_TRUE(path.is_file_exists());
+  EXPECT_TRUE(path.remove_file());
+  EXPECT_FALSE(path.is_file_exists());
+}
