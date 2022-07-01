@@ -54,12 +54,12 @@ Response ResponseGenerator::generate_response() {
                     _is_connection_close_);
   }
   if (has_fd()) {
-    return Response("", _is_connection_close_, Response::WAITING);
+    return Response("", _is_connection_close_, Response::READING);
   }
   if (_status_code_.has_default_content()) {
     _body_ = _create_status_code_body(_request_info_); // status_code or fd
     if (has_fd()) {
-      return Response("", _is_connection_close_, Response::WAITING);
+      return Response("", _is_connection_close_, Response::READING);
     }
   }
   std::string body = create_default_body_content(_status_code_);
