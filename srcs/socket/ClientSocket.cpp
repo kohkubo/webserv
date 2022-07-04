@@ -98,8 +98,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       //} else {
       ResponseGenerator response_generator(_request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      if (response_generator.content_state() ==
-          ResponseGenerator::Content::READ) {
+      if (response_generator.action() == ResponseGenerator::Content::READ) {
         SocketBase *file_socket =
             new FileReadSocket(_response_queue_.back(), response_generator);
         socket_map_actions.add_socket_map_action(SocketMapAction(
