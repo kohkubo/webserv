@@ -46,19 +46,8 @@ Response ResponseGenerator::generate_response() {
     return Response("", _is_connection_close_, Response::READING);
   }
   if (content_.action_ == Content::WRITE) {
-    if (write(content_.fd_, content_.str_.c_str(), content_.str_.size()) ==
-        -1) {
-      content_ = create_status_code_content(
-          _request_info_, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-    }
-    content_ = create_status_code_content(_request_info_,
-                                          HttpStatusCode::S_201_CREATED);
-    content_.fd_ =
-        -1; // writeが成功してもfd=-1にして_create_status_code_body()を使うようにする
+    return Response("", _is_connection_close_, Response::WRITING);
   }
-  // if (content_.action_ == Content::WRITE) {
-  //   return Response("", _is_connection_close_, Response::WRITING);
-  // }
   // CREATEのとき
   return Response(create_response_message(content_.str_),
                   _is_connection_close_);

@@ -4,8 +4,7 @@
 
 namespace response_generator {
 
-static std::string
-create_default_body_content(const HttpStatusCode &status_code) {
+std::string create_default_body_content(const HttpStatusCode &status_code) {
   LOG("create_default_body_content");
   return "<!DOCTYPE html>\n"
          "<html>\n"
