@@ -1,10 +1,13 @@
 #ifndef SRCS_SOCKET_CGISOCKET_HPP
 #define SRCS_SOCKET_CGISOCKET_HPP
 
+#include <string>
+
 #include "event/Response.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/SocketBase.hpp"
 #include "socket/Timeout.hpp"
+#include "socket/socket.hpp"
 
 namespace ns_socket {
 
@@ -14,8 +17,13 @@ class CgiSocket : public SocketBase {
 private:
   Timeout                  _timeout_;
   Response                &_response_;
+  std::string              _buffer_;
   ResponseGenerator        _response_generator_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
+  static const size_t      CGI_BUFFER_SIZE_ = 2048;
+
+private:
+  bool _handle_receive_event();
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);

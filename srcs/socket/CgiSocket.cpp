@@ -13,48 +13,11 @@
 
 namespace ns_socket {
 
-#define READ_FD  0
-#define WRITE_FD 1
-
 CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
-    : _timeout_(TIMEOUT_SECONDS_)
+    : SocketBase(response_generator.content_.fd_)
+    , _timeout_(TIMEOUT_SECONDS_)
     , _response_(response)
-    , _response_generator_(response_generator) {
-  // やりたいことsocketpairを作る。片側をsocket_fdに、もう片方を子プロセスのstdin,stdoutにmapping
-  int socket_pair[2] = {0, 0};
-  if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, socket_pair) == -1) {
-    ERROR_LOG("error: socketpair");
-    // set error response;
-    return;
-  }
-  pid_t pid = fork();
-  if (pid == -1) {
-    ERROR_LOG("error: fork");
-    // set error response;
-    return;
-  }
-  // child
-  if (pid == 0) {
-    close(socket_pair[READ_FD]);
-    dup2(socket_pair[WRITE_FD], STDOUT_FILENO);
-    close(socket_pair[WRITE_FD]);
-    char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
-                    const_cast<char *>(
-                        response_generator.content_.target_path_.str().c_str()),
-                    NULL};
-    CgiEnviron cgi_environ(response_generator.request_info,
-                           response_generator.content_.target_path_);
-    // TODO: execveの前にスクリプトのあるディレクトリに移動
-    // error handling
-    if (execve("/usr/bin/python3", argv, cgi_environ.environ()) == -1) {
-      ERROR_LOG("error: execve");
-      // TODO: can't not set error response
-      return;
-    }
-  }
-
-  // _socket_fd_ = cgi_socket_fd;
-}
+    , _response_generator_(response_generator) {}
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -63,17 +26,31 @@ struct pollfd CgiSocket::pollfd() {
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
+bool CgiSocket::_handle_receive_event() {
+  ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
+  if (receive_result.rc_ == 0) {
+    // LOG("got FIN from connection");
+    return true;
+  }
+  _buffer_ += receive_result.str_;
+  return false;
+}
+
 SocketMapActions CgiSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
 
   if ((revents & POLLIN) != 0) {
     // LOG("got POLLIN  event of fd " << _socket_fd_);
-    // bool is_close = _handle_receive_event(socket_map_actions);
-    // if (is_close)
-    //   return socket_map_actions;
+    bool is_close = _handle_receive_event();
+    if (is_close) {
+      // TODO: parse_cgi_response
+      _response_.set_response_message_and_sending(_buffer_);
+      socket_map_actions.add_socket_map_action(
+          SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+      return socket_map_actions;
+    }
   }
-
   // リクエストにbodyがあるとき、bodyを入力。書き込み終了したらshutdown。
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of fd " << _socket_fd_);

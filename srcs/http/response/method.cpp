@@ -33,21 +33,13 @@ method_get_file(const RequestInfo &request_info, const Path &target_path) {
                                       HttpStatusCode::S_404_NOT_FOUND);
   }
   if (target_path.has_suffix(".py")) {
-    // Result<std::string> result =
-    //     read_file_to_str_cgi(request_info, target_path);
-    // if (result.is_err_) {
-    //   ERROR_LOG("method_get_file: read file failed");
-    //   return create_status_code_content(
-    //       request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-    // }
-    // ResponseGenerator::Content content;
-    // content.action_ = ResponseGenerator::Content::CREATED;
-    // content.str_    = result.object_;
-    // return content;
-    ResponseGenerator::Content content;
-    content.action_      = ResponseGenerator::Content::CGI;
-    content.target_path_ = target_path;
-    return content;
+    Result<ResponseGenerator::Content> result =
+        read_file_to_str_cgi(request_info, target_path);
+    if (result.is_err_) {
+      return create_status_code_content(
+          request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    }
+    return result.object_;
   }
   Result<int> result = target_path.open_read_file();
   if (result.is_err_) {
