@@ -24,6 +24,7 @@ private:
 
 private:
   bool _handle_receive_event();
+  void _handle_send_event();
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);

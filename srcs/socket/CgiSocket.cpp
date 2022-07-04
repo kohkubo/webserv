@@ -26,16 +26,6 @@ struct pollfd CgiSocket::pollfd() {
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-bool CgiSocket::_handle_receive_event() {
-  ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
-  if (receive_result.rc_ == 0) {
-    // LOG("got FIN from connection");
-    return true;
-  }
-  _buffer_ += receive_result.str_;
-  return false;
-}
-
 SocketMapActions CgiSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
@@ -48,25 +38,33 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
       _response_.set_response_message_and_sending(_buffer_);
       socket_map_actions.add_socket_map_action(
           SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+      if (waitpid(_response_generator_.content_.cgi_pid_, NULL, 0) == -1) {
+        ERROR_LOG("error: waitpid in read_file_to_str_cgi");
+        // TODO: how to return error?
+      }
       return socket_map_actions;
     }
   }
   // リクエストにbodyがあるとき、bodyを入力。書き込み終了したらshutdown。
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of fd " << _socket_fd_);
-    // _handle_send_event();
+    _handle_send_event();
   }
-  // POLLIN
-  // close(pipefd[WRITE_FD]);
-  // std::string str = read_fd_to_str(pipefd[READ_FD]);
-
-  // close(pipefd[READ_FD]);
-  // if (waitpid(pid, NULL, 0) == -1) {
-  //   ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-  //   return Error<std::string>();
-  // }
-  // return Ok<std::string>(str);
   return socket_map_actions;
+}
+
+bool CgiSocket::_handle_receive_event() {
+  ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
+  if (receive_result.rc_ == 0) {
+    // LOG("got FIN from connection");
+    return true;
+  }
+  _buffer_ += receive_result.str_;
+  return false;
+}
+
+void CgiSocket::_handle_send_event() {
+  // asita
 }
 
 } // namespace ns_socket
