@@ -7,7 +7,7 @@ import (
 
 var testCgi = testCatergory{
 	categoryName: "cgi",
-	config:       "integration_test/conf/test.conf",
+	config:       "integration_test/conf/cgi.conf",
 	testCases: []testCase{
 		{
 			caseName: "5000_cgi_get_normal",
