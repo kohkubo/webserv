@@ -41,7 +41,6 @@ func makeTestPath() func() {
 	return func() { os.RemoveAll(testRoot) }
 }
 
-// TODO: autoindex
 var testAutoindex = testCatergory{
 	categoryName: "autoindex",
 	config:       "integration_test/conf/autoindex.conf",
