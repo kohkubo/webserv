@@ -4,8 +4,8 @@
 
 namespace response_generator {
 
-std::string create_default_body_content(const HttpStatusCode &status_code) {
-  LOG("create_default_body_content");
+std::string create_default_content_str(const HttpStatusCode &status_code) {
+  LOG("create_default_content_str");
   return "<!DOCTYPE html>\n"
          "<html>\n"
          "    <head>\n"
@@ -32,7 +32,7 @@ create_status_code_content(const RequestInfo    &request_info,
     Path file_path = request_info.location_->root_ + it->second;
     if (!file_path.is_file_exists()) {
       if (status_code == HttpStatusCode::S_404_NOT_FOUND) {
-        content.str_    = create_default_body_content(status_code);
+        content.str_    = create_default_content_str(status_code);
         content.action_ = ResponseGenerator::Content::CREATED;
         return content;
       }
@@ -42,7 +42,7 @@ create_status_code_content(const RequestInfo    &request_info,
     Result<int> result = file_path.open_read_file();
     if (result.is_err_) {
       if (status_code == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
-        content.str_    = create_default_body_content(status_code);
+        content.str_    = create_default_content_str(status_code);
         content.action_ = ResponseGenerator::Content::CREATED;
         return content;
       }
@@ -53,7 +53,7 @@ create_status_code_content(const RequestInfo    &request_info,
     content.fd_     = result.object_;
     return content;
   }
-  content.str_    = create_default_body_content(status_code);
+  content.str_    = create_default_content_str(status_code);
   content.action_ = ResponseGenerator::Content::CREATED;
   return content;
 }
