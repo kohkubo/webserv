@@ -47,7 +47,6 @@ Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,
                                          const Path        &target_path);
 std::string         create_autoindex_body(const RequestInfo &request_info,
                                           const Path        &target_path);
-std::string create_default_body_content(const HttpStatusCode &status_code);
 ResponseGenerator::Content
 create_status_code_content(const RequestInfo    &request_info,
                            const HttpStatusCode &status_code);

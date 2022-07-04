@@ -4,6 +4,25 @@
 
 namespace response_generator {
 
+static std::string
+create_default_body_content(const HttpStatusCode &status_code) {
+  LOG("create_default_body_content");
+  return "<!DOCTYPE html>\n"
+         "<html>\n"
+         "    <head>\n"
+         "        <title>" +
+         status_code.str() +
+         "</title>\n"
+         "    </head>\n"
+         "    <body>\n"
+         "<h2>" +
+         status_code.status_phrase() +
+         "</h2>\n"
+         "provided by webserv\n"
+         "    </body>\n"
+         "</html>";
+}
+
 ResponseGenerator::Content
 create_status_code_content(const RequestInfo    &request_info,
                            const HttpStatusCode &status_code) {
