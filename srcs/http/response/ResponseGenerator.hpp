@@ -23,8 +23,7 @@ public:
     HttpStatusCode status_code_;
     std::string    str_;
     fileFd         fd_;
-    // cgiはfd二つ発生するので、コンストラクタでfdを作成する。
-    Path target_path_;
+    pid_t          cgi_pid_;
 
     Content(HttpStatusCode status_code = HttpStatusCode::S_200_OK)
         : action_(READ)
@@ -47,10 +46,10 @@ public:
 };
 
 std::string create_default_body_content(const HttpStatusCode &status_code);
-Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,
-                                         const Path        &target_path);
-std::string         create_autoindex_body(const RequestInfo &request_info,
-                                          const Path        &target_path);
+Result<ResponseGenerator::Content>
+read_file_to_str_cgi(const RequestInfo &request_info, const Path &target_path);
+std::string create_autoindex_body(const RequestInfo &request_info,
+                                  const Path        &target_path);
 ResponseGenerator::Content
 create_status_code_content(const RequestInfo    &request_info,
                            const HttpStatusCode &status_code);
