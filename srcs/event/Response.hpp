@@ -41,6 +41,10 @@ public:
     // LOG("state: " << _state_);
     // LOG(response_message);
   }
+  Response(bool is_close, ResponseState state)
+      : _state_(state)
+      , _is_last_response_(is_close)
+      , _send_count_(0) {}
   ~Response() {}
 
   bool          is_sending() const { return _state_ == SENDING; }
