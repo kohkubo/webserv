@@ -41,10 +41,10 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 Response ResponseGenerator::generate_response() {
-  if (content_.state_ == Content::READ) {
+  if (content_.action_ == Content::READ) {
     return Response("", _is_connection_close_, Response::READING);
   }
-  if (content_.state_ == Content::WRITE) {
+  if (content_.action_ == Content::WRITE) {
     if (write(content_.fd_, content_.str_.c_str(), content_.str_.size()) ==
         -1) {
       content_ = create_status_code_content(
@@ -55,7 +55,7 @@ Response ResponseGenerator::generate_response() {
     content_.fd_ =
         -1; // writeが成功してもfd=-1にして_create_status_code_body()を使うようにする
   }
-  // if (content_.state_ == Content::WRITE) {
+  // if (content_.action_ == Content::WRITE) {
   //   return Response("", _is_connection_close_, Response::WRITING);
   // }
   // CREATEのとき

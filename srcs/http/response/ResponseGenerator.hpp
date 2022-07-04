@@ -13,18 +13,18 @@ namespace response_generator {
 class ResponseGenerator {
 public:
   struct Content {
-    enum ContentState {
+    enum Action {
       READ,   // FD読み込み待ち
       WRITE,  // FD書き込み待ち
       CREATED // contentを作成済み
     };
-    ContentState   state_;
+    Action         action_;
     HttpStatusCode status_code_;
     std::string    str_;
     fileFd         fd_;
 
     Content(HttpStatusCode status_code = HttpStatusCode::S_200_OK)
-        : state_(READ)
+        : action_(READ)
         , status_code_(status_code)
         , fd_(-1) {}
   };
@@ -38,9 +38,9 @@ public:
   ResponseGenerator(const RequestInfo &request_info,
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
-  Response              generate_response();
-  Content::ContentState content_state() const { return content_.state_; }
-  std::string           create_response_message(const std::string &content);
+  Response        generate_response();
+  Content::Action content_state() const { return content_.action_; }
+  std::string     create_response_message(const std::string &content);
 };
 
 Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,

@@ -14,8 +14,8 @@ create_status_code_content(const RequestInfo    &request_info,
     Path file_path = request_info.location_->root_ + it->second;
     if (!file_path.is_file_exists()) {
       if (status_code == HttpStatusCode::S_404_NOT_FOUND) {
-        content.str_   = create_default_body_content(status_code);
-        content.state_ = ResponseGenerator::Content::CREATED;
+        content.str_    = create_default_body_content(status_code);
+        content.action_ = ResponseGenerator::Content::CREATED;
         return content;
       }
       return create_status_code_content(request_info,
@@ -24,19 +24,19 @@ create_status_code_content(const RequestInfo    &request_info,
     Result<int> result = file_path.open_read_file();
     if (result.is_err_) {
       if (status_code == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
-        content.str_   = create_default_body_content(status_code);
-        content.state_ = ResponseGenerator::Content::CREATED;
+        content.str_    = create_default_body_content(status_code);
+        content.action_ = ResponseGenerator::Content::CREATED;
         return content;
       }
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     }
-    content.state_ = ResponseGenerator::Content::READ;
-    content.fd_    = result.object_;
+    content.action_ = ResponseGenerator::Content::READ;
+    content.fd_     = result.object_;
     return content;
   }
-  content.str_   = create_default_body_content(status_code);
-  content.state_ = ResponseGenerator::Content::CREATED;
+  content.str_    = create_default_body_content(status_code);
+  content.action_ = ResponseGenerator::Content::CREATED;
   return content;
 }
 
