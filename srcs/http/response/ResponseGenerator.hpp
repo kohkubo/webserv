@@ -51,13 +51,6 @@ ResponseGenerator::Content
 create_status_code_content(const RequestInfo    &request_info,
                            const HttpStatusCode &status_code);
 ResponseGenerator::Content handle_method(const RequestInfo &request_info);
-ResponseGenerator::Content method_post(const RequestInfo &request_info);
-ResponseGenerator::Content method_get(const RequestInfo &request_info);
-ResponseGenerator::Content method_delete(const RequestInfo &request_info);
-ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
-                                           const Path        &target_path);
-ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
-                                          const Path        &target_path);
 } // namespace response_generator
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

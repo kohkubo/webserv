@@ -9,8 +9,8 @@
 
 namespace response_generator {
 
-ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
-                                          const Path        &target_path) {
+static ResponseGenerator::Content
+method_get_dir(const RequestInfo &request_info, const Path &target_path) {
   if (!target_path.is_dir_exists()) {
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
@@ -25,8 +25,8 @@ ResponseGenerator::Content method_get_dir(const RequestInfo &request_info,
   return content;
 }
 
-ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
-                                           const Path        &target_path) {
+static ResponseGenerator::Content
+method_get_file(const RequestInfo &request_info, const Path &target_path) {
   if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return create_status_code_content(request_info,
@@ -57,13 +57,8 @@ ResponseGenerator::Content method_get_file(const RequestInfo &request_info,
   return content;
 }
 
-static Path create_default_target_path(const RequestInfo &request_info) {
-  return request_info.location_->root_ +
-         request_info.request_line_.absolute_path_;
-}
-
-ResponseGenerator::Content method_get(const RequestInfo &request_info) {
-  Path target_path = create_default_target_path(request_info);
+static ResponseGenerator::Content method_get(const RequestInfo &request_info,
+                                             Path              &target_path) {
   if (target_path.has_suffix("/")) {
     Path path_add_index = target_path + request_info.location_->index_;
     if (!path_add_index.is_file_exists()) {
@@ -74,8 +69,8 @@ ResponseGenerator::Content method_get(const RequestInfo &request_info) {
   return method_get_file(request_info, target_path);
 }
 
-ResponseGenerator::Content method_post(const RequestInfo &request_info) {
-  Path target_path = create_default_target_path(request_info);
+static ResponseGenerator::Content method_post(const RequestInfo &request_info,
+                                              const Path        &target_path) {
   /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -109,9 +104,9 @@ POSTリクエストを正常に処理した結果、
   return content;
 }
 
-ResponseGenerator::Content method_delete(const RequestInfo &request_info) {
+static ResponseGenerator::Content method_delete(const RequestInfo &request_info,
+                                                const Path &target_path) {
   HttpStatusCode status_code;
-  Path           target_path = create_default_target_path(request_info);
   if (!target_path.is_file_exists()) {
     ERROR_LOG("target file is not found");
     status_code = HttpStatusCode::S_404_NOT_FOUND;
@@ -140,16 +135,22 @@ static bool is_available_methods(const RequestInfo &request_info) {
          request_info.location_->available_methods_.end();
 }
 
+static Path create_default_target_path(const RequestInfo &request_info) {
+  return request_info.location_->root_ +
+         request_info.request_line_.absolute_path_;
+}
+
 ResponseGenerator::Content handle_method(const RequestInfo &request_info) {
   HttpStatusCode status_code;
+  Path           target_path = create_default_target_path(request_info);
   if (!is_available_methods(request_info)) {
     status_code = HttpStatusCode::S_405_NOT_ALLOWED;
   } else if ("GET" == request_info.request_line_.method_) {
-    return method_get(request_info);
+    return method_get(request_info, target_path);
   } else if ("POST" == request_info.request_line_.method_) {
-    return method_post(request_info);
+    return method_post(request_info, target_path);
   } else if ("DELETE" == request_info.request_line_.method_) {
-    return method_delete(request_info);
+    return method_delete(request_info, target_path);
   } else {
     ERROR_LOG("unknown method: " << request_info.request_line_.method_);
     status_code = HttpStatusCode::S_501_NOT_IMPLEMENTED;
