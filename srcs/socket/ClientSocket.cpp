@@ -6,6 +6,7 @@
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
 #include "socket/FileReadSocket.hpp"
+#include "socket/FileWriteSocket.hpp"
 
 namespace ns_socket {
 
@@ -101,6 +102,12 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       if (response_generator.action() == ResponseGenerator::Content::READ) {
         SocketBase *file_socket =
             new FileReadSocket(_response_queue_.back(), response_generator);
+        socket_map_actions.add_socket_map_action(SocketMapAction(
+            SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
+      } else if (response_generator.action() ==
+                 ResponseGenerator::Content::WRITE) {
+        SocketBase *file_socket =
+            new FileWriteSocket(_response_queue_.back(), response_generator);
         socket_map_actions.add_socket_map_action(SocketMapAction(
             SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
       }

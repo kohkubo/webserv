@@ -43,6 +43,7 @@ public:
   std::string     create_response_message(const std::string &content);
 };
 
+std::string create_default_body_content(const HttpStatusCode &status_code);
 Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,
                                          const Path        &target_path);
 std::string         create_autoindex_body(const RequestInfo &request_info,
