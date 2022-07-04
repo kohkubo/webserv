@@ -97,9 +97,9 @@ POSTリクエストを正常に処理した結果、
         request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
   ResponseGenerator::Content content;
-  content.action_      = ResponseGenerator::Content::WRITE;
-  content.fd_          = result.object_;
-  content.str_         = request_info.body_;
+  content.action_ = ResponseGenerator::Content::WRITE;
+  content.fd_     = result.object_;
+  content.str_    = request_info.body_;
   return content;
 }
 
