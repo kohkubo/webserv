@@ -39,7 +39,7 @@ public:
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response        generate_response();
-  Content::Action content_state() const { return content_.action_; }
+  Content::Action action() const { return content_.action_; }
   std::string     create_response_message(const std::string &content);
 };
 
