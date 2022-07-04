@@ -18,11 +18,11 @@ public:
   Path(char const *path);
   bool                is_file_exists() const;
   bool                is_dir_exists() const;
-  bool                is_accessible(int mode);
-  bool                is_minus_depth();
+  bool                is_accessible(int mode) const;
+  bool                is_minus_depth() const;
   bool                has_suffix(const std::string &suffix) const;
   Result<std::string> get_realpath() const;
-  bool                remove_file();
+  bool                remove_file() const;
   Result<int>         open_read_file() const;
   Result<int>         open_write_file() const;
   Result<DIR *>       open_dir() const;

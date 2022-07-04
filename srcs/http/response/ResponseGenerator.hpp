@@ -18,19 +18,20 @@ public:
       WRITE,  // FD書き込み待ち
       CREATED // contentを作成済み
     };
-    Action      action_;
-    fileFd      fd_;
-    std::string str_;
+    Action         action_;
+    HttpStatusCode status_code_;
+    std::string    str_;
+    fileFd         fd_;
 
-    Content()
+    Content(HttpStatusCode status_code = HttpStatusCode::S_200_OK)
         : action_(READ)
+        , status_code_(status_code)
         , fd_(-1) {}
   };
   Content content_;
 
 private:
   const RequestInfo _request_info_;
-  HttpStatusCode    _status_code_;
   bool              _is_connection_close_;
 
 public:
@@ -38,30 +39,18 @@ public:
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response        generate_response();
-  bool            has_fd() const { return content_.fd_ != -1; }
-  Content::Action content_state() const { return content_.action_; }
+  Content::Action action() const { return content_.action_; }
   std::string     create_response_message(const std::string &content);
-  std::string     create_response_message(HttpStatusCode status_code);
-
-private:
-  static Result<std::string>
-                 _read_file_to_str_cgi(const RequestInfo &request_info,
-                                       const Path        &target_path);
-  Content        _create_status_code_content(const RequestInfo &request_info);
-  HttpStatusCode _handle_method(const RequestInfo &request_info);
-  HttpStatusCode _method_get(const RequestInfo &request_info);
-  HttpStatusCode _method_get_dir(const RequestInfo &request_info,
-                                 const Path        &target_path);
-  HttpStatusCode _method_get_file(const RequestInfo &request_info,
-                                  const Path        &target_path);
-  HttpStatusCode _method_post(const RequestInfo &request_info);
-  static HttpStatusCode _method_delete(const RequestInfo &request_info);
 };
 
-std::string create_autoindex_body(const RequestInfo &request_info,
-                                  const Path        &target_path);
-std::string create_default_body_content(const HttpStatusCode &status_code);
-
+Result<std::string> read_file_to_str_cgi(const RequestInfo &request_info,
+                                         const Path        &target_path);
+std::string         create_autoindex_body(const RequestInfo &request_info,
+                                          const Path        &target_path);
+ResponseGenerator::Content
+create_status_code_content(const RequestInfo    &request_info,
+                           const HttpStatusCode &status_code);
+ResponseGenerator::Content handle_method(const RequestInfo &request_info);
 } // namespace response_generator
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

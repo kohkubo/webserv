@@ -46,7 +46,9 @@ bool Path::has_suffix(const std::string &suffix) const {
   return ::has_suffix(_path_, suffix);
 }
 
-bool Path::is_accessible(int mode) { return access(_path_.c_str(), mode) == 0; }
+bool Path::is_accessible(int mode) const {
+  return access(_path_.c_str(), mode) == 0;
+}
 
 Result<std::string> Path::get_realpath() const {
   char *abs_path = realpath(_path_.c_str(), NULL);
@@ -59,7 +61,7 @@ Result<std::string> Path::get_realpath() const {
   return Ok<std::string>(res);
 }
 
-bool Path::is_minus_depth() {
+bool Path::is_minus_depth() const {
   tokenVector   tokens = tokenize(_path_, "/", "/");
   tokenIterator it     = tokens.begin();
 
@@ -76,7 +78,7 @@ bool Path::is_minus_depth() {
   return false;
 }
 
-bool Path::remove_file() {
+bool Path::remove_file() const {
   int ret = std::remove(_path_.c_str());
   if (ret == -1) {
     ERROR_LOG_WITH_ERRNO("remove_file");
