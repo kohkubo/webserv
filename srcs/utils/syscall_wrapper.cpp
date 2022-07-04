@@ -28,15 +28,6 @@ int xpoll(struct pollfd *fds, nfds_t nfds, int timeout) {
   return nready;
 }
 
-// TODO: fdの上限によるエラーに関してexitしていいか
-DIR *xopendir(const char *name) {
-  DIR *dir = opendir(name);
-  if (dir == NULL) {
-    ERROR_EXIT_WITH_ERRNO("opendir() failed");
-  }
-  return dir;
-}
-
 struct dirent *xreaddir(DIR *dir) {
   errno                   = 0;
   struct dirent *dir_read = readdir(dir);

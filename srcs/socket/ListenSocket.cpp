@@ -14,6 +14,8 @@
 #include "utils/syscall_wrapper.hpp"
 #include "utils/utils.hpp"
 
+namespace ns_socket {
+
 ListenSocket::ListenSocket(const ConfigGroup &config_group)
     : config_group_(config_group) {
   _socket_fd_ = _open_new_socket(config_group.sockaddr_in());
@@ -75,3 +77,5 @@ SocketMapActions ListenSocket::handle_event(short int revents) {
 }
 
 bool ListenSocket::is_timed_out() { return false; }
+
+} // namespace ns_socket

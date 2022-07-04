@@ -6,6 +6,8 @@
 
 #include <vector>
 
+namespace ns_socket {
+
 class SocketMapActions {
 private:
   std::vector<SocketMapAction> _socket_map_action_vector_;
@@ -28,5 +30,7 @@ public:
     }
   }
 };
+
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_SOCKETMAPACTIONS_HPP */

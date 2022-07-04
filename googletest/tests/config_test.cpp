@@ -159,6 +159,21 @@ TEST(server_config_test, parse_map_directive) {
   }
 }
 
+TEST(server_config_test, parse_map_directive_exception) {
+  {
+    std::string str          = "server {\n"
+                               "    listen 0.0.0.0:50001;\n"
+                               "    error_page -404 /404.html;\n"
+                               "    location / {\n"
+                               "        root /var/www/html/;\n"
+                               "    }\n"
+                               "}\n";
+    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+    EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+                ::testing::ExitedWithCode(EXIT_FAILURE), "");
+  }
+}
+
 TEST(server_config_test, parse_boolean_directive) {
   {
     std::string     str          = "server {\n"
@@ -187,18 +202,55 @@ TEST(server_config_test, parse_boolean_directive) {
 }
 
 TEST(server_config_test, parse_size_directive) {
-  {
-    std::string str          = "server {\n"
-                               "   listen 0.0.0.0:50001;\n"
-                               "    client_max_body_size 1000;\n"
-                               "    location / {\n"
-                               "        root /var/www/;\n"
-                               "    }\n"
-                               "}\n";
-    tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    Config      config(token_vector.begin(), token_vector.end());
-    EXPECT_EQ(config.client_max_body_size_, static_cast<std::size_t>(1000));
-  }
+  std::string str          = "server {\n"
+                             "   listen 0.0.0.0:50001;\n"
+                             "    client_max_body_size 1000;\n"
+                             "    location / {\n"
+                             "        root /var/www/;\n"
+                             "    }\n"
+                             "}\n";
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  Config      config(token_vector.begin(), token_vector.end());
+  EXPECT_EQ(config.client_max_body_size_, static_cast<std::size_t>(1000));
+}
+
+TEST(server_config_test, parse_size_directive_exception) {
+  std::string str          = "server {\n"
+                             "   listen 0.0.0.0:50001;\n"
+                             "    client_max_body_size -1000;\n"
+                             "    location / {\n"
+                             "        root /var/www/;\n"
+                             "    }\n"
+                             "}\n";
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
+}
+
+TEST(server_config_test, parse_size_directive_exception2) {
+  std::string str          = "server {\n"
+                             "   listen 0.0.0.0:50001;\n"
+                             "    client_max_body_size hoge;\n"
+                             "    location / {\n"
+                             "        root /var/www/;\n"
+                             "    }\n"
+                             "}\n";
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
+}
+
+TEST(server_config_test, parse_size_directive_exception3) {
+  std::string str          = "server {\n"
+                             "   listen 0.0.0.0:50001;\n"
+                             "    client_max_body_size 123hoge;\n"
+                             "    location / {\n"
+                             "        root /var/www/;\n"
+                             "    }\n"
+                             "}\n";
+  tokenVector token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
+  EXPECT_EXIT({ Config config(token_vector.begin(), token_vector.end()); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
 }
 
 TEST(server_config_test, parse_vector_directive) {

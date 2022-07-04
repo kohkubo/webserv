@@ -3,6 +3,8 @@
 
 #include <ctime>
 
+namespace ns_socket {
+
 class Timeout {
 private:
   std::time_t _timeout_seconds_;
@@ -24,5 +26,7 @@ public:
     return std::difftime(_time_now(), _last_event_time_) >= _timeout_seconds_;
   }
 };
+
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_TIMEOUT_HPP */

@@ -2,6 +2,7 @@
 #define SRCS_HTTP_RESPONSE_CGIENVIRON_HPP
 
 #include "http/request/RequestInfo.hpp"
+#include "utils/Path.hpp"
 
 class CgiEnviron {
 private:
@@ -12,7 +13,7 @@ private:
 
 public:
   char **environ() { return _environ_; }
-  CgiEnviron(const RequestInfo &request_info);
+  CgiEnviron(const RequestInfo &request_info, const Path &target_path);
   ~CgiEnviron();
 };
 

@@ -50,6 +50,20 @@ bool getline(std::string &source, std::string &line, const std::string &delim) {
   return true;
 }
 
+Result<std::size_t> string_to_size(const std::string &str) {
+  for (size_t i = 0; i < str.size(); i++) {
+    char c = str[i];
+    if (!(std::isdigit(c) != 0)) {
+      return Error<std::size_t>();
+    }
+  }
+
+  std::size_t       result = 0;
+  std::stringstream ss(str);
+  ss >> result;
+  return Ok<std::size_t>(result);
+}
+
 Result<std::size_t> hexstr_to_size(const std::string &str) {
   for (size_t i = 0; i < str.size(); i++) {
     char c = str[i];
@@ -59,34 +73,9 @@ Result<std::size_t> hexstr_to_size(const std::string &str) {
     }
   }
 
-  std::size_t       x = 0;
+  std::size_t       result = 0;
   std::stringstream ss;
   ss << std::hex << str;
-  ss >> x;
-  return Ok<std::size_t>(x);
-}
-
-bool is_dir(const std::string &filepath) {
-  struct stat st = {};
-  if (stat(filepath.c_str(), &st) == 0) {
-    return S_ISDIR(st.st_mode);
-  }
-  return false;
-}
-
-bool is_minus_depth(const std::string &filepath) {
-  tokenVector   tokens = tokenize(filepath, "/", "/");
-  tokenIterator it     = tokens.begin();
-
-  for (long depth = 0; it != tokens.end(); it++) {
-    if (*it == "..") {
-      depth--;
-    } else if (*it != ".") {
-      depth++;
-    }
-    if (depth < 0) {
-      return true;
-    }
-  }
-  return false;
+  ss >> result;
+  return Ok<std::size_t>(result);
 }

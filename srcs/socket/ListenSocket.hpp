@@ -9,6 +9,8 @@
 #include "config/ConfigGroup.hpp"
 #include "socket/SocketBase.hpp"
 
+namespace ns_socket {
+
 class ListenSocket : public SocketBase {
 public:
   const ConfigGroup &config_group_;
@@ -26,5 +28,7 @@ public:
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
 };
+
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_LISTENSOCKET_HPP */

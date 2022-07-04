@@ -7,7 +7,8 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "http/const/const_http_enums.hpp"
+#include "http/HttpStatusCode.hpp"
+#include "utils/Path.hpp"
 #include "utils/tokenize.hpp"
 
 class RequestInfo {
@@ -33,7 +34,7 @@ public:
   */
   struct RequestLine {
     std::string method_;
-    std::string absolute_path_;
+    Path        absolute_path_;
     std::string query_;
     std::string http_version_;
   };
@@ -44,7 +45,6 @@ public:
   bool            is_chunked_;
   bool            has_content_length_;
   std::size_t     content_length_;
-  std::string     target_path_;
   Config          config_;
   const Location *location_;
   std::string     content_type_;
@@ -58,13 +58,13 @@ public:
 
   class BadRequestException : public std::logic_error {
   private:
-    HttpStatusCode::StatusCode _status_;
+    HttpStatusCode _status_;
 
   public:
     BadRequestException(
-        HttpStatusCode::StatusCode status = HttpStatusCode::BAD_REQUEST_400,
-        const std::string         &msg    = "Illegal request.");
-    HttpStatusCode::StatusCode status() const;
+        HttpStatusCode     status = HttpStatusCode::C_400_BAD_REQUEST,
+        const std::string &msg    = "Illegal request.");
+    HttpStatusCode status() const;
   };
 
   bool has_body() const { return has_content_length_ || is_chunked_; }

@@ -9,8 +9,6 @@
 #include <iostream>
 #include <map>
 
-#include "utils/utils.hpp"
-
 Config::Config()
     : client_max_body_size_(1024)
     , server_name_("") {}
@@ -116,8 +114,8 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   while (pos != end && *pos != "}") {
     tokenIterator head = pos;
     // clang-format off
-    pos = _parse_string_directive("root", location.root_, pos, end);
-    pos = _parse_string_directive("index", location.index_, pos, end);
+    pos = _parse_path_directive("root", location.root_, pos, end);
+    pos = _parse_path_directive("index", location.index_, pos, end);
     pos = _parse_bool_directive("autoindex", location.autoindex_, pos, end);
     pos = _parse_map_directive("return", location.return_map_, pos, end);
     pos = _parse_vector_directive("available_methods", location.available_methods_, pos, end);
@@ -136,12 +134,12 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
     location.available_methods_.push_back("POST");
     location.available_methods_.push_back("DELETE");
   }
-  if (has_suffix(location.index_, "/"))
+  if (location.index_.has_suffix("/"))
     ERROR_EXIT("index directive failed. don't add \"/\" to file path.");
-  if (!has_suffix(location.root_, "/"))
+  if (!location.root_.has_suffix("/"))
     ERROR_EXIT("root directive failed. please add \"/\" to end of root dir");
-  if (is_minus_depth(location.location_path_) ||
-      is_minus_depth(location.root_) || is_minus_depth(location.index_))
+  if (location.location_path_.is_minus_depth() ||
+      location.root_.is_minus_depth() || location.index_.is_minus_depth())
     ERROR_EXIT("minus depth path failed.");
   locations_.add_or_exit(location);
   return ++pos;
@@ -156,7 +154,11 @@ tokenIterator Config::_parse_map_directive(std::string                 key,
   pos++;
   if (pos == end || pos + 2 == end || *(pos + 2) != ";")
     ERROR_EXIT("could not detect directive value.");
-  value.insert(std::make_pair(std::atoi((*pos).c_str()), *(pos + 1)));
+  Result<std::size_t> result = string_to_size(*pos);
+  if (result.is_err_) {
+    ERROR_EXIT("could not detect directive value.");
+  }
+  value.insert(std::make_pair(result.object_, *(pos + 1)));
   return pos + 3;
 }
 
@@ -164,6 +166,18 @@ tokenIterator Config::_parse_string_directive(std::string   key,
                                               std::string  &value,
                                               tokenIterator pos,
                                               tokenIterator end) {
+  if (*pos != key)
+    return pos;
+  pos++;
+  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
+    ERROR_EXIT("could not detect directive value.");
+  value = *pos;
+  return pos + 2;
+}
+
+tokenIterator Config::_parse_path_directive(std::string key, Path &value,
+                                            tokenIterator pos,
+                                            tokenIterator end) {
   if (*pos != key)
     return pos;
   pos++;
@@ -181,9 +195,10 @@ tokenIterator Config::_parse_size_directive(std::string key, size_t &value,
   pos++;
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
-  // TODO: size_tに変換できるやり方ちゃんと調査
-  // TODO: エラー処理
-  value = std::atol((*pos).c_str());
+  Result<std::size_t> result = string_to_size(*pos);
+  if (result.is_err_)
+    ERROR_EXIT("could not parse size string.");
+  value = result.object_;
   return pos + 2;
 }
 

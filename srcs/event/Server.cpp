@@ -21,7 +21,7 @@ void Server::run_loop() {
         continue;
       }
       nready--;
-      SocketMapActions socket_map_actions =
+      ns_socket::SocketMapActions socket_map_actions =
           _socket_map_.handle_socket_event(it->fd, it->revents);
       socket_map_actions.do_action(_socket_map_);
     }

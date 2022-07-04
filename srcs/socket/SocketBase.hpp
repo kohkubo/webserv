@@ -7,6 +7,8 @@
 
 #include "utils/utils.hpp"
 
+namespace ns_socket {
+
 class SocketMapActions;
 
 class SocketBase {
@@ -27,5 +29,7 @@ public:
   virtual SocketMapActions handle_event(short int revents) = 0;
   int                      socket_fd() const { return _socket_fd_; }
 };
+
+} // namespace ns_socket
 
 #endif /* SRCS_SOCKET_SOCKETBASE_HPP */
