@@ -46,7 +46,7 @@ Response ResponseGenerator::generate_response() {
     return Response("", _is_connection_close_, Response::READING);
   }
   if (content_.action_ == Content::WRITE) {
-    return Response(create_response_message(content_.str_),
+    return Response("",
                     _is_connection_close_, Response::WRITING);
   }
   // CREATEのとき
