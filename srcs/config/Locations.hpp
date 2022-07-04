@@ -1,5 +1,5 @@
-#ifndef SRCS_CONFIG_LOCATIONVECTOR_HPP
-#define SRCS_CONFIG_LOCATIONVECTOR_HPP
+#ifndef SRCS_CONFIG_LOCATIONS_HPP
+#define SRCS_CONFIG_LOCATIONS_HPP
 
 #include <vector>
 
@@ -20,4 +20,4 @@ public:
   bool            empty() const { return _location_vector_.empty(); }
 };
 
-#endif /* SRCS_CONFIG_LOCATIONVECTOR_HPP */
+#endif /* SRCS_CONFIG_LOCATIONS_HPP */
