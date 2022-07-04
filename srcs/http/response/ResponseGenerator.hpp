@@ -24,7 +24,7 @@ public:
     std::string    str_;
     fileFd         fd_;
     // cgiはfd二つ発生するので、コンストラクタでfdを作成する。
-    std::string target_path_;
+    Path target_path_;
 
     Content(HttpStatusCode status_code = HttpStatusCode::S_200_OK)
         : action_(READ)

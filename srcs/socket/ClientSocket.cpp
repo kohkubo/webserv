@@ -5,6 +5,7 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
+#include "socket/CgiSocket.hpp"
 #include "socket/FileReadSocket.hpp"
 #include "socket/FileWriteSocket.hpp"
 
@@ -82,21 +83,6 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       if (request_state != Request::SUCCESS) {
         break;
       }
-      // fileを読むか、handle_methodやるところまで -> http status code
-      // 結果Result<openされたfd>が返ってくる。
-      // ResponseGenerator::Content body =
-      // ResponseGenerator::create_fd_or_body(
-      //     _request_.request_info(), HttpStatusCode::S_200_OK);
-      // if (body.has_fd()) {
-      //   SocketBase *file_socket =
-      //       new FileReadSocket(body.fd_, _response_queue_.back());
-      // }
-      // if (result.has_read_file_) {
-      //  SocketBase *file_socket =
-      //      new FileReadSocket(result.object_, _response_queue_.back());
-      //  socket_map_actions.add_socket_map_action(SocketMapAction(
-      //      SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
-      //} else {
       ResponseGenerator response_generator(_request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
       if (response_generator.action() == ResponseGenerator::Content::READ) {
@@ -110,6 +96,12 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
             new FileWriteSocket(_response_queue_.back(), response_generator);
         socket_map_actions.add_socket_map_action(SocketMapAction(
             SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
+      } else if (response_generator.action() ==
+                 ResponseGenerator::Content::CGI) {
+        SocketBase *cgi_socket =
+            new CgiSocket(_response_queue_.back(), response_generator);
+        socket_map_actions.add_socket_map_action(SocketMapAction(
+            SocketMapAction::INSERT, cgi_socket->socket_fd(), cgi_socket));
       }
       _request_ = Request();
     }
