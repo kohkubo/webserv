@@ -40,6 +40,6 @@ func readParseResponse(src io.Reader, reqMethod string) (*http.Response, error) 
 	case resp := <-ch_resp:
 		return resp, nil
 	case err := <-ch_error:
-		return nil, err
+		return nil, fmt.Errorf("readParseResponse: %w", err)
 	}
 }
