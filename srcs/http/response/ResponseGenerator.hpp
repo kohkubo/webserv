@@ -14,9 +14,10 @@ class ResponseGenerator {
 public:
   struct Content {
     enum Action {
-      READ,   // FD読み込み待ち
-      WRITE,  // FD書き込み待ち
-      CREATED // contentを作成済み
+      READ,    // FD読み込み待ち
+      WRITE,   // FD書き込み待ち
+      CREATED, // contentを作成済み
+      CGI      // CGI
     };
     Action         action_;
     HttpStatusCode status_code_;
