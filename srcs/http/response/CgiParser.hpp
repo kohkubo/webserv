@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 
+#include "http/HttpStatusCode.hpp"
 #include "utils/Result.hpp"
 
 // clang-format off
@@ -11,15 +12,27 @@
 rfc 3875 6. CGI Response
   CGI-Response = document-response | local-redir-response | client-redir-response | client-redirdoc-response
 
-  document-response = Content-Type [ Status ] *other-field NL response-body
-  local-redir-response = local-Location NL
-  client-redir-response = client-Location *extension-field NL
-  client-redirdoc-response = client-Location Status Content-Type *other-field NL response-body
+  document-response = Content-Type "Content-Type:" media-type NL
+                      [ Status ]   "Status:" status-code SP reason-phrase NL
+                      *other-field
+                      NL
+                      response-body
+  local-redir-response = local-Location  "Location:" local-pathquery NL
+                         NL
+  client-redir-response = client-Location "Location:" local-pathquery NL
+                          *extension-field
+                          NL
+  client-redirdoc-response = client-Location
+                             Status
+                             Content-Type
+                             *other-field
+                             NL
+                             response-body
 
     Content-Type = "Content-Type:" media-type NL
 
     Location        = local-Location | client-Location
-    client-Location = "Location:" fragment-URI NL
+    client-Location = "Location:" fragment-URI NL         // /ではじまる文字列
     local-Location  = "Location:" local-pathquery NL
 
     fragment-URI    = absoluteURI [ "#" fragment ]
@@ -56,29 +69,32 @@ public:
   typedef std::map<std::string, std::string> HeaderMap;
   enum CgiState {
     HEADER,
+    HEADER_END,
     BODY,
     END,
     ERROR,
   };
   enum ResponseType {
-    document,
-    local_redir,
-    client_redir,
-    client_redirdoc,
+    DOCUMENT,
+    LOCAL_REDIR,
+    CLIENT_REDIR,
+    CLIENT_REDIRDOC,
   };
-  CgiState     state_;
-  ResponseType response_type_;
-  std::string  new_line_delimiter_;
-  std::size_t  content_length_;
-  std::string  content_type_;
-  std::string  content_;
-  std::string  buffer_;
-  HeaderMap    header_map_;
+  CgiState       state_;
+  ResponseType   response_type_;
+  std::string    location_;
+  std::string    new_line_delimiter_;
+  std::size_t    content_length_;
+  std::string    content_type_;
+  std::string    content_;
+  std::string    buffer_;
+  HeaderMap      header_map_;
+  HttpStatusCode status_code_;
 
 public:
   CgiParser()
       : state_(HEADER)
-      , response_type_(document)
+      , response_type_(DOCUMENT)
       , new_line_delimiter_("\n")
       , content_length_(0) {}
   ~CgiParser(){};

@@ -3,20 +3,6 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-// cgiのパースエラー -> 500？
-
-std::string detect_newline_delimiter(const std::string &cgi_response) {
-  std::size_t pos = cgi_response.find("\r\n");
-  if (pos != std::string::npos) {
-    return "\r\n";
-  }
-  pos = cgi_response.find("\n");
-  if (pos == std::string::npos) {
-    // error
-  }
-  return "\n";
-}
-
 static Result<std::string> getline_cgi(std::string       &source,
                                        const std::string &delim) {
   std::size_t pos = source.find(delim);
@@ -52,7 +38,7 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
         return ERROR;
       }
       content_type_ = result.object_;
-      return BODY;
+      return HEADER_END;
     }
     std::size_t pos = line.find(":");
     if (pos == std::string::npos) {
@@ -60,7 +46,11 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
     }
     std::string key   = tolower(line.substr(0, pos));
     std::string value = tolower(trim(line.substr(pos + 1), " "));
-    header_map_[key]  = value;
+    std::pair<HeaderMap::const_iterator, bool> insert_result =
+        header_map_.insert(std::make_pair(key, value));
+    if (!insert_result.second) {
+      return ERROR;
+    }
   }
 }
 
@@ -89,16 +79,43 @@ CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
   return BODY;
 }
 
+bool is_client_location(const std::string &location) {
+  return location.find("http://") == 0 || location.find("https://") == 0;
+}
+
+CgiParser::ResponseType
+get_cgi_response_type(const CgiParser::HeaderMap &header_map) {
+  CgiParser::HeaderMap::const_iterator it = header_map.find("location");
+  if (it == header_map.end()) {
+    return CgiParser::DOCUMENT;
+  }
+  std::string location = it->second;
+  if (is_client_location(location)) {
+    CgiParser::HeaderMap::const_iterator it = header_map.find("status");
+    if (it == header_map.end()) {
+      return CgiParser::CLIENT_REDIRDOC;
+    }
+    return CgiParser::CLIENT_REDIR;
+  }
+  return CgiParser::LOCAL_REDIR;
+}
+
 CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
-  (void)response_type_;
   if (state_ == HEADER) {
     state_ = parse_header(buffer);
   }
+  if (state_ == HEADER_END) {
+    response_type_ = get_cgi_response_type(header_map_);
+    CgiParser::HeaderMap::const_iterator it =
+        header_map_.find("content-length");
+    if (it == header_map_.end()) {
+      state_ = END;
+    } else {
+      state_ = BODY;
+    }
+  }
   if (state_ == BODY) {
     state_ = parse_body(buffer);
-  }
-  if (state_ == END) {
-    return END;
   }
   return state_;
 }
