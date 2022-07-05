@@ -43,10 +43,13 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 
 Response ResponseGenerator::generate_response() {
   if (content_.action_ == Content::READ) {
-    return Response("", _is_connection_close_, Response::READING);
+    return Response(_is_connection_close_, Response::READING);
   }
   if (content_.action_ == Content::WRITE) {
-    return Response("", _is_connection_close_, Response::WRITING);
+    return Response(_is_connection_close_, Response::WRITING);
+  }
+  if (content_.action_ == Content::CGI) {
+    return Response(_is_connection_close_, Response::READING);
   }
   // CREATEのとき
   return Response(create_response_message(content_.str_),

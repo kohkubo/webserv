@@ -43,14 +43,14 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     bool is_close = _handle_receive_event();
     LOG(std::boolalpha << is_close);
     if (is_close) {
+      if (waitpid(_response_generator_.content_.cgi_pid_, NULL, 0) == -1) {
+        ERROR_LOG("error: waitpid in read_file_to_str_cgi");
+      }
       // TODO: parse_cgi_response
       _response_.set_response_message_and_sending(_buffer_);
       socket_map_actions.add_socket_map_action(
           SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
       return socket_map_actions;
-      if (waitpid(_response_generator_.content_.cgi_pid_, NULL, 0) == -1) {
-        ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-      }
     }
   }
   if ((revents & POLLOUT) != 0) {
