@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "http/response/CgiEnviron.hpp"
+#include "socket/FileReadSocket.hpp"
 #include "socket/SocketMapActions.hpp"
 
 namespace ns_socket {
@@ -15,11 +16,18 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
     , _timeout_(TIMEOUT_SECONDS_)
     , _response_(response)
     , _response_generator_(response_generator)
-    , _send_count_(0) {}
+    , _is_sending_(response_generator.request_info_.body_.size() != 0)
+    , _send_count_(0) {
+  if (!_is_sending_) {
+    shutdown(_socket_fd_, SHUT_WR);
+  }
+}
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
-  // bodyがあるときかつ、送信済みでないときpollout
+  if (_is_sending_) {
+    pfd.events = POLLIN | POLLOUT;
+  }
   return pfd;
 }
 
@@ -30,7 +38,7 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
   _timeout_.update_last_event();
 
   if ((revents & POLLIN) != 0) {
-    // LOG("got POLLIN  event of fd " << _socket_fd_);
+    LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event();
     if (is_close) {
       // TODO: parse_cgi_response
@@ -44,8 +52,8 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     }
   }
   if ((revents & POLLOUT) != 0) {
-    // LOG("got POLLOUT event of fd " << _socket_fd_);
-    _handle_send_event();
+    LOG("got POLLOUT event of cgi " << _socket_fd_);
+    _handle_send_event(socket_map_actions);
   }
   return socket_map_actions;
 }
@@ -60,9 +68,39 @@ bool CgiSocket::_handle_receive_event() {
   return false;
 }
 
-// リクエストにbodyがあるとき、bodyを入力。書き込み終了したらshutdown。
-void CgiSocket::_handle_send_event() {
-  // asita
+void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
+  ssize_t wc =
+      write(_socket_fd_, _response_generator_.request_info_.body_.c_str(),
+            _response_generator_.request_info_.body_.size());
+  if (wc == -1) {
+    LOG("write error");
+    socket_map_actions.add_socket_map_action(
+        SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+    _set_error_content(socket_map_actions);
+  }
+  _send_count_ += wc;
+  if (_send_count_ ==
+      static_cast<ssize_t>(_response_generator_.request_info_.body_.size())) {
+    _is_sending_ = false;
+    shutdown(_socket_fd_, SHUT_WR);
+  }
+}
+
+void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions) {
+  // response_generatorのcontentを更新
+  _response_generator_.content_ =
+      response_generator::create_status_code_content(
+          _response_generator_.request_info_,
+          HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+  // fileよむなら新しいソケット作成。そうじゃないならresponseの内容をセット
+  if (_response_generator_.action() == ResponseGenerator::Content::READ) {
+    SocketBase *file_socket =
+        new FileReadSocket(_response_, _response_generator_);
+    socket_map_actions.add_socket_map_action(SocketMapAction(
+        SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
+  }
+  // responseの内容を上書き(たぶんsendingの状態で上書きされる)
+  _response_ = _response_generator_.generate_response();
 }
 
 } // namespace ns_socket
