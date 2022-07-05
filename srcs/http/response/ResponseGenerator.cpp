@@ -19,26 +19,26 @@ namespace response_generator {
 
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      HttpStatusCode     status_code)
-    : _request_info_(request_info)
-    , _is_connection_close_(_request_info_.connection_close_ ||
+    : request_info_(request_info)
+    , _is_connection_close_(request_info_.connection_close_ ||
                             status_code == HttpStatusCode::C_400_BAD_REQUEST ||
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
   if (status_code.is_error_status_code()) {
-    content_ = create_status_code_content(_request_info_, status_code);
+    content_ = create_status_code_content(request_info_, status_code);
     return;
   }
-  if (_request_info_.location_ == NULL) {
-    content_ = create_status_code_content(_request_info_,
+  if (request_info_.location_ == NULL) {
+    content_ = create_status_code_content(request_info_,
                                           HttpStatusCode::S_404_NOT_FOUND);
     return;
   }
-  if (_request_info_.location_->return_map_.size() != 0) {
-    status_code = _request_info_.location_->return_map_.begin()->first;
-    content_    = create_status_code_content(_request_info_, status_code);
+  if (request_info_.location_->return_map_.size() != 0) {
+    status_code = request_info_.location_->return_map_.begin()->first;
+    content_    = create_status_code_content(request_info_, status_code);
     return;
   }
-  content_ = handle_method(_request_info_);
+  content_ = handle_method(request_info_);
 }
 
 Response ResponseGenerator::generate_response() {
@@ -94,7 +94,7 @@ static std::string create_response_header(const RequestInfo &request_info,
 std::string
 ResponseGenerator::create_response_message(const std::string &content) {
   std::string response = create_response_header(
-      _request_info_, _is_connection_close_, content_.status_code_);
+      request_info_, _is_connection_close_, content_.status_code_);
   response += entity_header_and_body(content);
   return response;
 };

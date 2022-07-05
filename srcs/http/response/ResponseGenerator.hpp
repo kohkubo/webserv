@@ -30,11 +30,11 @@ public:
         , status_code_(status_code)
         , fd_(-1) {}
   };
-  Content content_;
+  Content           content_;
+  const RequestInfo request_info_;
 
 private:
-  const RequestInfo _request_info_;
-  bool              _is_connection_close_;
+  bool _is_connection_close_;
 
 public:
   ResponseGenerator(const RequestInfo &request_info,
