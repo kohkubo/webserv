@@ -34,21 +34,23 @@ struct pollfd CgiSocket::pollfd() {
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketMapActions CgiSocket::handle_event(short int revents) {
+  LOG(revents);
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
 
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event();
+    LOG(std::boolalpha << is_close);
     if (is_close) {
       // TODO: parse_cgi_response
       _response_.set_response_message_and_sending(_buffer_);
       socket_map_actions.add_socket_map_action(
           SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+      return socket_map_actions;
       if (waitpid(_response_generator_.content_.cgi_pid_, NULL, 0) == -1) {
         ERROR_LOG("error: waitpid in read_file_to_str_cgi");
       }
-      return socket_map_actions;
     }
   }
   if ((revents & POLLOUT) != 0) {

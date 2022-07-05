@@ -1,5 +1,6 @@
 #include "http/response/ResponseGenerator.hpp"
 
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -16,7 +17,8 @@ Result<ResponseGenerator::Content>
 create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
   int socket_pair[2] = {0, 0};
   // 0番をソケットへ、1番をcgiのfdにmappingする。
-  if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, socket_pair) == -1) {
+  if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0,
+                 socket_pair) == -1) {
     ERROR_LOG("error: socketpair");
     return Error<ResponseGenerator::Content>();
   }
@@ -27,6 +29,7 @@ create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
   }
   // child
   if (pid == 0) {
+    close(socket_pair[0]);
     dup2(socket_pair[1], STDOUT_FILENO);
     dup2(socket_pair[1], STDIN_FILENO);
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
@@ -39,6 +42,7 @@ create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
     }
   }
   // parent
+  close(socket_pair[1]);
   ResponseGenerator::Content content;
   content.action_  = ResponseGenerator::Content::CGI;
   content.cgi_pid_ = pid;
