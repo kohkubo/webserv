@@ -19,8 +19,8 @@ public:
 public:
   SocketMapActions() {}
   ~SocketMapActions() {}
-  void add_new_action(SocketMapAction::ActionType type, int socket_fd,
-                      SocketBase *target) {
+  void add_action(SocketMapAction::ActionType type, int socket_fd,
+                  SocketBase *target) {
     SocketMapAction socket_map_action(type, socket_fd, target);
     _socket_map_action_vector_.push_back(socket_map_action);
   }

@@ -29,8 +29,7 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
             _response_generator_.content_.str_.size());
   if (write_size == -1) {
     LOG("write error");
-    socket_map_actions.add_new_action(SocketMapAction::DELETE, _socket_fd_,
-                                      this);
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
   if (write_size != 0) {
@@ -39,8 +38,7 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
             HttpStatusCode::S_201_CREATED));
     LOG("response message: " << response_message);
     _response_.set_response_message_and_sending(response_message);
-    socket_map_actions.add_new_action(SocketMapAction::DELETE, _socket_fd_,
-                                      this);
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
   LOG("write_size: " << write_size);

@@ -50,8 +50,7 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
       std::string response_message =
           _response_generator_.create_response_message(_buffer_);
       _response_.set_response_message_and_sending(response_message);
-      socket_map_actions.add_new_action(SocketMapAction::DELETE, _socket_fd_,
-                                        this);
+      socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
       return socket_map_actions;
     }
   }
@@ -78,8 +77,7 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
             _response_generator_.request_info_.body_.size());
   if (wc == -1) {
     LOG("write error");
-    socket_map_actions.add_new_action(SocketMapAction::DELETE, _socket_fd_,
-                                      this);
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     _set_error_content(socket_map_actions);
   }
   _send_count_ += wc;
@@ -100,8 +98,8 @@ void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions) {
   if (_response_generator_.action() == ResponseGenerator::Content::READ) {
     SocketBase *file_socket =
         new FileReadSocket(_response_, _response_generator_);
-    socket_map_actions.add_new_action(SocketMapAction::INSERT,
-                                      file_socket->socket_fd(), file_socket);
+    socket_map_actions.add_action(SocketMapAction::INSERT,
+                                  file_socket->socket_fd(), file_socket);
   }
   // responseの内容を上書き(たぶんsendingの状態で上書きされる)
   _response_ = _response_generator_.generate_response();

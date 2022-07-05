@@ -70,8 +70,8 @@ SocketMapActions ListenSocket::handle_event(short int revents) {
     // LOG("add new connection fd: " << conn_fd);
     SocketBase *client_socket = new ClientSocket(conn_fd, config_group_);
 
-    socket_map_actions.add_new_action(SocketMapAction::INSERT, conn_fd,
-                                      client_socket);
+    socket_map_actions.add_action(SocketMapAction::INSERT, conn_fd,
+                                  client_socket);
   }
   return socket_map_actions;
 }
