@@ -14,7 +14,8 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
     : SocketBase(response_generator.content_.fd_)
     , _timeout_(TIMEOUT_SECONDS_)
     , _response_(response)
-    , _response_generator_(response_generator) {}
+    , _response_generator_(response_generator)
+    , _send_count_(0) {}
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};

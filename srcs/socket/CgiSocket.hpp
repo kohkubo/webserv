@@ -19,6 +19,7 @@ private:
   Response                &_response_;
   std::string              _buffer_;
   ResponseGenerator        _response_generator_;
+  ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
   static const size_t      CGI_BUFFER_SIZE_ = 2048;
 
