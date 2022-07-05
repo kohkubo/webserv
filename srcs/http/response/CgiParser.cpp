@@ -46,7 +46,7 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
     }
     std::string line = result.object_;
     if (line.empty()) {
-      Result<std::string> result = parse_content_type(header_map_);
+      result = parse_content_type(header_map_);
       if (result.is_err_) {
         ERROR_LOG("parse_content_type error");
         return ERROR;
