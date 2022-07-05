@@ -42,18 +42,17 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 Response ResponseGenerator::generate_response() {
-  if (content_.action_ == Content::READ) {
+  switch (content_.action_) {
+  case Content::READ:
     return Response(_is_connection_close_, Response::READING);
-  }
-  if (content_.action_ == Content::WRITE) {
+  case Content::WRITE:
     return Response(_is_connection_close_, Response::WRITING);
-  }
-  if (content_.action_ == Content::CGI) {
+  case Content::CGI:
     return Response(_is_connection_close_, Response::READING);
+  default:
+    return Response(create_response_message(content_.str_),
+                    _is_connection_close_);
   }
-  // CREATEのとき
-  return Response(create_response_message(content_.str_),
-                  _is_connection_close_);
 }
 
 static std::string start_line(const HttpStatusCode &status_code) {
