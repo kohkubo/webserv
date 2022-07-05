@@ -17,7 +17,7 @@ class CgiSocket : public SocketBase {
 private:
   Timeout                  _timeout_;
   Response                &_response_;
-  std::string              _buffer_;
+  std::stringstream        _buffer_;
   ResponseGenerator        _response_generator_;
   bool                     _is_sending_;
   ssize_t                  _send_count_;
