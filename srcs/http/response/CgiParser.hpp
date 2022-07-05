@@ -1,7 +1,10 @@
 #ifndef SRCS_HTTP_RESPONSE_CGIPARSER
 #define SRCS_HTTP_RESPONSE_CGIPARSER
 
+#include <map>
 #include <string>
+
+#include "utils/Result.hpp"
 
 // clang-format off
 /*
@@ -18,7 +21,7 @@ rfc 3875 6. CGI Response
     Location        = local-Location | client-Location
     client-Location = "Location:" fragment-URI NL
     local-Location  = "Location:" local-pathquery NL
-    
+
     fragment-URI    = absoluteURI [ "#" fragment ]
     local-pathquery = abs-path [ "?" query-string ]
 
@@ -49,25 +52,39 @@ hogehoge
  */
 
 class CgiParser {
-private:
+public:
+  typedef std::map<std::string, std::string> HeaderMap;
+  enum CgiState {
+    HEADER,
+    BODY,
+    END,
+    ERROR,
+  };
   enum ResponseType {
     document,
     local_redir,
     client_redir,
     client_redirdoc,
   };
-
-  ResponseType _response_type_;
-  std::string  _new_line_delim_;
-  std::string  _content_type_;
-
-private:
-  CgiParser();
-  bool _parse_content_type(std::string &cgi_response);
+  CgiState     state_;
+  ResponseType response_type_;
+  std::string  new_line_delimiter_;
+  std::size_t  content_length_;
+  std::string  content_type_;
+  std::string  content_;
+  std::string  buffer_;
+  HeaderMap    header_map_;
 
 public:
-  CgiParser(std::string &cgi_response);
-  ~CgiParser();
+  CgiParser()
+      : state_(HEADER)
+      , response_type_(document)
+      , new_line_delimiter_("\n")
+      , content_length_(0) {}
+  ~CgiParser(){};
+  CgiState handle_cgi(std::string &buffer);
+  CgiState parse_header(std::string &buffer);
+  CgiState parse_body(std::string &buffer);
 };
 
 #endif /* SRCS_HTTP_RESPONSE_CGIPARSER */
