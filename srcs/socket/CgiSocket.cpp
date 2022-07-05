@@ -8,9 +8,6 @@
 #include "http/response/CgiEnviron.hpp"
 #include "socket/SocketMapActions.hpp"
 
-// TODO: cgiからのレスポンスは、ヘッダー＋レスポンスbody、要パース
-// local redirectどうするか
-
 namespace ns_socket {
 
 CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
@@ -21,6 +18,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
+  // bodyがあるときかつ、送信済みでないときpollout
   return pfd;
 }
 
@@ -40,12 +38,10 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
           SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
       if (waitpid(_response_generator_.content_.cgi_pid_, NULL, 0) == -1) {
         ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-        // TODO: how to return error?
       }
       return socket_map_actions;
     }
   }
-  // リクエストにbodyがあるとき、bodyを入力。書き込み終了したらshutdown。
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of fd " << _socket_fd_);
     _handle_send_event();
@@ -63,6 +59,7 @@ bool CgiSocket::_handle_receive_event() {
   return false;
 }
 
+// リクエストにbodyがあるとき、bodyを入力。書き込み終了したらshutdown。
 void CgiSocket::_handle_send_event() {
   // asita
 }

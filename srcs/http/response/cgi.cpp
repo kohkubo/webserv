@@ -13,7 +13,7 @@
 namespace response_generator {
 
 Result<ResponseGenerator::Content>
-read_file_to_str_cgi(const RequestInfo &request_info, const Path &target_path) {
+create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
   int socket_pair[2] = {0, 0};
   // 0番をソケットへ、1番をcgiのfdにmappingする。
   if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, socket_pair) == -1) {
