@@ -34,7 +34,7 @@ method_get_file(const RequestInfo &request_info, const Path &target_path) {
   }
   if (target_path.has_suffix(".py")) {
     Result<ResponseGenerator::Content> result =
-        read_file_to_str_cgi(request_info, target_path);
+        create_cgi_content(request_info, target_path);
     if (result.is_err_) {
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
