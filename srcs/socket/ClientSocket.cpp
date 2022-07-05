@@ -83,23 +83,25 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       }
       ResponseGenerator response_generator(_request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      if (response_generator.action() == ResponseGenerator::Content::READ) {
-        SocketBase *file_socket =
+      SocketBase *socket = NULL;
+      switch (response_generator.action()) {
+      case ResponseGenerator::Content::READ:
+        socket =
             new FileReadSocket(_response_queue_.back(), response_generator);
-        socket_map_actions.add_action(SocketMapAction::INSERT,
-                                      file_socket->socket_fd(), file_socket);
-      } else if (response_generator.action() ==
-                 ResponseGenerator::Content::WRITE) {
-        SocketBase *file_socket =
+        break;
+      case ResponseGenerator::Content::WRITE:
+        socket =
             new FileWriteSocket(_response_queue_.back(), response_generator);
+        break;
+      case ResponseGenerator::Content::CGI:
+        socket = new CgiSocket(_response_queue_.back(), response_generator);
+        break;
+      default:
+        break;
+      }
+      if (socket != NULL) {
         socket_map_actions.add_action(SocketMapAction::INSERT,
-                                      file_socket->socket_fd(), file_socket);
-      } else if (response_generator.action() ==
-                 ResponseGenerator::Content::CGI) {
-        SocketBase *cgi_socket =
-            new CgiSocket(_response_queue_.back(), response_generator);
-        socket_map_actions.add_action(SocketMapAction::INSERT,
-                                      cgi_socket->socket_fd(), cgi_socket);
+                                      socket->socket_fd(), socket);
       }
       _request_ = Request();
     }
