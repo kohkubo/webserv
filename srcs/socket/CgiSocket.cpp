@@ -47,7 +47,9 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
         ERROR_LOG("error: waitpid in read_file_to_str_cgi");
       }
       // TODO: parse_cgi_response
-      _response_.set_response_message_and_sending(_buffer_);
+      std::string response_message =
+          _response_generator_.create_response_message(_buffer_);
+      _response_.set_response_message_and_sending(response_message);
       socket_map_actions.add_socket_map_action(
           SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
       return socket_map_actions;
