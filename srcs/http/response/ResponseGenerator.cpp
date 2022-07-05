@@ -50,7 +50,7 @@ Response ResponseGenerator::generate_response() {
   case Content::CGI:
     return Response(_is_connection_close_, Response::READING);
   default:
-    return Response(create_response_message(content_.str_),
+    return Response(create_response_message(content_.content_),
                     _is_connection_close_);
   }
 }

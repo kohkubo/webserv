@@ -9,23 +9,24 @@
 #include <string>
 
 #include "http/response/CgiEnviron.hpp"
+#include "http/response/Content.hpp"
 #include "utils/utils.hpp"
 
 namespace response_generator {
 
-Result<ResponseGenerator::Content>
-create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
+Result<Content> create_cgi_content(const RequestInfo &request_info,
+                                   const Path        &target_path) {
   int socket_pair[2] = {0, 0};
   // 0番をソケットへ、1番をcgiのfdにmappingする。
   if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0,
                  socket_pair) == -1) {
     ERROR_LOG("error: socketpair");
-    return Error<ResponseGenerator::Content>();
+    return Error<Content>();
   }
   pid_t pid = fork();
   if (pid == -1) {
     ERROR_LOG("error: fork in read_file_to_str_cgi");
-    return Error<ResponseGenerator::Content>();
+    return Error<Content>();
   }
   // child
   if (pid == 0) {
@@ -38,16 +39,12 @@ create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
     // TODO: execveの前にスクリプトのあるディレクトリに移動
     if (execve("/usr/bin/python3", argv, cgi_environ.environ()) == -1) {
       ERROR_LOG("error: execve");
-      return Error<ResponseGenerator::Content>();
+      return Error<Content>();
     }
   }
   // parent
   close(socket_pair[1]);
-  ResponseGenerator::Content content;
-  content.action_  = ResponseGenerator::Content::CGI;
-  content.cgi_pid_ = pid;
-  content.fd_      = socket_pair[0];
-  return Ok<ResponseGenerator::Content>(content);
+  return Ok<Content>(Content(socket_pair[0], Content::CGI, pid));
 }
 
 } // namespace response_generator

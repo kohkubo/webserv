@@ -9,8 +9,8 @@
 
 namespace response_generator {
 
-static ResponseGenerator::Content
-method_get_dir(const RequestInfo &request_info, const Path &target_path) {
+static Content method_get_dir(const RequestInfo &request_info,
+                              const Path        &target_path) {
   if (!target_path.is_dir_exists()) {
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
@@ -19,22 +19,19 @@ method_get_dir(const RequestInfo &request_info, const Path &target_path) {
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_403_FORBIDDEN);
   }
-  ResponseGenerator::Content content;
-  content.action_ = ResponseGenerator::Content::CREATED;
-  content.str_    = create_autoindex_body(request_info, target_path);
-  return content;
+  return Content(create_autoindex_body(request_info, target_path),
+                 HttpStatusCode::S_200_OK);
 }
 
-static ResponseGenerator::Content
-method_get_file(const RequestInfo &request_info, const Path &target_path) {
+static Content method_get_file(const RequestInfo &request_info,
+                               const Path        &target_path) {
   if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
   }
   if (target_path.has_suffix(".py")) {
-    Result<ResponseGenerator::Content> result =
-        create_cgi_content(request_info, target_path);
+    Result<Content> result = create_cgi_content(request_info, target_path);
     if (result.is_err_) {
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
@@ -47,14 +44,10 @@ method_get_file(const RequestInfo &request_info, const Path &target_path) {
     return create_status_code_content(
         request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  ResponseGenerator::Content content;
-  content.action_ = ResponseGenerator::Content::READ;
-  content.fd_     = result.object_;
-  return content;
+  return Content(result.object_, Content::READ);
 }
 
-static ResponseGenerator::Content method_get(const RequestInfo &request_info,
-                                             Path              &target_path) {
+static Content method_get(const RequestInfo &request_info, Path &target_path) {
   if (target_path.has_suffix("/")) {
     Path path_add_index = target_path + request_info.location_->index_;
     if (!path_add_index.is_file_exists()) {
@@ -65,8 +58,8 @@ static ResponseGenerator::Content method_get(const RequestInfo &request_info,
   return method_get_file(request_info, target_path);
 }
 
-static ResponseGenerator::Content method_post(const RequestInfo &request_info,
-                                              const Path        &target_path) {
+static Content method_post(const RequestInfo &request_info,
+                           const Path        &target_path) {
   /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -92,16 +85,14 @@ POSTリクエストを正常に処理した結果、
     return create_status_code_content(
         request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  ResponseGenerator::Content content;
-  content.status_code_ = HttpStatusCode::S_201_CREATED;
-  content.action_      = ResponseGenerator::Content::WRITE;
-  content.fd_          = result.object_;
-  content.str_         = request_info.body_;
+  Content content(result.object_, Content::WRITE,
+                  HttpStatusCode::S_201_CREATED);
+  content.content_ = request_info.body_;
   return content;
 }
 
-static ResponseGenerator::Content method_delete(const RequestInfo &request_info,
-                                                const Path &target_path) {
+static Content method_delete(const RequestInfo &request_info,
+                             const Path        &target_path) {
   HttpStatusCode status_code;
   if (!target_path.is_file_exists()) {
     ERROR_LOG("target file is not found");
@@ -136,7 +127,7 @@ static Path create_default_target_path(const RequestInfo &request_info) {
          request_info.request_line_.absolute_path_;
 }
 
-ResponseGenerator::Content handle_method(const RequestInfo &request_info) {
+Content handle_method(const RequestInfo &request_info) {
   HttpStatusCode status_code;
   Path           target_path = create_default_target_path(request_info);
   if (!is_available_methods(request_info)) {
