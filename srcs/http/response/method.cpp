@@ -19,8 +19,8 @@ static Content method_get_dir(const RequestInfo &request_info,
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_403_FORBIDDEN);
   }
-  return Content(create_autoindex_body(request_info, target_path),
-                 HttpStatusCode::S_200_OK);
+  return CreatedContent(create_autoindex_body(request_info, target_path),
+                        HttpStatusCode::S_200_OK);
 }
 
 static Content method_get_file(const RequestInfo &request_info,
@@ -44,7 +44,7 @@ static Content method_get_file(const RequestInfo &request_info,
     return create_status_code_content(
         request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  return Content(result.object_, Content::READ);
+  return ReadContent(result.object_, HttpStatusCode::S_200_OK);
 }
 
 static Content method_get(const RequestInfo &request_info, Path &target_path) {
@@ -85,10 +85,7 @@ POSTリクエストを正常に処理した結果、
     return create_status_code_content(
         request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  Content content(result.object_, Content::WRITE,
-                  HttpStatusCode::S_201_CREATED);
-  content.content_ = request_info.body_;
-  return content;
+  return WriteContent(result.object_, request_info.body_);
 }
 
 static Content method_delete(const RequestInfo &request_info,

@@ -44,7 +44,7 @@ Result<Content> create_cgi_content(const RequestInfo &request_info,
   }
   // parent
   close(socket_pair[1]);
-  return Ok<Content>(Content(socket_pair[0], Content::CGI, pid));
+  return Ok<Content>(CgiContent(socket_pair[0], pid));
 }
 
 } // namespace response_generator

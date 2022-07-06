@@ -25,11 +25,37 @@ public:
 
 public:
   Content(HttpStatusCode status_code = HttpStatusCode::S_200_OK);
+  Content(Action action, HttpStatusCode status_code, std::string content,
+          int fd, pid_t pid);
   Content(int fd, Action action,
           HttpStatusCode status_code = HttpStatusCode::S_200_OK);
   Content(int fd, Action action, pid_t cgi_pid);
   Content(std::string content, HttpStatusCode status_code,
           Action action = CREATED);
+};
+
+class ReadContent : public Content {
+private:
+  ReadContent() {}
+
+public:
+  ReadContent(int fd, HttpStatusCode status_code);
+};
+
+class WriteContent : public Content {
+private:
+  WriteContent() {}
+
+public:
+  WriteContent(int fd, std::string content);
+};
+
+class CgiContent : public Content {
+private:
+  CgiContent() {}
+
+public:
+  CgiContent(int fd, pid_t cgi_pid);
 };
 
 } // namespace response_generator

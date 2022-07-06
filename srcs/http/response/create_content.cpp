@@ -43,7 +43,7 @@ Content create_status_code_content(const RequestInfo    &request_info,
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     }
-    return Content(result.object_, Content::READ, status_code);
+    return ReadContent(result.object_, status_code);
   }
   return Content(create_default_content_str(status_code), status_code);
 }
