@@ -29,6 +29,7 @@ create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
   // child
   if (pid == 0) {
     close(socket_pair[0]);
+    // TODO: error handling
     dup2(socket_pair[1], STDOUT_FILENO);
     dup2(socket_pair[1], STDIN_FILENO);
     close(socket_pair[1]);
@@ -42,7 +43,9 @@ create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
     }
   }
   // parent
-  // TODO: set nonblocking
+  if (fcntl(socket_pair[0], F_SETFL, O_NONBLOCK) == -1) {
+    return Error<ResponseGenerator::Content>();
+  }
   close(socket_pair[1]);
   ResponseGenerator::Content content;
   content.action_  = ResponseGenerator::Content::CGI;
