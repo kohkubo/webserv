@@ -12,7 +12,7 @@ private:
   Server() {}
 
 public:
-  Server(const std::vector<ConfigGroup> &config_groups)
+  Server(const std::vector<config::ConfigGroup> &config_groups)
       : _socket_map_(config_groups) {}
   ~Server() {}
   void run_loop();

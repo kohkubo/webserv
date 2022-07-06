@@ -82,7 +82,7 @@ static std::string create_response_header(const RequestInfo &request_info,
     return response + CRLF;
   }
   if (HttpStatusCode::S_301_MOVED_PERMANENTLY == status_code) {
-    returnMap::const_iterator it =
+    config::returnMap::const_iterator it =
         request_info.location_->return_map_.find(status_code);
     response += location_header(it->second);
   }

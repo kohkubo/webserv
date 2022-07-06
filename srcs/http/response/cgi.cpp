@@ -17,9 +17,7 @@ namespace response_generator {
 Result<Content> create_cgi_content(const RequestInfo &request_info,
                                    const Path        &target_path) {
   int socket_pair[2] = {0, 0};
-  // 0番をソケットへ、1番をcgiのfdにmappingする。
-  if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0,
-                 socket_pair) == -1) {
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, socket_pair) == -1) {
     ERROR_LOG("error: socketpair");
     return Error<Content>();
   }
@@ -31,8 +29,10 @@ Result<Content> create_cgi_content(const RequestInfo &request_info,
   // child
   if (pid == 0) {
     close(socket_pair[0]);
+    // TODO: error handling
     dup2(socket_pair[1], STDOUT_FILENO);
     dup2(socket_pair[1], STDIN_FILENO);
+    close(socket_pair[1]);
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
                     const_cast<char *>(target_path.str().c_str()), NULL};
     CgiEnviron cgi_environ(request_info, target_path);
@@ -43,6 +43,9 @@ Result<Content> create_cgi_content(const RequestInfo &request_info,
     }
   }
   // parent
+  if (fcntl(socket_pair[0], F_SETFL, O_NONBLOCK) == -1) {
+    return Error<ResponseGenerator::Content>();
+  }
   close(socket_pair[1]);
   return Ok<Content>(CgiContent(socket_pair[0], pid));
 }

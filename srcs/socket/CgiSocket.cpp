@@ -41,7 +41,6 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event();
-    LOG(std::boolalpha << is_close);
     if (is_close) {
       if (waitpid(_response_generator_.content_.cgi_pid_, NULL, 0) == -1) {
         ERROR_LOG("error: waitpid in read_file_to_str_cgi");

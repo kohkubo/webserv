@@ -11,9 +11,11 @@
 
 namespace ns_socket {
 
+typedef int listenFd;
+
 class ListenSocket : public SocketBase {
 public:
-  const ConfigGroup &config_group_;
+  const config::ConfigGroup &config_group_;
 
 private:
   static listenFd _create_socket();
@@ -22,7 +24,7 @@ private:
   static listenFd _open_new_socket(struct sockaddr_in info);
 
 public:
-  ListenSocket(const ConfigGroup &config_group);
+  ListenSocket(const config::ConfigGroup &config_group);
   virtual ~ListenSocket() {}
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
