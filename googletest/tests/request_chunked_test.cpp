@@ -24,14 +24,14 @@ TEST(request_chunked_test, chunked_body) {
                                "0\r\n"
                                "\r\n";
 
-  Config   config;
-  Location location;
+  config::Config   config;
+  config::Location location;
   location.root_          = "/";
   location.location_path_ = "/";
   config.locations_.add_or_exit(location);
 
-  ConfigGroup config_group(config);
-  Request     request;
+  config::ConfigGroup config_group(config);
+  Request             request;
 
   request.handle_request(request_buffer, config_group);
   const RequestInfo &info = request.request_info();
@@ -60,14 +60,14 @@ TEST(request_chunked_test, chunked_body_split) {
                                 "0\r\n"
                                 "\r\n";
 
-  Config   config;
-  Location location;
+  config::Config   config;
+  config::Location location;
   location.root_          = "/";
   location.location_path_ = "/";
   config.locations_.add_or_exit(location);
-  ConfigGroup config_group(config);
-  Request     request;
-  std::string request_buffer;
+  config::ConfigGroup config_group(config);
+  Request             request;
+  std::string         request_buffer;
   request_buffer.append(request_buffer1);
   request.handle_request(request_buffer, config_group);
   request_buffer.append(request_buffer2);

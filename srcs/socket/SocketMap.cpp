@@ -10,8 +10,8 @@
 
 namespace ns_socket {
 
-SocketMap::SocketMap(const std::vector<ConfigGroup> &config_groups) {
-  std::vector<ConfigGroup>::const_iterator it = config_groups.begin();
+SocketMap::SocketMap(const std::vector<config::ConfigGroup> &config_groups) {
+  std::vector<config::ConfigGroup>::const_iterator it = config_groups.begin();
   for (; it != config_groups.end(); it++) {
     SocketBase *listen_socket = new ListenSocket(*it);
     _socket_map_.insert(

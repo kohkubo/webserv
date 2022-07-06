@@ -19,7 +19,7 @@ private:
 
 public:
   SocketMap() {}
-  SocketMap(const std::vector<ConfigGroup> &config_groups);
+  SocketMap(const std::vector<config::ConfigGroup> &config_groups);
   ~SocketMap();
   void                       close_timedout_socket();
   std::vector<struct pollfd> create_pollfds();
