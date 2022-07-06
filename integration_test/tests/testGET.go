@@ -87,9 +87,6 @@ var testGET = testCatergory{
 				return clientA.DoAndCheck()
 			},
 		},
-
-		// TODO: ファイル直接指定の場合のアクセス権限test
-
 		{
 			caseName: "index解決後のアクセス権限確認test",
 			test: func() bool {
@@ -115,6 +112,34 @@ var testGET = testCatergory{
 				os.Chmod("html/index.html", 000)
 				result := clientA.DoAndCheck()
 				os.Chmod("html/index.html", 0755)
+				return result
+			},
+		},
+		{
+			caseName: "ファイル直接指定の場合のアクセス権限test",
+			test: func() bool {
+				port := "50000"
+				expectStatusCode := 500
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /dir1/index2.html HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				os.Chmod("html/dir1/index2.html", 000)
+				result := clientA.DoAndCheck()
+				os.Chmod("html/dir1/index2.html", 0755)
 				return result
 			},
 		},

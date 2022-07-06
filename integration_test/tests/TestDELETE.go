@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 )
 
-//TODO: DELET時はbodyなしでok?
 var testDELETE = testCatergory{
 	categoryName: "DELETE",
 	config:       "integration_test/conf/webserv.conf",
