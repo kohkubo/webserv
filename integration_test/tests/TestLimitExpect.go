@@ -66,7 +66,7 @@ var testAvailableMethods = testCatergory{
 			},
 		},
 		{
-			caseName: "available_methods multi get",
+			caseName: "multi available_methods get",
 			test: func() bool {
 				expectStatusCode := 200
 				expectBody := fileToBytes("html/index.html")
@@ -92,7 +92,7 @@ var testAvailableMethods = testCatergory{
 			},
 		},
 		{
-			caseName: "available_methods multi post",
+			caseName: "multi available_methods post",
 			test: func() bool {
 				expectStatusCode := 403
 				expectBody := httpresp.ErrorBody(expectStatusCode)
@@ -121,7 +121,7 @@ var testAvailableMethods = testCatergory{
 			},
 		},
 		{
-			caseName: "available_methods multi delete",
+			caseName: "multi available_methods delete",
 			test: func() bool {
 				expectStatusCode := 405
 				expectBody := httpresp.ErrorBody(expectStatusCode)
