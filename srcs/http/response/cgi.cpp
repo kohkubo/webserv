@@ -16,7 +16,6 @@ namespace response_generator {
 Result<ResponseGenerator::Content>
 create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
   int socket_pair[2] = {0, 0};
-  // 0番をソケットへ、1番をcgiのfdにmappingする。
   if (socketpair(AF_UNIX, SOCK_STREAM, 0, socket_pair) == -1) {
     ERROR_LOG("error: socketpair");
     return Error<ResponseGenerator::Content>();
