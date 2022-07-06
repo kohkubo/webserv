@@ -8,8 +8,29 @@
 // 一つでも入ってたら入ってるメソッドのみ許可
 // 一つもないときは全部許可
 
+tokenIterator Location::_parse_available_methods(tokenIterator pos,
+                                                 tokenIterator end) {
+  if (*pos != "available_methods")
+    return pos;
+  pos++;
+  if (pos == end)
+    ERROR_EXIT("could not detect directive value.");
+  has_available_methods_ = true;
+  for (; pos != end && *pos != ";"; pos++) {
+    if (*pos == "GET") {
+      available_methods_.get_ = true;
+    } else if (*pos == "POST") {
+      available_methods_.post_ = true;
+    } else if (*pos == "DELETE") {
+      available_methods_.delete_ = true;
+    }
+  }
+  if (pos == end)
+    ERROR_EXIT("available methods directive value is invalid.");
+  return pos;
+}
+
 tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
-  available_methods_.clear();
   pos++;
   if (pos == end)
     ERROR_EXIT("could not detect directive value.");
@@ -24,7 +45,7 @@ tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
     pos = parse_path_directive("index", index_, pos, end);
     pos = parse_bool_directive("autoindex", autoindex_, pos, end);
     pos = parse_map_directive("return", return_map_, pos, end);
-    pos = parse_vector_directive("available_methods", available_methods_, pos, end);
+    pos = _parse_available_methods(pos, end);
     pos = parse_bool_directive("cgi_extension", cgi_extension_, pos, end);
     pos = parse_bool_directive("upload_file", upload_file_, pos, end);
     // clang-format on
@@ -34,12 +55,6 @@ tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
   }
   if (pos == end)
     ERROR_EXIT("could not detect context end.");
-
-  if (available_methods_.size() == 0) {
-    available_methods_.push_back("GET");
-    available_methods_.push_back("POST");
-    available_methods_.push_back("DELETE");
-  }
   if (index_.has_suffix("/"))
     ERROR_EXIT("index directive failed. don't add \"/\" to file path.");
   if (!root_.has_suffix("/"))
@@ -49,3 +64,13 @@ tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
     ERROR_EXIT("minus depth path failed.");
   return ++pos;
 }
+
+// // 許可されていないかを返す。
+// bool Location::is_unavailable_method(std::string &method) {
+//   if (!has_available_methods_) {
+//     return false;
+//   }
+//   if (method == "GET") {
+//     return
+//   }
+// }
