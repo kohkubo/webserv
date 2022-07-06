@@ -44,7 +44,7 @@ Result<Content> create_cgi_content(const RequestInfo &request_info,
   }
   // parent
   if (fcntl(socket_pair[0], F_SETFL, O_NONBLOCK) == -1) {
-    return Error<ResponseGenerator::Content>();
+    return Error<Content>();
   }
   close(socket_pair[1]);
   return Ok<Content>(CgiContent(socket_pair[0], pid));

@@ -8,6 +8,13 @@ Content::Content(HttpStatusCode status_code)
     , fd_(-1)
     , cgi_pid_(-1) {}
 
+// created
+Content::Content(std::string content, HttpStatusCode status_code, Action action)
+    : action_(action)
+    , status_code_(status_code)
+    , content_(content)
+    , fd_(-1) {}
+
 Content::Content(Action action, HttpStatusCode status_code, std::string content,
                  int fd, pid_t pid)
     : action_(action)

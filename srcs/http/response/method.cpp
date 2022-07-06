@@ -19,8 +19,8 @@ static Content method_get_dir(const RequestInfo &request_info,
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_403_FORBIDDEN);
   }
-  return CreatedContent(create_autoindex_body(request_info, target_path),
-                        HttpStatusCode::S_200_OK);
+  return Content(create_autoindex_body(request_info, target_path),
+                 HttpStatusCode::S_200_OK);
 }
 
 static Content method_get_file(const RequestInfo &request_info,

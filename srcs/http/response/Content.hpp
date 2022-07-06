@@ -27,9 +27,6 @@ public:
   Content(HttpStatusCode status_code = HttpStatusCode::S_200_OK);
   Content(Action action, HttpStatusCode status_code, std::string content,
           int fd, pid_t pid);
-  Content(int fd, Action action,
-          HttpStatusCode status_code = HttpStatusCode::S_200_OK);
-  Content(int fd, Action action, pid_t cgi_pid);
   Content(std::string content, HttpStatusCode status_code,
           Action action = CREATED);
 };
