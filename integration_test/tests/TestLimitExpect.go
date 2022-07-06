@@ -6,16 +6,16 @@ import (
 	"net/http"
 )
 
-var testLimitExpect = testCatergory{
+var testAvailableMethods = testCatergory{
 	categoryName: "limit expect",
-	config:       "integration_test/conf/test.conf",
+	config:       "integration_test/conf/available_methods.conf",
 	testCases: []testCase{
 		{
 			caseName: "limit_expect ok",
 			test: func() bool {
 				expectStatusCode := 200
 				expectBody := fileToBytes("html/index.html")
-				Port := "50003"
+				Port := "50000"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
@@ -41,7 +41,7 @@ var testLimitExpect = testCatergory{
 			test: func() bool {
 				expectStatusCode := 405
 				expectBody := httpresp.ErrorBody(expectStatusCode)
-				Port := "50003"
+				Port := "50000"
 				Path := "/"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: Port,
