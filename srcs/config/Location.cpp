@@ -4,11 +4,6 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
-// available_methods
-// 一つでも入ってたら入ってるメソッドのみ許可
-// 一つもないときは全部許可
-
-// メソッドの指定はスペース区切り？
 tokenIterator Location::_parse_available_methods(tokenIterator pos,
                                                  tokenIterator end) {
   if (*pos != "available_methods")
