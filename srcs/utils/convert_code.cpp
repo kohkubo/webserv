@@ -1,14 +1,5 @@
 #include "utils/convert_code.hpp"
 
-//#include <stdio.h>
-#include <iomanip>
-#include <sstream>
-
-#include <iostream>
-// どの文字をエンコードするのかの定義はmdn?
-// utf8はこの後の話？
-// 変換時のcharとかintとかわからん
-
 static bool is_encode(const char c) { return (c == '%' || c == ':'); }
 
 static std::string char_to_hexadecimal_string(const char c) {
