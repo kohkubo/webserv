@@ -17,8 +17,7 @@ Result<ResponseGenerator::Content>
 create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
   int socket_pair[2] = {0, 0};
   // 0番をソケットへ、1番をcgiのfdにmappingする。
-  if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0,
-                 socket_pair) == -1) {
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, socket_pair) == -1) {
     ERROR_LOG("error: socketpair");
     return Error<ResponseGenerator::Content>();
   }
@@ -32,6 +31,7 @@ create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
     close(socket_pair[0]);
     dup2(socket_pair[1], STDOUT_FILENO);
     dup2(socket_pair[1], STDIN_FILENO);
+    close(socket_pair[1]);
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
                     const_cast<char *>(target_path.str().c_str()), NULL};
     CgiEnviron cgi_environ(request_info, target_path);
@@ -42,6 +42,7 @@ create_cgi_content(const RequestInfo &request_info, const Path &target_path) {
     }
   }
   // parent
+  // TODO: set nonblocking
   close(socket_pair[1]);
   ResponseGenerator::Content content;
   content.action_  = ResponseGenerator::Content::CGI;
