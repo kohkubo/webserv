@@ -8,6 +8,7 @@
 // 一つでも入ってたら入ってるメソッドのみ許可
 // 一つもないときは全部許可
 
+// メソッドの指定はスペース区切り？
 tokenIterator Location::_parse_available_methods(tokenIterator pos,
                                                  tokenIterator end) {
   if (*pos != "available_methods")
@@ -27,7 +28,7 @@ tokenIterator Location::_parse_available_methods(tokenIterator pos,
   }
   if (pos == end)
     ERROR_EXIT("available methods directive value is invalid.");
-  return pos;
+  return pos + 1;
 }
 
 tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
@@ -65,12 +66,18 @@ tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
   return ++pos;
 }
 
-// // 許可されていないかを返す。
-// bool Location::is_unavailable_method(std::string &method) {
-//   if (!has_available_methods_) {
-//     return false;
-//   }
-//   if (method == "GET") {
-//     return
-//   }
-// }
+bool Location::is_unavailable_method(const std::string &method) const {
+  if (!has_available_methods_) {
+    return false;
+  }
+  if (method == "GET") {
+    return !available_methods_.get_;
+  }
+  if (method == "POST") {
+    return !available_methods_.post_;
+  }
+  if (method == "GET") {
+    return !available_methods_.delete_;
+  }
+  return true;
+}

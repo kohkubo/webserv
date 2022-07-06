@@ -39,11 +39,10 @@ public:
       , cgi_extension_(false)
       , upload_file_(false)
       , has_available_methods_(false)
-      , available_methods_({false, false, false}) {}
+      , available_methods_((struct MethodFlag){false, false, false}) {}
 
   tokenIterator parse_location(tokenIterator pos, tokenIterator end);
-
-  // bool is_unavailable_method(std::string &method);
+  bool          is_unavailable_method(const std::string &method) const;
 };
 
 #endif /* SRCS_CONFIG_LOCATION_HPP */
