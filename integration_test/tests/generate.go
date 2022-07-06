@@ -22,7 +22,7 @@ func NormalTests() T {
 		testCgi,
 		testAutoindex,
 		testBadRequest,
-		testLimitExpect,
+		testAvailableMethods,
 		testLocation,
 		testServerName,
 		testReturn,

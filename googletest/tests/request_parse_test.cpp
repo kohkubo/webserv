@@ -13,9 +13,9 @@ TEST(request_parse_test, normal) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config      config;
-  ConfigGroup config_group(config);
-  Request     request;
+  config::Config      config;
+  config::ConfigGroup config_group(config);
+  Request             request;
 
   request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();
@@ -34,9 +34,9 @@ TEST(request_parse_test, normal_delete) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config      config;
-  ConfigGroup config_group(config);
-  Request     request;
+  config::Config      config;
+  config::ConfigGroup config_group(config);
+  Request             request;
 
   request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();
@@ -59,9 +59,9 @@ TEST(request_parse_test, normal_post) {
       "Content-Type: application/x-www-form-urlencoded\r\n"
       "Content-Length: 18\r\n\r\n";
 
-  Config      config;
-  ConfigGroup config_group(config);
-  Request     request;
+  config::Config      config;
+  config::ConfigGroup config_group(config);
+  Request             request;
 
   request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();
@@ -82,9 +82,9 @@ TEST(request_parse_test, query_string) {
                                "Connection: close\r\n"
                                "Accept: */*\r\n\r\n";
 
-  Config      config;
-  ConfigGroup config_group(config);
-  Request     request;
+  config::Config      config;
+  config::ConfigGroup config_group(config);
+  Request             request;
 
   request.handle_request(request_buffer, config_group);
   const RequestInfo &request_info = request.request_info();

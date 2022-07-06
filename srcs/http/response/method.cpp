@@ -124,12 +124,6 @@ static ResponseGenerator::Content method_delete(const RequestInfo &request_info,
 // An origin server that receives a request method that is recognized and
 // implemented, but not allowed for the target resource, SHOULD respond with the
 // 405 (Method Not Allowed) status code.
-static bool is_available_methods(const RequestInfo &request_info) {
-  return std::find(request_info.location_->available_methods_.begin(),
-                   request_info.location_->available_methods_.end(),
-                   request_info.request_line_.method_) !=
-         request_info.location_->available_methods_.end();
-}
 
 static Path create_default_target_path(const RequestInfo &request_info) {
   return request_info.location_->root_ +
@@ -139,7 +133,8 @@ static Path create_default_target_path(const RequestInfo &request_info) {
 ResponseGenerator::Content handle_method(const RequestInfo &request_info) {
   HttpStatusCode status_code;
   Path           target_path = create_default_target_path(request_info);
-  if (!is_available_methods(request_info)) {
+  if (request_info.location_->is_unavailable_method(
+          request_info.request_line_.method_)) {
     status_code = HttpStatusCode::S_405_NOT_ALLOWED;
   } else if ("GET" == request_info.request_line_.method_) {
     return method_get(request_info, target_path);

@@ -45,7 +45,7 @@ private:
                                         std::size_t max_body_size);
   static void  _check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
-  void         _tmp(const ConfigGroup &config_group);
+  void         _tmp(const config::ConfigGroup &config_group);
   RequestState _handle_request_line(std::string &request_buffer);
   RequestState _handle_request_header(std::string &request_buffer);
   RequestState _handle_request_body(std::string &request_buffer);
@@ -55,8 +55,8 @@ public:
       : _state_(RECEIVING_STARTLINE) {}
 
   const RequestInfo &request_info() const { return _request_info_; }
-  RequestState       handle_request(std::string       &request_buffer,
-                                    const ConfigGroup &config_group);
+  RequestState       handle_request(std::string               &request_buffer,
+                                    const config::ConfigGroup &config_group);
 };
 
 #endif /* SRCS_EVENT_REQUEST_HPP */

@@ -11,7 +11,8 @@
 
 namespace ns_socket {
 
-ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
+ClientSocket::ClientSocket(int                        client_fd,
+                           const config::ConfigGroup &config_group)
     : SocketBase(client_fd)
     , _config_group_(config_group)
     , _timeout_(TIMEOUT_SECONDS_) {}

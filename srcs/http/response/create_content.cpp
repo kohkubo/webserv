@@ -25,8 +25,8 @@ std::string create_default_content_str(const HttpStatusCode &status_code) {
 ResponseGenerator::Content
 create_status_code_content(const RequestInfo    &request_info,
                            const HttpStatusCode &status_code) {
-  ResponseGenerator::Content   content(status_code);
-  errorPageMap::const_iterator it =
+  ResponseGenerator::Content           content(status_code);
+  config::errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(status_code);
   if (it != request_info.config_.error_pages_.end()) {
     Path file_path = request_info.location_->root_ + it->second;
