@@ -21,10 +21,9 @@
 const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
 const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
 
-typedef std::map<int, std::string> errorPageMap;
-typedef int                        listenFd;
-
 namespace config {
+
+typedef std::map<int, std::string> errorPageMap;
 
 class Config {
 private:

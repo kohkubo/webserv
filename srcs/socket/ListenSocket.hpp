@@ -11,6 +11,8 @@
 
 namespace ns_socket {
 
+typedef int listenFd;
+
 class ListenSocket : public SocketBase {
 public:
   const config::ConfigGroup &config_group_;
