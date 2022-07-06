@@ -88,7 +88,7 @@ func (c *Client) SendRequestN(n int) {
 	sendContent := c.Request[c.sendCnt:limit]
 	sendN, err := fmt.Fprintf(c.Conn, sendContent)
 	if err != nil {
-		webserv.ExitWithKill(err)
+		webserv.ExitWithKill(fmt.Errorf("SendRequestN: %w", err))
 	}
 	c.sendLog = append(c.sendLog, sendContent)
 	c.sendCnt += sendN
@@ -101,7 +101,7 @@ func (c *Client) RecvResponse() {
 	}
 	resp, err := readParseResponse(c.Conn, resolveMethod(c.Request))
 	if err != nil {
-		webserv.ExitWithKill(err)
+		webserv.ExitWithKill(fmt.Errorf("RecvResponse: %w", err))
 	}
 	c.GotResponse = resp
 	if c.Close {
@@ -128,7 +128,7 @@ func (c *Client) IsExpectedResponse() bool {
 	}
 	result, err := c.ReponseChecker.Check(c.GotResponse)
 	if err != nil {
-		webserv.ExitWithKill(err)
+		webserv.ExitWithKill(fmt.Errorf("IsExpectedResponse: %w", err))
 	}
 	c.GotResponse.Body.Close()
 	testOK := result == 0
