@@ -264,9 +264,9 @@ TEST(server_config_test, parse_vector_directive) {
     tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config          config(token_vector.begin(), token_vector.end());
     const Location *location = config.locations_.select_location("/");
-    EXPECT_EQ(location->available_methods_.size(), static_cast<std::size_t>(2));
-    EXPECT_EQ(location->available_methods_[0], "GET");
-    EXPECT_EQ(location->available_methods_[1], "POST");
+    EXPECT_EQ(location->available_methods_.get_, true);
+    EXPECT_EQ(location->available_methods_.post_, true);
+    EXPECT_EQ(location->available_methods_.delete_, false);
   }
 }
 
@@ -286,12 +286,12 @@ TEST(server_config_test, parse_location_directive) {
     tokenVector     token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
     Config          config(token_vector.begin(), token_vector.end());
     const Location *location = config.locations_.select_location("/");
-    EXPECT_EQ(location->available_methods_.size(), static_cast<std::size_t>(2));
-    EXPECT_EQ(location->available_methods_[0], "GET");
-    EXPECT_EQ(location->available_methods_[1], "POST");
+    EXPECT_EQ(location->available_methods_.get_, true);
+    EXPECT_EQ(location->available_methods_.post_, true);
+    EXPECT_EQ(location->available_methods_.delete_, false);
     location = config.locations_.select_location("/dir1");
-    EXPECT_EQ(location->available_methods_.size(), static_cast<std::size_t>(2));
-    EXPECT_EQ(location->available_methods_[0], "GET");
-    EXPECT_EQ(location->available_methods_[1], "POST");
+    EXPECT_EQ(location->available_methods_.get_, true);
+    EXPECT_EQ(location->available_methods_.post_, true);
+    EXPECT_EQ(location->available_methods_.delete_, false);
   }
 }
