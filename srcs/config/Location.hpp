@@ -8,6 +8,8 @@
 #include "utils/Path.hpp"
 #include "utils/tokenize.hpp"
 
+namespace config {
+
 typedef std::map<int, std::string> returnMap;
 
 class Location {
@@ -44,5 +46,7 @@ public:
   tokenIterator parse_location(tokenIterator pos, tokenIterator end);
   bool          is_unavailable_method(const std::string &method) const;
 };
+
+} // namespace config
 
 #endif /* SRCS_CONFIG_LOCATION_HPP */

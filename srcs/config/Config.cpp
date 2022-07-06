@@ -10,6 +10,8 @@
 
 #include "config/directive_parser.hpp"
 
+namespace config {
+
 Config::Config()
     : client_max_body_size_(1024)
     , server_name_("") {}
@@ -107,3 +109,5 @@ tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   locations_.add_or_exit(location);
   return result;
 }
+
+} // namespace config

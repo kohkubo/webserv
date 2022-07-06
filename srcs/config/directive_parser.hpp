@@ -7,6 +7,8 @@
 #include "utils/Path.hpp"
 #include "utils/tokenize.hpp"
 
+namespace config {
+
 tokenIterator parse_string_directive(std::string key, std::string &value,
                                      tokenIterator pos, tokenIterator end);
 
@@ -26,5 +28,7 @@ tokenIterator parse_vector_directive(std::string               key,
 tokenIterator parse_map_directive(std::string                 key,
                                   std::map<int, std::string> &value,
                                   tokenIterator pos, tokenIterator end);
+
+} // namespace config
 
 #endif /* SRCS_CONFIG_DIRECTIVE_PARSER_HPP */

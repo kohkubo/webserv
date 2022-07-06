@@ -4,6 +4,8 @@
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
+namespace config {
+
 tokenIterator Location::_parse_available_methods(tokenIterator pos,
                                                  tokenIterator end) {
   if (*pos != "available_methods")
@@ -76,3 +78,5 @@ bool Location::is_unavailable_method(const std::string &method) const {
   }
   return true;
 }
+
+} // namespace config

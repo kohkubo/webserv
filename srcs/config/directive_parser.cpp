@@ -2,6 +2,8 @@
 
 #include "utils/utils.hpp"
 
+namespace config {
+
 tokenIterator parse_string_directive(std::string key, std::string &value,
                                      tokenIterator pos, tokenIterator end) {
   if (*pos != key)
@@ -85,3 +87,5 @@ tokenIterator parse_map_directive(std::string                 key,
   value.insert(std::make_pair(result.object_, *(pos + 1)));
   return pos + 3;
 }
+
+} // namespace config

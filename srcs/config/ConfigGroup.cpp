@@ -1,5 +1,7 @@
 #include "config/ConfigGroup.hpp"
 
+namespace config {
+
 ConfigGroup::ConfigGroup(const Config config)
     : _default_server_name_(config.server_name_) {
   _config_group_.insert(std::make_pair(config.server_name_, config));
@@ -32,3 +34,5 @@ Config ConfigGroup::select_config(const std::string &host_name) const {
   }
   return _config_group_.find(_default_server_name_)->second;
 }
+
+} // namespace config

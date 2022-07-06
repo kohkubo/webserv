@@ -5,6 +5,8 @@
 
 #include "config/Location.hpp"
 
+namespace config {
+
 class Locations {
 private:
   std::vector<Location> _location_vector_;
@@ -19,5 +21,7 @@ public:
   const Location *select_location(const Path &request_target) const;
   bool            empty() const { return _location_vector_.empty(); }
 };
+
+} // namespace config
 
 #endif /* SRCS_CONFIG_LOCATIONS_HPP */

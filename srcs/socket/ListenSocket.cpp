@@ -16,7 +16,7 @@
 
 namespace ns_socket {
 
-ListenSocket::ListenSocket(const ConfigGroup &config_group)
+ListenSocket::ListenSocket(const config::ConfigGroup &config_group)
     : config_group_(config_group) {
   _socket_fd_ = _open_new_socket(config_group.sockaddr_in());
 }

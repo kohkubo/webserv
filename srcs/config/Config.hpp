@@ -22,6 +22,9 @@ const std::string CONFIG_DELIMITER = "\v\r\f\t\n {};";
 const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
 
 typedef std::map<int, std::string> errorPageMap;
+typedef int                        listenFd;
+
+namespace config {
 
 class Config {
 private:
@@ -61,6 +64,6 @@ private:
   tokenIterator _parse_location(tokenIterator pos, tokenIterator end);
 };
 
-typedef int listenFd;
+} // namespace config
 
 #endif /* SRCS_CONFIG_CONFIG_HPP */
