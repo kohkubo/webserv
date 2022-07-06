@@ -4,10 +4,11 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
+
+#include "config/directive_parser.hpp"
 
 Config::Config()
     : client_max_body_size_(1024)
@@ -36,9 +37,9 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
     // clang-format off
     pos = _parse_location(pos, end);
     pos = _parse_listen(pos, end);
-    pos = _parse_string_directive("server_name", server_name_, pos, end);
-    pos = _parse_size_directive("client_max_body_size", client_max_body_size_, pos, end);
-    pos = _parse_map_directive("error_page", error_pages_, pos, end);
+    pos = parse_string_directive("server_name", server_name_, pos, end);
+    pos = parse_size_directive("client_max_body_size", client_max_body_size_, pos, end);
+    pos = parse_map_directive("error_page", error_pages_, pos, end);
     // clang-format on
     if (pos == head) {
       ERROR_EXIT("parse server directive failed.");
@@ -101,137 +102,8 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
 tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
-  Location location;
-  location.available_methods_
-      .clear(); // TODO: 雑だけど他に思いつかない。案ほしい。
-  pos++;
-  if (pos == end)
-    ERROR_EXIT("could not detect directive value.");
-  location.location_path_ = *pos++;
-  if (pos == end || *pos != "{")
-    ERROR_EXIT("could not detect context.");
-  pos++;
-  while (pos != end && *pos != "}") {
-    tokenIterator head = pos;
-    // clang-format off
-    pos = _parse_path_directive("root", location.root_, pos, end);
-    pos = _parse_path_directive("index", location.index_, pos, end);
-    pos = _parse_bool_directive("autoindex", location.autoindex_, pos, end);
-    pos = _parse_map_directive("return", location.return_map_, pos, end);
-    pos = _parse_vector_directive("available_methods", location.available_methods_, pos, end);
-    pos = _parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
-    pos = _parse_bool_directive("upload_file", location.upload_file_, pos, end);
-    // clang-format on
-    if (pos == head) {
-      ERROR_EXIT("parse location directive failed.");
-    }
-  }
-  if (pos == end)
-    ERROR_EXIT("could not detect context end.");
-  // TODO: 雑だけど他に思いつかない。案ほしい。
-  if (location.available_methods_.size() == 0) {
-    location.available_methods_.push_back("GET");
-    location.available_methods_.push_back("POST");
-    location.available_methods_.push_back("DELETE");
-  }
-  if (location.index_.has_suffix("/"))
-    ERROR_EXIT("index directive failed. don't add \"/\" to file path.");
-  if (!location.root_.has_suffix("/"))
-    ERROR_EXIT("root directive failed. please add \"/\" to end of root dir");
-  if (location.location_path_.is_minus_depth() ||
-      location.root_.is_minus_depth() || location.index_.is_minus_depth())
-    ERROR_EXIT("minus depth path failed.");
+  Location      location;
+  tokenIterator result = location.parse_location(pos, end);
   locations_.add_or_exit(location);
-  return ++pos;
-}
-
-tokenIterator Config::_parse_map_directive(std::string                 key,
-                                           std::map<int, std::string> &value,
-                                           tokenIterator               pos,
-                                           tokenIterator               end) {
-  if (*pos != key)
-    return pos;
-  pos++;
-  if (pos == end || pos + 2 == end || *(pos + 2) != ";")
-    ERROR_EXIT("could not detect directive value.");
-  Result<std::size_t> result = string_to_size(*pos);
-  if (result.is_err_) {
-    ERROR_EXIT("could not detect directive value.");
-  }
-  value.insert(std::make_pair(result.object_, *(pos + 1)));
-  return pos + 3;
-}
-
-tokenIterator Config::_parse_string_directive(std::string   key,
-                                              std::string  &value,
-                                              tokenIterator pos,
-                                              tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
-  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    ERROR_EXIT("could not detect directive value.");
-  value = *pos;
-  return pos + 2;
-}
-
-tokenIterator Config::_parse_path_directive(std::string key, Path &value,
-                                            tokenIterator pos,
-                                            tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
-  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    ERROR_EXIT("could not detect directive value.");
-  value = *pos;
-  return pos + 2;
-}
-
-tokenIterator Config::_parse_size_directive(std::string key, size_t &value,
-                                            tokenIterator pos,
-                                            tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
-  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    ERROR_EXIT("could not detect directive value.");
-  Result<std::size_t> result = string_to_size(*pos);
-  if (result.is_err_)
-    ERROR_EXIT("could not parse size string.");
-  value = result.object_;
-  return pos + 2;
-}
-
-tokenIterator Config::_parse_bool_directive(std::string key, bool &value,
-                                            tokenIterator pos,
-                                            tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
-  if (pos == end || pos + 1 == end || *(pos + 1) != ";")
-    ERROR_EXIT("could not detect directive value.");
-  if (*pos == "on")
-    value = true;
-  else if (*pos == "off")
-    value = false;
-  else
-    ERROR_EXIT("bool directive value is invalid.");
-  return pos + 2;
-}
-
-tokenIterator Config::_parse_vector_directive(std::string               key,
-                                              std::vector<std::string> &value,
-                                              tokenIterator             pos,
-                                              tokenIterator             end) {
-  if (*pos != key)
-    return pos;
-  pos++;
-  if (pos == end)
-    ERROR_EXIT("could not detect directive value.");
-  for (; pos != end && *pos != ";"; pos++) {
-    value.push_back(*pos);
-  }
-  if (pos == end)
-    ERROR_EXIT("vector directive value is invalid.");
-  return pos + 1;
+  return result;
 }

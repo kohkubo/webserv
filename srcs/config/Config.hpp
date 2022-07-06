@@ -56,30 +56,9 @@ public:
   tokenIterator last_iterator_pos() { return _last_iterator_pos_; }
 
 private:
-  tokenIterator        _parse(tokenIterator pos, tokenIterator end);
-  tokenIterator        _parse_listen(tokenIterator pos, tokenIterator end);
-  tokenIterator        _parse_location(tokenIterator pos, tokenIterator end);
-  static tokenIterator _parse_map_directive(std::string                 key,
-                                            std::map<int, std::string> &value,
-                                            tokenIterator               pos,
-                                            tokenIterator               end);
-  static tokenIterator _parse_string_directive(std::string   key,
-                                               std::string  &value,
-                                               tokenIterator pos,
-                                               tokenIterator end);
-  static tokenIterator _parse_path_directive(std::string key, Path &value,
-                                             tokenIterator pos,
-                                             tokenIterator end);
-  static tokenIterator _parse_size_directive(std::string key, size_t &value,
-                                             tokenIterator pos,
-                                             tokenIterator end);
-  static tokenIterator _parse_bool_directive(std::string key, bool &value,
-                                             tokenIterator pos,
-                                             tokenIterator end);
-  static tokenIterator _parse_vector_directive(std::string               key,
-                                               std::vector<std::string> &value,
-                                               tokenIterator             pos,
-                                               tokenIterator             end);
+  tokenIterator _parse(tokenIterator pos, tokenIterator end);
+  tokenIterator _parse_listen(tokenIterator pos, tokenIterator end);
+  tokenIterator _parse_location(tokenIterator pos, tokenIterator end);
 };
 
 typedef int listenFd;
