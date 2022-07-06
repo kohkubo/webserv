@@ -83,7 +83,7 @@ Request::handle_request(std::string               &request_buffer,
     _state_ = _handle_request_header(request_buffer);
     // TODO: この例外チェックの適切な場所を見直す kohkubo
     _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
-    _tmp(config_group);
+    _request_info_.config_ = config_group.select_config(_request_info_.host_);
   }
   if (_state_ == Request::RECEIVING_BODY) {
     /*

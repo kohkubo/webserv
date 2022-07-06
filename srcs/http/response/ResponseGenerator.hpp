@@ -2,6 +2,7 @@
 #define SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP
 
 #include "config/Config.hpp"
+#include "config/Location.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "utils/Path.hpp"
@@ -30,8 +31,9 @@ public:
         , status_code_(status_code)
         , fd_(-1) {}
   };
-  Content           content_;
-  const RequestInfo request_info_;
+  Content                 content_;
+  const RequestInfo       request_info_;
+  const config::Location *location_;
 
 private:
   bool _is_connection_close_;

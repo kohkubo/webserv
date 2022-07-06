@@ -20,6 +20,7 @@ namespace response_generator {
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      HttpStatusCode     status_code)
     : request_info_(request_info)
+    , location_(NULL)
     , _is_connection_close_(request_info_.connection_close_ ||
                             status_code == HttpStatusCode::C_400_BAD_REQUEST ||
                             status_code ==
@@ -28,7 +29,9 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     content_ = create_status_code_content(request_info_, status_code);
     return;
   }
-  if (request_info_.location_ == NULL) {
+  location_ = request_info_.config_.locations_.select_location(
+      request_info_.request_line_.absolute_path_);
+  if (location_ == NULL) {
     content_ = create_status_code_content(request_info_,
                                           HttpStatusCode::S_404_NOT_FOUND);
     return;
