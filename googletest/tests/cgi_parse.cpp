@@ -33,7 +33,7 @@ Result<std::string> getline_cgi(std::string &source, const std::string &delim) {
   return Ok<std::string>(getline_cgi_sub(source, delim, pos));
 }
 
-TEST(cgi_test2, getline_cgi) {
+TEST(cgi_parse, getline_cgi) {
   std::string source = "hoge\nfuga\n";
   Result<std::string> result = getline_cgi(source, "\n");
   EXPECT_EQ(result.object_, "hoge");
@@ -82,7 +82,7 @@ void print_cgi_parser(const CgiParser &cgi_parser) {
   std::cout << "  content_: " << cgi_parser.content_ << std::endl;
 }
 
-TEST(cgi_test2, cgi_parse_document_type) {
+TEST(cgi_parse, cgi_parse_document_type) {
   int         fd = open("tdata/cgi_test_data/cgi_document.txt", O_RDONLY);
   std::string buffer;
   CgiParser   cgi_parser;
@@ -131,7 +131,7 @@ static int xopen(const char *path, int flags) {
   return fd;
 }
 
-TEST(cgi_test2, cgi_parse_local_redir_reponse) {
+TEST(cgi_parse, cgi_parse_local_redir_reponse) {
   char tmp[256];
   getcwd(tmp, 256);
   std::cout << "Current working directory: " << tmp << std::endl;
@@ -150,8 +150,8 @@ TEST(cgi_test2, cgi_parse_local_redir_reponse) {
   close(fd);
 }
 
-TEST(cgi_test2, cgi_parse_local_redir_reponse_with_query) {
-  int         fd = xopen("tdata/cgi_local_redir_with_query.txt", O_RDONLY);
+TEST(cgi_parse, cgi_parse_local_redir_reponse_with_query) {
+  int         fd = xopen("tdata/cgi_test_data/cgi_local_redir_with_query.txt", O_RDONLY);
   std::string buffer;
   CgiParser   cgi_parser;
   while (random_read(fd, buffer)) {
@@ -166,8 +166,8 @@ TEST(cgi_test2, cgi_parse_local_redir_reponse_with_query) {
   close(fd);
 }
 
-TEST(cgi_test2, cgi_parse_local_redir_reponse_with_null_query) {
-  int         fd = xopen("tdata/cgi_local_redir_with_null_query.txt",
+TEST(cgi_parse, cgi_parse_local_redir_reponse_with_null_query) {
+  int         fd = xopen("tdata/cgi_test_data/cgi_local_redir_with_null_query.txt",
   O_RDONLY); std::string buffer; CgiParser   cgi_parser; while
   (random_read(fd, buffer)) {
     CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
