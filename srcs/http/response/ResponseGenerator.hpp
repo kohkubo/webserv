@@ -45,7 +45,6 @@ public:
   std::string     create_response_message(const std::string &content);
 };
 
-std::string create_default_content_str(const HttpStatusCode &status_code);
 Result<ResponseGenerator::Content>
 create_cgi_content(const RequestInfo &request_info, const Path &target_path);
 std::string create_autoindex_body(const RequestInfo &request_info,
