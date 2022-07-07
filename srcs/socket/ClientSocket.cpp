@@ -86,15 +86,15 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       _response_queue_.push_back(response_generator.generate_response());
       SocketBase *socket = NULL;
       switch (response_generator.action()) {
-      case response_generator::Content::READ:
+      case response_generator::ResponseInfo::READ:
         socket =
             new FileReadSocket(_response_queue_.back(), response_generator);
         break;
-      case response_generator::Content::WRITE:
+      case response_generator::ResponseInfo::WRITE:
         socket =
             new FileWriteSocket(_response_queue_.back(), response_generator);
         break;
-      case response_generator::Content::CGI:
+      case response_generator::ResponseInfo::CGI:
         socket = new CgiSocket(_response_queue_.back(), response_generator);
         break;
       default:

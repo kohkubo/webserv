@@ -9,8 +9,8 @@
 
 namespace response_generator {
 
-static Content method_get_dir(const RequestInfo &request_info,
-                              const Path        &target_path) {
+static ResponseInfo method_get_dir(const RequestInfo &request_info,
+                                   const Path        &target_path) {
   if (!target_path.is_dir_exists()) {
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
@@ -19,19 +19,19 @@ static Content method_get_dir(const RequestInfo &request_info,
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_403_FORBIDDEN);
   }
-  return Content(create_autoindex_body(request_info, target_path),
-                 HttpStatusCode::S_200_OK);
+  return ResponseInfo(create_autoindex_body(request_info, target_path),
+                      HttpStatusCode::S_200_OK);
 }
 
-static Content method_get_file(const RequestInfo &request_info,
-                               const Path        &target_path) {
+static ResponseInfo method_get_file(const RequestInfo &request_info,
+                                    const Path        &target_path) {
   if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return create_status_code_content(request_info,
                                       HttpStatusCode::S_404_NOT_FOUND);
   }
   if (target_path.has_suffix(".py")) {
-    Result<Content> result = create_cgi_content(request_info, target_path);
+    Result<ResponseInfo> result = create_cgi_content(request_info, target_path);
     if (result.is_err_) {
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
@@ -47,7 +47,8 @@ static Content method_get_file(const RequestInfo &request_info,
   return ReadContent(result.object_, HttpStatusCode::S_200_OK);
 }
 
-static Content method_get(const RequestInfo &request_info, Path &target_path) {
+static ResponseInfo method_get(const RequestInfo &request_info,
+                               Path              &target_path) {
   if (target_path.has_suffix("/")) {
     Path path_add_index = target_path + request_info.location_->index_;
     if (!path_add_index.is_file_exists()) {
@@ -58,8 +59,8 @@ static Content method_get(const RequestInfo &request_info, Path &target_path) {
   return method_get_file(request_info, target_path);
 }
 
-static Content method_post(const RequestInfo &request_info,
-                           const Path        &target_path) {
+static ResponseInfo method_post(const RequestInfo &request_info,
+                                const Path        &target_path) {
   /*
 TODO: postでファイル作った場合、content-location 返す必要あるかも？ kohkubo
 RFC 9110
@@ -88,8 +89,8 @@ POSTリクエストを正常に処理した結果、
   return WriteContent(result.object_, request_info.body_);
 }
 
-static Content method_delete(const RequestInfo &request_info,
-                             const Path        &target_path) {
+static ResponseInfo method_delete(const RequestInfo &request_info,
+                                  const Path        &target_path) {
   HttpStatusCode status_code;
   if (!target_path.is_file_exists()) {
     ERROR_LOG("target file is not found");
@@ -118,7 +119,7 @@ static Path create_default_target_path(const RequestInfo &request_info) {
          request_info.request_line_.absolute_path_;
 }
 
-Content handle_method(const RequestInfo &request_info) {
+ResponseInfo handle_method(const RequestInfo &request_info) {
   HttpStatusCode status_code;
   Path           target_path = create_default_target_path(request_info);
   if (request_info.location_->is_unavailable_method(

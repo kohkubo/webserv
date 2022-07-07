@@ -14,17 +14,17 @@
 
 namespace response_generator {
 
-Result<Content> create_cgi_content(const RequestInfo &request_info,
-                                   const Path        &target_path) {
+Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
+                                        const Path        &target_path) {
   int socket_pair[2] = {0, 0};
   if (socketpair(AF_UNIX, SOCK_STREAM, 0, socket_pair) == -1) {
     ERROR_LOG("error: socketpair");
-    return Error<Content>();
+    return Error<ResponseInfo>();
   }
   pid_t pid = fork();
   if (pid == -1) {
     ERROR_LOG("error: fork in read_file_to_str_cgi");
-    return Error<Content>();
+    return Error<ResponseInfo>();
   }
   // child
   if (pid == 0) {
@@ -39,15 +39,15 @@ Result<Content> create_cgi_content(const RequestInfo &request_info,
     // TODO: execveの前にスクリプトのあるディレクトリに移動
     if (execve("/usr/bin/python3", argv, cgi_environ.environ()) == -1) {
       ERROR_LOG("error: execve");
-      return Error<Content>();
+      return Error<ResponseInfo>();
     }
   }
   // parent
   if (fcntl(socket_pair[0], F_SETFL, O_NONBLOCK) == -1) {
-    return Error<Content>();
+    return Error<ResponseInfo>();
   }
   close(socket_pair[1]);
-  return Ok<Content>(CgiContent(socket_pair[0], pid));
+  return Ok<ResponseInfo>(CgiContent(socket_pair[0], pid));
 }
 
 } // namespace response_generator
