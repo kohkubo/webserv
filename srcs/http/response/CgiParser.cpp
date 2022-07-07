@@ -86,7 +86,7 @@ get_cgi_response_type(const CgiParser::HeaderMap &header_map) {
   }
   std::string location = it->second;
   if (is_client_location(location)) {
-    CgiParser::HeaderMap::const_iterator it = header_map.find("status");
+    it = header_map.find("status");
     if (it == header_map.end()) {
       return CgiParser::CLIENT_REDIRDOC;
     }
@@ -116,7 +116,7 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
       return HEADER;
     }
     std::string line = result.object_;
-    if (line.empty() || line == "\n") {
+    if (line.empty()) {
       LOG("cgi header end ============");
       return HEADER_END;
     }
