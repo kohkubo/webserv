@@ -25,8 +25,8 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
   std::string &sending_content = _response_generator_.content_.str_;
-  const char  *rest_str        = sending_content.c_str() + _send_count_;
-  size_t       rest_count      = sending_content.size() - _send_count_;
+  const char  *rest_str        = sending_content.c_str() + _write_count_;
+  size_t       rest_count      = sending_content.size() - _write_count_;
   ssize_t      write_size      = write(_socket_fd_, rest_str, rest_count);
   if (write_size == -1) {
     LOG("write error");
@@ -35,8 +35,8 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
                        HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return socket_map_actions;
   }
-  _send_count_ += write_size;
-  if (_send_count_ ==
+  _write_count_ += write_size;
+  if (_write_count_ ==
       static_cast<ssize_t>(_response_generator_.content_.str_.size())) {
     std::string response_message = _response_generator_.create_response_message(
         HttpStatusCode(HttpStatusCode::S_201_CREATED)
