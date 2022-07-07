@@ -32,6 +32,7 @@ public:
   bool            has_default_content() const;
   std::string     status_phrase() const;
   std::string     str() const;
+  std::string     create_default_content_str() const;
                   operator StatusCode() const;
 };
 

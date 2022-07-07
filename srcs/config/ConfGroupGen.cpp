@@ -2,6 +2,8 @@
 
 #include "utils/Path.hpp"
 
+namespace config {
+
 static std::vector<ConfigGroup>::iterator
 find_joinable_config_group(const Config             &config,
                            std::vector<ConfigGroup> &config_groups) {
@@ -41,3 +43,5 @@ std::vector<ConfigGroup> generate_config_group(const Path config_file_path) {
 
   return config_groups;
 }
+
+} // namespace config

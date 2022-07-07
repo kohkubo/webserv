@@ -5,6 +5,8 @@
 
 #include "utils/utils.hpp"
 
+namespace config {
+
 void Locations::add_or_exit(const Location &location) {
   Path                            location_path = location.location_path_.str();
   std::vector<Location>::iterator it            = _location_vector_.begin();
@@ -31,3 +33,5 @@ const Location *Locations::select_location(const Path &request_target) const {
   }
   return location;
 }
+
+} // namespace config

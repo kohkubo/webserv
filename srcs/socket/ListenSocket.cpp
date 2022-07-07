@@ -16,7 +16,7 @@
 
 namespace ns_socket {
 
-ListenSocket::ListenSocket(const ConfigGroup &config_group)
+ListenSocket::ListenSocket(const config::ConfigGroup &config_group)
     : config_group_(config_group) {
   _socket_fd_ = _open_new_socket(config_group.sockaddr_in());
 }
@@ -70,8 +70,8 @@ SocketMapActions ListenSocket::handle_event(short int revents) {
     // LOG("add new connection fd: " << conn_fd);
     SocketBase *client_socket = new ClientSocket(conn_fd, config_group_);
 
-    socket_map_actions.add_socket_map_action(
-        SocketMapAction(SocketMapAction::INSERT, conn_fd, client_socket));
+    socket_map_actions.add_action(SocketMapAction::INSERT, conn_fd,
+                                  client_socket);
   }
   return socket_map_actions;
 }

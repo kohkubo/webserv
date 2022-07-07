@@ -19,9 +19,9 @@ static const char *resolve_config_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char              *config_file_path = resolve_config_file(argc, argv);
-  std::vector<ConfigGroup> config_groups =
-      generate_config_group(config_file_path);
+  const char *config_file_path = resolve_config_file(argc, argv);
+  std::vector<config::ConfigGroup> config_groups =
+      config::generate_config_group(config_file_path);
 
   Server server(config_groups);
   server.run_loop();

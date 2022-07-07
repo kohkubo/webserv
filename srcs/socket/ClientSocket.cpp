@@ -5,12 +5,14 @@
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket.hpp"
+#include "socket/CgiSocket.hpp"
 #include "socket/FileReadSocket.hpp"
 #include "socket/FileWriteSocket.hpp"
 
 namespace ns_socket {
 
-ClientSocket::ClientSocket(int client_fd, const ConfigGroup &config_group)
+ClientSocket::ClientSocket(int                        client_fd,
+                           const config::ConfigGroup &config_group)
     : SocketBase(client_fd)
     , _config_group_(config_group)
     , _timeout_(TIMEOUT_SECONDS_) {}
@@ -33,8 +35,7 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
     LOG("connection was closed by client.");
-    socket_map_actions.add_socket_map_action(
-        SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
   if ((revents & POLLIN) != 0) {
@@ -54,8 +55,7 @@ bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
   if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
-    socket_map_actions.add_socket_map_action(
-        SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return true;
   }
   _buffer_ += receive_result.str_;
@@ -84,17 +84,25 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       }
       ResponseGenerator response_generator(_request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      if (response_generator.action() == ResponseGenerator::Content::READ) {
-        SocketBase *file_socket =
+      SocketBase *socket = NULL;
+      switch (response_generator.action()) {
+      case ResponseGenerator::Content::READ:
+        socket =
             new FileReadSocket(_response_queue_.back(), response_generator);
-        socket_map_actions.add_socket_map_action(SocketMapAction(
-            SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
-      } else if (response_generator.action() ==
-                 ResponseGenerator::Content::WRITE) {
-        SocketBase *file_socket =
+        break;
+      case ResponseGenerator::Content::WRITE:
+        socket =
             new FileWriteSocket(_response_queue_.back(), response_generator);
-        socket_map_actions.add_socket_map_action(SocketMapAction(
-            SocketMapAction::INSERT, file_socket->socket_fd(), file_socket));
+        break;
+      case ResponseGenerator::Content::CGI:
+        socket = new CgiSocket(_response_queue_.back(), response_generator);
+        break;
+      default:
+        break;
+      }
+      if (socket != NULL) {
+        socket_map_actions.add_action(SocketMapAction::INSERT,
+                                      socket->socket_fd(), socket);
       }
       _request_ = Request();
     }
