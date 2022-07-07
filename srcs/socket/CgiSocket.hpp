@@ -27,7 +27,8 @@ private:
 private:
   bool _handle_receive_event();
   void _handle_send_event(SocketMapActions &socket_map_actions);
-  void _set_error_content(SocketMapActions &socket_map_actions);
+  void _set_error_content(SocketMapActions &socket_map_actions,
+                          HttpStatusCode    status_code);
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);

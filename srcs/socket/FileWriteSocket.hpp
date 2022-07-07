@@ -21,6 +21,10 @@ private:
   ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
+private:
+  void _set_error_content(SocketMapActions &socket_map_actions,
+                          HttpStatusCode    status_code);
+
 public:
   FileWriteSocket(Response &response, ResponseGenerator response_generator)
       : SocketBase(response_generator.content_.fd_)

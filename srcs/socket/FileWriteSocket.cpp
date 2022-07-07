@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "http/response/ResponseGenerator.hpp"
+#include "socket/FileReadSocket.hpp"
 #include "socket/SocketMapActions.hpp"
 #include "utils/Path.hpp"
 
@@ -23,26 +24,40 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
   (void)revents;
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
-  // TODO: 一定数を書き込むようにする 3人
-  ssize_t write_size =
-      write(_socket_fd_, _response_generator_.content_.str_.c_str(),
-            _response_generator_.content_.str_.size());
+  std::string &sending_content = _response_generator_.content_.str_;
+  const char  *rest_str        = sending_content.c_str() + _send_count_;
+  size_t       rest_count      = sending_content.size() - _send_count_;
+  ssize_t      write_size      = write(_socket_fd_, rest_str, rest_count);
   if (write_size == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+    _set_error_content(socket_map_actions,
+                       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return socket_map_actions;
   }
-  if (write_size != 0) {
+  _send_count_ += write_size;
+  if (_send_count_ ==
+      static_cast<ssize_t>(_response_generator_.content_.str_.size())) {
     std::string response_message = _response_generator_.create_response_message(
         HttpStatusCode(HttpStatusCode::S_201_CREATED)
             .create_default_content_str());
-    LOG("response message: " << response_message);
     _response_.set_response_message_and_sending(response_message);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    return socket_map_actions;
   }
-  LOG("write_size: " << write_size);
   return socket_map_actions;
+}
+
+// status_codeはエラーコード前提、つまりActionはREAD or CREATED
+void FileWriteSocket::_set_error_content(SocketMapActions &socket_map_actions,
+                                         HttpStatusCode    status_code) {
+  _response_generator_.update_content(status_code);
+  if (_response_generator_.action() == ResponseGenerator::Content::READ) {
+    SocketBase *file_socket =
+        new FileReadSocket(_response_, _response_generator_);
+    socket_map_actions.add_action(SocketMapAction::INSERT,
+                                  file_socket->socket_fd(), file_socket);
+  }
+  _response_ = _response_generator_.generate_response();
 }
 
 } // namespace ns_socket

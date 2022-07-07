@@ -78,7 +78,9 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   if (wc == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    _set_error_content(socket_map_actions);
+    _set_error_content(socket_map_actions,
+                       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    return;
   }
   _send_count_ += wc;
   if (_send_count_ ==
@@ -88,18 +90,16 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   }
 }
 
-void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions) {
-  // response_generatorのcontentを更新
-  _response_generator_.update_content(
-      HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-  // fileよむなら新しいソケット作成。そうじゃないならresponseの内容をセット
+// status_codeはエラーコード前提、つまりActionはREAD or CREATED
+void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions,
+                                   HttpStatusCode    status_code) {
+  _response_generator_.update_content(status_code);
   if (_response_generator_.action() == ResponseGenerator::Content::READ) {
     SocketBase *file_socket =
         new FileReadSocket(_response_, _response_generator_);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
   }
-  // responseの内容を上書き(たぶんsendingの状態で上書きされる)
   _response_ = _response_generator_.generate_response();
 }
 
