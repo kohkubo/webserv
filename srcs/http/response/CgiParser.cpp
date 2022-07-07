@@ -116,7 +116,7 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
       return HEADER;
     }
     std::string line = result.object_;
-    if (line.empty()) {
+    if (line.empty() && !has_content_length_) {
       LOG("cgi header end ============");
       return HEADER_END;
     }
@@ -138,7 +138,8 @@ CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
     LOG("parse_body: invalid content-length");
     return ERROR;
   }
-  content_length_ = result.object_;
+  content_length_     = result.object_;
+  has_content_length_ = true;
   if (buffer.size() >= content_length_) {
     LOG("parse_body");
     content_ = buffer.substr(0, content_length_);

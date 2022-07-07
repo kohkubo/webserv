@@ -47,7 +47,7 @@ TEST(cgi_parse, getline_cgi) {
 
 bool random_read(int fd, std::string &buffer) {
   std::srand(std::time(NULL));
-  std::size_t read_size = 1000;// (std::rand() % 10) + 1;
+  std::size_t read_size = (std::rand() % 10) + 1;
   char       *buf       = new char[read_size];
   int         ret       = read(fd, buf, read_size);
 

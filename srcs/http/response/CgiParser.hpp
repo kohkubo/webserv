@@ -88,6 +88,7 @@ public:
   ResponseType   response_type_;
   CgiLocation    cgi_location_;
   std::size_t    content_length_;
+  bool           has_content_length_;
   std::string    content_type_;
   std::string    content_;
   std::string    buffer_;
@@ -98,7 +99,8 @@ public:
   CgiParser()
       : state_(HEADER)
       , response_type_(DOCUMENT)
-      , content_length_(0) {}
+      , content_length_(0)
+      , has_content_length_(false) {}
   ~CgiParser(){};
   CgiState handle_cgi(std::string &buffer);
   CgiState parse_header(std::string &buffer);
