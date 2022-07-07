@@ -151,8 +151,7 @@ CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
 CgiParser::CgiState CgiParser::parse_header_end() {
   Result<std::string> result = parse_content_type(header_map_);
   if (result.is_err_) {
-    ERROR_LOG("parse_content_type error");
-    return ERROR;
+    ERROR_LOG("no parse_content_type");
   }
   content_type_  = result.object_;
   response_type_ = get_cgi_response_type(header_map_);
