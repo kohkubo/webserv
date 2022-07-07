@@ -18,6 +18,7 @@ private:
   Timeout                  _timeout_;
   Response                &_response_;
   ResponseGenerator        _response_generator_;
+  ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
 public:
@@ -25,8 +26,9 @@ public:
       : SocketBase(response_generator.content_.fd_)
       , _timeout_(TIMEOUT_SECONDS_)
       , _response_(response)
-      , _response_generator_(response_generator){};
-  ~FileWriteSocket(){};
+      , _response_generator_(response_generator)
+      , _send_count_(0) {}
+  ~FileWriteSocket() {}
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out() { return _timeout_.is_timed_out(); }
