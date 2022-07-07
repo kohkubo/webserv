@@ -84,6 +84,24 @@ std::string HttpStatusCode::status_phrase() const {
 
 std::string HttpStatusCode::str() const { return to_string(status_code_); }
 
+std::string HttpStatusCode::create_default_content_str() const {
+  LOG("create_default_content_str");
+  return "<!DOCTYPE html>\n"
+         "<html>\n"
+         "    <head>\n"
+         "        <title>" +
+         str() +
+         "</title>\n"
+         "    </head>\n"
+         "    <body>\n"
+         "<h2>" +
+         status_phrase() +
+         "</h2>\n"
+         "provided by webserv\n"
+         "    </body>\n"
+         "</html>";
+}
+
 bool operator==(const HttpStatusCode &lhs, const HttpStatusCode &rhs) {
   return lhs.status_code_ == rhs.status_code_;
 }
