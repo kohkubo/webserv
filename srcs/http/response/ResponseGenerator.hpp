@@ -4,7 +4,7 @@
 #include "config/Config.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/Content.hpp"
+#include "http/response/ResponseInfo.hpp"
 #include "utils/Path.hpp"
 
 namespace response_generator {

@@ -1,4 +1,4 @@
-#include "http/response/Content.hpp"
+#include "http/response/ResponseInfo.hpp"
 
 namespace response_generator {
 

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "http/response/CgiEnviron.hpp"
-#include "http/response/Content.hpp"
+#include "http/response/ResponseInfo.hpp"
 #include "utils/utils.hpp"
 
 namespace response_generator {

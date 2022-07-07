@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_CONTENT_HPP
-#define SRCS_HTTP_RESPONSE_CONTENT_HPP
+#ifndef SRCS_HTTP_RESPONSE_RESPONSEINFO_HPP
+#define SRCS_HTTP_RESPONSE_RESPONSEINFO_HPP
 
 #include <string>
 
@@ -57,4 +57,4 @@ public:
 
 } // namespace response_generator
 
-#endif /* SRCS_HTTP_RESPONSE_CONTENT_HPP */
+#endif /* SRCS_HTTP_RESPONSE_RESPONSEINFO_HPP */
