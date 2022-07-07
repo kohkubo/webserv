@@ -89,10 +89,8 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 
 void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions) {
   // response_generatorのcontentを更新
-  _response_generator_.content_ =
-      response_generator::create_status_code_content(
-          _response_generator_.request_info_,
-          HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+  _response_generator_.update_content(
+      HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   // fileよむなら新しいソケット作成。そうじゃないならresponseの内容をセット
   if (_response_generator_.action() == ResponseGenerator::Content::READ) {
     SocketBase *file_socket =

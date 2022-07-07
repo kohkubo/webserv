@@ -26,22 +26,21 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
   if (status_code.is_error_status_code()) {
-    content_ = create_status_code_content(request_info_, status_code);
+    content_ = _create_status_code_content(status_code);
     return;
   }
   location_ = request_info_.config_.locations_.select_location(
       request_info_.request_line_.absolute_path_);
   if (location_ == NULL) {
-    content_ = create_status_code_content(request_info_,
-                                          HttpStatusCode::S_404_NOT_FOUND);
+    content_ = _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
     return;
   }
-  if (request_info_.location_->return_map_.size() != 0) {
-    status_code = request_info_.location_->return_map_.begin()->first;
-    content_    = create_status_code_content(request_info_, status_code);
+  if (location_->return_map_.size() != 0) {
+    status_code = location_->return_map_.begin()->first;
+    content_    = _create_status_code_content(status_code);
     return;
   }
-  content_ = handle_method(request_info_);
+  content_ = _handle_method();
 }
 
 Response ResponseGenerator::generate_response() {
@@ -73,7 +72,8 @@ static std::string entity_header_and_body(const std::string &content) {
          "Content-Type: text/html" + CRLF + CRLF + content;
 }
 
-static std::string create_response_header(const RequestInfo &request_info,
+static std::string create_response_header(const RequestInfo      &request_info,
+                                          const config::Location &location,
                                           const bool is_connection_close,
                                           const HttpStatusCode &status_code) {
   // LOG("status_code: " << status_code);
@@ -86,7 +86,7 @@ static std::string create_response_header(const RequestInfo &request_info,
   }
   if (HttpStatusCode::S_301_MOVED_PERMANENTLY == status_code) {
     config::returnMap::const_iterator it =
-        request_info.location_->return_map_.find(status_code);
+        location.return_map_.find(status_code);
     response += location_header(it->second);
   }
   if (HttpStatusCode::S_201_CREATED == status_code) {
@@ -99,7 +99,7 @@ static std::string create_response_header(const RequestInfo &request_info,
 std::string
 ResponseGenerator::create_response_message(const std::string &content) {
   std::string response = create_response_header(
-      request_info_, _is_connection_close_, content_.status_code_);
+      request_info_, *location_, _is_connection_close_, content_.status_code_);
   response += entity_header_and_body(content);
   return response;
 };
