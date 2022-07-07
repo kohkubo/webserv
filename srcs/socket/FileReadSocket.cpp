@@ -27,8 +27,7 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
   if (read_size == -1) {
     LOG("read error");
     // TODO: 500をセットしてFileReadSocketを作成する
-    socket_map_actions.add_socket_map_action(
-        SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
   if (read_size == 0) {
@@ -36,8 +35,7 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
         _response_generator_.create_response_message(_buffer_.str());
     // LOG("response message: " << response_message);
     _response_.set_response_message_and_sending(response_message);
-    socket_map_actions.add_socket_map_action(
-        SocketMapAction(SocketMapAction::DELETE, _socket_fd_, this));
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
   _buffer_ << std::string(buf, read_size);

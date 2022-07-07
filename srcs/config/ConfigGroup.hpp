@@ -16,6 +16,8 @@
   Config自体はvectorで保存、server_nameをkeyにしたmapを持つ。
 */
 
+namespace config {
+
 class ConfigGroup {
 private:
   std::string                   _default_server_name_;
@@ -32,5 +34,7 @@ public:
   void               add_config_or_exit(const Config config);
   Config             select_config(const std::string &host_name) const;
 };
+
+} // namespace config
 
 #endif /* SRCS_CONFIG_CONFIGGROUP_HPP */

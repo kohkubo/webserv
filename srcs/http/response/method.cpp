@@ -33,17 +33,13 @@ method_get_file(const RequestInfo &request_info, const Path &target_path) {
                                       HttpStatusCode::S_404_NOT_FOUND);
   }
   if (target_path.has_suffix(".py")) {
-    Result<std::string> result =
-        read_file_to_str_cgi(request_info, target_path);
+    Result<ResponseGenerator::Content> result =
+        create_cgi_content(request_info, target_path);
     if (result.is_err_) {
-      ERROR_LOG("method_get_file: read file failed");
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     }
-    ResponseGenerator::Content content;
-    content.action_ = ResponseGenerator::Content::CREATED;
-    content.str_    = result.object_;
-    return content;
+    return result.object_;
   }
   Result<int> result = target_path.open_read_file();
   if (result.is_err_) {
@@ -128,12 +124,6 @@ static ResponseGenerator::Content method_delete(const RequestInfo &request_info,
 // An origin server that receives a request method that is recognized and
 // implemented, but not allowed for the target resource, SHOULD respond with the
 // 405 (Method Not Allowed) status code.
-static bool is_available_methods(const RequestInfo &request_info) {
-  return std::find(request_info.location_->available_methods_.begin(),
-                   request_info.location_->available_methods_.end(),
-                   request_info.request_line_.method_) !=
-         request_info.location_->available_methods_.end();
-}
 
 static Path create_default_target_path(const RequestInfo &request_info) {
   return request_info.location_->root_ +
@@ -143,7 +133,8 @@ static Path create_default_target_path(const RequestInfo &request_info) {
 ResponseGenerator::Content handle_method(const RequestInfo &request_info) {
   HttpStatusCode status_code;
   Path           target_path = create_default_target_path(request_info);
-  if (!is_available_methods(request_info)) {
+  if (request_info.location_->is_unavailable_method(
+          request_info.request_line_.method_)) {
     status_code = HttpStatusCode::S_405_NOT_ALLOWED;
   } else if ("GET" == request_info.request_line_.method_) {
     return method_get(request_info, target_path);
