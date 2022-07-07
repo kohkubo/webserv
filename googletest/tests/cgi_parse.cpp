@@ -34,7 +34,7 @@ Result<std::string> getline_cgi(std::string &source, const std::string &delim) {
 }
 
 TEST(cgi_parse, getline_cgi) {
-  std::string source = "hoge\nfuga\n";
+  std::string         source = "hoge\nfuga\n";
   Result<std::string> result = getline_cgi(source, "\n");
   EXPECT_EQ(result.object_, "hoge");
   result = getline_cgi(source, "\n");
@@ -151,7 +151,8 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse) {
 }
 
 TEST(cgi_parse, cgi_parse_local_redir_reponse_with_query) {
-  int         fd = xopen("tdata/cgi_test_data/cgi_local_redir_with_query.txt", O_RDONLY);
+  int fd =
+      xopen("tdata/cgi_test_data/cgi_local_redir_with_query.txt", O_RDONLY);
   std::string buffer;
   CgiParser   cgi_parser;
   while (random_read(fd, buffer)) {
@@ -167,9 +168,11 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse_with_query) {
 }
 
 TEST(cgi_parse, cgi_parse_local_redir_reponse_with_null_query) {
-  int         fd = xopen("tdata/cgi_test_data/cgi_local_redir_with_null_query.txt",
-  O_RDONLY); std::string buffer; CgiParser   cgi_parser; while
-  (random_read(fd, buffer)) {
+  int fd = xopen("tdata/cgi_test_data/cgi_local_redir_with_null_query.txt",
+                 O_RDONLY);
+  std::string buffer;
+  CgiParser   cgi_parser;
+  while (random_read(fd, buffer)) {
     CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
     if (state == CgiParser::END) {
       break;
