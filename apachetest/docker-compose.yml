@@ -6,4 +6,4 @@ services:
       - "8080:80"
     volumes:
       - "./:/usr/local/apache2/htdocs/"
-      #- "${confpath}:/etc/nginx/nginx.conf"
+      - "${confpath}:/usr/local/apache2/conf/httpd.conf"
