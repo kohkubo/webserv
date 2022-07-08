@@ -12,7 +12,7 @@
 namespace ns_socket {
 
 CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
-    : SocketBase(response_generator.response_info_.fd_)
+    : LocalIOSocket(response, response_generator)
     , _timeout_(TIMEOUT_SECONDS_)
     , _response_(response)
     , _response_generator_(response_generator)
@@ -32,16 +32,6 @@ struct pollfd CgiSocket::pollfd() {
 }
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
-
-SocketBase *CgiSocket::handle_timed_out() {
-  SocketBase *file_socket = NULL;
-  _response_              = _response_generator_.update_new_status(
-                   HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-  if (_response_generator_.need_socket()) {
-    file_socket = _response_generator_.create_socket(_response_);
-  }
-  return file_socket;
-}
 
 SocketMapActions CgiSocket::handle_event(short int revents) {
   LOG(revents);
@@ -77,8 +67,8 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   if (receive_result.rc_ == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    _overwrite_error_response(socket_map_actions,
-                              HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    overwrite_error_response(socket_map_actions,
+                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return false;
   }
   if (receive_result.rc_ == 0) {
@@ -96,8 +86,8 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   if (wc == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    _overwrite_error_response(socket_map_actions,
-                              HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    overwrite_error_response(socket_map_actions,
+                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return;
   }
   _send_count_ += wc;
@@ -105,17 +95,6 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
       static_cast<ssize_t>(_response_generator_.request_info_.body_.size())) {
     _is_sending_ = false;
     shutdown(_socket_fd_, SHUT_WR);
-  }
-}
-
-// status_codeはエラーコード前提、つまりActionはREAD or CREATED
-void CgiSocket::_overwrite_error_response(SocketMapActions &socket_map_actions,
-                                          HttpStatusCode    status_code) {
-  _response_              = _response_generator_.update_new_status(status_code);
-  SocketBase *file_socket = _response_generator_.create_socket(_response_);
-  if (file_socket != NULL) {
-    socket_map_actions.add_action(SocketMapAction::INSERT,
-                                  file_socket->socket_fd(), file_socket);
   }
 }
 

@@ -5,7 +5,7 @@
 
 #include "event/Response.hpp"
 #include "http/response/ResponseGenerator.hpp"
-#include "socket/SocketBase.hpp"
+#include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
 #include "socket/socket.hpp"
 
@@ -13,7 +13,7 @@ namespace ns_socket {
 
 typedef response_generator::ResponseGenerator ResponseGenerator;
 
-class CgiSocket : public SocketBase {
+class CgiSocket : public LocalIOSocket {
 private:
   Timeout                  _timeout_;
   Response                &_response_;
@@ -27,8 +27,6 @@ private:
 private:
   bool _handle_receive_event(SocketMapActions &socket_map_actions);
   void _handle_send_event(SocketMapActions &socket_map_actions);
-  void _overwrite_error_response(SocketMapActions &socket_map_actions,
-                                 HttpStatusCode    status_code);
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);
@@ -36,7 +34,6 @@ public:
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
-  virtual SocketBase      *handle_timed_out();
 };
 
 } // namespace ns_socket
