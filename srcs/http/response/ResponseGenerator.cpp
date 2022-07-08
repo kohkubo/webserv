@@ -26,35 +26,36 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
   if (status_code.is_error_status_code()) {
-    content_ = _create_status_code_content(status_code);
+    response_info_ = _create_status_code_content(status_code);
     return;
   }
   location_ = request_info_.config_.locations_.select_location(
       request_info_.request_line_.absolute_path_);
   if (location_ == NULL) {
-    content_ = _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
+    response_info_ =
+        _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
     return;
   }
   if (location_->return_map_.size() != 0) {
-    status_code = location_->return_map_.begin()->first;
-    content_    = _create_status_code_content(status_code);
+    status_code    = location_->return_map_.begin()->first;
+    response_info_ = _create_status_code_content(status_code);
     return;
   }
   Path target_path =
       location_->root_ + request_info_.request_line_.absolute_path_;
-  content_ = _handle_method(target_path);
+  response_info_ = _handle_method(target_path);
 }
 
 Response ResponseGenerator::generate_response() {
-  switch (content_.action_) {
-  case Content::READ:
+  switch (response_info_.action_) {
+  case ResponseInfo::READ:
     return Response(_is_connection_close_, Response::READING);
-  case Content::WRITE:
+  case ResponseInfo::WRITE:
     return Response(_is_connection_close_, Response::WRITING);
-  case Content::CGI:
+  case ResponseInfo::CGI:
     return Response(_is_connection_close_, Response::READING);
   default:
-    return Response(create_response_message(content_.str_),
+    return Response(create_response_message(response_info_.content_),
                     _is_connection_close_);
   }
 }
@@ -100,8 +101,9 @@ static std::string create_response_header(const RequestInfo      &request_info,
 
 std::string
 ResponseGenerator::create_response_message(const std::string &content) {
-  std::string response = create_response_header(
-      request_info_, *location_, _is_connection_close_, content_.status_code_);
+  std::string response =
+      create_response_header(request_info_, *location_, _is_connection_close_,
+                             response_info_.status_code_);
   response += entity_header_and_body(content);
   return response;
 };
