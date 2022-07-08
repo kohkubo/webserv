@@ -50,13 +50,14 @@ ResponseGenerator::_method_get_file(const Path &target_path) {
   return content;
 }
 
-ResponseGenerator::Content ResponseGenerator::_method_get(Path &target_path) {
+ResponseGenerator::Content
+ResponseGenerator::_method_get(const Path &target_path) {
   if (target_path.has_suffix("/")) {
     Path path_add_index = target_path + location_->index_;
     if (!path_add_index.is_file_exists()) {
       return _method_get_dir(target_path);
     }
-    target_path = path_add_index;
+    return _method_get_file(path_add_index);
   }
   return _method_get_file(target_path);
 }
