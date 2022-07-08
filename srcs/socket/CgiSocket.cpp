@@ -33,6 +33,17 @@ struct pollfd CgiSocket::pollfd() {
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
+SocketBase *CgiSocket::handle_timed_out() {
+  SocketBase *file_socket = NULL;
+  _response_generator_.update_content(
+      HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+  if (_response_generator_.action() == response_generator::ResponseInfo::READ) {
+    file_socket = new FileReadSocket(_response_, _response_generator_);
+  }
+  _response_ = _response_generator_.generate_response();
+  return file_socket;
+}
+
 SocketMapActions CgiSocket::handle_event(short int revents) {
   LOG(revents);
   SocketMapActions socket_map_actions;

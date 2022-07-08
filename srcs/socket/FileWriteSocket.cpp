@@ -19,6 +19,17 @@ struct pollfd FileWriteSocket::pollfd() {
   return pfd;
 }
 
+SocketBase *FileWriteSocket::handle_timed_out() {
+  SocketBase *file_socket = NULL;
+  _response_generator_.update_content(
+      HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+  if (_response_generator_.action() == response_generator::ResponseInfo::READ) {
+    file_socket = new FileReadSocket(_response_, _response_generator_);
+  }
+  _response_ = _response_generator_.generate_response();
+  return file_socket;
+}
+
 SocketMapActions FileWriteSocket::handle_event(short int revents) {
   LOG("FileWriteSocket: handle_event: socket: " << _socket_fd_);
   (void)revents;
