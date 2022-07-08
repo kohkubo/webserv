@@ -20,37 +20,42 @@ namespace response_generator {
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      HttpStatusCode     status_code)
     : request_info_(request_info)
+    , location_(NULL)
     , _is_connection_close_(request_info_.connection_close_ ||
                             status_code == HttpStatusCode::C_400_BAD_REQUEST ||
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
   if (status_code.is_error_status_code()) {
-    content_ = create_status_code_content(request_info_, status_code);
+    response_info_ = _create_status_code_content(status_code);
     return;
   }
-  if (request_info_.location_ == NULL) {
-    content_ = create_status_code_content(request_info_,
-                                          HttpStatusCode::S_404_NOT_FOUND);
+  location_ = request_info_.config_.locations_.select_location(
+      request_info_.request_line_.absolute_path_);
+  if (location_ == NULL) {
+    response_info_ =
+        _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
     return;
   }
-  if (request_info_.location_->return_map_.size() != 0) {
-    status_code = request_info_.location_->return_map_.begin()->first;
-    content_    = create_status_code_content(request_info_, status_code);
+  if (location_->return_map_.size() != 0) {
+    status_code    = location_->return_map_.begin()->first;
+    response_info_ = _create_status_code_content(status_code);
     return;
   }
-  content_ = handle_method(request_info_);
+  Path target_path =
+      location_->root_ + request_info_.request_line_.absolute_path_;
+  response_info_ = _handle_method(target_path);
 }
 
 Response ResponseGenerator::generate_response() {
-  switch (content_.action_) {
-  case Content::READ:
+  switch (response_info_.action_) {
+  case ResponseInfo::READ:
     return Response(_is_connection_close_, Response::READING);
-  case Content::WRITE:
+  case ResponseInfo::WRITE:
     return Response(_is_connection_close_, Response::WRITING);
-  case Content::CGI:
+  case ResponseInfo::CGI:
     return Response(_is_connection_close_, Response::READING);
   default:
-    return Response(create_response_message(content_.str_),
+    return Response(create_response_message(response_info_.content_),
                     _is_connection_close_);
   }
 }
@@ -70,7 +75,8 @@ static std::string entity_header_and_body(const std::string &content) {
          "Content-Type: text/html" + CRLF + CRLF + content;
 }
 
-static std::string create_response_header(const RequestInfo &request_info,
+static std::string create_response_header(const RequestInfo      &request_info,
+                                          const config::Location &location,
                                           const bool is_connection_close,
                                           const HttpStatusCode &status_code) {
   // LOG("status_code: " << status_code);
@@ -83,7 +89,7 @@ static std::string create_response_header(const RequestInfo &request_info,
   }
   if (HttpStatusCode::S_301_MOVED_PERMANENTLY == status_code) {
     config::returnMap::const_iterator it =
-        request_info.location_->return_map_.find(status_code);
+        location.return_map_.find(status_code);
     response += location_header(it->second);
   }
   if (HttpStatusCode::S_201_CREATED == status_code) {
@@ -95,8 +101,9 @@ static std::string create_response_header(const RequestInfo &request_info,
 
 std::string
 ResponseGenerator::create_response_message(const std::string &content) {
-  std::string response = create_response_header(
-      request_info_, _is_connection_close_, content_.status_code_);
+  std::string response =
+      create_response_header(request_info_, *location_, _is_connection_close_,
+                             response_info_.status_code_);
   response += entity_header_and_body(content);
   return response;
 };

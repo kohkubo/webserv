@@ -23,7 +23,7 @@ private:
 
 public:
   FileReadSocket(Response &response, ResponseGenerator response_generator)
-      : SocketBase(response_generator.content_.fd_)
+      : SocketBase(response_generator.response_info_.fd_)
       , _timeout_(TIMEOUT_SECONDS_)
       , _response_(response)
       , _response_generator_(response_generator){};

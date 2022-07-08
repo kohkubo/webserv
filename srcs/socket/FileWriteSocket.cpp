@@ -25,8 +25,8 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
   _timeout_.update_last_event();
   // TODO: 一定数を書き込むようにする 3人
   ssize_t write_size =
-      write(_socket_fd_, _response_generator_.content_.str_.c_str(),
-            _response_generator_.content_.str_.size());
+      write(_socket_fd_, _response_generator_.response_info_.content_.c_str(),
+            _response_generator_.response_info_.content_.size());
   if (write_size == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);

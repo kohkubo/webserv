@@ -38,16 +38,15 @@ public:
     std::string query_;
     std::string http_version_;
   };
-  RequestLine             request_line_;
-  std::string             host_;
-  std::string             body_;
-  bool                    connection_close_;
-  bool                    is_chunked_;
-  bool                    has_content_length_;
-  std::size_t             content_length_;
-  config::Config          config_;
-  const config::Location *location_;
-  std::string             content_type_;
+  RequestLine    request_line_;
+  std::string    host_;
+  std::string    body_;
+  bool           connection_close_;
+  bool           is_chunked_;
+  bool           has_content_length_;
+  std::size_t    content_length_;
+  config::Config config_;
+  std::string    content_type_;
 
 public:
   RequestInfo()
