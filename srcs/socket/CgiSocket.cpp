@@ -41,7 +41,7 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
   // TODO: POLLHUP 拾えるはず
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
-    bool is_close = _handle_receive_event();
+    bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
       if (waitpid(_response_generator_.response_info_.cgi_pid_, NULL, 0) ==
           -1) {
@@ -62,8 +62,15 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
   return socket_map_actions;
 }
 
-bool CgiSocket::_handle_receive_event() {
+bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
+  if (receive_result.rc_ == -1) {
+    LOG("write error");
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+    _set_error_content(socket_map_actions,
+                       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    return;
+  }
   if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
     return true;

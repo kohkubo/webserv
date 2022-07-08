@@ -25,7 +25,7 @@ private:
   static const size_t      CGI_BUFFER_SIZE_ = 2048;
 
 private:
-  bool _handle_receive_event();
+  bool _handle_receive_event(SocketMapActions &socket_map_actions);
   void _handle_send_event(SocketMapActions &socket_map_actions);
   void _set_error_content(SocketMapActions &socket_map_actions,
                           HttpStatusCode    status_code);
