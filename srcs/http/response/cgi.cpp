@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 
+#include "http/request/RequestInfo.hpp"
 #include "http/response/CgiEnviron.hpp"
 #include "http/response/ResponseInfo.hpp"
 #include "utils/utils.hpp"
