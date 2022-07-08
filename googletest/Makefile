@@ -45,7 +45,7 @@ $(TOBJDIR)/%.o: $(TESTDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES) -o $@
 
 $(LIBDIR):
-	git clone --depth=1 https://github.com/google/googletest.git
+	git clone https://github.com/google/googletest.git -b v1.12.0 --depth 1
 	mkdir -p googletest/build includes
 	cmake -S ./googletest -B ./googletest/build
 	$(MAKE) -C googletest/build
