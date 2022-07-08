@@ -16,35 +16,6 @@
 #include "http/response/CgiParser.hpp"
 #include "utils/Result.hpp"
 
-static std::string getline_cgi_sub(std::string       &source,
-                                   const std::string &delim, std::size_t pos) {
-  std::string line = source.substr(0, pos);
-  source.erase(0, pos + delim.size());
-  return line;
-}
-
-Result<std::string> getline_cgi(std::string &source, const std::string &delim) {
-  LOG("source: " << source);
-  std::size_t pos = source.find(delim);
-  if (pos == std::string::npos) {
-    LOG("getline_cgi: delim not found");
-    return Error<std::string>();
-  }
-  return Ok<std::string>(getline_cgi_sub(source, delim, pos));
-}
-
-TEST(cgi_parse, getline_cgi) {
-  std::string         source = "hoge\nfuga\n";
-  Result<std::string> result = getline_cgi(source, "\n");
-  EXPECT_EQ(result.object_, "hoge");
-  result = getline_cgi(source, "\n");
-  EXPECT_EQ(result.object_, "fuga");
-  result = getline_cgi(source, "\n");
-  EXPECT_EQ(result.is_err_, true);
-  std::cout << "result.object_: " << result.object_ << std::endl;
-  std::cout << "result.is_err_: " << result.is_err_ << std::endl;
-}
-
 bool random_read(int fd, std::string &buffer) {
   std::srand(std::time(NULL));
   std::size_t read_size = (std::rand() % 10) + 1;
