@@ -95,7 +95,7 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions,
                                    HttpStatusCode    status_code) {
   _response_generator_.update_content(status_code);
-  if (_response_generator_.action() == ResponseGenerator::Content::READ) {
+  if (_response_generator_.action() == response_generator::ResponseInfo::READ) {
     SocketBase *file_socket =
         new FileReadSocket(_response_, _response_generator_);
     socket_map_actions.add_action(SocketMapAction::INSERT,
