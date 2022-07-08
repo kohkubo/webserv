@@ -84,23 +84,9 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       }
       ResponseGenerator response_generator(_request_.request_info());
       _response_queue_.push_back(response_generator.generate_response());
-      SocketBase *socket = NULL;
-      switch (response_generator.action()) {
-      case response_generator::ResponseInfo::READ:
-        socket =
-            new FileReadSocket(_response_queue_.back(), response_generator);
-        break;
-      case response_generator::ResponseInfo::WRITE:
-        socket =
-            new FileWriteSocket(_response_queue_.back(), response_generator);
-        break;
-      case response_generator::ResponseInfo::CGI:
-        socket = new CgiSocket(_response_queue_.back(), response_generator);
-        break;
-      default:
-        break;
-      }
-      if (socket != NULL) {
+      if (response_generator.need_socket()) {
+        SocketBase *socket =
+            response_generator.create_socket(_response_queue_.back());
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
       }

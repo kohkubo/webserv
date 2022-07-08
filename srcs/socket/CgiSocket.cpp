@@ -37,7 +37,7 @@ SocketBase *CgiSocket::handle_timed_out() {
   SocketBase *file_socket = NULL;
   _response_generator_.update_content(
       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-  if (_response_generator_.action() == response_generator::ResponseInfo::READ) {
+  if (_response_generator_.need_socket()) {
     file_socket = new FileReadSocket(_response_, _response_generator_);
   }
   _response_ = _response_generator_.generate_response();
@@ -113,7 +113,7 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions,
                                    HttpStatusCode    status_code) {
   _response_generator_.update_content(status_code);
-  if (_response_generator_.action() == response_generator::ResponseInfo::READ) {
+  if (_response_generator_.need_socket()) {
     SocketBase *file_socket =
         new FileReadSocket(_response_, _response_generator_);
     socket_map_actions.add_action(SocketMapAction::INSERT,

@@ -13,6 +13,10 @@
 #include "http/HttpStatusCode.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "socket/CgiSocket.hpp"
+#include "socket/FileReadSocket.hpp"
+#include "socket/FileWriteSocket.hpp"
+#include "socket/SocketBase.hpp"
 #include "utils/utils.hpp"
 
 namespace response_generator {
@@ -58,6 +62,23 @@ Response ResponseGenerator::generate_response() {
     return Response(create_response_message(response_info_.content_),
                     _is_connection_close_);
   }
+}
+
+ns_socket::SocketBase *ResponseGenerator::create_socket(Response &response) {
+  switch (response_info_.action_) {
+  case response_generator::ResponseInfo::READ:
+    return new ns_socket::FileReadSocket(response, *this);
+    break;
+  case response_generator::ResponseInfo::WRITE:
+    return new ns_socket::FileWriteSocket(response, *this);
+    break;
+  case response_generator::ResponseInfo::CGI:
+    return new ns_socket::CgiSocket(response, *this);
+    break;
+  default:
+    break;
+  }
+  return NULL;
 }
 
 static std::string start_line(const HttpStatusCode &status_code) {
