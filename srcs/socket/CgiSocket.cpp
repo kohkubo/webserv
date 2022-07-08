@@ -80,7 +80,7 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     _set_error_content(socket_map_actions,
                        HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-    return;
+    return false;
   }
   if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
