@@ -12,7 +12,7 @@
 namespace ns_socket {
 
 CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
-    : SocketBase(response_generator.content_.fd_)
+    : SocketBase(response_generator.response_info_.fd_)
     , _timeout_(TIMEOUT_SECONDS_)
     , _response_(response)
     , _response_generator_(response_generator)
@@ -42,7 +42,8 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event();
     if (is_close) {
-      if (waitpid(_response_generator_.content_.cgi_pid_, NULL, 0) == -1) {
+      if (waitpid(_response_generator_.response_info_.cgi_pid_, NULL, 0) ==
+          -1) {
         ERROR_LOG("error: waitpid in read_file_to_str_cgi");
       }
       // TODO: parse_cgi_response

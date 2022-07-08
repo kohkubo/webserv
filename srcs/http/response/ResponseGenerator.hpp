@@ -12,7 +12,7 @@ namespace response_generator {
 
 class ResponseGenerator {
 public:
-  ResponseInfo            content_;
+  ResponseInfo            response_info_;
   const RequestInfo       request_info_;
   const config::Location *location_;
 
@@ -33,7 +33,7 @@ public:
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response             generate_response();
-  ResponseInfo::Action action() const { return content_.action_; }
+  ResponseInfo::Action action() const { return response_info_.action_; }
   std::string          create_response_message(const std::string &content);
   void                 update_content(const HttpStatusCode &status_code);
 };

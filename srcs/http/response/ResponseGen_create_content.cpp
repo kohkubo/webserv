@@ -32,7 +32,7 @@ ResponseInfo ResponseGenerator::_create_status_code_content(
 }
 
 void ResponseGenerator::update_content(const HttpStatusCode &status_code) {
-  content_ = _create_status_code_content(status_code);
+  response_info_ = _create_status_code_content(status_code);
 }
 
 } // namespace response_generator
