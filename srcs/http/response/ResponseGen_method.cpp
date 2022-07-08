@@ -9,28 +9,26 @@
 
 namespace response_generator {
 
-ResponseGenerator::Content
-ResponseGenerator::_method_get_dir(const Path &target_path) {
+ResponseInfo ResponseGenerator::_method_get_dir(const Path &target_path) {
   if (!target_path.is_dir_exists()) {
     return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
   }
   if (!location_->autoindex_) {
     return _create_status_code_content(HttpStatusCode::S_403_FORBIDDEN);
   }
-  ResponseGenerator::Content content;
-  content.action_ = ResponseGenerator::Content::CREATED;
-  content.str_    = create_autoindex_body(request_info_, target_path);
+  ResponseInfo content;
+  content.action_  = ResponseInfo::CREATED;
+  content.content_ = create_autoindex_body(request_info_, target_path);
   return content;
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_get_file(const Path &target_path) {
+ResponseInfo ResponseGenerator::_method_get_file(const Path &target_path) {
   if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
   }
   if (target_path.has_suffix(".py")) {
-    Result<ResponseGenerator::Content> result =
+    Result<ResponseInfo> result =
         create_cgi_content(request_info_, target_path);
     if (result.is_err_) {
       return _create_status_code_content(
@@ -44,14 +42,13 @@ ResponseGenerator::_method_get_file(const Path &target_path) {
     return _create_status_code_content(
         HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  ResponseGenerator::Content content;
-  content.action_ = ResponseGenerator::Content::READ;
+  ResponseInfo content;
+  content.action_ = ResponseInfo::READ;
   content.fd_     = result.object_;
   return content;
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_get(const Path &target_path) {
+ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
   if (target_path.has_suffix("/")) {
     Path path_add_index = target_path + location_->index_;
     if (!path_add_index.is_file_exists()) {
@@ -62,8 +59,7 @@ ResponseGenerator::_method_get(const Path &target_path) {
   return _method_get_file(target_path);
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_post(const Path &target_path) {
+ResponseInfo ResponseGenerator::_method_post(const Path &target_path) {
   if (!location_->upload_file_ || target_path.has_suffix("/")) {
     return _create_status_code_content(HttpStatusCode::S_403_FORBIDDEN);
   }
@@ -73,16 +69,15 @@ ResponseGenerator::_method_post(const Path &target_path) {
     return _create_status_code_content(
         HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  ResponseGenerator::Content content;
+  ResponseInfo content;
   content.status_code_ = HttpStatusCode::S_201_CREATED;
-  content.action_      = ResponseGenerator::Content::WRITE;
+  content.action_      = ResponseInfo::WRITE;
   content.fd_          = result.object_;
-  content.str_         = request_info_.body_;
+  content.content_     = request_info_.body_;
   return content;
 }
 
-ResponseGenerator::Content
-ResponseGenerator::_method_delete(const Path &target_path) {
+ResponseInfo ResponseGenerator::_method_delete(const Path &target_path) {
   HttpStatusCode status_code;
   if (!target_path.is_file_exists()) {
     ERROR_LOG("target file is not found");
@@ -106,8 +101,7 @@ ResponseGenerator::_method_delete(const Path &target_path) {
 // implemented, but not allowed for the target resource, SHOULD respond with the
 // 405 (Method Not Allowed) status code.
 
-ResponseGenerator::Content
-ResponseGenerator::_handle_method(const Path &target_path) {
+ResponseInfo ResponseGenerator::_handle_method(const Path &target_path) {
   if (location_->is_unavailable_method(request_info_.request_line_.method_)) {
     return _create_status_code_content(HttpStatusCode::S_405_NOT_ALLOWED);
   }
