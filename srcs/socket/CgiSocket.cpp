@@ -35,12 +35,11 @@ bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketBase *CgiSocket::handle_timed_out() {
   SocketBase *file_socket = NULL;
-  _response_generator_.update_content(
-      HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+  _response_              = _response_generator_.update_response(
+                   HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   if (_response_generator_.need_socket()) {
-    file_socket = new FileReadSocket(_response_, _response_generator_);
+    file_socket = _response_generator_.create_socket(_response_);
   }
-  _response_ = _response_generator_.generate_response();
   return file_socket;
 }
 
@@ -112,14 +111,12 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 // status_codeはエラーコード前提、つまりActionはREAD or CREATED
 void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions,
                                    HttpStatusCode    status_code) {
-  _response_generator_.update_content(status_code);
+  _response_ = _response_generator_.update_response(status_code);
   if (_response_generator_.need_socket()) {
-    SocketBase *file_socket =
-        new FileReadSocket(_response_, _response_generator_);
+    SocketBase *file_socket = _response_generator_.create_socket(_response_);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
   }
-  _response_ = _response_generator_.generate_response();
 }
 
 } // namespace ns_socket
