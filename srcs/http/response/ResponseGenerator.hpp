@@ -39,14 +39,13 @@ private:
   bool _is_connection_close_;
 
 private:
-  Content _handle_method();
-  Content _method_get(Path &target_path);
+  Content _handle_method(const Path &target_path);
+  Content _method_get(const Path &target_path);
   Content _method_get_file(const Path &target_path);
   Content _method_get_dir(const Path &target_path);
   Content _method_post(const Path &target_path);
   Content _method_delete(const Path &target_path);
-  ResponseGenerator::Content
-  _create_status_code_content(const HttpStatusCode &status_code);
+  Content _create_status_code_content(const HttpStatusCode &status_code);
 
 public:
   ResponseGenerator(const RequestInfo &request_info,

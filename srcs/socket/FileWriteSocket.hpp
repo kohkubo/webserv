@@ -32,7 +32,7 @@ public:
       , _response_(response)
       , _response_generator_(response_generator)
       , _write_count_(0) {}
-  ~FileWriteSocket() {}
+  virtual ~FileWriteSocket(){};
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out() { return _timeout_.is_timed_out(); }

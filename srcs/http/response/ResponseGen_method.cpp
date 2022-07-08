@@ -105,23 +105,22 @@ ResponseGenerator::_method_delete(const Path &target_path) {
 // implemented, but not allowed for the target resource, SHOULD respond with the
 // 405 (Method Not Allowed) status code.
 
-ResponseGenerator::Content ResponseGenerator::_handle_method() {
-  HttpStatusCode status_code;
-  Path           target_path =
-      location_->root_ + request_info_.request_line_.absolute_path_;
+ResponseGenerator::Content
+ResponseGenerator::_handle_method(const Path &target_path) {
   if (location_->is_unavailable_method(request_info_.request_line_.method_)) {
-    status_code = HttpStatusCode::S_405_NOT_ALLOWED;
-  } else if ("GET" == request_info_.request_line_.method_) {
-    return _method_get(target_path);
-  } else if ("POST" == request_info_.request_line_.method_) {
-    return _method_post(target_path);
-  } else if ("DELETE" == request_info_.request_line_.method_) {
-    return _method_delete(target_path);
-  } else {
-    ERROR_LOG("unknown method: " << request_info_.request_line_.method_);
-    status_code = HttpStatusCode::S_501_NOT_IMPLEMENTED;
+    return _create_status_code_content(HttpStatusCode::S_405_NOT_ALLOWED);
   }
-  return _create_status_code_content(status_code);
+  if ("GET" == request_info_.request_line_.method_) {
+    return _method_get(target_path);
+  }
+  if ("POST" == request_info_.request_line_.method_) {
+    return _method_post(target_path);
+  }
+  if ("DELETE" == request_info_.request_line_.method_) {
+    return _method_delete(target_path);
+  }
+  ERROR_LOG("unknown method: " << request_info_.request_line_.method_);
+  return _create_status_code_content(HttpStatusCode::S_501_NOT_IMPLEMENTED);
 }
 
 } // namespace response_generator
