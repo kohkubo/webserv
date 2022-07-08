@@ -31,7 +31,8 @@ ResponseInfo ResponseGenerator::_create_status_code_content(
   return ResponseInfo(status_code.create_default_content_str(), status_code);
 }
 
-Response ResponseGenerator::update_response(const HttpStatusCode &status_code) {
+Response
+ResponseGenerator::update_new_status(const HttpStatusCode &status_code) {
   response_info_ = _create_status_code_content(status_code);
   return generate_response();
 }

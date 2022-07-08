@@ -35,7 +35,7 @@ bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketBase *CgiSocket::handle_timed_out() {
   SocketBase *file_socket = NULL;
-  _response_              = _response_generator_.update_response(
+  _response_              = _response_generator_.update_new_status(
                    HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   if (_response_generator_.need_socket()) {
     file_socket = _response_generator_.create_socket(_response_);
@@ -77,8 +77,8 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   if (receive_result.rc_ == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    _set_error_content(socket_map_actions,
-                       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    _overwrite_error_response(socket_map_actions,
+                              HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return false;
   }
   if (receive_result.rc_ == 0) {
@@ -96,8 +96,8 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   if (wc == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    _set_error_content(socket_map_actions,
-                       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    _overwrite_error_response(socket_map_actions,
+                              HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return;
   }
   _send_count_ += wc;
@@ -109,11 +109,11 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 }
 
 // status_codeはエラーコード前提、つまりActionはREAD or CREATED
-void CgiSocket::_set_error_content(SocketMapActions &socket_map_actions,
-                                   HttpStatusCode    status_code) {
-  _response_ = _response_generator_.update_response(status_code);
-  if (_response_generator_.need_socket()) {
-    SocketBase *file_socket = _response_generator_.create_socket(_response_);
+void CgiSocket::_overwrite_error_response(SocketMapActions &socket_map_actions,
+                                          HttpStatusCode    status_code) {
+  _response_              = _response_generator_.update_new_status(status_code);
+  SocketBase *file_socket = _response_generator_.create_socket(_response_);
+  if (file_socket != NULL) {
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
   }

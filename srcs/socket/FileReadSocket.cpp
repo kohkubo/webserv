@@ -19,7 +19,7 @@ struct pollfd FileReadSocket::pollfd() {
 
 SocketBase *FileReadSocket::handle_timed_out() {
   SocketBase *file_socket = NULL;
-  _response_generator_.update_response(
+  _response_generator_.update_new_status(
       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   if (_response_generator_.need_socket()) {
     file_socket = new FileReadSocket(_response_, _response_generator_);
@@ -57,7 +57,7 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
 
 void FileReadSocket::_set_error_content(SocketMapActions &socket_map_actions,
                                         HttpStatusCode    status_code) {
-  _response_generator_.update_response(status_code);
+  _response_generator_.update_new_status(status_code);
   if (_response_generator_.need_socket()) {
     SocketBase *file_socket =
         new FileReadSocket(_response_, _response_generator_);

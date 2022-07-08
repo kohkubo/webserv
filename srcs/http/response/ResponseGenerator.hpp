@@ -39,7 +39,7 @@ public:
   }
   ns_socket::SocketBase *create_socket(Response &response);
   std::string            create_response_message(const std::string &content);
-  Response               update_response(const HttpStatusCode &status_code);
+  Response               update_new_status(const HttpStatusCode &status_code);
 };
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
