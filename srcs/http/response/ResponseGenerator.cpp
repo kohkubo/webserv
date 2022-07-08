@@ -40,7 +40,9 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     content_    = _create_status_code_content(status_code);
     return;
   }
-  content_ = _handle_method();
+  Path target_path =
+      location_->root_ + request_info_.request_line_.absolute_path_;
+  content_ = _handle_method(target_path);
 }
 
 Response ResponseGenerator::generate_response() {
