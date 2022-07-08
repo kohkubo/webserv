@@ -4,19 +4,16 @@
 
 namespace response_generator {
 
-ResponseGenerator::Content
-create_status_code_content(const RequestInfo    &request_info,
-                           const HttpStatusCode &status_code) {
-  ResponseGenerator::Content           content(status_code);
+ResponseInfo create_status_code_content(const RequestInfo    &request_info,
+                                        const HttpStatusCode &status_code) {
   config::errorPageMap::const_iterator it =
       request_info.config_.error_pages_.find(status_code);
   if (it != request_info.config_.error_pages_.end()) {
     Path file_path = request_info.location_->root_ + it->second;
     if (!file_path.is_file_exists()) {
       if (status_code == HttpStatusCode::S_404_NOT_FOUND) {
-        content.str_    = status_code.create_default_content_str();
-        content.action_ = ResponseGenerator::Content::CREATED;
-        return content;
+        return ResponseInfo(status_code.create_default_content_str(),
+                            status_code);
       }
       return create_status_code_content(request_info,
                                         HttpStatusCode::S_404_NOT_FOUND);
@@ -24,20 +21,15 @@ create_status_code_content(const RequestInfo    &request_info,
     Result<int> result = file_path.open_read_file();
     if (result.is_err_) {
       if (status_code == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
-        content.str_    = status_code.create_default_content_str();
-        content.action_ = ResponseGenerator::Content::CREATED;
-        return content;
+        return ResponseInfo(status_code.create_default_content_str(),
+                            status_code);
       }
       return create_status_code_content(
           request_info, HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     }
-    content.action_ = ResponseGenerator::Content::READ;
-    content.fd_     = result.object_;
-    return content;
+    return ReadContent(result.object_, status_code);
   }
-  content.str_    = status_code.create_default_content_str();
-  content.action_ = ResponseGenerator::Content::CREATED;
-  return content;
+  return ResponseInfo(status_code.create_default_content_str(), status_code);
 }
 
 } // namespace response_generator

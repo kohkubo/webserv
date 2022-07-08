@@ -43,14 +43,14 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 
 Response ResponseGenerator::generate_response() {
   switch (content_.action_) {
-  case Content::READ:
+  case ResponseInfo::READ:
     return Response(_is_connection_close_, Response::READING);
-  case Content::WRITE:
+  case ResponseInfo::WRITE:
     return Response(_is_connection_close_, Response::WRITING);
-  case Content::CGI:
+  case ResponseInfo::CGI:
     return Response(_is_connection_close_, Response::READING);
   default:
-    return Response(create_response_message(content_.str_),
+    return Response(create_response_message(content_.content_),
                     _is_connection_close_);
   }
 }
