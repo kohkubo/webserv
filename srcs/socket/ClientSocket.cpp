@@ -74,7 +74,6 @@ void ClientSocket::_handle_send_event() {
 typedef response_generator::ResponseGenerator ResponseGenerator;
 
 void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
-  (void)socket_map_actions;
   try {
     for (;;) {
       Request::RequestState request_state =
@@ -96,7 +95,12 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
     // TODO: Fdを開く部分が書けていない
     ResponseGenerator response_generator(_request_.request_info(), e.status());
     _response_queue_.push_back(response_generator.generate_response());
-    _request_ = Request();
+    if (response_generator.need_socket()) {
+      SocketBase *socket =
+          response_generator.create_socket(_response_queue_.back());
+      socket_map_actions.add_action(SocketMapAction::INSERT,
+                                    socket->socket_fd(), socket);
+    }
   }
 }
 

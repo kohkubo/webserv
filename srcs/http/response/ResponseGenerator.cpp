@@ -66,13 +66,13 @@ Response ResponseGenerator::generate_response() {
 
 ns_socket::SocketBase *ResponseGenerator::create_socket(Response &response) {
   switch (response_info_.action_) {
-  case response_generator::ResponseInfo::READ:
+  case ResponseInfo::READ:
     return new ns_socket::FileReadSocket(response, *this);
     break;
-  case response_generator::ResponseInfo::WRITE:
+  case ResponseInfo::WRITE:
     return new ns_socket::FileWriteSocket(response, *this);
     break;
-  case response_generator::ResponseInfo::CGI:
+  case ResponseInfo::CGI:
     return new ns_socket::CgiSocket(response, *this);
     break;
   default:
