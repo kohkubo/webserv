@@ -10,7 +10,7 @@ LocalIOSocket::LocalIOSocket(Response         &response,
 
 SocketBase *LocalIOSocket::handle_timed_out() {
   SocketBase *file_socket = NULL;
-  _response_              = _response_generator_.update_new_status(
+  _response_              = _response_generator_.new_status_response(
                    HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   if (_response_generator_.need_socket()) {
     file_socket = _response_generator_.create_socket(_response_);
@@ -20,7 +20,7 @@ SocketBase *LocalIOSocket::handle_timed_out() {
 
 void LocalIOSocket::overwrite_error_response(
     SocketMapActions &socket_map_actions, HttpStatusCode status_code) {
-  _response_              = _response_generator_.update_new_status(status_code);
+  _response_ = _response_generator_.new_status_response(status_code);
   SocketBase *file_socket = _response_generator_.create_socket(_response_);
   if (file_socket != NULL) {
     socket_map_actions.add_action(SocketMapAction::INSERT,
