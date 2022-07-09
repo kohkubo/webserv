@@ -18,7 +18,6 @@ create_environ_map(const RequestInfo &request_info,
     environ_map["CONTENT_TYPE"]   = request_info.content_type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-
   Result<std::string> result       = target_path.get_realpath();
   if (result.is_err_) {
     environ_map["PATH_INFO"] = target_path.str();
@@ -26,24 +25,17 @@ create_environ_map(const RequestInfo &request_info,
     environ_map["PATH_INFO"] = result.object_;
   }
   environ_map["PATH_TRANSLATED"] = environ_map["PATH_INFO"];
+  environ_map["REMOTE_ADDR"]     = peer_name;
+  environ_map["REMOTE_HOST"]     = environ_map["REMOTE_ADDR"];
   environ_map["QUERY_STRING"]    = request_info.request_line_.query_;
   environ_map["REQUEST_METHOD"]  = request_info.request_line_.method_;
+  environ_map["SCRIPT_NAME"] =
+      request_info.request_line_.absolute_path_.get_script_name();
+  environ_map["SERVER_NAME"] = request_info.config_.server_name_;
+  environ_map["SERVER_PORT"] =
+      to_string(ntohs(request_info.config_.sockaddr_in_.sin_port));
   environ_map["SERVER_PROTOCOL"] = "HTTP/1.1";
   environ_map["SERVER_SOFTWARE"] = "webserv 0.0.0";
-  environ_map["REMOTE_ADDR"]     = peer_name;
-
-  // TODO: request_targetからファイルのパスだけ取る。
-  // ex) target: /hoge/test.py script_name: /test.py
-  environ_map["SCRIPT_NAME"] = request_info.request_line_.absolute_path_.str();
-
-  // TODO: addrinfoからポートを変換
-  environ_map["SERVER_PORT"] = "";
-
-  // なくても良さそうなもの
-  // environ_map["AUTH_TYPE"] = "";
-  // environ_map["REMOTE_HOST"]       = "";
-  // environ_map["REMOTE_IDENT"]      = "";
-  // environ_map["REMOTE_USER"]      = "";
 
   return environ_map;
 }
