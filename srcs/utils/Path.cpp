@@ -63,7 +63,7 @@ Result<std::string> Path::get_realpath() const {
 
 std::string Path::get_script_name() const {
   std::size_t last_slash  = _path_.find_last_of('/');
-  std::string scrpit_name = _path_.substr(last_slash);
+  std::string scrpit_name = _path_.substr(last_slash + 1);
   return scrpit_name;
 }
 

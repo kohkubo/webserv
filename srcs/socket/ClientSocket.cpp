@@ -88,7 +88,8 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       if (request_state != Request::SUCCESS) {
         break;
       }
-      ResponseGenerator response_generator(_request_.request_info());
+      ResponseGenerator response_generator(_request_.request_info(),
+                                           _peer_name_);
       _response_queue_.push_back(response_generator.generate_response());
       SocketBase *socket = NULL;
       switch (response_generator.action()) {
@@ -114,7 +115,8 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
     }
   } catch (const RequestInfo::BadRequestException &e) {
     // TODO: Fdを開く部分が書けていない
-    ResponseGenerator response_generator(_request_.request_info(), e.status());
+    ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
+                                         e.status());
     _response_queue_.push_back(response_generator.generate_response());
     _request_ = Request();
   }
