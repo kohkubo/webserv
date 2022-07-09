@@ -30,7 +30,7 @@ private:
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);
-  virtual ~CgiSocket() {}
+  virtual ~CgiSocket();
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();

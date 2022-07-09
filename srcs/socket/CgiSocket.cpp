@@ -23,6 +23,19 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
   }
 }
 
+CgiSocket::~CgiSocket() {
+  pid_t cgi_process = _response_generator_.response_info_.cgi_pid_;
+  int   status      = 0;
+  kill(cgi_process, SIGTERM);
+  if (waitpid(cgi_process, &status, WNOHANG) == -1) {
+    ERROR_LOG("error: waitpid in read_file_to_str_cgi");
+  }
+  if (WIFEXITED(status)) {
+    LOG("child is dead");
+    return;
+  }
+}
+
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
   if (_is_sending_) {
@@ -43,10 +56,6 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
-      if (waitpid(_response_generator_.response_info_.cgi_pid_, NULL, 0) ==
-          -1) {
-        ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-      }
       // TODO: parse_cgi_response
       std::string response_message =
           _response_generator_.create_response_message(_buffer_.str());
