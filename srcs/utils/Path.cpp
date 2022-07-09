@@ -61,6 +61,12 @@ Result<std::string> Path::get_realpath() const {
   return Ok<std::string>(res);
 }
 
+std::string Path::get_script_name() const {
+  std::size_t last_slash  = _path_.find_last_of('/');
+  std::string scrpit_name = _path_.substr(last_slash);
+  return scrpit_name;
+}
+
 bool Path::is_minus_depth() const {
   tokenVector   tokens = tokenize(_path_, "/", "/");
   tokenIterator it     = tokens.begin();
