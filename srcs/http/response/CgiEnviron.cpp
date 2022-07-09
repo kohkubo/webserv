@@ -9,7 +9,8 @@
 #include "utils/utils.hpp"
 
 static std::map<std::string, std::string>
-create_environ_map(const RequestInfo &request_info, const Path &target_path) {
+create_environ_map(const RequestInfo &request_info,
+                   const std::string &peer_name, const Path &target_path) {
   std::map<std::string, std::string> environ_map;
 
   if (request_info.has_body()) {
@@ -29,9 +30,7 @@ create_environ_map(const RequestInfo &request_info, const Path &target_path) {
   environ_map["REQUEST_METHOD"]  = request_info.request_line_.method_;
   environ_map["SERVER_PROTOCOL"] = "HTTP/1.1";
   environ_map["SERVER_SOFTWARE"] = "webserv 0.0.0";
-
-  // TODO: addrinfoからアドレスを文字列に変換
-  environ_map["REMOTE_ADDR"]     = "";
+  environ_map["REMOTE_ADDR"]     = peer_name;
 
   // TODO: request_targetからファイルのパスだけ取る。
   // ex) target: /hoge/test.py script_name: /test.py
@@ -62,9 +61,9 @@ create_cgi_environ(const std::map<std::string, std::string> &environ_map) {
 }
 
 CgiEnviron::CgiEnviron(const RequestInfo &request_info,
-                       const Path        &target_path) {
+                       const std::string &peer_name, const Path &target_path) {
   std::map<std::string, std::string> environ_map =
-      create_environ_map(request_info, target_path);
+      create_environ_map(request_info, peer_name, target_path);
   _environ_ = create_cgi_environ(environ_map);
 }
 
