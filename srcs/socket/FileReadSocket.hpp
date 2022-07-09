@@ -6,14 +6,14 @@
 #include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/response/ResponseGenerator.hpp"
-#include "socket/SocketBase.hpp"
+#include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
 
 namespace ns_socket {
 
 typedef response_generator::ResponseGenerator ResponseGenerator;
 
-class FileReadSocket : public SocketBase {
+class FileReadSocket : public LocalIOSocket {
 private:
   Timeout                  _timeout_;
   Response                &_response_;
@@ -23,11 +23,12 @@ private:
 
 public:
   FileReadSocket(Response &response, ResponseGenerator response_generator)
-      : SocketBase(response_generator.response_info_.fd_)
+      : LocalIOSocket(response, response_generator)
       , _timeout_(TIMEOUT_SECONDS_)
       , _response_(response)
-      , _response_generator_(response_generator){};
-  virtual ~FileReadSocket(){};
+      , _response_generator_(response_generator) {}
+
+  virtual ~FileReadSocket() {}
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out() { return _timeout_.is_timed_out(); }

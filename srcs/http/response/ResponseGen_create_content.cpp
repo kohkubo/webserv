@@ -31,8 +31,10 @@ ResponseInfo ResponseGenerator::_create_status_code_content(
   return ResponseInfo(status_code.create_default_content_str(), status_code);
 }
 
-void ResponseGenerator::update_content(const HttpStatusCode &status_code) {
+Response
+ResponseGenerator::new_status_response(const HttpStatusCode &status_code) {
   response_info_ = _create_status_code_content(status_code);
+  return generate_response();
 }
 
 } // namespace response_generator
