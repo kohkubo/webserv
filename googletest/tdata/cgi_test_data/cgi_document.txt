@@ -1,0 +1,26 @@
+Content-type: text/plain; charset=iso-8859-1
+test: text/plain; charset=iso-8859-1
+jkldsjke: text/plain; charset=iso-8859-1
+Content-Length: 378
+
+CGI/1.0 test script report:
+
+argc is 0. argv is .
+
+SERVER_SOFTWARE = asdfsf
+SERVER_NAME = fdsfeede
+GATEWAY_INTERFACE = dfsdkhdjjd
+SERVER_PROTOCOL = djdjdjd
+SERVER_PORT = ddd
+REQUEST_METHOD = sdkgjgjh  dfsdfjkl
+HTTP_ACCEPT = dkk34kk5j
+PATH_INFO =
+PATH_TRANSLATED =
+SCRIPT_NAME =
+QUERY_STRING =
+REMOTE_HOST =
+REMOTE_ADDR =
+REMOTE_USER =
+AUTH_TYPE =
+CONTENT_TYPE =
+CONTENT_LENGTH =

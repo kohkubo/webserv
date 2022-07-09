@@ -1,0 +1,2 @@
+Location: /tdata/cgi.py?
+

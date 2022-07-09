@@ -82,3 +82,8 @@ TEST(util_test, test_string_to_size) {
   EXPECT_TRUE(string_to_size("abc").is_err_);
   EXPECT_TRUE(string_to_size("-20").is_err_);
 }
+
+TEST(util_test, trim) {
+  EXPECT_EQ(trim("", " "), "");
+  EXPECT_EQ(trim(" ", " "), "");
+}
