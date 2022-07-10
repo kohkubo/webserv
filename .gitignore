@@ -21,6 +21,7 @@
 test
 !pre-push
 !*.py
+!*.pl
 !html
 !*.jpeg
 !Dockerfile
