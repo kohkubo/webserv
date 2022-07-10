@@ -26,8 +26,9 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
   ssize_t read_size = read(_socket_fd_, buf, 1024);
   if (read_size == -1) {
     LOG("read error");
-    // TODO: 500をセットしてFileReadSocketを作成する
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+    overwrite_error_response(socket_map_actions,
+                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return socket_map_actions;
   }
   if (read_size == 0) {
