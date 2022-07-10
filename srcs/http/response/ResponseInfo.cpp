@@ -32,8 +32,8 @@ ReadContent::ReadContent(int fd, HttpStatusCode status_code)
     : ResponseInfo(ResponseInfo::READ, status_code, std::string(), fd, -1) {}
 
 // cgi
-CgiContent::CgiContent(int fd, pid_t cgi_pid)
-    : ResponseInfo(ResponseInfo::CGI, HttpStatusCode::S_200_OK, std::string(),
-                   fd, cgi_pid) {}
+CgiContent::CgiContent(int fd, pid_t cgi_pid, std::string content)
+    : ResponseInfo(ResponseInfo::CGI, HttpStatusCode::S_200_OK, content, fd,
+                   cgi_pid) {}
 
 } // namespace response_generator

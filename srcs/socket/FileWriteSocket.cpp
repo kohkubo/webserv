@@ -36,9 +36,7 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
     return socket_map_actions;
   }
   _write_count_ += write_size;
-  if (_write_count_ ==
-      static_cast<ssize_t>(
-          _response_generator_.response_info_.content_.size())) {
+  if (_write_count_ == static_cast<ssize_t>(sending_content.size())) {
     std::string response_message = _response_generator_.create_response_message(
         HttpStatusCode(HttpStatusCode::S_201_CREATED)
             .create_default_content_str());
