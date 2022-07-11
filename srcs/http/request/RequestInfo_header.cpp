@@ -41,29 +41,27 @@ static size_t parse_request_content_length(const std::string &content_length) {
 void RequestInfo::parse_request_header() {
   std::map<std::string, std::string>::const_iterator itr;
 
-  itr = header_field_map_.find("Host");
-  if (itr == header_field_map_.end()) {
-    // TODO:
-    // この例外処理、header_field_mapを格納し終わった後にすれば、header_field_mapをメンバ変数として持たなくて良い気がする
+  if (!header_field_map_.has_field("Host")) {
     throw BadRequestException(HttpStatusCode::C_400_BAD_REQUEST,
                               "Host field is not found.");
   }
+  itr   = header_field_map_.find("Host");
   host_ = parse_request_host(itr->second);
-  itr   = header_field_map_.find("Connection");
-  if (itr != header_field_map_.end()) {
+  if (header_field_map_.has_field("Connection")) {
+    itr               = header_field_map_.find("Connection");
     connection_close_ = parse_request_connection(itr->second);
   }
-  itr = header_field_map_.find("Content-Length");
-  if (itr != header_field_map_.end()) {
+  if (header_field_map_.has_field("Content-Length")) {
+    itr                 = header_field_map_.find("Content-Length");
     has_content_length_ = true;
     content_length_     = parse_request_content_length(itr->second);
   }
-  itr = header_field_map_.find("Transfer-Encoding");
-  if (itr != header_field_map_.end()) {
+  if (header_field_map_.has_field("Transfer-Encoding")) {
+    itr         = header_field_map_.find("Transfer-Encoding");
     is_chunked_ = parse_request_transfer_encoding(itr->second);
   }
-  itr = header_field_map_.find("Content-Type");
-  if (itr != header_field_map_.end()) {
+  if (header_field_map_.has_field("Content-Type")) {
+    itr           = header_field_map_.find("Content-Type");
     content_type_ = itr->second;
   }
 }
