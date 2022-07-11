@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
-print("Content-Type: text/html;")
+print("Content-type: text/html")
 print("")
-print("hello world")
+print("Hello, World")
