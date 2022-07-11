@@ -68,8 +68,6 @@ void RequestInfo::parse_request_header() {
   }
 }
 
-// 呼び出し元で例外をcatchする
-// エラー→例外
 /*
 TODO: 全部400で返すのはRFCに反する? 2022/06/25 kohkubo
 RFC 9110

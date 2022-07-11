@@ -2,6 +2,7 @@
 #define SRCS_HTTP_HEADERFIELDMAP_HPP
 
 #include <map>
+#include <string>
 
 class HeaderFieldMap {
 public:
@@ -19,6 +20,7 @@ public:
   field_map_type::const_iterator find(const std::string &field_name) const;
   field_map_type::iterator       end() { return _field_map_.end(); }
   field_map_type::const_iterator end() const { return _field_map_.end(); }
+  bool                           has_field(const std::string &field_name);
 };
 
 #endif /* SRCS_HTTP_HEADERFIELDMAP_HPP */

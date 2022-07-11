@@ -2,7 +2,7 @@
 
 #include "utils/utils.hpp"
 
-static const std::string OWS_ = " \t";
+const std::string HeaderFieldMap::OWS_ = " \t";
 
 /*
 Rfc9110 sec5.3
@@ -43,4 +43,8 @@ HeaderFieldMap::find(const std::string &field_name) {
 HeaderFieldMap::field_map_type::const_iterator
 HeaderFieldMap::find(const std::string &field_name) const {
   return _field_map_.find(field_name);
+}
+
+bool HeaderFieldMap::has_field(const std::string &field_name) {
+  return _field_map_.count(field_name) == 1u;
 }
