@@ -6,7 +6,9 @@
 
 class HeaderFieldMap {
 public:
-  typedef std::map<std::string, std::string> field_map_type;
+  typedef std::map<std::string, std::string>                 field_map_type;
+  typedef std::map<std::string, std::string>::iterator       iterator;
+  typedef std::map<std::string, std::string>::const_iterator const_iterator;
 
 private:
   field_map_type           _field_map_;
