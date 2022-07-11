@@ -31,6 +31,7 @@ bool HeaderFieldMap::store_new_field(std::string &field_line) {
     ERROR_LOG("store_new_field: duplicated field.");
     return false;
   }
+  // TODO: error handling
   _field_map_[field_name] = field_value;
   return true;
 }
