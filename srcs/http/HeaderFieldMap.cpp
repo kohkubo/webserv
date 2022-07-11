@@ -46,6 +46,6 @@ HeaderFieldMap::find(const std::string &field_name) const {
   return _field_map_.find(field_name);
 }
 
-bool HeaderFieldMap::has_field(const std::string &field_name) {
+bool HeaderFieldMap::has_field(const std::string &field_name) const {
   return _field_map_.count(field_name) == 1u;
 }

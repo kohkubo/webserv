@@ -20,7 +20,7 @@ public:
   bool                           store_new_field(std::string &field_line);
   field_map_type::iterator       find(const std::string &field_name);
   field_map_type::const_iterator find(const std::string &field_name) const;
-  bool                           has_field(const std::string &field_name);
+  bool                           has_field(const std::string &field_name) const;
 };
 
 #endif /* SRCS_HTTP_HEADERFIELDMAP_HPP */
