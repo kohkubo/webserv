@@ -20,7 +20,7 @@ bool HeaderFieldMap::store_new_field(std::string &field_line) {
     ERROR_LOG("store_new_field: invalid header line.");
     return false;
   }
-  std::string field_name = field_line.substr(0, pos);
+  std::string field_name = tolower(field_line.substr(0, pos));
   char        last_char  = field_name[field_name.size() - 1];
   if (last_char == ' ' || last_char == '\t') {
     ERROR_LOG("store_new_field: field name has OWS.");
