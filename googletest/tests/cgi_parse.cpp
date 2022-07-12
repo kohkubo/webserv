@@ -35,23 +35,24 @@ bool random_read(int fd, std::string &buffer) {
   return true;
 }
 
-void print_map(const std::map<std::string, std::string> &map) {
-  std::map<std::string, std::string>::const_iterator it;
-  for (it = map.begin(); it != map.end(); ++it) {
-    std::cout << "  " << it->first << ": " << it->second << std::endl;
-  }
-}
+// void print_map(const std::map<std::string, std::string> &map) {
+//   std::map<std::string, std::string>::const_iterator it;
+//   for (it = map.begin(); it != map.end(); ++it) {
+//     std::cout << "  " << it->first << ": " << it->second << std::endl;
+//   }
+// }
 
-void print_cgi_parser(const CgiParser &cgi_parser) {
-  std::cout << "CgiParser:" << std::endl;
-  std::cout << "  content_type_: " << cgi_parser.content_type_ << std::endl;
-  std::cout << "  content_length_: " << cgi_parser.content_length_ << std::endl;
-  std::cout << "  headers.size(): " << cgi_parser.header_map_.size()
-            << std::endl;
-  print_map(cgi_parser.header_map_);
-  std::cout << std::endl;
-  std::cout << "  content_: " << cgi_parser.content_ << std::endl;
-}
+// void print_cgi_parser(const CgiParser &cgi_parser) {
+//   std::cout << "CgiParser:" << std::endl;
+//   std::cout << "  content_type_: " << cgi_parser.content_type_ << std::endl;
+//   std::cout << "  content_length_: " << cgi_parser.content_length_ <<
+//   std::endl; std::cout << "  headers.size(): " <<
+//   cgi_parser.header_field_map_.size()
+//             << std::endl;
+//   print_map(cgi_parser.header_field_map_);
+//   std::cout << std::endl;
+//   std::cout << "  content_: " << cgi_parser.content_ << std::endl;
+// }
 
 TEST(cgi_parse, cgi_parse_document_type) {
   int         fd = open("tdata/cgi_test_data/cgi_document.txt", O_RDONLY);
@@ -66,7 +67,7 @@ TEST(cgi_parse, cgi_parse_document_type) {
   // print_cgi_parser(cgi_parser);
   EXPECT_EQ(cgi_parser.content_type_, "text/plain");
   EXPECT_EQ(cgi_parser.content_length_, (std::size_t)378);
-  EXPECT_EQ(cgi_parser.header_map_["jkldsjke"],
+  EXPECT_EQ(cgi_parser.header_field_map_.value("jkldsjke"),
             "text/plain; charset=iso-8859-1");
   EXPECT_EQ(cgi_parser.content_, "\
 CGI/1.0 test script report:\n\

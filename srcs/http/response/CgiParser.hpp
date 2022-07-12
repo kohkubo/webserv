@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 
+#include "http/HeaderFieldMap.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "utils/Result.hpp"
 
@@ -66,7 +67,6 @@ hogehoge
 
 class CgiParser {
 public:
-  typedef std::map<std::string, std::string> HeaderMap;
   enum CgiState {
     HEADER,
     HEADER_END,
@@ -92,7 +92,7 @@ public:
   std::string    content_type_;
   std::string    content_;
   std::string    buffer_;
-  HeaderMap      header_map_;
+  HeaderFieldMap header_field_map_;
   HttpStatusCode status_code_;
 
 public:
