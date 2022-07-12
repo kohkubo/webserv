@@ -147,13 +147,12 @@ var testGET = testCatergory{
 			caseName: "minus_depth 1",
 			test: func() bool {
 				port := "50000"
-				expectStatusCode := 404
+				expectStatusCode := 400
 				expectBody := httpresp.ErrorBody(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /../ HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
-						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
@@ -172,13 +171,12 @@ var testGET = testCatergory{
 			caseName: "minus_depth 2",
 			test: func() bool {
 				port := "50000"
-				expectStatusCode := 404
+				expectStatusCode := 400
 				expectBody := httpresp.ErrorBody(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /hoge/../../ HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
-						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
