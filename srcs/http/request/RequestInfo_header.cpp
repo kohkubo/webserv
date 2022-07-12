@@ -10,13 +10,6 @@
 
 const std::string RequestInfo::OWS_ = " \t";
 
-// TODO: Transfer-Encodingはカンマ区切りのフィールド
-static bool
-parse_request_transfer_encoding(const std::string &transfer_encoding) {
-  return transfer_encoding == "chunked";
-}
-
-// TODO: hostとportで分ける必要あるか確認
 static std::string parse_request_host(const std::string &host_line) {
   std::size_t pos = host_line.find(':');
   if (pos == std::string::npos) {
@@ -26,7 +19,6 @@ static std::string parse_request_host(const std::string &host_line) {
 }
 
 static bool parse_request_connection(const std::string &connection) {
-  // TODO: tolower ってことは cLoseとかもあり? kohkubo
   return tolower(connection) == "close";
 }
 
@@ -56,12 +48,11 @@ void RequestInfo::parse_request_header() {
     content_length_          = parse_request_content_length(value);
   }
   if (header_field_map_.has_field("transfer-encoding")) {
-    const std::string &value = header_field_map_.value("transfer-encoding");
-    is_chunked_              = parse_request_transfer_encoding(value);
+    // TODO: Transfer-Encodingはカンマ区切りのフィールド
+    transfer_encoding_ = header_field_map_.value("transfer-encoding");
   }
   if (header_field_map_.has_field("content-type")) {
-    const std::string &value = header_field_map_.value("content-type");
-    content_type_            = value;
+    content_type_ = header_field_map_.value("content-type");
   }
 }
 

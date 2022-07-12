@@ -44,16 +44,15 @@ public:
   std::string    body_;
   HeaderFieldMap header_field_map_;
   bool           connection_close_;
-  bool           is_chunked_;
   bool           has_content_length_;
   std::size_t    content_length_;
+  std::string    transfer_encoding_;
   config::Config config_;
   std::string    content_type_;
 
 public:
   RequestInfo()
       : connection_close_(false)
-      , is_chunked_(false)
       , has_content_length_(false)
       , content_length_(0) {}
 
@@ -68,7 +67,8 @@ public:
     HttpStatusCode status() const;
   };
 
-  bool has_body() const { return has_content_length_ || is_chunked_; }
+  bool has_body() const { return has_content_length_ || is_chunked(); }
+  bool is_chunked() const { return transfer_encoding_ == "chunked"; }
   void parse_request_line(const std::string &request_line);
   void parse_request_header();
   bool is_valid_request_header() const;
