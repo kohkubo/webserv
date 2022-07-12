@@ -1,5 +1,6 @@
 #include "socket/CgiSocket.hpp"
 
+#include <signal.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
