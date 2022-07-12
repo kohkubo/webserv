@@ -2,8 +2,8 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/colorprint"
-	"integration_test/webserv"
+	"integrationtest/colorprint"
+	"integrationtest/webserv"
 )
 
 type testCase struct {

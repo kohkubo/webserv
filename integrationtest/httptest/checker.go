@@ -2,7 +2,7 @@ package httptest
 
 import (
 	"fmt"
-	"integration_test/httpresp"
+	"integrationtest/httpresp"
 	"io"
 	"net/http"
 	"os"

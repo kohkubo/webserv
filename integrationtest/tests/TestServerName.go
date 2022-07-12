@@ -1,30 +1,25 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httptest"
 	"net/http"
 )
 
-var testCgi = testCatergory{
-	categoryName: "cgi",
-	config:       "integration_test/conf/cgi.conf",
+var testServerName = testCatergory{
+	categoryName: "servername",
+	config:       "integrationtest/conf/server_name.conf",
 	testCases: []testCase{
 		{
-			caseName: "5000_cgi_get_normal",
+			caseName: "match_hoge",
 			test: func() bool {
-				expectBody := []byte(
-					"name= taro\n" +
-						"blood= A\n" +
-						"text= string\n",
-				)
+				port := "50001"
+				expectBody := []byte("index in dir1")
 
 				expectStatusCode := 200
-				port := "50000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET /cgi_test.py?name=taro&blood=A&text=string HTTP/1.1\r\n" +
-						"Host: localhost:" + port + "\r\n" +
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: hoge.com:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
@@ -41,20 +36,16 @@ var testCgi = testCatergory{
 			},
 		},
 		{
-			caseName: "indexでcgi指定",
+			caseName: "match_fuga",
 			test: func() bool {
-				expectBody := []byte(
-					"name= taro\n" +
-						"blood= A\n" +
-						"text= string\n",
-				)
+				port := "50001"
+				expectBody := []byte("index in dir2")
 
 				expectStatusCode := 200
-				port := "50000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET /html/?name=taro&blood=A&text=string HTTP/1.1\r\n" +
-						"Host: localhost:" + port + "\r\n" +
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: fuga.com:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
@@ -71,15 +62,16 @@ var testCgi = testCatergory{
 			},
 		},
 		{
-			caseName: "cgi timeout",
+			caseName: "no_match",
 			test: func() bool {
-				expectStatusCode := 500
-				expectBody := httpresp.ErrorBody(expectStatusCode)
-				port := "50000"
+				port := "50001"
+				expectBody := []byte("index in server_name")
+
+				expectStatusCode := 200
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET /time_out.py HTTP/1.1\r\n" +
-						"Host: localhost:" + port + "\r\n" +
+					Request: "GET / HTTP/1.1\r\n" +
+						"Host: no_such_host.com:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +

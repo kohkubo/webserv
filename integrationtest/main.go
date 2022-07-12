@@ -1,9 +1,9 @@
 package main
 
 import (
-	"integration_test/colorprint"
-	"integration_test/tests"
-	"integration_test/webserv"
+	"integrationtest/colorprint"
+	"integrationtest/tests"
+	"integrationtest/webserv"
 	"os"
 	"time"
 )

@@ -2,7 +2,7 @@ package httptest
 
 import (
 	"fmt"
-	"integration_test/webserv"
+	"integrationtest/webserv"
 	"math/rand"
 	"net"
 	"net/http"

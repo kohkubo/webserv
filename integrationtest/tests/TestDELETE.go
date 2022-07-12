@@ -3,9 +3,9 @@ package tests
 import (
 	"errors"
 	"fmt"
-	"integration_test/httpresp"
-	"integration_test/httptest"
-	"integration_test/webserv"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
+	"integrationtest/webserv"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,14 +13,14 @@ import (
 
 var testDELETE = testCatergory{
 	categoryName: "DELETE",
-	config:       "integration_test/conf/webserv.conf",
+	config:       "integrationtest/conf/webserv.conf",
 	testCases: []testCase{
 		{
 			caseName: "simple",
 			test: func() bool {
 				// setup file to delete
 				deleteFilePath := "/tmp/delete.txt"                         // httpリクエストで指定するターゲットURI
-				rootRelativePath := "html"                                  // configで指定されているrootへの(integration_testからの)相対パス
+				rootRelativePath := "html"                                  // configで指定されているrootへの(integrationtestからの)相対パス
 				deleteFileRelativePath := rootRelativePath + deleteFilePath // ターゲットURIへの相対パス
 				if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
 					webserv.ExitWithKill(err)

@@ -1,14 +1,14 @@
 package tests
 
 import (
-	"integration_test/httptest"
+	"integrationtest/httptest"
 	"net/http"
 )
 
 // テストの用意
 var testKeepAlive = testCatergory{
 	categoryName: "KeepAlive",
-	config:       "integration_test/conf/test.conf",
+	config:       "integrationtest/conf/test.conf",
 	testCases: []testCase{
 		{
 			caseName: "serial request",
