@@ -1,15 +1,15 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 )
 
 // テストの用意
 var testReturn = testCatergory{
 	categoryName: "Return",
-	config:       "integration_test/conf/return.conf",
+	config:       "integrationtest/conf/return.conf",
 	testCases: []testCase{
 		{
 			caseName: "return 301",

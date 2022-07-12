@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 	"os"
 )
@@ -10,7 +10,7 @@ import (
 // テストの用意
 var testGET = testCatergory{
 	categoryName: "GET",
-	config:       "integration_test/conf/test.conf",
+	config:       "integrationtest/conf/test.conf",
 	testCases: []testCase{
 		{
 			caseName: "GET / ",

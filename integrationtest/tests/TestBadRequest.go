@@ -1,15 +1,15 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 	"strings"
 )
 
 var testBadRequest = testCatergory{
 	categoryName: "badrequest",
-	config:       "integration_test/conf/webserv.conf",
+	config:       "integrationtest/conf/webserv.conf",
 	testCases: []testCase{
 		{
 			caseName: "too long request line",

@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"math/rand"
 	"net/http"
 	"time"
@@ -10,7 +10,7 @@ import (
 
 var testIOMulti = testCatergory{
 	categoryName: "IOMulti",
-	config:       "integration_test/conf/iomulti.conf",
+	config:       "integrationtest/conf/iomulti.conf",
 	testCases: []testCase{
 		{
 			caseName: "3client",

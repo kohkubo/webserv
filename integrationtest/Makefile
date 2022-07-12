@@ -3,7 +3,7 @@ GOBUILD=go mod tidy && go build
 GOCLEAN=go clean
 GOTEST=go test
 GOGET=go get
-BINARY_NAME=integration_test
+BINARY_NAME=integrationtest
 BINARY_UNIX=$(BINARY_NAME)_unix
 
 # Make rule
@@ -23,11 +23,11 @@ re: clean all
 
 .PHONY: run
 run: build
-	./integration_test
+	./integrationtest
 
 .PHONY: run_all
 run_all: build
-	./integration_test -all
+	./integrationtest -all
 
 .PHONY: gotest
 gotest: build

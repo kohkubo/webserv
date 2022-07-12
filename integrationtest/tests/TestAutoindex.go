@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
-	"integration_test/webserv"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
+	"integrationtest/webserv"
 	"net/http"
 	"os"
 )
@@ -43,7 +43,7 @@ func makeTestPath() func() {
 
 var testAutoindex = testCatergory{
 	categoryName: "autoindex",
-	config:       "integration_test/conf/autoindex.conf",
+	config:       "integrationtest/conf/autoindex.conf",
 	testCases: []testCase{
 		{
 			caseName: "simple",
