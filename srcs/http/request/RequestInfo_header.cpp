@@ -18,10 +18,6 @@ static std::string parse_request_host(const std::string &host_line) {
   return host_line.substr(0, pos);
 }
 
-static bool parse_request_connection(const std::string &connection) {
-  return tolower(connection) == "close";
-}
-
 static size_t parse_request_content_length(const std::string &content_length) {
   Result<std::size_t> result = string_to_size(content_length);
   if (result.is_err_) {
@@ -39,8 +35,7 @@ void RequestInfo::parse_request_header() {
                               "Host field is not found.");
   }
   if (header_field_map_.has_field("connection")) {
-    const std::string &value = header_field_map_.value("connection");
-    connection_close_        = parse_request_connection(value);
+    connection_ = tolower(header_field_map_.value("connection"));
   }
   if (header_field_map_.has_field("content-length")) {
     const std::string &value = header_field_map_.value("content-length");

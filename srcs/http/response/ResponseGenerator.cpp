@@ -25,7 +25,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      HttpStatusCode     status_code)
     : request_info_(request_info)
     , location_(NULL)
-    , _is_connection_close_(request_info_.connection_close_ ||
+    , _is_connection_close_(request_info_.is_close_connection() ||
                             status_code == HttpStatusCode::C_400_BAD_REQUEST ||
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE) {

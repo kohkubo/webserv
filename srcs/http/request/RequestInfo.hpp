@@ -43,17 +43,16 @@ public:
   std::string    host_;
   std::string    body_;
   HeaderFieldMap header_field_map_;
-  bool           connection_close_;
   bool           has_content_length_;
   std::size_t    content_length_;
+  std::string    connection_;
   std::string    transfer_encoding_;
   config::Config config_;
   std::string    content_type_;
 
 public:
   RequestInfo()
-      : connection_close_(false)
-      , has_content_length_(false)
+      : has_content_length_(false)
       , content_length_(0) {}
 
   class BadRequestException : public std::logic_error {
@@ -69,6 +68,7 @@ public:
 
   bool has_body() const { return has_content_length_ || is_chunked(); }
   bool is_chunked() const { return transfer_encoding_ == "chunked"; }
+  bool is_close_connection() const { return connection_ == "close"; }
   void parse_request_line(const std::string &request_line);
   void parse_request_header();
   bool is_valid_request_header() const;
