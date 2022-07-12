@@ -326,7 +326,6 @@ var testBadRequest = testCatergory{
 				return clientA.DoAndCheck()
 			},
 		},
-
 		{
 			caseName: "Transfer-Encoding but last member is not chunked",
 			test: func() bool {
@@ -348,6 +347,34 @@ var testBadRequest = testCatergory{
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "transfer-encoding not implemented",
+			test: func() bool {
+
+				expectStatusCode := 501
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+
+				port := "55000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "POST / HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Transfer-Encoding: gzip, chunked\r\n" +
+						"\r\n" +
+						"4\r\n" +
+						"test\r\n" +
+						"0\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
 						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
 					},
