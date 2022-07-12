@@ -60,8 +60,13 @@ void SocketMap::close_timedout_socket() {
   std::map<int, SocketBase *>::const_iterator it = _socket_map_.begin();
   while (it != _socket_map_.end()) {
     if (it->second->is_timed_out()) {
-      int         socket_fd = it->first;
-      SocketBase *socket    = it->second;
+      int         socket_fd  = it->first;
+      SocketBase *socket     = it->second;
+      SocketBase *new_socket = socket->handle_timed_out();
+      if (new_socket != NULL) {
+        do_socket_map_action(SocketMapAction(
+            SocketMapAction::INSERT, new_socket->socket_fd(), new_socket));
+      }
       it++;
       do_socket_map_action(
           SocketMapAction(SocketMapAction::DELETE, socket_fd, socket));

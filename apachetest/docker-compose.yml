@@ -1,9 +1,15 @@
 version: '3.7'
 services:
   web:
-    image: httpd
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
     volumes:
+      # root dir
       - "./:/usr/local/apache2/htdocs/"
+      # cgi dir (see ScriptAlias directive in conf file)
+      - "./cgi/:/usr/local/apache2/cgi-bin/"
+      # conf file
       - "${confpath}:/usr/local/apache2/conf/httpd.conf"

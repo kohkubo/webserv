@@ -52,7 +52,7 @@ private:
   CgiContent() {}
 
 public:
-  CgiContent(int fd, pid_t cgi_pid);
+  CgiContent(int fd, pid_t cgi_pid, std::string content);
 };
 
 } // namespace response_generator

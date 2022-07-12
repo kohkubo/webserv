@@ -49,7 +49,7 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
     return Error<ResponseInfo>();
   }
   close(socket_pair[1]);
-  return Ok<ResponseInfo>(CgiContent(socket_pair[0], pid));
+  return Ok<ResponseInfo>(CgiContent(socket_pair[0], pid, request_info.body_));
 }
 
 } // namespace response_generator
