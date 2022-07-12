@@ -1,14 +1,14 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 )
 
 var testAvailableMethods = testCatergory{
 	categoryName: "available method",
-	config:       "integration_test/conf/available_methods.conf",
+	config:       "integrationtest/conf/available_methods.conf",
 	testCases: []testCase{
 		{
 			caseName: "available_methods ok",

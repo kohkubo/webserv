@@ -1,13 +1,13 @@
 package tests
 
 import (
-	"integration_test/httptest"
+	"integrationtest/httptest"
 	"net/http"
 )
 
 var testServerName = testCatergory{
 	categoryName: "servername",
-	config:       "integration_test/conf/server_name.conf",
+	config:       "integrationtest/conf/server_name.conf",
 	testCases: []testCase{
 		{
 			caseName: "match_hoge",

@@ -3,7 +3,7 @@ package tests
 import (
 	"context"
 	"fmt"
-	"integration_test/httptest"
+	"integrationtest/httptest"
 	"net/http"
 	"os"
 
@@ -12,7 +12,7 @@ import (
 
 var testMultiConnection = testCatergory{
 	categoryName: "MultiConnection",
-	config:       "integration_test/conf/iomulti.conf",
+	config:       "integrationtest/conf/iomulti.conf",
 	testCases: []testCase{
 		{
 			caseName: "parallel connection",

@@ -1,14 +1,14 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 )
 
 var testCgi = testCatergory{
 	categoryName: "cgi",
-	config:       "integration_test/conf/cgi.conf",
+	config:       "integrationtest/conf/cgi.conf",
 	testCases: []testCase{
 		{
 			caseName: "5000_cgi_get_normal",
