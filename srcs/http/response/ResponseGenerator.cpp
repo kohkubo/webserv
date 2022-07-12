@@ -33,11 +33,6 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     response_info_ = _create_status_code_content(status_code);
     return;
   }
-  if (request_info.request_line_.absolute_path_.is_minus_depth()) {
-    response_info_ =
-        _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
-    return;
-  }
   location_ = request_info_.config_.locations_.select_location(
       request_info_.request_line_.absolute_path_);
   if (location_ == NULL) {
