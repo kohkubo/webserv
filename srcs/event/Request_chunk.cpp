@@ -36,7 +36,7 @@ Request::RequestState Request::_chunk_loop(std::string &request_buffer) {
       if (is_last_chunk) {
         return SUCCESS;
       }
-      _request_body_.append(line);
+      _request_info_.body_.append(line);
       _chunk_.next_chunk_type_ = CHUNK_SIZE;
     }
   }

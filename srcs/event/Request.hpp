@@ -29,7 +29,6 @@ struct Request {
 private:
   RequestState                       _state_;
   RequestInfo                        _request_info_;
-  std::string                        _request_body_;
   Chunk                              _chunk_;
   std::map<std::string, std::string> _field_map_;
   // RFC 9110
