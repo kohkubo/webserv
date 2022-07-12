@@ -26,11 +26,16 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     : request_info_(request_info)
     , location_(NULL)
     , _is_connection_close_(request_info_.connection_close_ ||
-                            status_code == HttpStatusCode::C_400_BAD_REQUEST ||
+                            status_code == HttpStatusCode::S_400_BAD_REQUEST ||
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
   if (status_code.is_error_status_code()) {
     response_info_ = _create_status_code_content(status_code);
+    return;
+  }
+  if (request_info.request_line_.absolute_path_.is_minus_depth()) {
+    response_info_ =
+        _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
     return;
   }
   location_ = request_info_.config_.locations_.select_location(
