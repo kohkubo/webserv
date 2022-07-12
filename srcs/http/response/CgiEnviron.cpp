@@ -10,7 +10,7 @@
 
 static std::map<std::string, std::string>
 create_environ_map(const RequestInfo &request_info,
-                   const std::string &peer_name, const Path &target_path) {
+                   const std::string &client_ip_addr, const Path &target_path) {
   std::map<std::string, std::string> environ_map;
 
   if (request_info.has_body()) {
@@ -25,7 +25,7 @@ create_environ_map(const RequestInfo &request_info,
     environ_map["PATH_INFO"] = result.object_;
   }
   environ_map["PATH_TRANSLATED"] = environ_map["PATH_INFO"];
-  environ_map["REMOTE_ADDR"]     = peer_name;
+  environ_map["REMOTE_ADDR"]     = client_ip_addr;
   environ_map["REMOTE_HOST"]     = environ_map["REMOTE_ADDR"];
   environ_map["QUERY_STRING"]    = request_info.request_line_.query_;
   environ_map["REQUEST_METHOD"]  = request_info.request_line_.method_;

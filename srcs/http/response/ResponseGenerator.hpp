@@ -14,7 +14,7 @@ class ResponseGenerator {
 public:
   ResponseInfo            response_info_;
   const RequestInfo       request_info_;
-  const std::string      &peer_name_;
+  const std::string      &client_ip_addr_;
   const config::Location *location_;
 
 private:
