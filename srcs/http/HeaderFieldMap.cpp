@@ -36,14 +36,9 @@ bool HeaderFieldMap::store_new_field(std::string &field_line) {
   return true;
 }
 
-HeaderFieldMap::field_map_type::iterator
-HeaderFieldMap::find(const std::string &field_name) {
-  return _field_map_.find(field_name);
-}
-
-HeaderFieldMap::field_map_type::const_iterator
-HeaderFieldMap::find(const std::string &field_name) const {
-  return _field_map_.find(field_name);
+// has_fieldでkeyがあることを確認せずに使用しない。
+const std::string &HeaderFieldMap::value(const std::string &field_name) const {
+  return _field_map_.find(field_name)->second;
 }
 
 bool HeaderFieldMap::has_field(const std::string &field_name) const {
