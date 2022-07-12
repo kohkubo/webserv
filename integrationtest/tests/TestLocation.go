@@ -1,14 +1,14 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 )
 
 var testLocation = testCatergory{
 	categoryName: "location",
-	config:       "integration_test/conf/location.conf",
+	config:       "integrationtest/conf/location.conf",
 	testCases: []testCase{
 		{
 			caseName: "最長マッチチェック 0",

@@ -1,5 +1,6 @@
 #include "socket/CgiSocket.hpp"
 
+#include <signal.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -16,7 +17,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
     , _timeout_(TIMEOUT_SECONDS_)
     , _response_(response)
     , _response_generator_(response_generator)
-    , _is_sending_(response_generator.request_info_.body_.size() != 0)
+    , _is_sending_(response_generator.response_info_.content_.size() != 0)
     , _send_count_(0) {
   if (!_is_sending_) {
     shutdown(_socket_fd_, SHUT_WR);
@@ -89,9 +90,10 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
-  ssize_t wc =
-      write(_socket_fd_, _response_generator_.request_info_.body_.c_str(),
-            _response_generator_.request_info_.body_.size());
+  std::string &sending_content = _response_generator_.response_info_.content_;
+  const char  *rest_str        = sending_content.c_str() + _send_count_;
+  size_t       rest_count      = sending_content.size() - _send_count_;
+  ssize_t      wc              = write(_socket_fd_, rest_str, rest_count);
   if (wc == -1) {
     LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
@@ -100,8 +102,7 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
     return;
   }
   _send_count_ += wc;
-  if (_send_count_ ==
-      static_cast<ssize_t>(_response_generator_.request_info_.body_.size())) {
+  if (_send_count_ == static_cast<ssize_t>(sending_content.size())) {
     _is_sending_ = false;
     shutdown(_socket_fd_, SHUT_WR);
   }

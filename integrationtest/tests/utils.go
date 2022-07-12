@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/webserv"
+	"integrationtest/webserv"
 	"io/ioutil"
 	"os"
 	"strconv"

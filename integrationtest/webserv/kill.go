@@ -2,7 +2,7 @@ package webserv
 
 import (
 	"fmt"
-	"integration_test/colorprint"
+	"integrationtest/colorprint"
 	"os"
 )
 

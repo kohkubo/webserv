@@ -2,9 +2,9 @@ package tests
 
 import (
 	"fmt"
-	"integration_test/httpresp"
-	"integration_test/httptest"
-	"integration_test/webserv"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
+	"integrationtest/webserv"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -14,13 +14,13 @@ import (
 
 var testPOST = testCatergory{
 	categoryName: "POST",
-	config:       "integration_test/conf/post.conf",
+	config:       "integrationtest/conf/post.conf",
 	testCases: []testCase{
 		{
 			caseName: "create file and overwrite",
 			test: func() bool {
 				postFilePath := "/tmp/post.txt"                           // httpリクエストで指定するターゲットURI
-				rootRelativePath := "html"                                // configで指定されているrootへの(integration_testからの)相対パス
+				rootRelativePath := "html"                                // configで指定されているrootへの(integrationtestからの)相対パス
 				deleteFileRelativePath := rootRelativePath + postFilePath // ターゲットURIへの相対パス
 				os.RemoveAll(filepath.Dir(deleteFileRelativePath))        // 既に存在していた時を考慮して削除
 				if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
@@ -106,7 +106,7 @@ var testPOST = testCatergory{
 			caseName: " keepalive, 1:file作成, 2:上書き",
 			test: func() bool {
 				postFilePath := "/tmp/post.txt"                           // httpリクエストで指定するターゲットURI
-				rootRelativePath := "html"                                // configで指定されているrootへの(integration_testからの)相対パス
+				rootRelativePath := "html"                                // configで指定されているrootへの(integrationtestからの)相対パス
 				deleteFileRelativePath := rootRelativePath + postFilePath // ターゲットURIへの相対パス
 				os.RemoveAll(filepath.Dir(deleteFileRelativePath))        // 既に存在していた時を考慮して削除
 				if err := os.MkdirAll(filepath.Dir(deleteFileRelativePath), 0750); err != nil {
@@ -249,7 +249,7 @@ var testPOST = testCatergory{
 			caseName: "dir not exists",
 			test: func() bool {
 				postFilePath := "/tmp/post.txt"                           // httpリクエストで指定するターゲットURI
-				rootRelativePath := "html"                                // configで指定されているrootへの(integration_testからの)相対パス
+				rootRelativePath := "html"                                // configで指定されているrootへの(integrationtestからの)相対パス
 				deleteFileRelativePath := rootRelativePath + postFilePath // ターゲットURIへの相対パス
 				os.RemoveAll(filepath.Dir(deleteFileRelativePath))        // ディレクトリが存在しない時のテストなので削除
 

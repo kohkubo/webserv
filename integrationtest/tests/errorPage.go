@@ -1,14 +1,14 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 )
 
 var testErrorPage = testCatergory{
 	categoryName: "error_page",
-	config:       "integration_test/conf/error_page.conf",
+	config:       "integrationtest/conf/error_page.conf",
 	testCases: []testCase{
 		{
 			caseName: "404 error",
