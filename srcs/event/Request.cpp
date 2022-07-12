@@ -57,7 +57,8 @@ Request::_handle_request_body(std::string &request_buffer) {
     _state_ = _chunk_loop(request_buffer);
     // throws BadRequestException
     _check_max_client_body_size_exception(
-        _request_info_.body_.size(), _request_info_.config_.client_max_body_size_);
+        _request_info_.body_.size(),
+        _request_info_.config_.client_max_body_size_);
     // throws BadRequestException
   } else if (request_buffer.size() >= _request_info_.content_length_) {
     _request_info_.body_ =
