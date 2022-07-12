@@ -10,10 +10,9 @@
 
 const std::string RequestInfo::OWS_ = " \t";
 
-// TODO: Transfer-Encodingはカンマ区切りのフィールド
 static bool
 parse_request_transfer_encoding(const std::string &transfer_encoding) {
-  return transfer_encoding == "chunked";
+  return has_suffix(transfer_encoding, "chunked");
 }
 
 // TODO: hostとportで分ける必要あるか確認
