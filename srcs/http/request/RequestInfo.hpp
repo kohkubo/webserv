@@ -43,7 +43,6 @@ public:
   };
   RequestLine            request_line_;
   std::string            host_;
-  std::string            content_;
   ContentInfo            content_info_;
   std::string            connection_;
   transferEncodingVector transfer_encoding_;

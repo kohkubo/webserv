@@ -14,8 +14,9 @@ create_environ_map(const RequestInfo &request_info,
   std::map<std::string, std::string> environ_map;
 
   if (request_info.has_body()) {
-    environ_map["CONTENT_LENGTH"] = to_string(request_info.content_.size());
-    environ_map["CONTENT_TYPE"]   = request_info.content_info_.content_type_;
+    environ_map["CONTENT_LENGTH"] =
+        to_string(request_info.content_info_.content_.size());
+    environ_map["CONTENT_TYPE"] = request_info.content_info_.content_type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
   Result<std::string> result       = target_path.get_realpath();

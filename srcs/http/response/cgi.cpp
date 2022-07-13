@@ -50,7 +50,7 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
   }
   close(socket_pair[1]);
   return Ok<ResponseInfo>(
-      CgiContent(socket_pair[0], pid, request_info.content_));
+      CgiContent(socket_pair[0], pid, request_info.content_info_.content_));
 }
 
 } // namespace response_generator
