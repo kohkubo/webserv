@@ -38,8 +38,33 @@ static size_t parse_request_content_length(const std::string &content_length) {
   return result.object_;
 }
 
-// 呼び出し元で例外をcatchする
-// エラー→例外
+void RequestInfo::parse_request_header() {
+  if (header_field_map_.has_field("host")) {
+    const std::string &value = header_field_map_.value("host");
+    host_                    = parse_request_host(value);
+  } else {
+    throw BadRequestException(HttpStatusCode::S_400_BAD_REQUEST,
+                              "Host field is not found.");
+  }
+  if (header_field_map_.has_field("connection")) {
+    const std::string &value = header_field_map_.value("connection");
+    connection_close_        = parse_request_connection(value);
+  }
+  if (header_field_map_.has_field("content-length")) {
+    const std::string &value = header_field_map_.value("content-length");
+    has_content_length_      = true;
+    content_length_          = parse_request_content_length(value);
+  }
+  if (header_field_map_.has_field("transfer-encoding")) {
+    const std::string &value = header_field_map_.value("transfer-encoding");
+    is_chunked_              = parse_request_transfer_encoding(value);
+  }
+  if (header_field_map_.has_field("content-type")) {
+    const std::string &value = header_field_map_.value("content-type");
+    content_type_            = value;
+  }
+}
+
 /*
 TODO: 全部400で返すのはRFCに反する? 2022/06/25 kohkubo
 RFC 9110
@@ -50,44 +75,6 @@ fields larger than it wishes to process MUST respond with an appropriate 4xx
 要求ヘッダーのフィールド行、フィールド値、または処理したいよりも大きいフィールドのセットを受信するサーバーは、
 適切な4xx（クライアントエラー）ステータスコードで応答する必要があります。
 */
-void RequestInfo::parse_request_header(
-    const std::map<std::string, std::string> &header_field_map) {
-  // call each field's parser
-  std::map<std::string, std::string>::const_iterator itr;
-  itr = header_field_map.find("Host");
-  if (itr == header_field_map.end()) {
-    // TODO:
-    // この例外処理、header_field_mapを格納し終わった後にすれば、header_field_mapをメンバ変数として持たなくて良い気がする
-    throw BadRequestException(HttpStatusCode::S_400_BAD_REQUEST,
-                              "Host field is not found.");
-  }
-  host_ = parse_request_host(itr->second);
-  itr   = header_field_map.find("Connection");
-  if (itr != header_field_map.end()) {
-    connection_close_ = parse_request_connection(itr->second);
-  }
-  itr = header_field_map.find("Content-Length");
-  if (itr != header_field_map.end()) {
-    has_content_length_ = true;
-    content_length_     = parse_request_content_length(itr->second);
-  }
-  itr = header_field_map.find("Transfer-Encoding");
-  if (itr != header_field_map.end()) {
-    is_chunked_ = parse_request_transfer_encoding(itr->second);
-  }
-  itr = header_field_map.find("Content-Type");
-  if (itr != header_field_map.end()) {
-    content_type_ = itr->second;
-  }
-}
-
-// TODO: フィールド追加
-static bool is_comma_separated(std::string &field_name) {
-  (void)field_name;
-  // カンマ区切りが定義されたフィールドか判定する。
-  // tmp
-  return false;
-}
 /*
 RFC 9110
 5.3.  Field Order
@@ -100,26 +87,3 @@ header fields that could impact request processing.
 
 TODO: この部分を読むと、ヘッダーごとにパースしても問題ない？ kohkubo
 */
-void RequestInfo::store_request_header_field_map(
-    const std::string                  &header_line,
-    std::map<std::string, std::string> &header_field_map) {
-  std::size_t pos = header_line.find(':');
-  if (pos == std::string::npos) {
-    throw BadRequestException();
-  }
-  std::string field_name = header_line.substr(0, pos);
-  char        last_char  = field_name[field_name.size() - 1];
-  if (last_char == ' ' || last_char == '\t') {
-    throw BadRequestException();
-  }
-  const std::string field_value = trim(header_line.substr(pos + 1), OWS_);
-  if (header_field_map.count(field_name) != 0u) {
-    if (is_comma_separated(field_name)) {
-      header_field_map[field_name] += ", " + field_value;
-    } else {
-      throw BadRequestException();
-    }
-  } else {
-    header_field_map[field_name] = field_value;
-  }
-}

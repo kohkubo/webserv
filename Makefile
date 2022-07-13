@@ -12,8 +12,8 @@ deps = $(srcs:$(srcsdir)%.cpp=$(objsdir)%.d)
 # == path of googletest dir ==
 gtestdir := googletest
 
-# == path of integration_test dir ==
-itestdir := integration_test
+# == path of integrationtest dir ==
+itestdir := integrationtest
 
 .PHONY: all
 all: $(NAME)

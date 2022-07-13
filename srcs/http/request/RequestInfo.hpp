@@ -7,6 +7,7 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
+#include "http/HeaderFieldMap.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "utils/Path.hpp"
 #include "utils/tokenize.hpp"
@@ -41,6 +42,7 @@ public:
   RequestLine    request_line_;
   std::string    host_;
   std::string    body_;
+  HeaderFieldMap header_field_map_;
   bool           connection_close_;
   bool           is_chunked_;
   bool           has_content_length_;
@@ -67,13 +69,8 @@ public:
   };
 
   bool has_body() const { return has_content_length_ || is_chunked_; }
-
-  static void store_request_header_field_map(
-      const std::string                  &header_line,
-      std::map<std::string, std::string> &header_field_map);
   void parse_request_line(const std::string &request_line);
-  void parse_request_header(
-      const std::map<std::string, std::string> &header_field_map);
+  void parse_request_header();
   bool is_valid_request_header() const;
 };
 
