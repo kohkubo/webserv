@@ -133,7 +133,7 @@ var testCgi = testCatergory{
 			caseName: "cgi header field",
 			test: func() bool {
 				expectBody := []byte(
-					"Helloe world",
+					"Hello world",
 				)
 
 				expectStatusCode := 200
