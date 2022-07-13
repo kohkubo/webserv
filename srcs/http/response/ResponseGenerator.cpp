@@ -22,10 +22,10 @@
 namespace response_generator {
 
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
-                                     const std::string &client_ip_addr,
+                                     const std::string &peer_name,
                                      HttpStatusCode     status_code)
     : request_info_(request_info)
-    , client_ip_addr_(client_ip_addr)
+    , peer_name_(peer_name)
     , location_(NULL)
     , _is_connection_close_(request_info_.connection_close_ ||
                             status_code == HttpStatusCode::C_400_BAD_REQUEST ||

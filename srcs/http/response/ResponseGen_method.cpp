@@ -27,7 +27,7 @@ ResponseInfo ResponseGenerator::_method_get_file(const Path &target_path) {
   }
   if (target_path.has_suffix(".py")) {
     Result<ResponseInfo> result =
-        create_cgi_content(request_info_, client_ip_addr_, target_path);
+        create_cgi_content(request_info_, peer_name_, target_path);
     if (result.is_err_) {
       return _create_status_code_content(
           HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
