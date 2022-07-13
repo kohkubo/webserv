@@ -30,6 +30,7 @@ Request::_handle_request_header(std::string &request_buffer) {
       if (line != "") {
         bool result = _header_field_map_.store_new_field(line);
         if (!result) {
+          ERROR_LOG("invalid header field");
           throw RequestInfo::BadRequestException();
         }
         continue;
@@ -37,11 +38,14 @@ Request::_handle_request_header(std::string &request_buffer) {
       _request_info_.parse_request_header(_header_field_map_);
       // throws BadRequestException
       if (!_request_info_.is_valid_request_header()) {
+        ERROR_LOG("invalid request header");
         throw RequestInfo::BadRequestException();
       }
-      _check_max_client_body_size_exception(
-          _request_info_.content_length_,
-          _request_info_.config_.client_max_body_size_);
+      if (_request_info_.has_content_length()) {
+        _check_max_client_body_size_exception(
+            _request_info_.content_length_,
+            _request_info_.config_.client_max_body_size_);
+      }
       if (_request_info_.has_body()) {
         _state_ = RECEIVING_BODY;
         break;
@@ -62,7 +66,8 @@ Request::_handle_request_body(std::string &request_buffer) {
         _request_info_.body_.size(),
         _request_info_.config_.client_max_body_size_);
     // throws BadRequestException
-  } else if (request_buffer.size() >= _request_info_.content_length_) {
+  } else if (request_buffer.size() >=
+             static_cast<std::size_t>(_request_info_.content_length_)) {
     _request_info_.body_ =
         cutout_request_body(request_buffer, _request_info_.content_length_);
     _state_ = SUCCESS;

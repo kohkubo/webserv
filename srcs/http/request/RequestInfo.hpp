@@ -43,8 +43,7 @@ public:
   RequestLine            request_line_;
   std::string            host_;
   std::string            body_;
-  bool                   has_content_length_;
-  std::size_t            content_length_;
+  ssize_t                content_length_;
   std::string            connection_;
   transferEncodingVector transfer_encoding_;
   config::Config         config_;
@@ -52,8 +51,7 @@ public:
 
 public:
   RequestInfo()
-      : has_content_length_(false)
-      , content_length_(0) {}
+      : content_length_(-1) {}
 
   class BadRequestException : public std::logic_error {
   private:
@@ -66,11 +64,12 @@ public:
     HttpStatusCode status() const;
   };
 
-  bool has_body() const { return has_content_length_ || is_chunked(); }
+  bool has_body() const { return has_content_length() || is_chunked(); }
   bool is_chunked() const {
     return transfer_encoding_.size() != 0 &&
            transfer_encoding_.back() == "chunked";
   }
+  bool has_content_length() const { return content_length_ >= 0; }
   bool is_close_connection() const { return connection_ == "close"; }
   void parse_request_line(const std::string &request_line);
   void parse_request_header(const HeaderFieldMap &header_field_map);

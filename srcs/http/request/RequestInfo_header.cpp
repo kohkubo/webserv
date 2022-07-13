@@ -44,7 +44,6 @@ void RequestInfo::parse_request_header(const HeaderFieldMap &header_field_map) {
   }
   if (header_field_map.has_field("content-length")) {
     const std::string &value = header_field_map.value("content-length");
-    has_content_length_      = true;
     content_length_          = parse_request_content_length(value);
   }
   if (header_field_map.has_field("transfer-encoding")) {
