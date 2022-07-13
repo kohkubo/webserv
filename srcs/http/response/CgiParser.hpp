@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_CGIPARSER
-#define SRCS_HTTP_RESPONSE_CGIPARSER
+#ifndef SRCS_HTTP_RESPONSE_CGIPARSER_HPP
+#define SRCS_HTTP_RESPONSE_CGIPARSER_HPP
 
 #include <map>
 #include <string>
@@ -108,4 +108,4 @@ public:
   CgiState parse_body(std::string &buffer);
 };
 
-#endif /* SRCS_HTTP_RESPONSE_CGIPARSER */
+#endif /* SRCS_HTTP_RESPONSE_CGIPARSER_HPP */
