@@ -34,11 +34,12 @@ TEST(request_chunked_test, chunked_body) {
   Request             request;
 
   request.handle_request(request_buffer, config_group);
-  const RequestInfo &info = request.request_info();
+  const RequestInfo &request_info = request.request_info();
 
-  EXPECT_EQ(info.is_chunked(), true);
-  EXPECT_EQ(info.content_, "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
-                           "Networkhello world\ntest");
+  EXPECT_EQ(request_info.is_chunked(), true);
+  EXPECT_EQ(request_info.content_info_.content_,
+            "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+            "Networkhello world\ntest");
 }
 
 TEST(request_chunked_test, chunked_body_split) {
@@ -75,10 +76,10 @@ TEST(request_chunked_test, chunked_body_split) {
   request_buffer.append(request_buffer3);
   request.handle_request(request_buffer, config_group);
 
-  const RequestInfo &info = request.request_info();
+  const RequestInfo &request_info = request.request_info();
 
-  EXPECT_EQ(info.is_chunked(), true);
-  EXPECT_EQ(info.content_,
+  EXPECT_EQ(request_info.is_chunked(), true);
+  EXPECT_EQ(request_info.content_info_.content_,
             "Mozilla aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Networkhello "
             "world\ntest");
 }
