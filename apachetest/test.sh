@@ -9,5 +9,5 @@ docker-compose down
 #cgi
 export confpath="./conf/cgi.conf"
 docker-compose up -d
-curl http://localhost:8080/cgi-bin/test.py
+curl localhost:8080/cgi-bin/cgi_test/simple.py -v
 docker-compose down

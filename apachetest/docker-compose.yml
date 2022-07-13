@@ -10,6 +10,6 @@ services:
       # root dir
       - "./:/usr/local/apache2/htdocs/"
       # cgi dir (see ScriptAlias directive in conf file)
-      - "./cgi/:/usr/local/apache2/cgi-bin/"
+      - "./../html/:/usr/local/apache2/cgi-bin/"
       # conf file
       - "${confpath}:/usr/local/apache2/conf/httpd.conf"
