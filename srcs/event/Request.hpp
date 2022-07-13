@@ -29,7 +29,6 @@ struct Request {
 private:
   RequestState _state_;
   RequestInfo  _request_info_;
-  std::string  _request_body_;
   Chunk        _chunk_;
   // RFC 9110
   // 4.1.URI References
