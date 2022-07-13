@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"integration_test/httpresp"
-	"integration_test/httptest"
+	"integrationtest/httpresp"
+	"integrationtest/httptest"
 	"net/http"
 	"os"
 )
@@ -10,7 +10,7 @@ import (
 // テストの用意
 var testGET = testCatergory{
 	categoryName: "GET",
-	config:       "integration_test/conf/test.conf",
+	config:       "integrationtest/conf/test.conf",
 	testCases: []testCase{
 		{
 			caseName: "GET / ",
@@ -144,20 +144,43 @@ var testGET = testCatergory{
 			},
 		},
 		{
-			caseName: "minus_depth ",
+			caseName: "minus_depth 1",
 			test: func() bool {
 				port := "50000"
-				expectStatusCode := 403
+				expectStatusCode := 400
 				expectBody := httpresp.ErrorBody(expectStatusCode)
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /../ HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
-						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
 						`Accept: */*` + "\r\n" +
 						"\r\n",
-					ExpectStatusCode: http.StatusForbidden,
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "minus_depth 2",
+			test: func() bool {
+				port := "50000"
+				expectStatusCode := 400
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /hoge/../../ HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
 						"Connection":     {"close"},
 						"Content-Length": {lenStr(expectBody)},

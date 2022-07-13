@@ -31,8 +31,8 @@ parse_content_type(const HeaderFieldMap &header_field_map) {
   if (!header_field_map.has_field("content-type")) {
     return Error<std::string>();
   }
-  HeaderFieldMap::const_iterator it = header_field_map.find("content-type");
-  return Ok<std::string>(parse_content_type_sub(it->second));
+  const std::string &value = header_field_map.value("content-type");
+  return Ok<std::string>(parse_content_type_sub(value));
 }
 
 static Result<std::size_t>
@@ -49,8 +49,8 @@ parse_content_length(const HeaderFieldMap &header_field_map) {
   if (!header_field_map.has_field("content-length")) {
     return Error<std::size_t>();
   }
-  HeaderFieldMap::const_iterator it = header_field_map.find("content-length");
-  return parse_content_length_sub(it->second);
+  const std::string &value = header_field_map.value("content-length");
+  return parse_content_length_sub(value);
 }
 
 static bool is_client_location(const std::string &location) {
@@ -74,8 +74,8 @@ parse_cgi_location(const HeaderFieldMap &header_field_map) {
     LOG("cgi location not found");
     return Error<CgiParser::CgiLocation>();
   }
-  HeaderFieldMap::const_iterator it = header_field_map.find("location");
-  return Ok<CgiParser::CgiLocation>(parse_cgi_location_sub(it->second));
+  const std::string &value = header_field_map.value("location");
+  return Ok<CgiParser::CgiLocation>(parse_cgi_location_sub(value));
 }
 
 static CgiParser::ResponseType
@@ -83,8 +83,8 @@ get_cgi_response_type(const HeaderFieldMap &header_field_map) {
   if (!header_field_map.has_field("location")) {
     return CgiParser::DOCUMENT;
   }
-  HeaderFieldMap::const_iterator it = header_field_map.find("location");
-  if (is_client_location(it->second)) {
+  const std::string &value = header_field_map.value("location");
+  if (is_client_location(value)) {
     if (!header_field_map.has_field("status")) {
       return CgiParser::CLIENT_REDIRDOC;
     }

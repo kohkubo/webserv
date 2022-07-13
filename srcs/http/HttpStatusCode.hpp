@@ -11,7 +11,7 @@ public:
     S_204_NO_CONTENT            = 204,
     S_301_MOVED_PERMANENTLY     = 301,
     S_304_NOT_MODIFIED          = 304,
-    C_400_BAD_REQUEST           = 400,
+    S_400_BAD_REQUEST           = 400,
     S_403_FORBIDDEN             = 403,
     S_404_NOT_FOUND             = 404,
     S_405_NOT_ALLOWED           = 405,
