@@ -13,7 +13,8 @@ private:
 
 public:
   char **environ() { return _environ_; }
-  CgiEnviron(const RequestInfo &request_info, const Path &target_path);
+  CgiEnviron(const RequestInfo &request_info, const std::string &peer_name,
+             const Path &target_path);
   ~CgiEnviron();
 };
 
