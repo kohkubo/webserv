@@ -48,7 +48,7 @@ struct pollfd CgiSocket::pollfd() {
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketMapActions CgiSocket::handle_event(short int revents) {
-  LOG(revents);
+  LOG("cgi socket handle event");
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
 
