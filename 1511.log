@@ -1,0 +1,10 @@
+HTTP/1.0 200 OK
+Content-type: text/html
+
+
+
+Hello world
+<p>name: taro
+<p>sex: default
+<p>blood: default
+<p>end</p>
