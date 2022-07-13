@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 
+#include "http/ContentInfo.hpp"
 #include "http/HeaderFieldMap.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "utils/Result.hpp"
