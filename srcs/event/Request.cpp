@@ -28,13 +28,13 @@ Request::_handle_request_header(std::string &request_buffer) {
   while (getline(request_buffer, line)) { // noexcept
     if (_state_ == RECEIVING_HEADER) {
       if (line != "") {
-        bool result = _request_info_.header_field_map_.store_new_field(line);
+        bool result = _header_field_map_.store_new_field(line);
         if (!result) {
           throw RequestInfo::BadRequestException();
         }
         continue;
       }
-      _request_info_.parse_request_header();
+      _request_info_.parse_request_header(_header_field_map_);
       // throws BadRequestException
       if (!_request_info_.is_valid_request_header()) {
         throw RequestInfo::BadRequestException();

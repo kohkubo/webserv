@@ -31,28 +31,28 @@ parse_request_transfer_encoding(const std::string &transfer_encoding) {
   return tokenize(transfer_encoding, " ,", " ,");
 }
 
-void RequestInfo::parse_request_header() {
-  if (header_field_map_.has_field("host")) {
-    const std::string &value = header_field_map_.value("host");
+void RequestInfo::parse_request_header(const HeaderFieldMap &header_field_map) {
+  if (header_field_map.has_field("host")) {
+    const std::string &value = header_field_map.value("host");
     host_                    = parse_request_host(value);
   } else {
     throw BadRequestException(HttpStatusCode::S_400_BAD_REQUEST,
                               "Host field is not found.");
   }
-  if (header_field_map_.has_field("connection")) {
-    connection_ = tolower(header_field_map_.value("connection"));
+  if (header_field_map.has_field("connection")) {
+    connection_ = tolower(header_field_map.value("connection"));
   }
-  if (header_field_map_.has_field("content-length")) {
-    const std::string &value = header_field_map_.value("content-length");
+  if (header_field_map.has_field("content-length")) {
+    const std::string &value = header_field_map.value("content-length");
     has_content_length_      = true;
     content_length_          = parse_request_content_length(value);
   }
-  if (header_field_map_.has_field("transfer-encoding")) {
-    const std::string &value = header_field_map_.value("transfer-encoding");
+  if (header_field_map.has_field("transfer-encoding")) {
+    const std::string &value = header_field_map.value("transfer-encoding");
     transfer_encoding_       = parse_request_transfer_encoding(value);
   }
-  if (header_field_map_.has_field("content-type")) {
-    content_type_ = header_field_map_.value("content-type");
+  if (header_field_map.has_field("content-type")) {
+    content_type_ = header_field_map.value("content-type");
   }
 }
 

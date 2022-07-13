@@ -43,7 +43,6 @@ public:
   RequestLine            request_line_;
   std::string            host_;
   std::string            body_;
-  HeaderFieldMap         header_field_map_;
   bool                   has_content_length_;
   std::size_t            content_length_;
   std::string            connection_;
@@ -74,7 +73,7 @@ public:
   }
   bool is_close_connection() const { return connection_ == "close"; }
   void parse_request_line(const std::string &request_line);
-  void parse_request_header();
+  void parse_request_header(const HeaderFieldMap &header_field_map);
   bool is_valid_request_header() const;
 };
 
