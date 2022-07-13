@@ -36,7 +36,7 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
     dup2(socket_pair[1], STDIN_FILENO);
     close(socket_pair[1]);
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
-                     const_cast<char *>(target_path.str().c_str()), NULL};
+                    const_cast<char *>(target_path.str().c_str()), NULL};
     CgiEnviron cgi_environ(request_info, peer_name, target_path);
     // TODO: execveの前にスクリプトのあるディレクトリに移動
     if (execve("/usr/bin/python3", argv, cgi_environ.environ()) == -1) {
