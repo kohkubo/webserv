@@ -107,7 +107,7 @@ var testCgi = testCatergory{
 		{
 			caseName: "cgi timeout",
 			test: func() bool {
-				expectStatusCode := 500
+				expectStatusCode := 504
 				expectBody := httpresp.ErrorBody(expectStatusCode)
 				port := "50000"
 				clientA := httptest.NewClient(httptest.TestSource{
