@@ -31,7 +31,7 @@ void RequestInfo::parse_request_header() {
     const std::string &value = header_field_map_.value("host");
     host_                    = parse_request_host(value);
   } else {
-    throw BadRequestException(HttpStatusCode::C_400_BAD_REQUEST,
+    throw BadRequestException(HttpStatusCode::S_400_BAD_REQUEST,
                               "Host field is not found.");
   }
   if (header_field_map_.has_field("connection")) {
