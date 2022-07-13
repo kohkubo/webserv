@@ -10,23 +10,12 @@
 
 const std::string RequestInfo::OWS_ = " \t";
 
-static bool
-parse_request_transfer_encoding(const std::string &transfer_encoding) {
-  return has_suffix(transfer_encoding, "chunked");
-}
-
-// TODO: hostとportで分ける必要あるか確認
 static std::string parse_request_host(const std::string &host_line) {
   std::size_t pos = host_line.find(':');
   if (pos == std::string::npos) {
     return host_line;
   }
   return host_line.substr(0, pos);
-}
-
-static bool parse_request_connection(const std::string &connection) {
-  // TODO: tolower ってことは cLoseとかもあり? kohkubo
-  return tolower(connection) == "close";
 }
 
 static size_t parse_request_content_length(const std::string &content_length) {
@@ -37,30 +26,33 @@ static size_t parse_request_content_length(const std::string &content_length) {
   return result.object_;
 }
 
-void RequestInfo::parse_request_header() {
-  if (header_field_map_.has_field("host")) {
-    const std::string &value = header_field_map_.value("host");
+static RequestInfo::transferEncodingVector
+parse_request_transfer_encoding(const std::string &transfer_encoding) {
+  return tokenize(transfer_encoding, " ,", " ,");
+}
+
+void RequestInfo::parse_request_header(const HeaderFieldMap &header_field_map) {
+  if (header_field_map.has_field("host")) {
+    const std::string &value = header_field_map.value("host");
     host_                    = parse_request_host(value);
   } else {
     throw BadRequestException(HttpStatusCode::S_400_BAD_REQUEST,
                               "Host field is not found.");
   }
-  if (header_field_map_.has_field("connection")) {
-    const std::string &value = header_field_map_.value("connection");
-    connection_close_        = parse_request_connection(value);
+  if (header_field_map.has_field("connection")) {
+    connection_ = tolower(header_field_map.value("connection"));
   }
-  if (header_field_map_.has_field("content-length")) {
-    const std::string &value = header_field_map_.value("content-length");
+  if (header_field_map.has_field("content-length")) {
+    const std::string &value = header_field_map.value("content-length");
     has_content_length_      = true;
     content_length_          = parse_request_content_length(value);
   }
-  if (header_field_map_.has_field("transfer-encoding")) {
-    const std::string &value = header_field_map_.value("transfer-encoding");
-    is_chunked_              = parse_request_transfer_encoding(value);
+  if (header_field_map.has_field("transfer-encoding")) {
+    const std::string &value = header_field_map.value("transfer-encoding");
+    transfer_encoding_       = parse_request_transfer_encoding(value);
   }
-  if (header_field_map_.has_field("content-type")) {
-    const std::string &value = header_field_map_.value("content-type");
-    content_type_            = value;
+  if (header_field_map.has_field("content-type")) {
+    content_type_ = header_field_map.value("content-type");
   }
 }
 

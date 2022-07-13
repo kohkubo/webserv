@@ -27,12 +27,17 @@ bool HeaderFieldMap::store_new_field(std::string &field_line) {
     return false;
   }
   const std::string field_value = trim(field_line.substr(pos + 1), OWS_);
-  if (_field_map_.count(field_name) == 1u) {
-    ERROR_LOG("store_new_field: duplicated field.");
+  if (field_value.empty()) {
+    ERROR_LOG("store_new_field: empty field value.");
     return false;
   }
   // TODO: error handling
-  _field_map_[field_name] = field_value;
+  std::pair<field_map_type::iterator, bool> result =
+      _field_map_.insert(std::make_pair(field_name, field_value));
+  if (!result.second) {
+    ERROR_LOG("store_new_field: field name is duplicated.");
+    return false;
+  }
   return true;
 }
 

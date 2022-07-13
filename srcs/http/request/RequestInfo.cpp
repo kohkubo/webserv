@@ -13,15 +13,13 @@ HttpStatusCode RequestInfo::BadRequestException::status() const {
 }
 
 bool RequestInfo::is_valid_request_header() const {
-  if (has_content_length_ && is_chunked_) {
+  if (has_content_length_ && is_chunked()) {
     // LOG("request contains both of Content-Length and Chunked-Encoding.");
     return false;
   }
-  if (header_field_map_.has_field("transfer-encoding")) {
-    const std::string &value = header_field_map_.value("transfer-encoding");
-    if (!has_suffix(value, "chunked")) {
-      return false;
-    }
+  if (transfer_encoding_.size() != 0 &&
+      transfer_encoding_.back() != "chunked") {
+    return false;
   }
   if ((request_line_.method_ == "GET" || request_line_.method_ == "DELETE") &&
       has_body()) {
