@@ -15,6 +15,7 @@ class ResponseGenerator {
 public:
   ResponseInfo            response_info_;
   const RequestInfo       request_info_;
+  const std::string      &peer_name_;
   const config::Location *location_;
 
 private:
@@ -31,6 +32,7 @@ private:
 
 public:
   ResponseGenerator(const RequestInfo &request_info,
+                    const std::string &peer_name,
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response generate_response();
@@ -43,6 +45,7 @@ public:
 };
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
+                                        const std::string &peer_name,
                                         const Path        &target_path);
 std::string          create_autoindex_body(const RequestInfo &request_info,
                                            const Path        &target_path);

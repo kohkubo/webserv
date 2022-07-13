@@ -16,6 +16,7 @@
 namespace response_generator {
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
+                                        const std::string &peer_name,
                                         const Path        &target_path) {
   int socket_pair[2] = {0, 0};
   if (socketpair(AF_UNIX, SOCK_STREAM, 0, socket_pair) == -1) {
@@ -36,7 +37,7 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
     close(socket_pair[1]);
     char      *argv[] = {const_cast<char *>("/usr/bin/python3"),
                     const_cast<char *>(target_path.str().c_str()), NULL};
-    CgiEnviron cgi_environ(request_info, target_path);
+    CgiEnviron cgi_environ(request_info, peer_name, target_path);
     // TODO: execveの前にスクリプトのあるディレクトリに移動
     if (execve("/usr/bin/python3", argv, cgi_environ.environ()) == -1) {
       ERROR_LOG("error: execve");

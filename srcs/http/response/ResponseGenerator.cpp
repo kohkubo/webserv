@@ -22,11 +22,13 @@
 namespace response_generator {
 
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
+                                     const std::string &peer_name,
                                      HttpStatusCode     status_code)
     : request_info_(request_info)
+    , peer_name_(peer_name)
     , location_(NULL)
     , _is_connection_close_(request_info_.connection_close_ ||
-                            status_code == HttpStatusCode::C_400_BAD_REQUEST ||
+                            status_code == HttpStatusCode::S_400_BAD_REQUEST ||
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
   if (status_code.is_error_status_code()) {
