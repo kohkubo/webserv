@@ -163,7 +163,7 @@ var testCgi = testCatergory{
 			caseName: "cgi status code",
 			test: func() bool {
 				expectBody := []byte(
-					"Helloe world",
+					"Hello world",
 				)
 
 				expectStatusCode := 418
@@ -171,6 +171,35 @@ var testCgi = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /cgi_test/status.py HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+
+		{
+			caseName: "cgi content length",
+			test: func() bool {
+				expectBody := []byte(
+					"Hello world",
+				)
+
+				expectStatusCode := 200
+				port := "50000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /cgi_test/content_length.py HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
