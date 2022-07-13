@@ -1,6 +1,7 @@
 #include "socket/ClientSocket.hpp"
 
 #include <poll.h>
+#include <sys/socket.h>
 
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
@@ -15,7 +16,12 @@ ClientSocket::ClientSocket(int                        client_fd,
                            const config::ConfigGroup &config_group)
     : SocketBase(client_fd)
     , _config_group_(config_group)
-    , _timeout_(TIMEOUT_SECONDS_) {}
+    , _timeout_(TIMEOUT_SECONDS_) {
+  struct sockaddr_in perr_addr;
+  socklen_t          serv_len = sizeof(perr_addr);
+  getpeername(_socket_fd_, (struct sockaddr *)&perr_addr, &serv_len);
+  _peer_name_ = inet_ntoa(perr_addr.sin_addr);
+}
 
 struct pollfd ClientSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -81,7 +87,8 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       if (request_state != Request::SUCCESS) {
         break;
       }
-      ResponseGenerator response_generator(_request_.request_info());
+      ResponseGenerator response_generator(_request_.request_info(),
+                                           _peer_name_);
       _response_queue_.push_back(response_generator.generate_response());
       if (response_generator.need_socket()) {
         SocketBase *socket =
@@ -93,7 +100,8 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
     }
   } catch (const RequestInfo::BadRequestException &e) {
     // TODO: Fdを開く部分が書けていない
-    ResponseGenerator response_generator(_request_.request_info(), e.status());
+    ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
+                                         e.status());
     _response_queue_.push_back(response_generator.generate_response());
     if (response_generator.need_socket()) {
       SocketBase *socket =
