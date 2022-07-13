@@ -1,6 +1,8 @@
 #ifndef SRCS_HTTP_CONTENTINFO_HPP
 #define SRCS_HTTP_CONTENTINFO_HPP
 
+#include <sys/types.h>
+
 #include <string>
 
 class ContentInfo {
