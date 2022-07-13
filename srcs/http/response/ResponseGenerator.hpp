@@ -37,7 +37,7 @@ public:
   ~ResponseGenerator() {}
   Response generate_response();
   bool     need_socket() const {
-        return response_info_.action_ != ResponseInfo::CREATED;
+    return response_info_.action_ != ResponseInfo::CREATED;
   }
   ns_socket::SocketBase *create_socket(Response &response);
   std::string            create_response_message(const std::string &content);
