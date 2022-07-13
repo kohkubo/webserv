@@ -5,8 +5,9 @@ import cgi
 form = cgi.FieldStorage()
 
 # cgiのレスポンスの改行は\n(UNIX,POSIX共通)
-print("Status: 500 hoge")
+print("Status: 200 OK")
 print("Content-type: text/html")
+print("hoge: fuga")
 print("")
 print("Hello world")
 print("<p>name:", form.getvalue("name", "default"))
