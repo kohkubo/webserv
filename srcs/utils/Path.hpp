@@ -22,6 +22,7 @@ public:
   bool                is_minus_depth() const;
   bool                has_suffix(const std::string &suffix) const;
   Result<std::string> get_realpath() const;
+  std::string         get_script_name() const;
   bool                remove_file() const;
   Result<int>         open_read_file() const;
   Result<int>         open_write_file() const;
