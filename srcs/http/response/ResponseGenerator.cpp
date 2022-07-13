@@ -33,9 +33,9 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     return;
   }
   if (request_info.header_field_map_.has_field("transfer-encoding")) {
-    HeaderFieldMap::const_iterator it =
-        request_info.header_field_map_.find("transfer-encoding");
-    if (it->second != "chunked") {
+    const std::string &value =
+        request_info.header_field_map_.value("transfer-encoding");
+    if (value != "chunked") {
       // A server that receives a request message with a transfer coding it does
       // not understand SHOULD respond with 501 (Not Implemented).
       // (rfc9112 sec6.1)

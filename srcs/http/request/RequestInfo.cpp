@@ -18,9 +18,8 @@ bool RequestInfo::is_valid_request_header() const {
     return false;
   }
   if (header_field_map_.has_field("transfer-encoding")) {
-    HeaderFieldMap::const_iterator it =
-        header_field_map_.find("transfer-encoding");
-    if (!has_suffix(it->second, "chunked")) {
+    const std::string &value = header_field_map_.value("transfer-encoding");
+    if (!has_suffix(value, "chunked")) {
       return false;
     }
   }
