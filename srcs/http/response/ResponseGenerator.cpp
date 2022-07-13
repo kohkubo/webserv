@@ -34,8 +34,8 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     response_info_ = _create_status_code_content(status_code);
     return;
   }
-  if (!(request_info_.transfer_encoding_.size() == 1 &&
-        request_info_.transfer_encoding_.back() == "chunked")) {
+  if (request_info_.transfer_encoding_.size() != 0 &&
+      request_info_.is_chunked()) {
     response_info_ =
         _create_status_code_content(HttpStatusCode::S_501_NOT_IMPLEMENTED);
     return;
