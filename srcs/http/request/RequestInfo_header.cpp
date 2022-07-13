@@ -26,6 +26,11 @@ static size_t parse_request_content_length(const std::string &content_length) {
   return result.object_;
 }
 
+static RequestInfo::transferEncodingVector
+parse_request_transfer_encoding(const std::string &transfer_encoding) {
+  return tokenize(transfer_encoding, " ,", " ,");
+}
+
 void RequestInfo::parse_request_header() {
   if (header_field_map_.has_field("host")) {
     const std::string &value = header_field_map_.value("host");
@@ -43,8 +48,8 @@ void RequestInfo::parse_request_header() {
     content_length_          = parse_request_content_length(value);
   }
   if (header_field_map_.has_field("transfer-encoding")) {
-    // TODO: Transfer-Encodingはカンマ区切りのフィールド
-    transfer_encoding_ = header_field_map_.value("transfer-encoding");
+    const std::string &value = header_field_map_.value("transfer-encoding");
+    transfer_encoding_       = parse_request_transfer_encoding(value);
   }
   if (header_field_map_.has_field("content-type")) {
     content_type_ = header_field_map_.value("content-type");

@@ -1,6 +1,7 @@
 #include "http/request/RequestInfo.hpp"
 
 #include "http/HttpStatusCode.hpp"
+#include "utils/utils.hpp"
 
 RequestInfo::BadRequestException::BadRequestException(HttpStatusCode     status,
                                                       const std::string &msg)
@@ -16,8 +17,12 @@ bool RequestInfo::is_valid_request_header() const {
     // LOG("request contains both of Content-Length and Chunked-Encoding.");
     return false;
   }
-  // TODO: has Transfer-Encoding but last encoding is not chunked. -> 400
-  // そもそもchunked以外のTransfer-Encoding実装する？
+  if (header_field_map_.has_field("transfer-encoding")) {
+    const std::string &value = header_field_map_.value("transfer-encoding");
+    if (!has_suffix(value, "chunked")) {
+      return false;
+    }
+  }
   if ((request_line_.method_ == "GET" || request_line_.method_ == "DELETE") &&
       has_body()) {
     // LOG("GET or DELETE request has body.");

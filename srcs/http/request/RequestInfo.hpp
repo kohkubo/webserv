@@ -17,6 +17,7 @@ private:
   static const std::string OWS_;
 
 public:
+  typedef std::vector<std::string> transferEncodingVector;
   /*
   RFC 9112
   https://triple-underscore.github.io/http1-ja.html#p.absolute-form
@@ -39,16 +40,16 @@ public:
     std::string query_;
     std::string http_version_;
   };
-  RequestLine    request_line_;
-  std::string    host_;
-  std::string    body_;
-  HeaderFieldMap header_field_map_;
-  bool           has_content_length_;
-  std::size_t    content_length_;
-  std::string    connection_;
-  std::string    transfer_encoding_;
-  config::Config config_;
-  std::string    content_type_;
+  RequestLine            request_line_;
+  std::string            host_;
+  std::string            body_;
+  HeaderFieldMap         header_field_map_;
+  bool                   has_content_length_;
+  std::size_t            content_length_;
+  std::string            connection_;
+  transferEncodingVector transfer_encoding_;
+  config::Config         config_;
+  std::string            content_type_;
 
 public:
   RequestInfo()
@@ -67,7 +68,10 @@ public:
   };
 
   bool has_body() const { return has_content_length_ || is_chunked(); }
-  bool is_chunked() const { return transfer_encoding_ == "chunked"; }
+  bool is_chunked() const {
+    return transfer_encoding_.size() != 0 &&
+           transfer_encoding_.back() == "chunked";
+  }
   bool is_close_connection() const { return connection_ == "close"; }
   void parse_request_line(const std::string &request_line);
   void parse_request_header();

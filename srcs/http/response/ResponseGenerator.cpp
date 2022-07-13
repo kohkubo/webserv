@@ -20,7 +20,6 @@
 #include "utils/utils.hpp"
 
 namespace response_generator {
-
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      const std::string &peer_name,
                                      HttpStatusCode     status_code)
@@ -34,6 +33,18 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
   if (status_code.is_error_status_code()) {
     response_info_ = _create_status_code_content(status_code);
     return;
+  }
+  if (request_info.header_field_map_.has_field("transfer-encoding")) {
+    const std::string &value =
+        request_info.header_field_map_.value("transfer-encoding");
+    if (value != "chunked") {
+      // A server that receives a request message with a transfer coding it does
+      // not understand SHOULD respond with 501 (Not Implemented).
+      // (rfc9112 sec6.1)
+      response_info_ =
+          _create_status_code_content(HttpStatusCode::S_501_NOT_IMPLEMENTED);
+      return;
+    }
   }
   location_ = request_info_.config_.locations_.select_location(
       request_info_.request_line_.absolute_path_);
