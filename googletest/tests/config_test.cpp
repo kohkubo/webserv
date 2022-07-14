@@ -65,7 +65,7 @@ TEST(server_config_test, parse_string_derective_exception) {
   }
 }
 
-TEST(server_config_test, parse_string_derective) {
+TEST(server_config_test, parse_string_derective1) {
   {
     std::string str             = "server {\n"
                                   "    listen 0.0.0.0:50001;\n"
@@ -79,6 +79,9 @@ TEST(server_config_test, parse_string_derective) {
     config::Config config(token_vector.begin(), token_vector.end());
     EXPECT_EQ(config.server_name_, "example.com");
   }
+}
+
+TEST(server_config_test, parse_string_derective2) {
   {
     std::string str             = "server {\n"
                                   "    listen 0.0.0.0:50001;\n"

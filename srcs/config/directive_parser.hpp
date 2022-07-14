@@ -9,25 +9,15 @@
 
 namespace config {
 
-tokenIterator parse_string_directive(std::string key, std::string &value,
-                                     tokenIterator pos, tokenIterator end);
+// clang-format off
+tokenIterator parse_string_directive(std::string &value, tokenIterator pos, tokenIterator end);
+tokenIterator parse_path_directive(Path &value, tokenIterator pos,tokenIterator end);
+tokenIterator parse_size_directive(size_t &value, tokenIterator pos,tokenIterator end);
+tokenIterator parse_bool_directive(bool &value,tokenIterator pos, tokenIterator end);
+tokenIterator parse_vector_directive(std::vector<std::string> &value, tokenIterator pos, tokenIterator end);
+tokenIterator parse_map_directive(std::map<int, std::string> &value, tokenIterator pos, tokenIterator end);
 
-tokenIterator parse_path_directive(std::string key, Path &value,
-                                   tokenIterator pos, tokenIterator end);
-
-tokenIterator parse_size_directive(std::string key, size_t &value,
-                                   tokenIterator pos, tokenIterator end);
-
-tokenIterator parse_bool_directive(std::string key, bool &value,
-                                   tokenIterator pos, tokenIterator end);
-
-tokenIterator parse_vector_directive(std::string               key,
-                                     std::vector<std::string> &value,
-                                     tokenIterator pos, tokenIterator end);
-
-tokenIterator parse_map_directive(std::string                 key,
-                                  std::map<int, std::string> &value,
-                                  tokenIterator pos, tokenIterator end);
+// clang-format on
 
 } // namespace config
 
