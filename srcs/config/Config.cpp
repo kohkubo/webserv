@@ -82,7 +82,12 @@ tokenIterator Config::_parse_server_name_directive(tokenIterator pos,
 
 tokenIterator Config::_parse_client_max_body_size_directive(tokenIterator pos,
                                                             tokenIterator end) {
-  return parse_size_directive(client_max_body_size_, pos, end);
+  tokenIterator token_iteratoer =
+      parse_size_directive(client_max_body_size_, pos, end);
+  if (client_max_body_size_ > MAX_CLIENT_MAX_BODY_SIZE_) {
+    ERROR_EXIT("client_max_body_size is too large.");
+  }
+  return token_iteratoer;
 }
 
 tokenIterator Config::_parse_error_page_directive(tokenIterator pos,

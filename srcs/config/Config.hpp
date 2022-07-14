@@ -35,13 +35,14 @@ private:
   tokenIterator _last_iterator_pos_;
 
 public:
-  size_t             client_max_body_size_;
-  std::string        server_name_;
-  bool               has_listen_;
-  struct sockaddr_in sockaddr_in_;
-  errorPageMap       error_pages_;
-  Locations          locations_;
-  directiveParserMap directive_parser_map_;
+  size_t              client_max_body_size_;
+  std::string         server_name_;
+  bool                has_listen_;
+  struct sockaddr_in  sockaddr_in_;
+  errorPageMap        error_pages_;
+  Locations           locations_;
+  directiveParserMap  directive_parser_map_;
+  static const size_t MAX_CLIENT_MAX_BODY_SIZE_ = 65536; //数字には根拠なし
 
 public:
   class UnexpectedTokenException : public std::logic_error {
