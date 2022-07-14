@@ -40,6 +40,15 @@ Config &Config::operator=(const Config &other) {
   return *this;
 }
 
+static void check_config_error(const Config &config) {
+  if (config.locations_.empty()) {
+    ERROR_EXIT("could not detect location directive.");
+  }
+  if (!config.has_listen_) {
+    ERROR_EXIT("could not detect listen directive.");
+  }
+}
+
 tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   pos++;
   if (*pos++ != "{")
@@ -54,12 +63,7 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   if (pos == end) {
     ERROR_EXIT("could not detect context end.");
   }
-  if (locations_.empty()) {
-    ERROR_EXIT("could not detect location directive.");
-  }
-  if (!has_listen_) {
-    ERROR_EXIT("could not detect listen directive.");
-  }
+  check_config_error(*this);
   return ++pos;
 }
 
