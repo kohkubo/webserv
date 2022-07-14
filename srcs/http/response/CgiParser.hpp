@@ -88,11 +88,10 @@ public:
   CgiState       state_;
   ResponseType   response_type_;
   CgiLocation    cgi_location_;
-  ContentInfo    content_info_;
-  std::string    content_;
-  std::string    buffer_;
   HeaderFieldMap header_field_map_;
-  // HttpStatusCode status_code_;
+
+  ContentInfo content_info_;
+  std::string content_;
 
 public:
   CgiParser()

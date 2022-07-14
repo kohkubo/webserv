@@ -21,21 +21,6 @@ static Result<std::string> getline_cgi(std::string       &source,
   return Ok<std::string>(getline_cgi_sub(source, delim, pos));
 }
 
-static std::string
-parse_content_type_sub(const std::string &content_type_line) {
-  tokenVector token_vector = tokenize(content_type_line, ";", ";");
-  return token_vector[0];
-}
-
-static Result<std::string>
-parse_content_type(const HeaderFieldMap &header_field_map) {
-  if (!header_field_map.has_field("content-type")) {
-    return Error<std::string>();
-  }
-  const std::string &value = header_field_map.value("content-type");
-  return Ok<std::string>(parse_content_type_sub(value));
-}
-
 static Result<std::size_t>
 parse_content_length_sub(const std::string &content_length) {
   Result<std::size_t> result = string_to_size(content_length);
@@ -132,12 +117,7 @@ CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
 }
 
 CgiParser::CgiState CgiParser::parse_header_end() {
-  Result<std::string> result = parse_content_type(header_field_map_);
-  if (result.is_err_) {
-    ERROR_LOG("no parse_content_type");
-  }
-  content_info_.content_type_ = result.object_;
-  response_type_              = get_cgi_response_type(header_field_map_);
+  response_type_ = get_cgi_response_type(header_field_map_);
   Result<CgiParser::CgiLocation> result_cgi_location =
       parse_cgi_location(header_field_map_);
   if (!result_cgi_location.is_err_) {
