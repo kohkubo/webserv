@@ -39,9 +39,8 @@ private:
 
 private:
   RequestState _chunk_loop(std::string &request_buffer);
-  static void
-  _check_max_client_body_size_exception(std::size_t actual_body_size,
-                                        std::size_t max_body_size);
+  static void  _check_max_client_body_size_exception(ssize_t actual_body_size,
+                                                     std::size_t max_body_size);
   static void  _check_buffer_length_exception(std::string &request_buffer,
                                               std::size_t  buffer_limit_length);
   RequestState _handle_request_line(std::string &request_buffer);
