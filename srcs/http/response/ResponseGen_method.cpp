@@ -64,7 +64,7 @@ ResponseInfo ResponseGenerator::_method_post(const Path &target_path) {
     return _create_status_code_content(
         HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  return WriteContent(result.object_, request_info_.body_);
+  return WriteContent(result.object_, request_info_.content_info_.content_);
 }
 
 ResponseInfo ResponseGenerator::_method_delete(const Path &target_path) {

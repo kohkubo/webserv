@@ -8,5 +8,7 @@ form = cgi.FieldStorage()
 print("Status: 200 OK")
 print("Content-type: text/html")
 print("")
-# chunkにすれば、max_lenghtを考える必要ないので、このテストケース保留
-print("a" * (2147483647 + 1))
+
+for num in range(21474836478888):
+    print("a", end="")
+

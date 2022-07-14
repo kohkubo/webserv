@@ -14,7 +14,10 @@ var testCgi = testCatergory{
 			caseName: "5000_cgi_get_normal",
 			test: func() bool {
 				expectBody := []byte(
-					"name= taro\n" +
+					"Status: 200 OK\n" +
+						"Content-type: text/html\n" +
+						"\n" +
+						"name= taro\n" +
 						"blood= A\n" +
 						"text= string\n",
 				)
@@ -44,7 +47,10 @@ var testCgi = testCatergory{
 			caseName: "indexでcgi指定",
 			test: func() bool {
 				expectBody := []byte(
-					"name= taro\n" +
+					"Status: 200 OK\n" +
+						"Content-type: text/html\n" +
+						"\n" +
+						"name= taro\n" +
 						"blood= A\n" +
 						"text= string\n",
 				)

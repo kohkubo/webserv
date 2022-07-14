@@ -3,10 +3,11 @@
 #include "http/request/RequestInfo.hpp"
 #include "utils/utils.hpp"
 
-void Request::_check_max_client_body_size_exception(
-    std::size_t actual_body_size, std::size_t max_body_size) {
-  if (actual_body_size > max_body_size) {
-    ERROR_LOG("max_client_body_size exceeded");
+void Request::_check_max_client_body_size_exception(ssize_t actual_body_size,
+                                                    std::size_t max_body_size) {
+  if (static_cast<std::size_t>(actual_body_size) > max_body_size) {
+    ERROR_LOG("max_client_body_size exceeded: " << actual_body_size << " > "
+                                                << max_body_size);
     throw RequestInfo::BadRequestException(
         HttpStatusCode::S_413_ENTITY_TOO_LARGE);
   }
