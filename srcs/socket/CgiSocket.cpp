@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "http/response/CgiEnviron.hpp"
+#include "http/response/CgiParser.hpp"
 #include "socket/FileReadSocket.hpp"
 #include "socket/SocketMapActions.hpp"
 
@@ -57,11 +57,9 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
-      // TODO: parse_cgi_response
-      std::string response_message =
-          _response_generator_.create_response_message(_buffer_);
-      _response_.set_response_message_and_sending(response_message);
       socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+      overwrite_error_response(socket_map_actions,
+                               HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
       return socket_map_actions;
     }
   }
@@ -76,16 +74,14 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
   if (receive_result.rc_ == -1) {
     LOG("write error");
-    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    overwrite_error_response(socket_map_actions,
-                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-    return false;
+    return true;
   }
   if (receive_result.rc_ == 0) {
-    // LOG("got FIN from connection");
+    LOG("got FIN from connection");
     return true;
   }
   _buffer_ += receive_result.str_;
+  _parse_buffer(socket_map_actions);
   return false;
 }
 
@@ -105,6 +101,32 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   if (_send_count_ == static_cast<ssize_t>(sending_content.size())) {
     _is_sending_ = false;
     shutdown(_socket_fd_, SHUT_WR);
+  }
+}
+
+void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
+  CgiParser::CgiState cgi_state = _cgi_parser_.handle_cgi(_buffer_);
+  LOG("state:" << cgi_state);
+  if (cgi_state == CgiParser::ERROR) {
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+    overwrite_error_response(socket_map_actions,
+                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    return;
+  }
+  if (cgi_state != CgiParser::END) {
+    return;
+  }
+  std::string response_message;
+  switch (_cgi_parser_.response_type_) {
+  case CgiParser::DOCUMENT:
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+    response_message =
+        _response_generator_.create_response_message(_cgi_parser_);
+    _response_.set_response_message_and_sending(response_message);
+    return;
+    break;
+  default:
+    break;
   }
 }
 

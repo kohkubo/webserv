@@ -93,7 +93,7 @@ public:
   std::string    content_;
   std::string    buffer_;
   HeaderFieldMap header_field_map_;
-  HttpStatusCode status_code_;
+  // HttpStatusCode status_code_;
 
 public:
   CgiParser()
@@ -102,10 +102,11 @@ public:
       , content_length_(0)
       , has_content_length_(false) {}
   ~CgiParser(){};
-  CgiState handle_cgi(std::string &buffer);
-  CgiState parse_header(std::string &buffer);
-  CgiState parse_header_end();
-  CgiState parse_body(std::string &buffer);
+  CgiState    handle_cgi(std::string &buffer);
+  CgiState    parse_header(std::string &buffer);
+  CgiState    parse_header_end();
+  CgiState    parse_body(std::string &buffer);
+  std::string http_start_line() const;
 };
 
 #endif /* SRCS_HTTP_RESPONSE_CGIPARSER_HPP */

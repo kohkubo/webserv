@@ -4,6 +4,7 @@
 #include <string>
 
 #include "event/Response.hpp"
+#include "http/response/CgiParser.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
@@ -19,6 +20,7 @@ private:
   Response                &_response_;
   std::string              _buffer_;
   ResponseGenerator        _response_generator_;
+  CgiParser                _cgi_parser_;
   bool                     _is_sending_;
   ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
@@ -27,6 +29,7 @@ private:
 private:
   bool _handle_receive_event(SocketMapActions &socket_map_actions);
   void _handle_send_event(SocketMapActions &socket_map_actions);
+  void _parse_buffer(SocketMapActions &socket_map_actions);
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);

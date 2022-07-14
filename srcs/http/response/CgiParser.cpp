@@ -1,5 +1,6 @@
 #include "http/response/CgiParser.hpp"
 
+#include "http/const/const_delimiter.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
@@ -158,4 +159,14 @@ CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
     state_ = parse_body(buffer);
   }
   return state_;
+}
+
+std::string CgiParser::http_start_line() const {
+  if (response_type_ == CLIENT_REDIR || response_type_ == CLIENT_REDIRDOC) {
+    return "HTTP/1.1" + SP + HttpStatusCode(302).status_phrase() + CRLF;
+  }
+  if (header_field_map_.has_field("status")) {
+    return "HTTP/1.1" + SP + header_field_map_.value("status") + CRLF;
+  }
+  return "HTTP/1.1" + SP + HttpStatusCode().status_phrase() + CRLF;
 }
