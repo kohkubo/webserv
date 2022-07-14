@@ -75,17 +75,13 @@ ns_socket::SocketBase *ResponseGenerator::create_socket(Response &response) {
   switch (response_info_.action_) {
   case ResponseInfo::READ:
     return new ns_socket::FileReadSocket(response, *this);
-    break;
   case ResponseInfo::WRITE:
     return new ns_socket::FileWriteSocket(response, *this);
-    break;
   case ResponseInfo::CGI:
     return new ns_socket::CgiSocket(response, *this);
-    break;
   default:
-    break;
+    return NULL;
   }
-  return NULL;
 }
 
 static std::string start_line(const HttpStatusCode &status_code) {
