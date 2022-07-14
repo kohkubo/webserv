@@ -5,6 +5,7 @@
 #include "config/Location.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "http/response/CgiParser.hpp"
 #include "http/response/ResponseInfo.hpp"
 #include "socket/SocketBase.hpp"
 #include "utils/Path.hpp"
@@ -41,7 +42,8 @@ public:
   }
   ns_socket::SocketBase *create_socket(Response &response);
   std::string            create_response_message(const std::string &content);
-  Response               new_status_response(const HttpStatusCode &status_code);
+  std::string create_response_message(const CgiParser &cgi_parser) const;
+  Response    new_status_response(const HttpStatusCode &status_code);
 };
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
