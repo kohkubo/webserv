@@ -119,6 +119,8 @@ CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
     return ERROR;
   }
   content_info_.content_length_ = result.object_;
+  // content-lengthがあるとき…bodyの長さで切り出す。そうじゃないとき入力の終了まで受け取る。
+  // 入力を受け取りながら送信は現状無し、
   if (buffer.size() >=
       static_cast<std::size_t>(content_info_.content_length_)) {
     LOG("parse_body");
