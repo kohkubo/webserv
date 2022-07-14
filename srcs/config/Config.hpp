@@ -58,9 +58,12 @@ public:
   tokenIterator last_iterator_pos() { return _last_iterator_pos_; }
 
 private:
-  tokenIterator _parse(tokenIterator pos, tokenIterator end);
-  tokenIterator _parse_listen(tokenIterator pos, tokenIterator end);
-  tokenIterator _parse_location(tokenIterator pos, tokenIterator end);
+  tokenIterator        _parse(tokenIterator pos, tokenIterator end);
+  tokenIterator        _parse_listen(tokenIterator pos, tokenIterator end);
+  tokenIterator        _parse_location(tokenIterator pos, tokenIterator end);
+  static tokenIterator _parse_available_methods(Location     &location,
+                                                tokenIterator pos,
+                                                tokenIterator end);
 };
 
 } // namespace config

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <map>
 
+#include "config/Location.hpp"
 #include "config/directive_parser.hpp"
 
 namespace config {
@@ -58,7 +59,7 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
 }
 
 static struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
-                                      const std::string &listen_port) {
+                                             const std::string &listen_port) {
   struct addrinfo  hints    = {};
   struct addrinfo *addrinfo = NULL;
   hints.ai_family           = AF_INET;
@@ -101,13 +102,68 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   return pos + 2;
 }
 
+tokenIterator Config::_parse_available_methods(Location     &location,
+                                               tokenIterator pos,
+                                               tokenIterator end) {
+  if (*pos != "available_methods")
+    return pos;
+  pos++;
+  if (pos == end)
+    ERROR_EXIT("could not detect directive value.");
+  location.has_available_methods_ = true;
+  for (; pos != end && *pos != ";"; pos++) {
+    if (*pos == "GET") {
+      location.available_methods_.get_ = true;
+    } else if (*pos == "POST") {
+      location.available_methods_.post_ = true;
+    } else if (*pos == "DELETE") {
+      location.available_methods_.delete_ = true;
+    }
+  }
+  if (pos == end)
+    ERROR_EXIT("available methods directive value is invalid.");
+  return pos + 1;
+}
+
 tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
   if (*pos != "location")
     return pos;
-  Location      location;
-  tokenIterator result = location.parse_location(pos, end);
+  Location location;
+
+  pos++;
+  if (pos == end)
+    ERROR_EXIT("could not detect directive value.");
+  location.location_path_ = *pos++;
+  if (pos == end || *pos != "{")
+    ERROR_EXIT("could not detect context.");
+  pos++;
+  while (pos != end && *pos != "}") {
+    tokenIterator head = pos;
+    // clang-format off
+    pos = parse_path_directive("root", location.root_, pos, end);
+    pos = parse_path_directive("index", location.index_, pos, end);
+    pos = parse_bool_directive("autoindex", location.autoindex_, pos, end);
+    pos = parse_map_directive("return", location.return_map_, pos, end);
+    pos = _parse_available_methods(location, pos, end);
+    pos = parse_bool_directive("cgi_extension", location.cgi_extension_, pos, end);
+    pos = parse_bool_directive("upload_file", location.upload_file_, pos, end);
+    // clang-format on
+    if (pos == head) {
+      ERROR_EXIT("parse location directive failed.");
+    }
+  }
+  if (pos == end)
+    ERROR_EXIT("could not detect context end.");
+  if (location.index_.has_suffix("/"))
+    ERROR_EXIT("index directive failed. don't add \"/\" to file path.");
+  if (!location.root_.has_suffix("/"))
+    ERROR_EXIT("root directive failed. please add \"/\" to end of root dir");
+  if (location.location_path_.is_minus_depth() ||
+      location.root_.is_minus_depth() || location.index_.is_minus_depth())
+    ERROR_EXIT("minus depth path failed.");
+
   locations_.add_or_exit(location);
-  return result;
+  return ++pos;
 }
 
 } // namespace config

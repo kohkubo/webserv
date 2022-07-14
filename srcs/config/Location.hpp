@@ -30,9 +30,6 @@ public:
   bool       has_available_methods_;
   MethodFlag available_methods_;
 
-private:
-  tokenIterator _parse_available_methods(tokenIterator pos, tokenIterator end);
-
 public:
   Location()
       : root_("html/")
@@ -43,8 +40,7 @@ public:
       , has_available_methods_(false)
       , available_methods_((struct MethodFlag){false, false, false}) {}
 
-  tokenIterator parse_location(tokenIterator pos, tokenIterator end);
-  bool          is_unavailable_method(const std::string &method) const;
+  bool is_unavailable_method(const std::string &method) const;
 };
 
 } // namespace config
