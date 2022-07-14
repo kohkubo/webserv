@@ -53,7 +53,7 @@ public:
 public:
   Config();
   Config(tokenIterator start, tokenIterator end)
-      : client_max_body_size_(1024)
+      : client_max_body_size_(MAX_CLIENT_MAX_BODY_SIZE_)
       , server_name_("")
       , has_listen_(false) {
     _init_directive_parser_map();
