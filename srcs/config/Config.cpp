@@ -57,7 +57,7 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   return ++pos;
 }
 
-struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
+static struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
                                       const std::string &listen_port) {
   struct addrinfo  hints    = {};
   struct addrinfo *addrinfo = NULL;
