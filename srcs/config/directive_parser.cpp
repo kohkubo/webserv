@@ -44,18 +44,6 @@ tokenIterator parse_bool_directive(bool &value, tokenIterator pos,
   return pos + 2;
 }
 
-tokenIterator parse_vector_directive(std::vector<std::string> &value,
-                                     tokenIterator pos, tokenIterator end) {
-  if (pos == end)
-    ERROR_EXIT("could not detect directive value.");
-  for (; pos != end && *pos != ";"; pos++) {
-    value.push_back(*pos);
-  }
-  if (pos == end)
-    ERROR_EXIT("vector directive value is invalid.");
-  return pos + 1;
-}
-
 tokenIterator parse_map_directive(std::map<int, std::string> &value,
                                   tokenIterator pos, tokenIterator end) {
   if (pos == end || pos + 2 == end || *(pos + 2) != ";")
