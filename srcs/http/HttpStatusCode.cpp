@@ -8,6 +8,9 @@
 HttpStatusCode::HttpStatusCode(StatusCode status_code)
     : status_code_(status_code) {}
 
+HttpStatusCode::HttpStatusCode(const int status_num)
+    : status_code_(static_cast<StatusCode>(status_num)) {}
+
 HttpStatusCode &HttpStatusCode::operator=(StatusCode status_code) {
   status_code_ = status_code;
   return *this;
