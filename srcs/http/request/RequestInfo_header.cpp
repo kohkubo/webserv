@@ -43,16 +43,15 @@ void RequestInfo::parse_request_header(const HeaderFieldMap &header_field_map) {
     connection_ = tolower(header_field_map.value("connection"));
   }
   if (header_field_map.has_field("content-length")) {
-    const std::string &value = header_field_map.value("content-length");
-    has_content_length_      = true;
-    content_length_          = parse_request_content_length(value);
+    const std::string &value      = header_field_map.value("content-length");
+    content_info_.content_length_ = parse_request_content_length(value);
   }
   if (header_field_map.has_field("transfer-encoding")) {
     const std::string &value = header_field_map.value("transfer-encoding");
     transfer_encoding_       = parse_request_transfer_encoding(value);
   }
   if (header_field_map.has_field("content-type")) {
-    content_type_ = header_field_map.value("content-type");
+    content_info_.content_type_ = header_field_map.value("content-type");
   }
 }
 
