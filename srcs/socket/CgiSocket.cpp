@@ -57,9 +57,7 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
-      socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-      overwrite_error_response(socket_map_actions,
-                               HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+      // TODO: treat as END of output
       return socket_map_actions;
     }
   }
@@ -74,7 +72,10 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
   if (receive_result.rc_ == -1) {
     LOG("write error");
-    return true;
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+    overwrite_error_response(socket_map_actions,
+                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    return false;
   }
   if (receive_result.rc_ == 0) {
     LOG("got FIN from connection");

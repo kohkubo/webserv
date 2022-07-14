@@ -96,26 +96,6 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
   }
 }
 
-CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
-  // bodyのパース時に毎回content lengthパース？ yn
-  Result<std::size_t> result = parse_content_length(header_field_map_);
-  if (result.is_err_) {
-    LOG("parse_body: invalid content-length");
-    return ERROR;
-  }
-  content_info_.content_length_ = result.object_;
-  // content-lengthがあるとき…bodyの長さで切り出す。そうじゃないとき入力の終了まで受け取る。
-  // 入力を受け取りながら送信は現状無し、
-  if (buffer.size() >=
-      static_cast<std::size_t>(content_info_.content_length_)) {
-    LOG("parse_body");
-    content_ = buffer.substr(0, content_info_.content_length_);
-    buffer.erase(0, content_info_.content_length_);
-    return END;
-  }
-  return BODY;
-}
-
 CgiParser::CgiState CgiParser::parse_header_end() {
   response_type_ = get_cgi_response_type(header_field_map_);
   Result<CgiParser::CgiLocation> result_cgi_location =
@@ -123,11 +103,28 @@ CgiParser::CgiState CgiParser::parse_header_end() {
   if (!result_cgi_location.is_err_) {
     cgi_location_ = result_cgi_location.object_;
   }
-  if (header_field_map_.has_field("content-length")) {
-    LOG("has_cgi_body");
-    return BODY;
+  Result<std::size_t> result = parse_content_length(header_field_map_);
+  if (!result.is_err_) {
+    content_info_.content_length_ = result.object_;
   }
-  return END;
+  return BODY;
+}
+
+CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
+  // content-lengthがあるとき…bodyの長さで切り出す。そうじゃないとき入力の終了まで受け取る。
+  // 入力を受け取りながら送信は現状無し、
+
+  if (content_info_.has_content_length() &&
+      content_.size() + buffer.size() >=
+          static_cast<std::size_t>(content_info_.content_length_)) {
+    content_ +=
+        buffer.substr(0, content_info_.content_length_ - content_.size());
+    return END;
+  }
+
+  content_ += buffer;
+  buffer.clear();
+  return BODY;
 }
 
 CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
