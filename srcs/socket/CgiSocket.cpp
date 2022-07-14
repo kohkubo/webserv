@@ -59,7 +59,7 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     if (is_close) {
       // TODO: parse_cgi_response
       std::string response_message =
-          _response_generator_.create_response_message(_buffer_.str());
+          _response_generator_.create_response_message(_buffer_);
       _response_.set_response_message_and_sending(response_message);
       socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
       return socket_map_actions;
@@ -85,7 +85,7 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
     // LOG("got FIN from connection");
     return true;
   }
-  _buffer_ << receive_result.str_;
+  _buffer_ += receive_result.str_;
   return false;
 }
 
