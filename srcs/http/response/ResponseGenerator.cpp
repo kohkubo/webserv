@@ -142,7 +142,6 @@ ResponseGenerator::create_response_message(const CgiParser &cgi_parser) const {
   response += "Content-Length: " + to_string(cgi_parser.content_.size()) + CRLF;
   response += CRLF;
   response += cgi_parser.content_;
-
   return response;
 };
 

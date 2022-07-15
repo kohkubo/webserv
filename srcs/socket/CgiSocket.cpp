@@ -122,10 +122,11 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   switch (_cgi_parser_.response_type_) {
   case CgiParser::DOCUMENT:
   case CgiParser::CLIENT_REDIR:
-    // case CgiParser::CLIENT_REDIRDOC:
+  case CgiParser::CLIENT_REDIRDOC:
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     response_message =
         _response_generator_.create_response_message(_cgi_parser_);
+    std::cout << response_message << std::endl;
     _response_.set_response_message_and_sending(response_message);
     return;
     break;
