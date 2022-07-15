@@ -24,18 +24,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
   }
 }
 
-CgiSocket::~CgiSocket() {
-  pid_t cgi_process = _response_generator_.response_info_.cgi_pid_;
-  int   status      = 0;
-  kill(cgi_process, SIGTERM);
-  if (waitpid(cgi_process, &status, WNOHANG) == -1) {
-    ERROR_LOG("error: waitpid in read_file_to_str_cgi");
-  }
-  if (WIFEXITED(status)) {
-    LOG("child is dead");
-    return;
-  }
-}
+CgiSocket::~CgiSocket() {}
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -48,14 +37,15 @@ struct pollfd CgiSocket::pollfd() {
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketBase *CgiSocket::handle_timed_out() {
+  _kill_cgi_process();
   SocketBase *file_socket = NULL;
-  _response_              = _response_generator_.new_status_response(
-                   HttpStatusCode::S_504_GATEWAY_TIME_OUT);
+  _response_              = _response_generator_.new_status_response(504);
   if (_response_generator_.need_socket()) {
     file_socket = _response_generator_.create_socket(_response_);
   }
   return file_socket;
 }
+
 SocketMapActions CgiSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
@@ -66,6 +56,7 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
       _create_cgi_response(socket_map_actions);
+      _kill_cgi_process();
       return socket_map_actions;
     }
   }
@@ -79,10 +70,10 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
 bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
   if (receive_result.rc_ == -1) {
-    LOG("write error");
+    LOG("receive error");
+    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    overwrite_error_response(socket_map_actions,
-                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    overwrite_error_response(socket_map_actions, 500);
     return false;
   }
   if (receive_result.rc_ == 0) {
@@ -101,9 +92,9 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   ssize_t      wc              = write(_socket_fd_, rest_str, rest_count);
   if (wc == -1) {
     LOG("write error");
+    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    overwrite_error_response(socket_map_actions,
-                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    overwrite_error_response(socket_map_actions, 500);
     return;
   }
   _send_count_ += wc;
@@ -115,17 +106,15 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 
 void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   CgiParser::CgiState cgi_state = _cgi_parser_.handle_cgi(_buffer_);
-  LOG("state:" << cgi_state);
   if (cgi_state == CgiParser::ERROR) {
+    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    overwrite_error_response(socket_map_actions,
-                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    overwrite_error_response(socket_map_actions, 500);
     return;
   }
-  if (cgi_state != CgiParser::END) {
-    return;
+  if (cgi_state == CgiParser::END) {
+    _create_cgi_response(socket_map_actions);
   }
-  _create_cgi_response(socket_map_actions);
 }
 
 void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
@@ -140,6 +129,21 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
     break;
   default:
     break;
+  }
+}
+
+void CgiSocket::_kill_cgi_process() const {
+  pid_t cgi_process = _response_generator_.response_info_.cgi_pid_;
+  int   status      = 0;
+  if (kill(cgi_process, SIGTERM) == -1) {
+    ERROR_LOG_WITH_ERRNO("kill");
+  }
+  if (waitpid(cgi_process, &status, WNOHANG) == -1) {
+    ERROR_LOG("error: waitpid");
+  }
+  if (WIFEXITED(status)) {
+    // LOG("child is dead");
+    return;
   }
 }
 
