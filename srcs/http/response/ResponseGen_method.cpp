@@ -21,18 +21,12 @@ ResponseInfo ResponseGenerator::_method_get_dir(const Path &target_path) {
 }
 
 ResponseInfo ResponseGenerator::_method_get_file(const Path &target_path) {
+  if (location_->cgi_extension_ && target_path.has_suffix(".py")) {
+    return _method_cgi(target_path);
+  }
   if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
-  }
-  if (target_path.has_suffix(".py")) {
-    Result<ResponseInfo> result =
-        create_cgi_content(request_info_, peer_name_, target_path);
-    if (result.is_err_) {
-      return _create_status_code_content(
-          HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
-    }
-    return result.object_;
   }
   Result<int> result = target_path.open_read_file();
   if (result.is_err_) {
@@ -52,6 +46,20 @@ ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
     return _method_get_file(path_add_index);
   }
   return _method_get_file(target_path);
+}
+
+ResponseInfo ResponseGenerator::_method_cgi(const Path &target_path) {
+  if (!target_path.is_file_exists()) {
+    ERROR_LOG("method_get_file: file not found");
+    return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
+  }
+  Result<ResponseInfo> result =
+      create_cgi_content(request_info_, peer_name_, target_path);
+  if (result.is_err_) {
+    return _create_status_code_content(
+        HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+  }
+  return result.object_;
 }
 
 ResponseInfo ResponseGenerator::_method_post(const Path &target_path) {
@@ -94,6 +102,9 @@ ResponseInfo ResponseGenerator::_method_delete(const Path &target_path) {
 ResponseInfo ResponseGenerator::_handle_method(const Path &target_path) {
   if (location_->is_unavailable_method(request_info_.request_line_.method_)) {
     return _create_status_code_content(HttpStatusCode::S_405_NOT_ALLOWED);
+  }
+  if (location_->cgi_extension_ && target_path.has_suffix(".py")) {
+    return _method_cgi(target_path);
   }
   if ("GET" == request_info_.request_line_.method_) {
     return _method_get(target_path);

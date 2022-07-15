@@ -29,6 +29,7 @@ private:
   ResponseInfo _method_get_dir(const Path &target_path);
   ResponseInfo _method_post(const Path &target_path);
   ResponseInfo _method_delete(const Path &target_path);
+  ResponseInfo _method_cgi(const Path &target_path);
   ResponseInfo _create_status_code_content(const HttpStatusCode &status_code);
 
 public:
