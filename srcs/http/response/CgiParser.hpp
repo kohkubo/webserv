@@ -93,6 +93,8 @@ public:
   ContentInfo content_info_;
   std::string content_;
 
+  static const std::size_t BUFFER_MAX_LENGTH_ = 8192;
+
 public:
   CgiParser()
       : state_(HEADER)

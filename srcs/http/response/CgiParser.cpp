@@ -86,6 +86,9 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
       return HEADER;
     }
     std::string line = result.object_;
+    if (line.size() >= BUFFER_MAX_LENGTH_) {
+      return ERROR;
+    }
     if (line.empty()) {
       // LOG("cgi header end ============");
       return HEADER_END;
