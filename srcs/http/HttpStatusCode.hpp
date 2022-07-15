@@ -15,7 +15,7 @@ public:
     S_403_FORBIDDEN             = 403,
     S_404_NOT_FOUND             = 404,
     S_405_NOT_ALLOWED           = 405,
-    S_413_ENTITY_TOO_LARGE      = 413,
+    S_413_CONTENT_TOO_LARGE     = 413,
     S_500_INTERNAL_SERVER_ERROR = 500,
     S_501_NOT_IMPLEMENTED       = 501,
     S_520_UNKNOWN_ERROR         = 520,
