@@ -47,6 +47,15 @@ struct pollfd CgiSocket::pollfd() {
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
+SocketBase *CgiSocket::handle_timed_out() {
+  SocketBase *file_socket = NULL;
+  _response_              = _response_generator_.new_status_response(
+                   HttpStatusCode::S_504_GATEWAY_TIME_OUT);
+  if (_response_generator_.need_socket()) {
+    file_socket = _response_generator_.create_socket(_response_);
+  }
+  return file_socket;
+}
 SocketMapActions CgiSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();

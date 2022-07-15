@@ -38,6 +38,7 @@ public:
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
+  virtual SocketBase      *handle_timed_out();
 };
 
 } // namespace ns_socket

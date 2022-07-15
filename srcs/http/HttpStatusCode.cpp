@@ -64,7 +64,7 @@ std::map<int, const char *> init_response_status_phrase_map() {
   res[501] = "501 Not Implemented";
   res[502] = "502 Bad Gateway";
   res[503] = "503 Service Temporarily Unavailable";
-  res[504] = "504 Gateway Time-out";
+  res[504] = "504 Gateway Timeout";
   res[505] = "505 HTTP Version Not Supported";
   res[507] = "507 Insufficient Storage";
   res[520] = "520 Unknown Error";

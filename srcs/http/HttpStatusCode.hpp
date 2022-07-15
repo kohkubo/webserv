@@ -19,6 +19,7 @@ public:
     S_413_ENTITY_TOO_LARGE      = 413,
     S_500_INTERNAL_SERVER_ERROR = 500,
     S_501_NOT_IMPLEMENTED       = 501,
+    S_504_GATEWAY_TIME_OUT      = 504,
     S_520_UNKNOWN_ERROR         = 520,
   };
 
