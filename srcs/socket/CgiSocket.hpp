@@ -30,6 +30,7 @@ private:
   bool _handle_receive_event(SocketMapActions &socket_map_actions);
   void _handle_send_event(SocketMapActions &socket_map_actions);
   void _parse_buffer(SocketMapActions &socket_map_actions);
+  void _create_cgi_response(SocketMapActions &socket_map_actions);
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);

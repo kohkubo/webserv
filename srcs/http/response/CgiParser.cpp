@@ -15,7 +15,7 @@ static Result<std::string> getline_cgi(std::string       &source,
                                        const std::string &delim) {
   std::size_t pos = source.find(delim);
   if (pos == std::string::npos) {
-    LOG("getline_cgi: delim not found");
+    // LOG("getline_cgi: delim not found");
     return Error<std::string>();
   }
   return Ok<std::string>(getline_cgi_sub(source, delim, pos));
@@ -57,7 +57,7 @@ parse_cgi_location_sub(const std::string &location_line) {
 static Result<CgiParser::CgiLocation>
 parse_cgi_location(const HeaderFieldMap &header_field_map) {
   if (!header_field_map.has_field("location")) {
-    LOG("cgi location not found");
+    // LOG("cgi location not found");
     return Error<CgiParser::CgiLocation>();
   }
   const std::string &value = header_field_map.value("location");
@@ -87,7 +87,7 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
     }
     std::string line = result.object_;
     if (line.empty()) {
-      LOG("cgi header end ============");
+      // LOG("cgi header end ============");
       return HEADER_END;
     }
     if (!header_field_map_.store_new_field(line)) {

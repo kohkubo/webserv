@@ -48,7 +48,6 @@ struct pollfd CgiSocket::pollfd() {
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketMapActions CgiSocket::handle_event(short int revents) {
-  LOG("cgi socket handle event");
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
 
@@ -57,7 +56,7 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
-      // TODO: treat as END of output
+      _create_cgi_response(socket_map_actions);
       return socket_map_actions;
     }
   }
@@ -117,6 +116,10 @@ void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   if (cgi_state != CgiParser::END) {
     return;
   }
+  _create_cgi_response(socket_map_actions);
+}
+
+void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   std::string response_message;
   switch (_cgi_parser_.response_type_) {
   case CgiParser::DOCUMENT:
