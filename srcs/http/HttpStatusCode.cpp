@@ -37,7 +37,7 @@ std::map<int, const char *> init_response_status_phrase_map() {
   res[204] = "204 No Content";
   res[206] = "206 Partial Content";
   res[301] = "301 Moved Permanently";
-  res[302] = "302 Moved Temporarily";
+  res[302] = "302 Found";
   res[303] = "303 See Other";
   res[304] = "304 Not Modified";
   res[307] = "307 Temporary Redirect";

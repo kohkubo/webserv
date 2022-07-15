@@ -55,8 +55,8 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
-      _create_cgi_response(socket_map_actions);
       _kill_cgi_process();
+      _create_cgi_response(socket_map_actions);
       return socket_map_actions;
     }
   }
@@ -121,6 +121,8 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   std::string response_message;
   switch (_cgi_parser_.response_type_) {
   case CgiParser::DOCUMENT:
+  case CgiParser::CLIENT_REDIR:
+    // case CgiParser::CLIENT_REDIRDOC:
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     response_message =
         _response_generator_.create_response_message(_cgi_parser_);

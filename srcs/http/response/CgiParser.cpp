@@ -71,7 +71,7 @@ get_cgi_response_type(const HeaderFieldMap &header_field_map) {
   }
   const std::string &value = header_field_map.value("location");
   if (is_client_location(value)) {
-    if (!header_field_map.has_field("status")) {
+    if (header_field_map.has_field("status")) {
       return CgiParser::CLIENT_REDIRDOC;
     }
     return CgiParser::CLIENT_REDIR;
