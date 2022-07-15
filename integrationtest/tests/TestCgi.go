@@ -249,7 +249,7 @@ var testCgi = testCatergory{
 			caseName: "cgi client redirect",
 			test: func() bool {
 				expectBody := []byte(
-					"redirect/target body",
+					"",
 				)
 
 				expectStatusCode := 302
@@ -264,9 +264,10 @@ var testCgi = testCatergory{
 						"\r\n",
 					ExpectStatusCode: expectStatusCode,
 					ExpectHeader: http.Header{
-						"Connection":   {"close"},
-						"Location":     {"http://localhost:55000/cgi_test/redirect/target.py"},
-						"Dummy-Header": {"dududu"},
+						"Connection":     {"close"},
+						"Content-Length": {"0"},
+						"Location":       {"http://localhost:55000/cgi_test/redirect/target.py"},
+						"Dummy-Header":   {"dududu"},
 					},
 					ExpectBody: expectBody,
 				})
