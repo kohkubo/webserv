@@ -151,7 +151,8 @@ var testCgi = testCatergory{
 						"Connection":     {"close"},
 						"Content-Length": {lenStr(expectBody)},
 						"Content-Type":   {"text/html"},
-						"hoge":           {"fuga"},
+						"Hoge":           {"fuga"},
+						"Dummy-Header":   {"dududu"},
 					},
 					ExpectBody: expectBody,
 				})
