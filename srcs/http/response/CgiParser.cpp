@@ -101,6 +101,7 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
 
 CgiParser::CgiState CgiParser::parse_header_end() {
   response_type_ = get_cgi_response_type(header_field_map_);
+  // TODO: check is_valid_response()
   Result<CgiParser::CgiLocation> result_cgi_location =
       parse_cgi_location(header_field_map_);
   if (!result_cgi_location.is_err_) {
@@ -143,6 +144,7 @@ CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
   return state_;
 }
 
+// TODO: validation 3digit SP [text]
 static std::string parse_status_header(const std::string &status) {
   if (status.size() < 3) {
     return HttpStatusCode(500).status_phrase();
