@@ -126,7 +126,6 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     response_message =
         _response_generator_.create_response_message(_cgi_parser_);
-    std::cout << response_message << std::endl;
     _response_.set_response_message_and_sending(response_message);
     return;
     break;
