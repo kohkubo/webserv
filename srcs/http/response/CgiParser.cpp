@@ -21,24 +21,6 @@ static Result<std::string> getline_cgi(std::string       &source,
   return Ok<std::string>(getline_cgi_sub(source, delim, pos));
 }
 
-static Result<std::size_t>
-parse_content_length_sub(const std::string &content_length) {
-  Result<std::size_t> result = string_to_size(content_length);
-  if (result.is_err_) {
-    return Error<std::size_t>();
-  }
-  return Ok<std::size_t>(result.object_);
-}
-
-static Result<std::size_t>
-parse_content_length(const HeaderFieldMap &header_field_map) {
-  if (!header_field_map.has_field("content-length")) {
-    return Error<std::size_t>();
-  }
-  const std::string &value = header_field_map.value("content-length");
-  return parse_content_length_sub(value);
-}
-
 static bool is_client_location(const std::string &location) {
   return location.find("http://") == 0 || location.find("https://") == 0;
 }
@@ -107,8 +89,13 @@ CgiParser::CgiState CgiParser::parse_header_end() {
   if (!result_cgi_location.is_err_) {
     cgi_location_ = result_cgi_location.object_;
   }
-  Result<std::size_t> result = parse_content_length(header_field_map_);
-  if (!result.is_err_) {
+
+  if (header_field_map_.has_field("content-length")) {
+    const std::string  &value  = header_field_map_.value("content-length");
+    Result<std::size_t> result = string_to_size(value);
+    if (result.is_err_) {
+      return ERROR;
+    }
     content_info_.content_length_ = result.object_;
   }
   return BODY;
