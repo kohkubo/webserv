@@ -82,20 +82,22 @@ get_cgi_response_type(const HeaderFieldMap &header_field_map) {
 }
 
 bool CgiParser::_is_valid_header() const {
-  // local redir ... only location
   if (response_type_ == DOCUMENT || response_type_ == CLIENT_REDIRDOC) {
     if (!header_field_map_.has_field("content-type")) {
       return false;
     }
   }
   if (response_type_ == LOCAL_REDIR) {
+    // TODO: local redir ... only location
   }
   return true;
 }
 
 CgiParser::CgiState CgiParser::parse_header_end() {
   response_type_ = get_cgi_response_type(header_field_map_);
-  // TODO: check is_valid_response()
+  if (!_is_valid_header()) {
+    return ERROR;
+  }
   Result<CgiParser::CgiLocation> result_cgi_location =
       parse_cgi_location(header_field_map_);
   if (!result_cgi_location.is_err_) {
