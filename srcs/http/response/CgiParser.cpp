@@ -144,13 +144,13 @@ CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
   return state_;
 }
 
-// TODO: validation 3digit SP [text]
-static std::string parse_status_header(const std::string &status) {
-  if (status.size() < 3) {
+std::string CgiParser::_parse_status_header() const {
+  const std::string &status = header_field_map_.value("status");
+  if (status.size() <= 3) {
     return HttpStatusCode(500).status_phrase();
   }
   Result<std::size_t> result = string_to_size(status.substr(0, 3));
-  if (result.is_err_) {
+  if (result.is_err_ || status[3] != ' ') {
     return HttpStatusCode(500).status_phrase();
   }
   return status;
@@ -161,8 +161,7 @@ std::string CgiParser::http_start_line() const {
     return "HTTP/1.1" + SP + HttpStatusCode(302).status_phrase() + CRLF;
   }
   if (header_field_map_.has_field("status")) {
-    const std::string &value = header_field_map_.value("status");
-    return "HTTP/1.1" + SP + parse_status_header(value) + CRLF;
+    return "HTTP/1.1" + SP + _parse_status_header() + CRLF;
   }
   return "HTTP/1.1" + SP + HttpStatusCode().status_phrase() + CRLF;
 }
