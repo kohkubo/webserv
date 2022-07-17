@@ -33,9 +33,6 @@ struct pollfd ClientSocket::pollfd() {
 
 bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-// SocketMapAction* linked list
-// std::vector<SocketMapAction> SocketMapActions.add(socket_map_action)
-
 SocketMapActions ClientSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
