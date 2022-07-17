@@ -46,21 +46,6 @@ parse_cgi_location(const HeaderFieldMap &header_field_map) {
   return Ok<CgiParser::CgiLocation>(parse_cgi_location_sub(value));
 }
 
-static CgiParser::ResponseType
-get_cgi_response_type(const HeaderFieldMap &header_field_map) {
-  if (!header_field_map.has_field("location")) {
-    return CgiParser::DOCUMENT;
-  }
-  const std::string &value = header_field_map.value("location");
-  if (is_client_location(value)) {
-    if (header_field_map.has_field("status")) {
-      return CgiParser::CLIENT_REDIRDOC;
-    }
-    return CgiParser::CLIENT_REDIR;
-  }
-  return CgiParser::LOCAL_REDIR;
-}
-
 CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
   for (;;) {
     Result<std::string> result = getline_cgi(buffer, "\n");
@@ -81,6 +66,33 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
   }
 }
 
+static CgiParser::ResponseType
+get_cgi_response_type(const HeaderFieldMap &header_field_map) {
+  if (!header_field_map.has_field("location")) {
+    return CgiParser::DOCUMENT;
+  }
+  const std::string &value = header_field_map.value("location");
+  if (is_client_location(value)) {
+    if (header_field_map.has_field("status")) {
+      return CgiParser::CLIENT_REDIRDOC;
+    }
+    return CgiParser::CLIENT_REDIR;
+  }
+  return CgiParser::LOCAL_REDIR;
+}
+
+bool CgiParser::_is_valid_header() const {
+  // local redir ... only location
+  if (response_type_ == DOCUMENT || response_type_ == CLIENT_REDIRDOC) {
+    if (!header_field_map_.has_field("content-type")) {
+      return false;
+    }
+  }
+  if (response_type_ == LOCAL_REDIR) {
+  }
+  return true;
+}
+
 CgiParser::CgiState CgiParser::parse_header_end() {
   response_type_ = get_cgi_response_type(header_field_map_);
   // TODO: check is_valid_response()
@@ -97,6 +109,9 @@ CgiParser::CgiState CgiParser::parse_header_end() {
       return ERROR;
     }
     content_info_.content_length_ = result.object_;
+  }
+  if (response_type_ == LOCAL_REDIR) {
+    return END;
   }
   return BODY;
 }

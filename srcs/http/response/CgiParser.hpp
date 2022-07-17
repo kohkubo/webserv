@@ -14,22 +14,10 @@
 rfc 3875 6. CGI Response
   CGI-Response = document-response | local-redir-response | client-redir-response | client-redirdoc-response
 
-  document-response = Content-Type "Content-Type:" media-type NL
-                      [ Status ]   "Status:" status-code SP reason-phrase NL
-                      *other-field
-                      NL
-                      response-body
-  local-redir-response = local-Location  "Location:" local-pathquery NL
-                         NL
-  client-redir-response = client-Location "Location:" local-pathquery NL
-                          *extension-field
-                          NL
-  client-redirdoc-response = client-Location
-                             Status
-                             Content-Type
-                             *other-field
-                             NL
-                             response-body
+  document-response = Content-Type [ Status ] *other-field NL response-body
+  local-redir-response = local-Location NL
+  client-redir-response = client-Location *extension-field NL
+  client-redirdoc-response = client-Location Status Content-Type *other-field NL response-body
 
     Content-Type = "Content-Type:" media-type NL
 
@@ -96,6 +84,7 @@ public:
   static const std::size_t BUFFER_MAX_LENGTH_ = 8192;
 
 private:
+  bool        _is_valid_header() const;
   std::string _parse_status_header() const;
 
 public:
