@@ -141,7 +141,6 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
   request_info.request_line_.absolute_path_ = _cgi_parser_.cgi_location_.path_;
   request_info.request_line_.query_         = _cgi_parser_.cgi_location_.query_;
 
-  LOG(request_info.request_line_.absolute_path_);
   ResponseGenerator response_generator(request_info,
                                        _response_generator_.peer_name_);
   _response_ = response_generator.generate_response();
