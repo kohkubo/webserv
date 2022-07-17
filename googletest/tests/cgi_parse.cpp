@@ -65,8 +65,8 @@ TEST(cgi_parse, cgi_parse_document_type) {
     }
   }
   // print_cgi_parser(cgi_parser);
-  EXPECT_EQ(cgi_parser.content_type_, "text/plain");
-  EXPECT_EQ(cgi_parser.content_length_, (std::size_t)378);
+  EXPECT_EQ(cgi_parser.content_info_.content_type_, "text/plain");
+  EXPECT_EQ(cgi_parser.content_info_.content_length_, 378);
   EXPECT_EQ(cgi_parser.header_field_map_.value("jkldsjke"),
             "text/plain; charset=iso-8859-1");
   EXPECT_EQ(cgi_parser.content_, "\

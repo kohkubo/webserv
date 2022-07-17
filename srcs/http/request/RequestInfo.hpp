@@ -7,6 +7,7 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
+#include "http/ContentInfo.hpp"
 #include "http/HeaderFieldMap.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "utils/Path.hpp"
@@ -42,19 +43,13 @@ public:
   };
   RequestLine            request_line_;
   std::string            host_;
-  std::string            body_;
-  bool                   has_content_length_;
-  std::size_t            content_length_;
+  ContentInfo            content_info_;
   std::string            connection_;
   transferEncodingVector transfer_encoding_;
   config::Config         config_;
-  std::string            content_type_;
 
 public:
-  RequestInfo()
-      : has_content_length_(false)
-      , content_length_(0) {}
-
+  RequestInfo() {}
   class BadRequestException : public std::logic_error {
   private:
     HttpStatusCode _status_;
@@ -66,7 +61,9 @@ public:
     HttpStatusCode status() const;
   };
 
-  bool has_body() const { return has_content_length_ || is_chunked(); }
+  bool has_body() const {
+    return content_info_.has_content_length() || is_chunked();
+  }
   bool is_chunked() const {
     return transfer_encoding_.size() != 0 &&
            transfer_encoding_.back() == "chunked";
