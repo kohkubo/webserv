@@ -32,7 +32,6 @@ bool HeaderFieldMap::store_new_field(std::string &field_line) {
     ERROR_LOG("store_new_field: empty field value.");
     return false;
   }
-  // TODO: error handling
   std::pair<field_map_type::iterator, bool> result =
       _field_map_.insert(std::make_pair(field_name, field_value));
   if (!result.second) {
