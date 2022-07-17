@@ -32,6 +32,7 @@ private:
   void _parse_buffer(SocketMapActions &socket_map_actions);
   void _kill_cgi_process() const;
   void _create_cgi_response(SocketMapActions &socket_map_actions);
+  void _redirect_local(SocketMapActions &socket_map_actions);
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);

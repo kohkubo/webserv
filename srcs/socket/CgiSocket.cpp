@@ -119,18 +119,36 @@ void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
 
 void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   std::string response_message;
+  socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   switch (_cgi_parser_.response_type_) {
   case CgiParser::DOCUMENT:
   case CgiParser::CLIENT_REDIR:
   case CgiParser::CLIENT_REDIRDOC:
-    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     response_message =
         _response_generator_.create_response_message(_cgi_parser_);
     _response_.set_response_message_and_sending(response_message);
     return;
-    break;
+  case CgiParser::LOCAL_REDIR:
+    _redirect_local(socket_map_actions);
+    return;
   default:
     break;
+  }
+}
+
+void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
+  RequestInfo request_info = _response_generator_.request_info_;
+  request_info.request_line_.absolute_path_ = _cgi_parser_.cgi_location_.path_;
+  request_info.request_line_.query_         = _cgi_parser_.cgi_location_.query_;
+
+  LOG(request_info.request_line_.absolute_path_);
+  ResponseGenerator response_generator(request_info,
+                                       _response_generator_.peer_name_);
+  _response_ = response_generator.generate_response();
+  if (response_generator.need_socket()) {
+    SocketBase *socket = response_generator.create_socket(_response_);
+    socket_map_actions.add_action(SocketMapAction::INSERT, socket->socket_fd(),
+                                  socket);
   }
 }
 
