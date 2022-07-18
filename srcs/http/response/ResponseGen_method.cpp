@@ -41,7 +41,7 @@ ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
       return _method_get_dir(target_path);
     }
     if (location_->cgi_extension_ && path_add_index.has_suffix(".py")) {
-      return _method_cgi(target_path);
+      return _method_cgi(path_add_index);
     }
     return _method_get_file(path_add_index);
   }
