@@ -132,6 +132,7 @@ CgiParser::CgiState CgiParser::parse_header_end() {
       return ERROR;
     }
     content_info_.content_length_ = result.object_;
+    header_field_map_.erase("content-length");
   }
   if (response_type_ == LOCAL_REDIR) {
     return END;
