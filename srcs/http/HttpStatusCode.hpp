@@ -10,7 +10,7 @@ public:
     S_201_CREATED               = 201,
     S_204_NO_CONTENT            = 204,
     S_301_MOVED_PERMANENTLY     = 301,
-    S_302_MOVED_TEMPORARILY     = 302,
+    S_302_FOUND                 = 302,
     S_304_NOT_MODIFIED          = 304,
     S_400_BAD_REQUEST           = 400,
     S_403_FORBIDDEN             = 403,

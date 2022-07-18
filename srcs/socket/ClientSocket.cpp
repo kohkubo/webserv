@@ -45,13 +45,13 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
     return socket_map_actions;
   }
   if ((revents & POLLIN) != 0) {
-    // LOG("got POLLIN  event of fd " << _socket_fd_);
+    // LOG("got POLLIN  event of client " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close)
       return socket_map_actions;
   }
   if ((revents & POLLOUT) != 0) {
-    // LOG("got POLLOUT event of fd " << _socket_fd_);
+    // LOG("got POLLOUT event of client " << _socket_fd_);
     _handle_send_event();
   }
   return socket_map_actions;

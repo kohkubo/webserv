@@ -21,24 +21,6 @@ static Result<std::string> getline_cgi(std::string       &source,
   return Ok<std::string>(getline_cgi_sub(source, delim, pos));
 }
 
-static Result<std::size_t>
-parse_content_length_sub(const std::string &content_length) {
-  Result<std::size_t> result = string_to_size(content_length);
-  if (result.is_err_) {
-    return Error<std::size_t>();
-  }
-  return Ok<std::size_t>(result.object_);
-}
-
-static Result<std::size_t>
-parse_content_length(const HeaderFieldMap &header_field_map) {
-  if (!header_field_map.has_field("content-length")) {
-    return Error<std::size_t>();
-  }
-  const std::string &value = header_field_map.value("content-length");
-  return parse_content_length_sub(value);
-}
-
 static bool is_client_location(const std::string &location) {
   return location.find("http://") == 0 || location.find("https://") == 0;
 }
@@ -71,7 +53,7 @@ get_cgi_response_type(const HeaderFieldMap &header_field_map) {
   }
   const std::string &value = header_field_map.value("location");
   if (is_client_location(value)) {
-    if (!header_field_map.has_field("status")) {
+    if (header_field_map.has_field("status")) {
       return CgiParser::CLIENT_REDIRDOC;
     }
     return CgiParser::CLIENT_REDIR;
@@ -101,13 +83,19 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
 
 CgiParser::CgiState CgiParser::parse_header_end() {
   response_type_ = get_cgi_response_type(header_field_map_);
+  // TODO: check is_valid_response()
   Result<CgiParser::CgiLocation> result_cgi_location =
       parse_cgi_location(header_field_map_);
   if (!result_cgi_location.is_err_) {
     cgi_location_ = result_cgi_location.object_;
   }
-  Result<std::size_t> result = parse_content_length(header_field_map_);
-  if (!result.is_err_) {
+
+  if (header_field_map_.has_field("content-length")) {
+    const std::string  &value  = header_field_map_.value("content-length");
+    Result<std::size_t> result = string_to_size(value);
+    if (result.is_err_) {
+      return ERROR;
+    }
     content_info_.content_length_ = result.object_;
   }
   return BODY;
@@ -143,12 +131,24 @@ CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
   return state_;
 }
 
+std::string CgiParser::_parse_status_header() const {
+  const std::string &status = header_field_map_.value("status");
+  if (status.size() <= 3) {
+    return HttpStatusCode(500).status_phrase();
+  }
+  Result<std::size_t> result = string_to_size(status.substr(0, 3));
+  if (result.is_err_ || status[3] != ' ') {
+    return HttpStatusCode(500).status_phrase();
+  }
+  return status;
+}
+
 std::string CgiParser::http_start_line() const {
-  if (response_type_ == CLIENT_REDIR || response_type_ == CLIENT_REDIRDOC) {
+  if (response_type_ == CLIENT_REDIR) {
     return "HTTP/1.1" + SP + HttpStatusCode(302).status_phrase() + CRLF;
   }
   if (header_field_map_.has_field("status")) {
-    return "HTTP/1.1" + SP + header_field_map_.value("status") + CRLF;
+    return "HTTP/1.1" + SP + _parse_status_header() + CRLF;
   }
   return "HTTP/1.1" + SP + HttpStatusCode().status_phrase() + CRLF;
 }

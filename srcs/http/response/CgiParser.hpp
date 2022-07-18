@@ -95,6 +95,9 @@ public:
 
   static const std::size_t BUFFER_MAX_LENGTH_ = 8192;
 
+private:
+  std::string _parse_status_header() const;
+
 public:
   CgiParser()
       : state_(HEADER)

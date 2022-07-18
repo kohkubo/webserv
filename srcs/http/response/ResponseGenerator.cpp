@@ -139,13 +139,10 @@ ResponseGenerator::create_response_message(const CgiParser &cgi_parser) const {
   if (_is_connection_close_) {
     response += connection_header();
   }
-  if (cgi_parser.response_type_ == CgiParser::CLIENT_REDIR) {
-    return response + CRLF;
-  }
+  // TODO: bodyのないレスポンスの生成
   response += "Content-Length: " + to_string(cgi_parser.content_.size()) + CRLF;
   response += CRLF;
   response += cgi_parser.content_;
-
   return response;
 };
 
