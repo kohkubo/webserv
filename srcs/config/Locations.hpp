@@ -17,7 +17,6 @@ private:
 public:
   Locations() {}
   ~Locations(){};
-  Location       &back() { return _location_vector_.back(); }
   void            add_or_exit(const Location &location);
   const Location *select_location(const Path &request_target) const;
   bool            empty() const { return _location_vector_.empty(); }
