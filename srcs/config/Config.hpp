@@ -27,27 +27,27 @@ class Config;
 typedef std::map<int, std::string> errorPageMap;
 
 class Config {
-private:
-  tokenIterator _last_iterator_pos_;
-
 public:
   typedef tokenIterator (Config::*directive_parser_func)(tokenIterator pos,
                                                          tokenIterator end);
   typedef std::map<std::string, directive_parser_func> directiveParserMap;
-  size_t                                               client_max_body_size_;
-  std::string                                          server_name_;
-  bool                                                 has_listen_;
-  struct sockaddr_in                                   sockaddr_in_;
-  errorPageMap                                         error_pages_;
-  Locations                                            locations_;
-  directiveParserMap                                   directive_parser_map_;
-  static const size_t MAX_CLIENT_MAX_BODY_SIZE_ = 65536; //数字には根拠なし
+
+private:
+  tokenIterator             _last_iterator_pos_;
+  static directiveParserMap directive_parser_map_;
 
 public:
-  class UnexpectedTokenException : public std::logic_error {
-  public:
-    UnexpectedTokenException(const std::string &msg = "unexpected token.");
-  };
+  size_t             client_max_body_size_;
+  std::string        server_name_;
+  bool               has_listen_;
+  struct sockaddr_in sockaddr_in_;
+  errorPageMap       error_pages_;
+  Locations          locations_;
+  static const size_t MAX_CLIENT_MAX_BODY_SIZE_ = 65536; //数字には根拠なし
+
+private:
+  static directiveParserMap _init_directive_parser_map();
+  tokenIterator             _parse(tokenIterator pos, tokenIterator end);
 
 public:
   Config();
@@ -69,9 +69,6 @@ public:
   tokenIterator parse_error_page_directive(tokenIterator pos, tokenIterator end);
   tokenIterator parse_location_directive(tokenIterator pos, tokenIterator end);
   // clang-format on
-
-private:
-  tokenIterator _parse(tokenIterator pos, tokenIterator end);
 };
 
 } // namespace config

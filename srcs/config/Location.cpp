@@ -6,7 +6,10 @@
 
 namespace config {
 
-static Location::directiveParserMap init_directive_parser_map() {
+Location::directiveParserMap Location::directive_parser_map_ =
+    _init_directive_parser_map();
+
+Location::directiveParserMap Location::_init_directive_parser_map() {
   Location::directiveParserMap directive_parser_map;
   // clang-format off
   directive_parser_map["root"] = &Location::parse_root_directive;
@@ -20,9 +23,6 @@ static Location::directiveParserMap init_directive_parser_map() {
   return directive_parser_map;
 }
 
-Location::directiveParserMap g_directive_location_parser_map =
-    init_directive_parser_map();
-
 tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
   if (pos == end)
     ERROR_EXIT("could not detect directive value.");
@@ -35,9 +35,8 @@ tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
   }
   pos++;
   while (pos != end && *pos != "}") {
-    directiveParserMap::iterator it =
-        g_directive_location_parser_map.find(*pos);
-    if (it == g_directive_location_parser_map.end()) {
+    directiveParserMap::iterator it = directive_parser_map_.find(*pos);
+    if (it == directive_parser_map_.end()) {
       ERROR_EXIT("unknown location directive: " + *pos);
     }
     pos = (this->*it->second)(++pos, end);

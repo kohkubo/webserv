@@ -24,16 +24,22 @@ public:
     bool delete_;
   };
 
-  Path               location_path_;
-  Path               root_;
-  Path               index_;
-  bool               autoindex_;
-  bool               cgi_extension_;
-  bool               upload_file_;
-  returnMap          return_map_;
-  bool               has_available_methods_;
-  MethodFlag         available_methods_;
-  directiveParserMap directive_parser_map_;
+private:
+  static directiveParserMap directive_parser_map_;
+
+public:
+  Path       location_path_;
+  Path       root_;
+  Path       index_;
+  bool       autoindex_;
+  bool       cgi_extension_;
+  bool       upload_file_;
+  returnMap  return_map_;
+  bool       has_available_methods_;
+  MethodFlag available_methods_;
+
+private:
+  static directiveParserMap _init_directive_parser_map();
 
 public:
   Location()
