@@ -21,9 +21,6 @@ ResponseInfo ResponseGenerator::_method_get_dir(const Path &target_path) {
 }
 
 ResponseInfo ResponseGenerator::_method_get_file(const Path &target_path) {
-  if (location_->cgi_extension_ && target_path.has_suffix(".py")) {
-    return _method_cgi(target_path);
-  }
   if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
@@ -42,6 +39,9 @@ ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
     Path path_add_index = target_path + location_->index_;
     if (!path_add_index.is_file_exists()) {
       return _method_get_dir(target_path);
+    }
+    if (location_->cgi_extension_ && path_add_index.has_suffix(".py")) {
+      return _method_cgi(path_add_index);
     }
     return _method_get_file(path_add_index);
   }
