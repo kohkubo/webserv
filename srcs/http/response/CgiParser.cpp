@@ -88,7 +88,9 @@ bool CgiParser::_is_valid_header() const {
     }
   }
   if (response_type_ == LOCAL_REDIR) {
-    // TODO: local redir ... only location
+    if (header_field_map_.size() != 1) {
+      return false;
+    }
   }
   return true;
 }
