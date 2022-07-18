@@ -19,6 +19,7 @@ public:
   const std::string &value(const std::string &field_name) const;
   bool               has_field(const std::string &field_name) const;
   std::string        to_string() const;
+  std::size_t erase(const std::string &key) { return _field_map_.erase(key); };
 };
 
 #endif /* SRCS_HTTP_HEADERFIELDMAP_HPP */
