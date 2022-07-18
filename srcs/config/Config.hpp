@@ -23,11 +23,18 @@ const std::string CONFIG_SKIP      = "\v\r\f\t\n ";
 
 namespace config {
 
+class Config;
 typedef std::map<int, std::string> errorPageMap;
 
 class Config {
+public:
+  typedef tokenIterator (Config::*directive_parser_func)(tokenIterator pos,
+                                                         tokenIterator end);
+  typedef std::map<std::string, directive_parser_func> directiveParserMap;
+
 private:
-  tokenIterator _last_iterator_pos_;
+  tokenIterator             _last_iterator_pos_;
+  static directiveParserMap directive_parser_map_;
 
 public:
   size_t             client_max_body_size_;
@@ -36,12 +43,11 @@ public:
   struct sockaddr_in sockaddr_in_;
   errorPageMap       error_pages_;
   Locations          locations_;
+  static const size_t MAX_CLIENT_MAX_BODY_SIZE_ = 65536; //数字には根拠なし
 
-public:
-  class UnexpectedTokenException : public std::logic_error {
-  public:
-    UnexpectedTokenException(const std::string &msg = "unexpected token.");
-  };
+private:
+  static directiveParserMap _init_directive_parser_map();
+  tokenIterator             _parse(tokenIterator pos, tokenIterator end);
 
 public:
   Config();
@@ -56,11 +62,13 @@ public:
   Config(const Config &other);
   Config       &operator=(const Config &other);
   tokenIterator last_iterator_pos() { return _last_iterator_pos_; }
-
-private:
-  tokenIterator _parse(tokenIterator pos, tokenIterator end);
-  tokenIterator _parse_listen(tokenIterator pos, tokenIterator end);
-  tokenIterator _parse_location(tokenIterator pos, tokenIterator end);
+  // clang-format off
+  tokenIterator parse_client_max_body_size_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_server_name_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_listen_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_error_page_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_location_directive(tokenIterator pos, tokenIterator end);
+  // clang-format on
 };
 
 } // namespace config

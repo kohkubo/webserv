@@ -65,7 +65,7 @@ TEST(server_config_test, parse_string_derective_exception) {
   }
 }
 
-TEST(server_config_test, parse_string_derective) {
+TEST(server_config_test, parse_string_derective1) {
   {
     std::string str             = "server {\n"
                                   "    listen 0.0.0.0:50001;\n"
@@ -79,6 +79,9 @@ TEST(server_config_test, parse_string_derective) {
     config::Config config(token_vector.begin(), token_vector.end());
     EXPECT_EQ(config.server_name_, "example.com");
   }
+}
+
+TEST(server_config_test, parse_string_derective2) {
   {
     std::string str             = "server {\n"
                                   "    listen 0.0.0.0:50001;\n"
@@ -264,23 +267,6 @@ TEST(server_config_test, parse_size_directive_exception3) {
   EXPECT_EXIT(
       { config::Config config(token_vector.begin(), token_vector.end()); },
       ::testing::ExitedWithCode(EXIT_FAILURE), "");
-}
-
-TEST(server_config_test, parse_vector_directive) {
-  {
-    std::string    str          = "server {\n"
-                                  "   listen 0.0.0.0:50001;\n"
-                                  "    location / {\n"
-                                  "        available_methods GET POST;\n"
-                                  "    }\n"
-                                  "}\n";
-    tokenVector    token_vector = tokenize(str, CONFIG_DELIMITER, CONFIG_SKIP);
-    config::Config config(token_vector.begin(), token_vector.end());
-    const config::Location *location = config.locations_.select_location("/");
-    EXPECT_EQ(location->available_methods_.get_, true);
-    EXPECT_EQ(location->available_methods_.post_, true);
-    EXPECT_EQ(location->available_methods_.delete_, false);
-  }
 }
 
 TEST(server_config_test, parse_location_directive) {
