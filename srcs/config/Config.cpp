@@ -12,8 +12,11 @@
 
 namespace config {
 
-static Config::directiveParserMap init_directive_parser_map() {
-  Config::directiveParserMap directive_parser_map;
+Config::directiveParserMap Config::directive_parser_map_ =
+    _init_directive_parser_map();
+
+Config::directiveParserMap Config::_init_directive_parser_map() {
+  directiveParserMap directive_parser_map;
   // clang-format off
   directive_parser_map["client_max_body_size"] = &Config::parse_client_max_body_size_directive;
   directive_parser_map["listen"] = &Config::parse_listen_directive;
@@ -23,8 +26,6 @@ static Config::directiveParserMap init_directive_parser_map() {
   // clang-format on
   return directive_parser_map;
 }
-
-Config::directiveParserMap g_directive_parser_map = init_directive_parser_map();
 
 Config::Config()
     : client_max_body_size_(1024)
@@ -58,8 +59,8 @@ tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   if (*pos++ != "{")
     ERROR_EXIT("server directive does not have context.");
   while (pos != end && *pos != "}") {
-    directiveParserMap::iterator it = g_directive_parser_map.find(*pos);
-    if (it == g_directive_parser_map.end()) {
+    directiveParserMap::iterator it = directive_parser_map_.find(*pos);
+    if (it == directive_parser_map_.end()) {
       ERROR_EXIT("unknown directive: " + *pos);
     }
     pos = (this->*it->second)(++pos, end);
@@ -86,12 +87,12 @@ tokenIterator Config::parse_server_name_directive(tokenIterator pos,
 
 tokenIterator Config::parse_client_max_body_size_directive(tokenIterator pos,
                                                            tokenIterator end) {
-  tokenIterator token_iteratoer =
+  tokenIterator token_iterator =
       parse_size_directive(client_max_body_size_, pos, end);
   if (client_max_body_size_ > MAX_CLIENT_MAX_BODY_SIZE_) {
     ERROR_EXIT("client_max_body_size is too large.");
   }
-  return token_iteratoer;
+  return token_iterator;
 }
 
 tokenIterator Config::parse_error_page_directive(tokenIterator pos,
