@@ -100,7 +100,7 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
       return HEADER;
     }
     std::string line = result.object_;
-    if (line.empty() && !has_content_length_) {
+    if (line.empty() && !content_info_.has_content_length()) {
       LOG("cgi header end ============");
       return HEADER_END;
     }
@@ -117,12 +117,12 @@ CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
     LOG("parse_body: invalid content-length");
     return ERROR;
   }
-  content_length_     = result.object_;
-  has_content_length_ = true;
-  if (buffer.size() >= content_length_) {
+  content_info_.content_length_ = result.object_;
+  if (buffer.size() >=
+      static_cast<std::size_t>(content_info_.content_length_)) {
     LOG("parse_body");
-    content_ = buffer.substr(0, content_length_);
-    buffer.erase(0, content_length_);
+    content_ = buffer.substr(0, content_info_.content_length_);
+    buffer.erase(0, content_info_.content_length_);
     return END;
   }
   return BODY;
@@ -133,8 +133,8 @@ CgiParser::CgiState CgiParser::parse_header_end() {
   if (result.is_err_) {
     ERROR_LOG("no parse_content_type");
   }
-  content_type_  = result.object_;
-  response_type_ = get_cgi_response_type(header_field_map_);
+  content_info_.content_type_ = result.object_;
+  response_type_              = get_cgi_response_type(header_field_map_);
   Result<CgiParser::CgiLocation> result_cgi_location =
       parse_cgi_location(header_field_map_);
   if (!result_cgi_location.is_err_) {
