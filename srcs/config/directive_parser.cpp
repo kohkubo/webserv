@@ -4,33 +4,24 @@
 
 namespace config {
 
-tokenIterator parse_string_directive(std::string key, std::string &value,
-                                     tokenIterator pos, tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
+tokenIterator parse_string_directive(std::string &value, tokenIterator pos,
+                                     tokenIterator end) {
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
   value = *pos;
   return pos + 2;
 }
 
-tokenIterator parse_path_directive(std::string key, Path &value,
-                                   tokenIterator pos, tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
+tokenIterator parse_path_directive(Path &value, tokenIterator pos,
+                                   tokenIterator end) {
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
   value = *pos;
   return pos + 2;
 }
 
-tokenIterator parse_size_directive(std::string key, size_t &value,
-                                   tokenIterator pos, tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
+tokenIterator parse_size_directive(size_t &value, tokenIterator pos,
+                                   tokenIterator end) {
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
   Result<std::size_t> result = string_to_size(*pos);
@@ -40,11 +31,8 @@ tokenIterator parse_size_directive(std::string key, size_t &value,
   return pos + 2;
 }
 
-tokenIterator parse_bool_directive(std::string key, bool &value,
-                                   tokenIterator pos, tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
+tokenIterator parse_bool_directive(bool &value, tokenIterator pos,
+                                   tokenIterator end) {
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
   if (*pos == "on")
@@ -56,28 +44,8 @@ tokenIterator parse_bool_directive(std::string key, bool &value,
   return pos + 2;
 }
 
-tokenIterator parse_vector_directive(std::string               key,
-                                     std::vector<std::string> &value,
-                                     tokenIterator pos, tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
-  if (pos == end)
-    ERROR_EXIT("could not detect directive value.");
-  for (; pos != end && *pos != ";"; pos++) {
-    value.push_back(*pos);
-  }
-  if (pos == end)
-    ERROR_EXIT("vector directive value is invalid.");
-  return pos + 1;
-}
-
-tokenIterator parse_map_directive(std::string                 key,
-                                  std::map<int, std::string> &value,
+tokenIterator parse_map_directive(std::map<int, std::string> &value,
                                   tokenIterator pos, tokenIterator end) {
-  if (*pos != key)
-    return pos;
-  pos++;
   if (pos == end || pos + 2 == end || *(pos + 2) != ";")
     ERROR_EXIT("could not detect directive value.");
   Result<std::size_t> result = string_to_size(*pos);
