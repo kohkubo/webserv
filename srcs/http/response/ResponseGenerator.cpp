@@ -133,7 +133,7 @@ ResponseGenerator::create_response_message(const std::string &content) {
 };
 
 std::string
-ResponseGenerator::create_response_message(const CgiParser &cgi_parser) const {
+ResponseGenerator::create_response_message(const CgiInfo &cgi_parser) const {
   std::string response = cgi_parser.http_start_line();
   response += cgi_parser.header_field_map_.to_string();
   if (_is_connection_close_) {

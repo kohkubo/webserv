@@ -4,7 +4,7 @@
 #include <string>
 
 #include "event/Response.hpp"
-#include "http/response/CgiParser.hpp"
+#include "http/response/CgiInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
@@ -20,7 +20,7 @@ private:
   Response                &_response_;
   std::string              _buffer_;
   ResponseGenerator        _response_generator_;
-  CgiParser                _cgi_parser_;
+  CgiInfo                  _cgi_info_;
   bool                     _is_sending_;
   ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;

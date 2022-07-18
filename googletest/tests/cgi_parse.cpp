@@ -57,10 +57,10 @@ bool random_read(int fd, std::string &buffer) {
 TEST(cgi_parse, cgi_parse_document_type) {
   int         fd = open("tdata/cgi_test_data/cgi_document.txt", O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_parser;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_parser.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }
@@ -108,10 +108,10 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse) {
   std::cout << "Current working directory: " << tmp << std::endl;
   int         fd = xopen("tdata/cgi_test_data/cgi_local_redir.txt", O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_parser;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_parser.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }
@@ -125,10 +125,10 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse_with_query) {
   int fd =
       xopen("tdata/cgi_test_data/cgi_local_redir_with_query.txt", O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_parser;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_parser.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }
@@ -142,10 +142,10 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse_with_null_query) {
   int fd = xopen("tdata/cgi_test_data/cgi_local_redir_with_null_query.txt",
                  O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_parser;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_parser.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }

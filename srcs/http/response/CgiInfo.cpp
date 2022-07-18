@@ -1,4 +1,4 @@
-#include "http/response/CgiParser.hpp"
+#include "http/response/CgiInfo.hpp"
 
 #include "http/const/const_delimiter.hpp"
 #include "utils/tokenize.hpp"
@@ -25,28 +25,28 @@ static bool is_client_location(const std::string &location) {
   return location.find("http://") == 0 || location.find("https://") == 0;
 }
 
-static CgiParser::CgiLocation
+static CgiInfo::CgiLocation
 parse_cgi_location_sub(const std::string &location_line) {
-  CgiParser::CgiLocation cgi_location;
-  tokenVector            token_vector = tokenize(location_line, "?", "?");
-  cgi_location.path_                  = token_vector[0];
+  CgiInfo::CgiLocation cgi_location;
+  tokenVector          token_vector = tokenize(location_line, "?", "?");
+  cgi_location.path_                = token_vector[0];
   if (token_vector.size() > 1) {
     cgi_location.query_ = token_vector[1];
   }
   return cgi_location;
 }
 
-static Result<CgiParser::CgiLocation>
+static Result<CgiInfo::CgiLocation>
 parse_cgi_location(const HeaderFieldMap &header_field_map) {
   if (!header_field_map.has_field("location")) {
     // LOG("cgi location not found");
-    return Error<CgiParser::CgiLocation>();
+    return Error<CgiInfo::CgiLocation>();
   }
   const std::string &value = header_field_map.value("location");
-  return Ok<CgiParser::CgiLocation>(parse_cgi_location_sub(value));
+  return Ok<CgiInfo::CgiLocation>(parse_cgi_location_sub(value));
 }
 
-CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
+CgiInfo::CgiState CgiInfo::parse_header(std::string &buffer) {
   for (;;) {
     Result<std::string> result = getline_cgi(buffer, "\n");
     if (result.is_err_) {
@@ -66,22 +66,22 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
   }
 }
 
-static CgiParser::ResponseType
+static CgiInfo::ResponseType
 get_cgi_response_type(const HeaderFieldMap &header_field_map) {
   if (!header_field_map.has_field("location")) {
-    return CgiParser::DOCUMENT;
+    return CgiInfo::DOCUMENT;
   }
   const std::string &value = header_field_map.value("location");
   if (is_client_location(value)) {
     if (header_field_map.has_field("status")) {
-      return CgiParser::CLIENT_REDIRDOC;
+      return CgiInfo::CLIENT_REDIRDOC;
     }
-    return CgiParser::CLIENT_REDIR;
+    return CgiInfo::CLIENT_REDIR;
   }
-  return CgiParser::LOCAL_REDIR;
+  return CgiInfo::LOCAL_REDIR;
 }
 
-bool CgiParser::_is_valid_header() const {
+bool CgiInfo::_is_valid_header() const {
   if (response_type_ == DOCUMENT || response_type_ == CLIENT_REDIRDOC) {
     if (!header_field_map_.has_field("content-type")) {
       return false;
@@ -95,7 +95,7 @@ bool CgiParser::_is_valid_header() const {
   return true;
 }
 
-bool CgiParser::_parse_status_header() {
+bool CgiInfo::_parse_status_header() {
   const std::string &status = header_field_map_.value("status");
   if (status.size() <= 3) {
     return false;
@@ -109,12 +109,12 @@ bool CgiParser::_parse_status_header() {
   return true;
 }
 
-CgiParser::CgiState CgiParser::parse_header_end() {
+CgiInfo::CgiState CgiInfo::parse_header_end() {
   response_type_ = get_cgi_response_type(header_field_map_);
   if (!_is_valid_header()) {
     return ERROR;
   }
-  Result<CgiParser::CgiLocation> result_cgi_location =
+  Result<CgiInfo::CgiLocation> result_cgi_location =
       parse_cgi_location(header_field_map_);
   if (!result_cgi_location.is_err_) {
     cgi_location_ = result_cgi_location.object_;
@@ -140,7 +140,7 @@ CgiParser::CgiState CgiParser::parse_header_end() {
   return BODY;
 }
 
-CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
+CgiInfo::CgiState CgiInfo::parse_body(std::string &buffer) {
   // content-lengthがあるとき…bodyの長さで切り出す。そうじゃないとき入力の終了まで受け取る。
   // 入力を受け取りながら送信は現状無し、
 
@@ -157,7 +157,7 @@ CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
   return BODY;
 }
 
-CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
+CgiInfo::CgiState CgiInfo::handle_cgi(std::string &buffer) {
   if (state_ == HEADER) {
     state_ = parse_header(buffer);
   }
@@ -170,7 +170,7 @@ CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
   return state_;
 }
 
-std::string CgiParser::http_start_line() const {
+std::string CgiInfo::http_start_line() const {
   if (response_type_ == CLIENT_REDIR) {
     return "HTTP/1.1" + SP + HttpStatusCode(302).status_phrase() + CRLF;
   }

@@ -5,7 +5,7 @@
 #include "config/Location.hpp"
 #include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/CgiParser.hpp"
+#include "http/response/CgiInfo.hpp"
 #include "http/response/ResponseInfo.hpp"
 #include "socket/SocketBase.hpp"
 #include "utils/Path.hpp"
@@ -39,11 +39,11 @@ public:
   ~ResponseGenerator() {}
   Response generate_response();
   bool     need_socket() const {
-        return response_info_.action_ != ResponseInfo::CREATED;
+    return response_info_.action_ != ResponseInfo::CREATED;
   }
   ns_socket::SocketBase *create_socket(Response &response);
   std::string            create_response_message(const std::string &content);
-  std::string create_response_message(const CgiParser &cgi_parser) const;
+  std::string create_response_message(const CgiInfo &cgi_parser) const;
   Response    new_status_response(const HttpStatusCode &status_code);
 };
 

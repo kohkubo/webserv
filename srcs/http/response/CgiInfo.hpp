@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_CGIPARSER_HPP
-#define SRCS_HTTP_RESPONSE_CGIPARSER_HPP
+#ifndef SRCS_HTTP_RESPONSE_CGIINFO_HPP
+#define SRCS_HTTP_RESPONSE_CGIINFO_HPP
 
 #include <map>
 #include <string>
@@ -54,7 +54,7 @@ NL
 hogehoge
  */
 
-class CgiParser {
+class CgiInfo {
 public:
   enum CgiState {
     HEADER,
@@ -90,10 +90,10 @@ private:
   bool _parse_status_header();
 
 public:
-  CgiParser()
+  CgiInfo()
       : state_(HEADER)
       , response_type_(DOCUMENT) {}
-  ~CgiParser(){};
+  ~CgiInfo(){};
   CgiState    handle_cgi(std::string &buffer);
   CgiState    parse_header(std::string &buffer);
   CgiState    parse_header_end();
@@ -101,4 +101,4 @@ public:
   std::string http_start_line() const;
 };
 
-#endif /* SRCS_HTTP_RESPONSE_CGIPARSER_HPP */
+#endif /* SRCS_HTTP_RESPONSE_CGIINFO_HPP */
