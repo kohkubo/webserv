@@ -12,6 +12,21 @@
 
 namespace config {
 
+Config::directiveParserMap Config::directive_parser_map_ =
+    _init_directive_parser_map();
+
+Config::directiveParserMap Config::_init_directive_parser_map() {
+  directiveParserMap directive_parser_map;
+  // clang-format off
+  directive_parser_map["client_max_body_size"] = &Config::parse_client_max_body_size_directive;
+  directive_parser_map["listen"] = &Config::parse_listen_directive;
+  directive_parser_map["error_page"] = &Config::parse_error_page_directive;
+  directive_parser_map["server_name"] = &Config::parse_server_name_directive;
+  directive_parser_map["location"] = &Config::parse_location_directive;
+  // clang-format on
+  return directive_parser_map;
+}
+
 Config::Config()
     : client_max_body_size_(1024)
     , server_name_("") {}
@@ -30,35 +45,63 @@ Config &Config::operator=(const Config &other) {
   return *this;
 }
 
+static void check_config_error(const Config &config) {
+  if (config.locations_.empty()) {
+    ERROR_EXIT("could not detect location directive.");
+  }
+  if (!config.has_listen_) {
+    ERROR_EXIT("could not detect listen directive.");
+  }
+}
+
 tokenIterator Config::_parse(tokenIterator pos, tokenIterator end) {
   pos++;
   if (*pos++ != "{")
     ERROR_EXIT("server directive does not have context.");
   while (pos != end && *pos != "}") {
-    tokenIterator head = pos;
-    // clang-format off
-    pos = _parse_location(pos, end);
-    pos = _parse_listen(pos, end);
-    pos = parse_string_directive("server_name", server_name_, pos, end);
-    pos = parse_size_directive("client_max_body_size", client_max_body_size_, pos, end);
-    pos = parse_map_directive("error_page", error_pages_, pos, end);
-    // clang-format on
-    if (pos == head) {
-      ERROR_EXIT("parse server directive failed.");
+    directiveParserMap::iterator it = directive_parser_map_.find(*pos);
+    if (it == directive_parser_map_.end()) {
+      ERROR_EXIT("unknown directive: " + *pos);
     }
+    pos = (this->*it->second)(++pos, end);
   }
-  if (pos == end)
+  if (pos == end) {
     ERROR_EXIT("could not detect context end.");
-  if (locations_.empty())
-    ERROR_EXIT("could not detect location directive.");
-  if (!has_listen_) {
-    ERROR_EXIT("could not detect listen directive.");
   }
+  check_config_error(*this);
   return ++pos;
 }
 
-struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
-                                      const std::string &listen_port) {
+tokenIterator Config::parse_location_directive(tokenIterator pos,
+                                               tokenIterator end) {
+  Location      location;
+  tokenIterator result = location.parse_location(pos, end);
+  locations_.add_or_exit(location);
+  return result;
+}
+
+tokenIterator Config::parse_server_name_directive(tokenIterator pos,
+                                                  tokenIterator end) {
+  return parse_string_directive(server_name_, pos, end);
+}
+
+tokenIterator Config::parse_client_max_body_size_directive(tokenIterator pos,
+                                                           tokenIterator end) {
+  tokenIterator token_iterator =
+      parse_size_directive(client_max_body_size_, pos, end);
+  if (client_max_body_size_ > MAX_CLIENT_MAX_BODY_SIZE_) {
+    ERROR_EXIT("client_max_body_size is too large.");
+  }
+  return token_iterator;
+}
+
+tokenIterator Config::parse_error_page_directive(tokenIterator pos,
+                                                 tokenIterator end) {
+  return parse_map_directive(error_pages_, pos, end);
+}
+
+static struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
+                                             const std::string &listen_port) {
   struct addrinfo  hints    = {};
   struct addrinfo *addrinfo = NULL;
   hints.ai_family           = AF_INET;
@@ -77,10 +120,8 @@ struct sockaddr_in create_sockaddr_in(const std::string &listen_address,
   return sockaddr_in;
 }
 
-tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
-  if (*pos != "listen")
-    return pos;
-  pos++;
+tokenIterator Config::parse_listen_directive(tokenIterator pos,
+                                             tokenIterator end) {
   if (pos == end || pos + 1 == end || *(pos + 1) != ";")
     ERROR_EXIT("could not detect directive value.");
   // LOG("listen: " << *pos);
@@ -99,15 +140,6 @@ tokenIterator Config::_parse_listen(tokenIterator pos, tokenIterator end) {
   sockaddr_in_            = create_sockaddr_in(listen_address, listen_port);
   has_listen_             = true;
   return pos + 2;
-}
-
-tokenIterator Config::_parse_location(tokenIterator pos, tokenIterator end) {
-  if (*pos != "location")
-    return pos;
-  Location      location;
-  tokenIterator result = location.parse_location(pos, end);
-  locations_.add_or_exit(location);
-  return result;
 }
 
 } // namespace config

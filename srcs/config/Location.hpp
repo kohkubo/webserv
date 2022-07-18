@@ -14,12 +14,20 @@ typedef std::map<int, std::string> returnMap;
 
 class Location {
 public:
+  typedef tokenIterator (Location::*directive_location_parser_func)(
+      tokenIterator pos, tokenIterator end);
+  typedef std::map<std::string, directive_location_parser_func>
+      directiveParserMap;
   struct MethodFlag {
     bool get_;
     bool post_;
     bool delete_;
   };
 
+private:
+  static directiveParserMap directive_parser_map_;
+
+public:
   Path       location_path_;
   Path       root_;
   Path       index_;
@@ -31,7 +39,7 @@ public:
   MethodFlag available_methods_;
 
 private:
-  tokenIterator _parse_available_methods(tokenIterator pos, tokenIterator end);
+  static directiveParserMap _init_directive_parser_map();
 
 public:
   Location()
@@ -42,9 +50,18 @@ public:
       , upload_file_(false)
       , has_available_methods_(false)
       , available_methods_((struct MethodFlag){false, false, false}) {}
-
+  bool is_unavailable_method(const std::string &method) const;
+  // clang-format off
   tokenIterator parse_location(tokenIterator pos, tokenIterator end);
-  bool          is_unavailable_method(const std::string &method) const;
+  tokenIterator parse_root_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_index_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_autoindex_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_cgi_extension_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_upload_file_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_available_methods_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_location_directive(tokenIterator pos, tokenIterator end);
+  tokenIterator parse_return_directive(tokenIterator pos, tokenIterator end);
+  // clang-format on
 };
 
 } // namespace config
