@@ -6,17 +6,22 @@
 
 namespace config {
 
-void Location::_init_directive_parser_map() {
+static Location::directiveParserMap init_directive_parser_map() {
+  Location::directiveParserMap directive_parser_map;
   // clang-format off
-  directive_parser_map_["root"] = &Location::_parse_root_directive;
-  directive_parser_map_["index"] = &Location::_parse_index_directive;
-  directive_parser_map_["autoindex"] = &Location::_parse_autoindex_directive;
-  directive_parser_map_["cgi_extension"] = &Location::_parse_cgi_extension_directive;
-  directive_parser_map_["upload_file"] = &Location::_parse_upload_file_directive;
-  directive_parser_map_["available_methods"] = &Location::_parse_available_methods_directive;
-  directive_parser_map_["return"] = &Location::_parse_return_directive;
+  directive_parser_map["root"] = &Location::parse_root_directive;
+  directive_parser_map["index"] = &Location::parse_index_directive;
+  directive_parser_map["autoindex"] = &Location::parse_autoindex_directive;
+  directive_parser_map["cgi_extension"] = &Location::parse_cgi_extension_directive;
+  directive_parser_map["upload_file"] = &Location::parse_upload_file_directive;
+  directive_parser_map["available_methods"] = &Location::parse_available_methods_directive;
+  directive_parser_map["return"] = &Location::parse_return_directive;
   // clang-format on
+  return directive_parser_map;
 }
+
+Location::directiveParserMap g_directive_location_parser_map =
+    init_directive_parser_map();
 
 tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
   if (pos == end)
@@ -30,8 +35,9 @@ tokenIterator Location::parse_location(tokenIterator pos, tokenIterator end) {
   }
   pos++;
   while (pos != end && *pos != "}") {
-    directiveParserMap::iterator it = directive_parser_map_.find(*pos);
-    if (it == directive_parser_map_.end()) {
+    directiveParserMap::iterator it =
+        g_directive_location_parser_map.find(*pos);
+    if (it == g_directive_location_parser_map.end()) {
       ERROR_EXIT("unknown location directive: " + *pos);
     }
     pos = (this->*it->second)(++pos, end);
@@ -57,8 +63,8 @@ bool Location::is_unavailable_method(const std::string &method) const {
   return true;
 }
 
-tokenIterator Location::_parse_root_directive(tokenIterator pos,
-                                              tokenIterator end) {
+tokenIterator Location::parse_root_directive(tokenIterator pos,
+                                             tokenIterator end) {
   tokenIterator token_iteratoer = parse_path_directive(root_, pos, end);
   if (!root_.has_suffix("/")) {
     ERROR_EXIT("root directive failed. please add \"/\" to end of root dir");
@@ -69,8 +75,8 @@ tokenIterator Location::_parse_root_directive(tokenIterator pos,
   return token_iteratoer;
 }
 
-tokenIterator Location::_parse_index_directive(tokenIterator pos,
-                                               tokenIterator end) {
+tokenIterator Location::parse_index_directive(tokenIterator pos,
+                                              tokenIterator end) {
   tokenIterator token_iteratoer = parse_path_directive(index_, pos, end);
   if (index_.has_suffix("/")) {
     ERROR_EXIT("index directive failed. don't add \"/\" to file path.");
@@ -81,18 +87,18 @@ tokenIterator Location::_parse_index_directive(tokenIterator pos,
   return token_iteratoer;
 }
 
-tokenIterator Location::_parse_autoindex_directive(tokenIterator pos,
-                                                   tokenIterator end) {
+tokenIterator Location::parse_autoindex_directive(tokenIterator pos,
+                                                  tokenIterator end) {
   return parse_bool_directive(autoindex_, pos, end);
 }
 
-tokenIterator Location::_parse_return_directive(tokenIterator pos,
-                                                tokenIterator end) {
+tokenIterator Location::parse_return_directive(tokenIterator pos,
+                                               tokenIterator end) {
   return parse_map_directive(return_map_, pos, end);
 }
 
-tokenIterator Location::_parse_available_methods_directive(tokenIterator pos,
-                                                           tokenIterator end) {
+tokenIterator Location::parse_available_methods_directive(tokenIterator pos,
+                                                          tokenIterator end) {
   if (pos == end) {
     ERROR_EXIT("could not detect directive value.");
   }
@@ -112,13 +118,13 @@ tokenIterator Location::_parse_available_methods_directive(tokenIterator pos,
   return pos + 1;
 }
 
-tokenIterator Location::_parse_cgi_extension_directive(tokenIterator pos,
-                                                       tokenIterator end) {
+tokenIterator Location::parse_cgi_extension_directive(tokenIterator pos,
+                                                      tokenIterator end) {
   return parse_bool_directive(cgi_extension_, pos, end);
 }
 
-tokenIterator Location::_parse_upload_file_directive(tokenIterator pos,
-                                                     tokenIterator end) {
+tokenIterator Location::parse_upload_file_directive(tokenIterator pos,
+                                                    tokenIterator end) {
   return parse_bool_directive(upload_file_, pos, end);
 }
 
