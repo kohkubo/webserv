@@ -1,5 +1,6 @@
 #include "http/response/CgiParser.hpp"
 
+#include "http/const/const_delimiter.hpp"
 #include "utils/tokenize.hpp"
 #include "utils/utils.hpp"
 
@@ -14,25 +15,10 @@ static Result<std::string> getline_cgi(std::string       &source,
                                        const std::string &delim) {
   std::size_t pos = source.find(delim);
   if (pos == std::string::npos) {
-    LOG("getline_cgi: delim not found");
+    // LOG("getline_cgi: delim not found");
     return Error<std::string>();
   }
   return Ok<std::string>(getline_cgi_sub(source, delim, pos));
-}
-
-static std::string
-parse_content_type_sub(const std::string &content_type_line) {
-  tokenVector token_vector = tokenize(content_type_line, ";", ";");
-  return token_vector[0];
-}
-
-static Result<std::string>
-parse_content_type(const HeaderFieldMap &header_field_map) {
-  if (!header_field_map.has_field("content-type")) {
-    return Error<std::string>();
-  }
-  const std::string &value = header_field_map.value("content-type");
-  return Ok<std::string>(parse_content_type_sub(value));
 }
 
 static Result<std::size_t>
@@ -71,7 +57,7 @@ parse_cgi_location_sub(const std::string &location_line) {
 static Result<CgiParser::CgiLocation>
 parse_cgi_location(const HeaderFieldMap &header_field_map) {
   if (!header_field_map.has_field("location")) {
-    LOG("cgi location not found");
+    // LOG("cgi location not found");
     return Error<CgiParser::CgiLocation>();
   }
   const std::string &value = header_field_map.value("location");
@@ -100,8 +86,11 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
       return HEADER;
     }
     std::string line = result.object_;
-    if (line.empty() && !content_info_.has_content_length()) {
-      LOG("cgi header end ============");
+    if (line.size() >= BUFFER_MAX_LENGTH_) {
+      return ERROR;
+    }
+    if (line.empty()) {
+      // LOG("cgi header end ============");
       return HEADER_END;
     }
     if (!header_field_map_.store_new_field(line)) {
@@ -110,41 +99,35 @@ CgiParser::CgiState CgiParser::parse_header(std::string &buffer) {
   }
 }
 
-CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
-  // bodyのパース時に毎回content lengthパース？ yn
-  Result<std::size_t> result = parse_content_length(header_field_map_);
-  if (result.is_err_) {
-    LOG("parse_body: invalid content-length");
-    return ERROR;
-  }
-  content_info_.content_length_ = result.object_;
-  if (buffer.size() >=
-      static_cast<std::size_t>(content_info_.content_length_)) {
-    LOG("parse_body");
-    content_ = buffer.substr(0, content_info_.content_length_);
-    buffer.erase(0, content_info_.content_length_);
-    return END;
-  }
-  return BODY;
-}
-
 CgiParser::CgiState CgiParser::parse_header_end() {
-  Result<std::string> result = parse_content_type(header_field_map_);
-  if (result.is_err_) {
-    ERROR_LOG("no parse_content_type");
-  }
-  content_info_.content_type_ = result.object_;
-  response_type_              = get_cgi_response_type(header_field_map_);
+  response_type_ = get_cgi_response_type(header_field_map_);
   Result<CgiParser::CgiLocation> result_cgi_location =
       parse_cgi_location(header_field_map_);
   if (!result_cgi_location.is_err_) {
     cgi_location_ = result_cgi_location.object_;
   }
-  if (header_field_map_.has_field("content-length")) {
-    LOG("has_cgi_body");
-    return BODY;
+  Result<std::size_t> result = parse_content_length(header_field_map_);
+  if (!result.is_err_) {
+    content_info_.content_length_ = result.object_;
   }
-  return END;
+  return BODY;
+}
+
+CgiParser::CgiState CgiParser::parse_body(std::string &buffer) {
+  // content-lengthがあるとき…bodyの長さで切り出す。そうじゃないとき入力の終了まで受け取る。
+  // 入力を受け取りながら送信は現状無し、
+
+  if (content_info_.has_content_length() &&
+      content_.size() + buffer.size() >=
+          static_cast<std::size_t>(content_info_.content_length_)) {
+    content_ +=
+        buffer.substr(0, content_info_.content_length_ - content_.size());
+    return END;
+  }
+
+  content_ += buffer;
+  buffer.clear();
+  return BODY;
 }
 
 CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
@@ -158,4 +141,14 @@ CgiParser::CgiState CgiParser::handle_cgi(std::string &buffer) {
     state_ = parse_body(buffer);
   }
   return state_;
+}
+
+std::string CgiParser::http_start_line() const {
+  if (response_type_ == CLIENT_REDIR || response_type_ == CLIENT_REDIRDOC) {
+    return "HTTP/1.1" + SP + HttpStatusCode(302).status_phrase() + CRLF;
+  }
+  if (header_field_map_.has_field("status")) {
+    return "HTTP/1.1" + SP + header_field_map_.value("status") + CRLF;
+  }
+  return "HTTP/1.1" + SP + HttpStatusCode().status_phrase() + CRLF;
 }

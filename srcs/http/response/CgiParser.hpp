@@ -1,5 +1,5 @@
-#ifndef SRCS_HTTP_RESPONSE_CGIPARSER
-#define SRCS_HTTP_RESPONSE_CGIPARSER
+#ifndef SRCS_HTTP_RESPONSE_CGIPARSER_HPP
+#define SRCS_HTTP_RESPONSE_CGIPARSER_HPP
 
 #include <map>
 #include <string>
@@ -88,21 +88,23 @@ public:
   CgiState       state_;
   ResponseType   response_type_;
   CgiLocation    cgi_location_;
-  ContentInfo    content_info_;
-  std::string    content_;
-  std::string    buffer_;
   HeaderFieldMap header_field_map_;
-  HttpStatusCode status_code_;
+
+  ContentInfo content_info_;
+  std::string content_;
+
+  static const std::size_t BUFFER_MAX_LENGTH_ = 8192;
 
 public:
   CgiParser()
       : state_(HEADER)
       , response_type_(DOCUMENT) {}
   ~CgiParser(){};
-  CgiState handle_cgi(std::string &buffer);
-  CgiState parse_header(std::string &buffer);
-  CgiState parse_header_end();
-  CgiState parse_body(std::string &buffer);
+  CgiState    handle_cgi(std::string &buffer);
+  CgiState    parse_header(std::string &buffer);
+  CgiState    parse_header_end();
+  CgiState    parse_body(std::string &buffer);
+  std::string http_start_line() const;
 };
 
-#endif /* SRCS_HTTP_RESPONSE_CGIPARSER */
+#endif /* SRCS_HTTP_RESPONSE_CGIPARSER_HPP */

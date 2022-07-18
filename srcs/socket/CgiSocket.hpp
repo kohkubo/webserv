@@ -4,6 +4,7 @@
 #include <string>
 
 #include "event/Response.hpp"
+#include "http/response/CgiParser.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
@@ -17,8 +18,9 @@ class CgiSocket : public LocalIOSocket {
 private:
   Timeout                  _timeout_;
   Response                &_response_;
-  std::stringstream        _buffer_;
+  std::string              _buffer_;
   ResponseGenerator        _response_generator_;
+  CgiParser                _cgi_parser_;
   bool                     _is_sending_;
   ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
@@ -27,6 +29,9 @@ private:
 private:
   bool _handle_receive_event(SocketMapActions &socket_map_actions);
   void _handle_send_event(SocketMapActions &socket_map_actions);
+  void _parse_buffer(SocketMapActions &socket_map_actions);
+  void _kill_cgi_process() const;
+  void _create_cgi_response(SocketMapActions &socket_map_actions);
 
 public:
   CgiSocket(Response &response, ResponseGenerator response_generator);
@@ -34,6 +39,7 @@ public:
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
+  virtual SocketBase      *handle_timed_out();
 };
 
 } // namespace ns_socket

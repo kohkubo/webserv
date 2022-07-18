@@ -1,5 +1,6 @@
 #include "http/HeaderFieldMap.hpp"
 
+#include "http/const/const_delimiter.hpp"
 #include "utils/utils.hpp"
 
 const std::string HeaderFieldMap::OWS_ = " \t";
@@ -48,4 +49,16 @@ const std::string &HeaderFieldMap::value(const std::string &field_name) const {
 
 bool HeaderFieldMap::has_field(const std::string &field_name) const {
   return _field_map_.count(field_name) == 1u;
+}
+
+std::string HeaderFieldMap::to_string() const {
+  std::string                    res;
+  field_map_type::const_iterator it = _field_map_.begin();
+  for (; it != _field_map_.end(); it++) {
+    // TODO: tmp
+    if (it->first == "status" || it->first == "content-length")
+      continue;
+    res += it->first + ": " + it->second + CRLF;
+  }
+  return res;
 }

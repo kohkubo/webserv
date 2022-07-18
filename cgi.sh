@@ -1,0 +1,1 @@
+curl localhost:55000/cgi_test/simple.py\?name=taro -v

@@ -10,6 +10,7 @@ public:
     S_201_CREATED               = 201,
     S_204_NO_CONTENT            = 204,
     S_301_MOVED_PERMANENTLY     = 301,
+    S_302_MOVED_TEMPORARILY     = 302,
     S_304_NOT_MODIFIED          = 304,
     S_400_BAD_REQUEST           = 400,
     S_403_FORBIDDEN             = 403,
@@ -18,6 +19,7 @@ public:
     S_413_ENTITY_TOO_LARGE      = 413,
     S_500_INTERNAL_SERVER_ERROR = 500,
     S_501_NOT_IMPLEMENTED       = 501,
+    S_504_GATEWAY_TIME_OUT      = 504,
     S_520_UNKNOWN_ERROR         = 520,
   };
 
@@ -25,6 +27,7 @@ public:
 
 public:
   HttpStatusCode(StatusCode status_code = S_200_OK);
+  HttpStatusCode(const int status_num);
   HttpStatusCode &operator=(const HttpStatusCode &other);
   HttpStatusCode &operator=(StatusCode status_code);
   HttpStatusCode &operator=(const int num);

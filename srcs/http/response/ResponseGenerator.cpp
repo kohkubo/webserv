@@ -75,17 +75,13 @@ ns_socket::SocketBase *ResponseGenerator::create_socket(Response &response) {
   switch (response_info_.action_) {
   case ResponseInfo::READ:
     return new ns_socket::FileReadSocket(response, *this);
-    break;
   case ResponseInfo::WRITE:
     return new ns_socket::FileWriteSocket(response, *this);
-    break;
   case ResponseInfo::CGI:
     return new ns_socket::CgiSocket(response, *this);
-    break;
   default:
-    break;
+    return NULL;
   }
-  return NULL;
 }
 
 static std::string start_line(const HttpStatusCode &status_code) {
@@ -133,6 +129,23 @@ ResponseGenerator::create_response_message(const std::string &content) {
       create_response_header(request_info_, *location_, _is_connection_close_,
                              response_info_.status_code_);
   response += entity_header_and_body(content);
+  return response;
+};
+
+std::string
+ResponseGenerator::create_response_message(const CgiParser &cgi_parser) const {
+  std::string response = cgi_parser.http_start_line();
+  response += cgi_parser.header_field_map_.to_string();
+  if (_is_connection_close_) {
+    response += connection_header();
+  }
+  if (cgi_parser.response_type_ == CgiParser::CLIENT_REDIR) {
+    return response + CRLF;
+  }
+  response += "Content-Length: " + to_string(cgi_parser.content_.size()) + CRLF;
+  response += CRLF;
+  response += cgi_parser.content_;
+
   return response;
 };
 
