@@ -14,4 +14,6 @@ curl -v --raw localhost:8080/cgi-bin/cgi_test/status.py
 curl -v --raw localhost:8080/cgi-bin/cgi_test/add_header.py
 curl -v --raw -d "name=taro" -X POST localhost:8080/cgi-bin/cgi_test/simple.py
 curl -v --raw localhost:8080/cgi-bin/cgi_test/too_long_header.py
+curl -v --raw localhost:8080/cgi-bin/cgi_test/local_redirect.py
+
 docker-compose down

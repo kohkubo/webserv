@@ -33,9 +33,6 @@ struct pollfd ClientSocket::pollfd() {
 
 bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-// SocketMapAction* linked list
-// std::vector<SocketMapAction> SocketMapActions.add(socket_map_action)
-
 SocketMapActions ClientSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
@@ -99,7 +96,6 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
-    // TODO: Fdを開く部分が書けていない
     ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
                                          e.status());
     _response_queue_.push_back(response_generator.generate_response());
