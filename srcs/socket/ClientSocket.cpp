@@ -38,6 +38,7 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
     // LOG("connection was closed by client.");
+    _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
@@ -90,7 +91,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       _response_queue_.push_back(response_generator.generate_response());
       if (response_generator.need_socket()) {
         SocketBase *socket =
-            response_generator.create_socket(_response_queue_.back());
+            response_generator.create_socket(_response_queue_.back(), this);
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
         _child_socket_set_.insert(socket);
@@ -103,7 +104,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
     _response_queue_.push_back(response_generator.generate_response());
     if (response_generator.need_socket()) {
       SocketBase *socket =
-          response_generator.create_socket(_response_queue_.back());
+          response_generator.create_socket(_response_queue_.back(), this);
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
       _child_socket_set_.insert(socket);

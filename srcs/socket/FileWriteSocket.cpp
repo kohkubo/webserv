@@ -30,6 +30,7 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
   ssize_t      write_size      = write(_socket_fd_, rest_str, rest_count);
   if (write_size == -1) {
     LOG("write error");
+    _parent_socket_->notify_accomplished(this);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions,
                              HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
@@ -41,6 +42,7 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
         HttpStatusCode(HttpStatusCode::S_201_CREATED)
             .create_default_content_str());
     _response_.set_response_message_and_sending(response_message);
+    _parent_socket_->notify_accomplished(this);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   }
   return socket_map_actions;

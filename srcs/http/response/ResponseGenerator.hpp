@@ -7,6 +7,7 @@
 #include "http/request/RequestInfo.hpp"
 #include "http/response/CgiInfo.hpp"
 #include "http/response/ResponseInfo.hpp"
+#include "socket/ClientSocket.hpp"
 #include "socket/SocketBase.hpp"
 #include "utils/Path.hpp"
 
@@ -41,7 +42,8 @@ public:
   bool     need_socket() const {
         return response_info_.action_ != ResponseInfo::CREATED;
   }
-  ns_socket::SocketBase *create_socket(Response &response);
+  ns_socket::SocketBase *create_socket(Response                &response,
+                                       ns_socket::ClientSocket *parent_socket);
   std::string            create_response_message(const std::string &content);
   std::string            create_response_message(const CgiInfo &cgi_info) const;
   Response               new_status_response(const HttpStatusCode &status_code);
