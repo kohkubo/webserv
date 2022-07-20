@@ -106,6 +106,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
           response_generator.create_socket(_response_queue_.back());
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
+      _child_socket_set_.insert(socket);
     }
   }
 }
@@ -117,6 +118,10 @@ void ClientSocket::_add_delete_child_socket(
     socket_map_actions.add_action(SocketMapAction::DELETE, (*it)->socket_fd(),
                                   *it);
   }
+}
+
+void ClientSocket::notify_accomplished(SocketBase *child_socket) {
+  _child_socket_set_.erase(child_socket);
 }
 
 } // namespace ns_socket

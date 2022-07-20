@@ -41,6 +41,7 @@ public:
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
   virtual SocketBase      *handle_timed_out() { return NULL; }
+  void                     notify_accomplished(SocketBase *child_socket);
 };
 
 } // namespace ns_socket
