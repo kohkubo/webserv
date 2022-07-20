@@ -25,5 +25,6 @@ test
 !*.jpeg
 !Dockerfile
 !*.log
+!*.jpg
 
 googletest/includes/
