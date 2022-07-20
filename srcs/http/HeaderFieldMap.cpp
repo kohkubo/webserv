@@ -54,9 +54,6 @@ std::string HeaderFieldMap::to_string() const {
   std::string                    res;
   field_map_type::const_iterator it = _field_map_.begin();
   for (; it != _field_map_.end(); it++) {
-    // TODO: tmp
-    if (it->first == "status" || it->first == "content-length")
-      continue;
     res += it->first + ": " + it->second + CRLF;
   }
   return res;
