@@ -49,12 +49,18 @@ ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
 }
 
 ResponseInfo ResponseGenerator::_method_cgi(const Path &target_path) {
+
   if (!target_path.is_file_exists()) {
     ERROR_LOG("method_get_file: file not found");
     return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
   }
+  Result<std::string> result_realpath = target_path.realpath();
+  if (result_realpath.is_err_) {
+    return _create_status_code_content(
+        HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+  }
   Result<ResponseInfo> result =
-      create_cgi_content(request_info_, peer_name_, target_path);
+      create_cgi_content(request_info_, peer_name_, result_realpath.object_);
   if (result.is_err_) {
     return _create_status_code_content(
         HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
