@@ -31,7 +31,7 @@ static AutoindexCategory read_dir_to_entry_category(const Path &path) {
   }
   DIR           *dir   = result.object_;
   struct dirent *entry = NULL;
-  while ((entry = xreaddir(dir)) != NULL) {
+  while ((entry = w_readdir(dir)) != NULL) {
     AutoindexCategory::entryName entry_name = entry->d_name;
     bool                         is_dir     = (entry->d_type & DT_DIR) != 0;
     bool                         is_file    = (entry->d_type & DT_REG) != 0;
@@ -45,7 +45,7 @@ static AutoindexCategory read_dir_to_entry_category(const Path &path) {
     else
       autoindex_category.files_.insert(entry_name);
   }
-  xclosedir(dir);
+  w_closedir(dir);
   return autoindex_category;
 }
 

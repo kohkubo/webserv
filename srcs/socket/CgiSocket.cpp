@@ -20,7 +20,9 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
     , _is_sending_(response_generator.response_info_.content_.size() != 0)
     , _send_count_(0) {
   if (!_is_sending_) {
-    shutdown(_socket_fd_, SHUT_WR);
+    if (shutdown(_socket_fd_, SHUT_WR) == -1) {
+      ERROR_LOG_WITH_ERRNO("shutdown error");
+    }
   }
 }
 
@@ -99,7 +101,9 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   _send_count_ += wc;
   if (_send_count_ == static_cast<ssize_t>(sending_content.size())) {
     _is_sending_ = false;
-    shutdown(_socket_fd_, SHUT_WR);
+    if (shutdown(_socket_fd_, SHUT_WR) == -1) {
+      ERROR_LOG_WITH_ERRNO("shutdown error");
+    }
   }
 }
 
@@ -156,7 +160,7 @@ void CgiSocket::_kill_cgi_process() const {
     ERROR_LOG_WITH_ERRNO("kill");
   }
   if (waitpid(cgi_process, &status, WNOHANG) == -1) {
-    ERROR_LOG("error: waitpid");
+    ERROR_LOG_WITH_ERRNO("error: waitpid");
   }
   if (WIFEXITED(status)) {
     // LOG("child is dead");

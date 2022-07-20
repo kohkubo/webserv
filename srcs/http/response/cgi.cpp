@@ -30,8 +30,12 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
   }
   // child
   if (pid == 0) {
-    close(socket_pair[0]);
-    int error = dup2(socket_pair[1], STDOUT_FILENO);
+    int error = close(socket_pair[0]);
+    if (error == -1) {
+      ERROR_LOG_WITH_ERRNO("error: close in read_file_to_str_cgi");
+      exit(1);
+    }
+    error = dup2(socket_pair[1], STDOUT_FILENO);
     if (error == -1) {
       ERROR_LOG_WITH_ERRNO("error: dup2");
       return Error<ResponseInfo>();
@@ -61,7 +65,11 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
     ERROR_LOG_WITH_ERRNO("error: fcntl");
     return Error<ResponseInfo>();
   }
-  close(socket_pair[1]);
+  int error = close(socket_pair[1]);
+  if (error == -1) {
+    ERROR_LOG_WITH_ERRNO("error: close");
+    return Error<ResponseInfo>();
+  }
   return Ok<ResponseInfo>(
       CgiContent(socket_pair[0], pid, request_info.content_info_.content_));
 }

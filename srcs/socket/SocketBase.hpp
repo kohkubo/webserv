@@ -22,7 +22,9 @@ public:
       : _socket_fd_(socket_fd) {}
   virtual ~SocketBase() {
     // LOG("close connection fd: " << _socket_fd_);
-    close(_socket_fd_);
+    if (close(_socket_fd_) == -1) {
+      ERROR_LOG_WITH_ERRNO("close connection fd: " << _socket_fd_);
+    }
   }
   virtual bool             is_timed_out()                  = 0;
   virtual SocketBase      *handle_timed_out()              = 0;

@@ -39,7 +39,9 @@ listenFd ListenSocket::_create_socket() {
   int on = 1;
   if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&on,
                  sizeof(on)) == -1) {
-    close(listen_fd);
+    if (close(listen_fd) == -1) {
+      ERROR_LOG_WITH_ERRNO("close() failed.");
+    }
     ERROR_EXIT_WITH_ERRNO("setsockopt() failed.");
   }
   return listen_fd;
@@ -47,14 +49,18 @@ listenFd ListenSocket::_create_socket() {
 
 void ListenSocket::_bind_address(listenFd listen_fd, struct sockaddr_in info) {
   if (bind(listen_fd, (const struct sockaddr *)&info, sizeof(info)) == -1) {
-    close(listen_fd);
+    if (close(listen_fd) == -1) {
+      ERROR_LOG_WITH_ERRNO("close() failed.");
+    }
     ERROR_EXIT_WITH_ERRNO("bind() failed.");
   }
 }
 
 void ListenSocket::_start_listen(listenFd listen_fd) {
   if (listen(listen_fd, SOMAXCONN) == -1) {
-    close(listen_fd);
+    if (close(listen_fd) == -1) {
+      ERROR_LOG_WITH_ERRNO("close() failed.");
+    }
     ERROR_EXIT_WITH_ERRNO("listen() failed.");
   }
 }

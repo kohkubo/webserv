@@ -58,7 +58,9 @@ public:
     }
     _send_count_ += send_count;
     if (_is_last_response_ && _is_send_all()) {
-      shutdown(conn_fd, SHUT_WR);
+      if (shutdown(conn_fd, SHUT_WR) == -1) {
+        ERROR_LOG_WITH_ERRNO("shutdown error");
+      }
       _state_ = CLOSING;
     } else if (_is_send_all()) {
       _state_ = COMPLETE;

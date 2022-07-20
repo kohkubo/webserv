@@ -17,10 +17,13 @@ ClientSocket::ClientSocket(int                        client_fd,
     : SocketBase(client_fd)
     , _config_group_(config_group)
     , _timeout_(TIMEOUT_SECONDS_) {
-  struct sockaddr_in perr_addr;
-  socklen_t          serv_len = sizeof(perr_addr);
-  getpeername(_socket_fd_, (struct sockaddr *)&perr_addr, &serv_len);
-  _peer_name_ = inet_ntoa(perr_addr.sin_addr);
+  struct sockaddr_in peer_addr;
+  socklen_t          serv_len = sizeof(peer_addr);
+  if (getpeername(_socket_fd_, (struct sockaddr *)&peer_addr, &serv_len) ==
+      -1) {
+    ERROR_LOG_WITH_ERRNO("getpeername() failed.");
+  }
+  _peer_name_ = inet_ntoa(peer_addr.sin_addr);
 }
 
 struct pollfd ClientSocket::pollfd() {

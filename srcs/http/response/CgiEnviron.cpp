@@ -48,6 +48,9 @@ create_cgi_environ(const std::map<std::string, std::string> &environ_map) {
   for (std::size_t i = 0; it != environ_map.end(); i++, it++) {
     std::string value = it->first + "=" + it->second;
     cgi_environ[i]    = ::strdup(value.c_str());
+    if (cgi_environ[i] == NULL) {
+      ERROR_LOG_WITH_ERRNO("strdup() failed");
+    }
   }
   cgi_environ[environ_map.size()] = NULL;
   return cgi_environ;
