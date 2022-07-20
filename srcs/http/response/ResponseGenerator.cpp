@@ -100,7 +100,7 @@ static std::string entity_header_and_body(const std::string &content) {
 }
 
 static std::string create_response_header(const RequestInfo      &request_info,
-                                          const config::Location &location,
+                                          const config::Location *location,
                                           const bool is_connection_close,
                                           const HttpStatusCode &status_code) {
   // LOG("status_code: " << status_code);
@@ -113,7 +113,7 @@ static std::string create_response_header(const RequestInfo      &request_info,
   }
   if (HttpStatusCode::S_301_MOVED_PERMANENTLY == status_code) {
     config::returnMap::const_iterator it =
-        location.return_map_.find(status_code);
+        location->return_map_.find(status_code);
     response += location_header(it->second);
   }
   if (HttpStatusCode::S_201_CREATED == status_code) {
@@ -126,7 +126,7 @@ static std::string create_response_header(const RequestInfo      &request_info,
 std::string
 ResponseGenerator::create_response_message(const std::string &content) {
   std::string response =
-      create_response_header(request_info_, *location_, _is_connection_close_,
+      create_response_header(request_info_, location_, _is_connection_close_,
                              response_info_.status_code_);
   response += entity_header_and_body(content);
   return response;
