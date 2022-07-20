@@ -66,10 +66,12 @@ struct pollfd ListenSocket::pollfd() {
 SocketMapActions ListenSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   if ((revents & POLLIN) != 0) {
-    connFd conn_fd            = xaccept(_socket_fd_);
-    // LOG("add new connection fd: " << conn_fd);
+    connFd conn_fd = accept(_socket_fd_, (struct sockaddr *)NULL, NULL);
+    if (conn_fd == -1) {
+      ERROR_LOG_WITH_ERRNO("accept() failed.");
+      return socket_map_actions;
+    }
     SocketBase *client_socket = new ClientSocket(conn_fd, config_group_);
-
     socket_map_actions.add_action(SocketMapAction::INSERT, conn_fd,
                                   client_socket);
   }

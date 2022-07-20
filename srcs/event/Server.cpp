@@ -14,7 +14,11 @@ void Server::run_loop() {
   for (;;) {
     _socket_map_.close_timedout_socket();
     std::vector<struct pollfd> pollfds = _socket_map_.create_pollfds();
-    int nready = xpoll(&pollfds[0], pollfds.size(), 5000);
+    int                        nready = poll(&pollfds[0], pollfds.size(), 5000);
+    if (nready == -1) {
+      ERROR_LOG_WITH_ERRNO("poll() failed");
+      continue;
+    }
     std::vector<struct pollfd>::iterator it = pollfds.begin();
     for (; it != pollfds.end() && 0 < nready; it++) {
       if (it->revents == 0) {
