@@ -37,9 +37,12 @@ var testMultiConnection = testCatergory{
 					ExpectBody: expectBody,
 				}
 				eg, ctx := errgroup.WithContext(context.Background())
-				count := 150 //150くらいでエラー => RecvResponse: readParseResponse: read tcp 127.0.0.1:58012->127.0.0.1:50000: read: connection reset by peer
+				count := 150
+				// 200くらいでエラー
+				// => RecvResponse: readParseResponse: read tcp 127.0.0.1:58012->127.0.0.1:50000: read: connection reset by peer
 				// => 何かしらのエラーでサーバから接続をリセットされたときに出るエラー
 				// SOMAXCONNを超えて接続拒否されたことによるものと認識していたが, Responseをreadする時点で起きている
+				// webserbは
 				// webserbが用意していないエラー => もっと下のレイヤーで起きたもの
 				// TODO: 上記のエラーの種類がわからない(errors.Is(syscall.ECONNRESET, err)ではなかった)のと
 				//       それが確かに起きるはずのエラーなのかわかっていないので, エラーを拾っての処理は保留
