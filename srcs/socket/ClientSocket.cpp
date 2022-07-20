@@ -58,7 +58,7 @@ bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
   if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
-    // add action delete all child
+    _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return true;
   }
@@ -93,7 +93,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
             response_generator.create_socket(_response_queue_.back());
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
-        // store child socket
+        _child_socket_set_.insert(socket);
       }
       _request_ = Request();
     }
@@ -107,6 +107,15 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
     }
+  }
+}
+
+void ClientSocket::_add_delete_child_socket(
+    SocketMapActions &socket_map_actions) {
+  std::set<SocketBase *>::iterator it = _child_socket_set_.begin();
+  for (; it != _child_socket_set_.end(); it++) {
+    socket_map_actions.add_action(SocketMapAction::DELETE, (*it)->socket_fd(),
+                                  *it);
   }
 }
 
