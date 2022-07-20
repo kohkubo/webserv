@@ -111,7 +111,6 @@ Result<int> Path::open_write_file() const {
   return Ok<int>(fd);
 }
 
-// TODO: fdの上限によるエラーに関してexitしていいか
 Result<DIR *> Path::open_dir() const {
   DIR *dir = opendir(_path_.c_str());
   if (dir == NULL) {
