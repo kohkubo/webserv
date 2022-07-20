@@ -1,6 +1,5 @@
 #include "socket/ListenSocket.hpp"
 
-#include <fcntl.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -32,9 +31,6 @@ listenFd ListenSocket::_create_socket() {
   listenFd listen_fd = socket(AF_INET, SOCK_STREAM, 6);
   if (listen_fd == -1) {
     ERROR_EXIT_WITH_ERRNO("socket() failed.");
-  }
-  if (fcntl(listen_fd, F_SETFL, O_NONBLOCK) == -1) {
-    ERROR_EXIT_WITH_ERRNO("fcntl() failed.");
   }
   int on = 1;
   if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&on,
