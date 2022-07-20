@@ -37,7 +37,7 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
-    LOG("connection was closed by client.");
+    // LOG("connection was closed by client.");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
