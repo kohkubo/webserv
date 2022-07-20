@@ -13,7 +13,7 @@
 #include "config/Config.hpp"
 #include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/CgiParser.hpp"
+#include "http/response/CgiInfo.hpp"
 #include "utils/Result.hpp"
 
 bool random_read(int fd, std::string &buffer) {
