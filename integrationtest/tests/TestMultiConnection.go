@@ -41,11 +41,12 @@ var testMultiConnection = testCatergory{
 				// 200くらいでエラー
 				// => RecvResponse: readParseResponse: read tcp 127.0.0.1:58012->127.0.0.1:50000: read: connection reset by peer
 				// => 何かしらのエラーでサーバから接続をリセットされたときに出るエラー
+				//
 				// SOMAXCONNを超えて接続拒否されたことによるものと認識していたが, Responseをreadする時点で起きている
-				// webserbは
-				// webserbが用意していないエラー => もっと下のレイヤーで起きたもの
-				// TODO: 上記のエラーの種類がわからない(errors.Is(syscall.ECONNRESET, err)ではなかった)のと
-				//       それが確かに起きるはずのエラーなのかわかっていないので, エラーを拾っての処理は保留
+				// webserb自体はエラーを出していない => もっと下のレイヤーで起きたもの
+				//
+				// 上記のエラーの種類がわからない(errors.Is(syscall.ECONNRESET, err)ではなかった)のと
+				// それが確かに起きるはずのエラーなのかわかっていないので, エラーを拾っての処理は保留
 				for i := 0; i < count; i++ {
 					i := i
 					eg.Go(func() error {
@@ -89,8 +90,9 @@ var testMultiConnection = testCatergory{
 					},
 					ExpectBody: expectBody,
 				}
-				count := 1000 // 10240あたりでエラー => RecvResponse: readParseResponse: unexpected EOF
-				// TODO: errors.Is(io.ErrUnexpectedEOF, err)で判定できるが, 上のテストと同じくエラー拾っての処理は保留
+				count := 1000
+				// 10240あたりでエラー => RecvResponse: readParseResponse: unexpected EOF
+				// errors.Is(io.ErrUnexpectedEOF, err)で判定できるが, 上のテストと同じくエラー拾っての処理は保留
 				var clients []*httptest.Client
 				for i := 0; i < count; i++ {
 					c := httptest.NewClient(baseSource)
