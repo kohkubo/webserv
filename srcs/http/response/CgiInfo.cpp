@@ -81,7 +81,7 @@ get_cgi_response_type(const HeaderFieldMap &header_field_map) {
   return CgiInfo::LOCAL_REDIR;
 }
 
-bool CgiParser::_is_valid_header() const {
+bool CgiInfo::_is_valid_header() const {
   if ((response_type_ == DOCUMENT || response_type_ == CLIENT_REDIRDOC) &&
       !header_field_map_.has_field("content-type")) {
     return false;
