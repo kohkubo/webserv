@@ -22,8 +22,8 @@ private:
   std::string                _buffer_;
   Timeout                    _timeout_;
   std::string                _peer_name_;
-  static const std::time_t   TIMEOUT_SECONDS_ = 60;
-  static const size_t HTTP_BUFFER_SIZE_       = 4096;
+  static const std::time_t   TIMEOUT_SECONDS_  = 60;
+  static const size_t        HTTP_BUFFER_SIZE_ = 4096;
 
 private:
   void _parse_buffer(SocketMapActions &socket_map_actions);
