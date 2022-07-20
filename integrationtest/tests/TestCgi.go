@@ -303,7 +303,7 @@ var testCgi = testCatergory{
 		},
 
 		{
-			caseName: "cgi client redirect",
+			caseName: "cgi client redirect doc",
 			test: func() bool {
 				expectBody := []byte(
 					"some content from rediroc response",

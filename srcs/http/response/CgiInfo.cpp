@@ -120,7 +120,7 @@ CgiInfo::CgiState CgiInfo::parse_header_end() {
   }
 
   if (header_field_map_.has_field("status")) {
-    if (_parse_status_header()) {
+    if (!_parse_status_header()) {
       return ERROR;
     }
   }
@@ -173,7 +173,7 @@ std::string CgiInfo::http_start_line() const {
   if (response_type_ == CLIENT_REDIR) {
     return "HTTP/1.1" + SP + HttpStatusCode(302).status_phrase() + CRLF;
   }
-  if (header_field_map_.has_field("status")) {
+  if (!http_status_.empty()) {
     return "HTTP/1.1" + SP + http_status_ + CRLF;
   }
   return "HTTP/1.1" + SP + HttpStatusCode().status_phrase() + CRLF;
