@@ -50,7 +50,6 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
 
-  // TODO: POLLHUP 拾えるはず
   if ((revents & POLLIN) != 0) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
