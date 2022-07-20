@@ -7,7 +7,7 @@
 typedef int listenFd;
 typedef int connFd;
 
-struct dirent *xreaddir(DIR *dir);
-void           xclosedir(DIR *dir);
+struct dirent *w_readdir(DIR *dir);
+void           w_closedir(DIR *dir);
 
 #endif /* SRCS_UTILS_SYSCALL_WRAPPER_HPP */
