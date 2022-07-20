@@ -74,7 +74,6 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   if (receive_result.rc_ == -1) {
     LOG("receive error");
     _kill_cgi_process();
-    _parent_socket_->notify_accomplished(this);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return false;
@@ -96,7 +95,6 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   if (wc == -1) {
     LOG("write error");
     _kill_cgi_process();
-    _parent_socket_->notify_accomplished(this);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -112,7 +110,6 @@ void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   CgiInfo::CgiState cgi_state = _cgi_info_.handle_cgi(_buffer_);
   if (cgi_state == CgiInfo::ERROR) {
     _kill_cgi_process();
-    _parent_socket_->notify_accomplished(this);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;

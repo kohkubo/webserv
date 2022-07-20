@@ -24,7 +24,7 @@ protected:
 public:
   LocalIOSocket(Response &response, ResponseGenerator response_generator,
                 ClientSocket *parent_socket);
-  virtual ~LocalIOSocket() {}
+  virtual ~LocalIOSocket() { _parent_socket_->notify_accomplished(this); }
   virtual SocketBase *handle_timed_out();
 };
 

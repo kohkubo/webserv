@@ -26,7 +26,6 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
   ssize_t read_size = read(_socket_fd_, buf, 1024);
   if (read_size == -1) {
     LOG("read error");
-    _parent_socket_->notify_accomplished(this);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions,
                              HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
@@ -37,7 +36,6 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
         _response_generator_.create_response_message(_buffer_.str());
     // LOG("response message: " << response_message);
     _response_.set_response_message_and_sending(response_message);
-    _parent_socket_->notify_accomplished(this);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }

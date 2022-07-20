@@ -1,6 +1,6 @@
 NAME = webserv
 CXX = clang++
-CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g -fsanitize=undefined -fsanitize=address -ftrivial-auto-var-init=pattern -Wtautological-compare -Wsign-compare -gfull -fstandalone-debug -gdwarf-5 -gz
+CXXFLAGS = -Wall -Werror -Wextra -Wshadow -MMD -MP -std=c++98 -I$(includes) -g -fsanitize=address -fsanitize=undefined -ftrivial-auto-var-init=pattern -Wtautological-compare -Wsign-compare -gfull -fstandalone-debug -gdwarf-5 -gz
 
 includes = srcs
 srcsdir = srcs
