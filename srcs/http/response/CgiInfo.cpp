@@ -103,7 +103,8 @@ bool CgiInfo::_parse_status_header() {
   if (result.is_err_ || status[3] != ' ') {
     return false;
   }
-  http_status_ = status;
+  http_status_  = status;
+  status_digit_ = result.object_;
   header_field_map_.erase("status");
   return true;
 }

@@ -82,6 +82,7 @@ public:
   std::string content_;
 
   std::string http_status_;
+  std::size_t status_digit_;
 
   static const std::size_t BUFFER_MAX_LENGTH_ = 8192;
 
@@ -92,7 +93,8 @@ private:
 public:
   CgiInfo()
       : state_(HEADER)
-      , response_type_(DOCUMENT) {}
+      , response_type_(DOCUMENT)
+      , status_digit_(0) {}
   ~CgiInfo(){};
   CgiState    handle_cgi(std::string &buffer);
   CgiState    parse_header(std::string &buffer);
