@@ -13,7 +13,7 @@
 #include "config/Config.hpp"
 #include "event/Request.hpp"
 #include "http/request/RequestInfo.hpp"
-#include "http/response/CgiParser.hpp"
+#include "http/response/CgiInfo.hpp"
 #include "utils/Result.hpp"
 
 bool random_read(int fd, std::string &buffer) {
@@ -42,33 +42,33 @@ bool random_read(int fd, std::string &buffer) {
 //   }
 // }
 
-// void print_cgi_parser(const CgiParser &cgi_parser) {
+// void print_cgi_parser(const CgiParser &cgi_info) {
 //   std::cout << "CgiParser:" << std::endl;
-//   std::cout << "  content_type_: " << cgi_parser.content_type_ << std::endl;
-//   std::cout << "  content_length_: " << cgi_parser.content_length_ <<
+//   std::cout << "  content_type_: " << cgi_info.content_type_ << std::endl;
+//   std::cout << "  content_length_: " << cgi_info.content_length_ <<
 //   std::endl; std::cout << "  headers.size(): " <<
-//   cgi_parser.header_field_map_.size()
+//   cgi_info.header_field_map_.size()
 //             << std::endl;
-//   print_map(cgi_parser.header_field_map_);
+//   print_map(cgi_info.header_field_map_);
 //   std::cout << std::endl;
-//   std::cout << "  content_: " << cgi_parser.content_ << std::endl;
+//   std::cout << "  content_: " << cgi_info.content_ << std::endl;
 // }
 
 TEST(cgi_parse, cgi_parse_document_type) {
   int         fd = open("tdata/cgi_test_data/cgi_document.txt", O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_info;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_info.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }
-  // print_cgi_parser(cgi_parser);
-  EXPECT_EQ(cgi_parser.content_info_.content_length_, 378);
-  EXPECT_EQ(cgi_parser.header_field_map_.value("jkldsjke"),
+  // print_cgi_parser(cgi_info);
+  EXPECT_EQ(cgi_info.content_info_.content_length_, 378);
+  EXPECT_EQ(cgi_info.header_field_map_.value("jkldsjke"),
             "text/plain; charset=iso-8859-1");
-  EXPECT_EQ(cgi_parser.content_, "\
+  EXPECT_EQ(cgi_info.content_, "\
 CGI/1.0 test script report:\n\
 \n\
 argc is 0. argv is .\n\
@@ -108,16 +108,16 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse) {
   std::cout << "Current working directory: " << tmp << std::endl;
   int         fd = xopen("tdata/cgi_test_data/cgi_local_redir.txt", O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_info;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_info.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }
-  // print_cgi_parser(cgi_parser);
-  EXPECT_EQ(cgi_parser.cgi_location_.path_, "/tdata/cgi.py");
-  EXPECT_EQ(cgi_parser.cgi_location_.query_, "");
+  // print_cgi_parser(cgi_info);
+  EXPECT_EQ(cgi_info.cgi_location_.path_, "/tdata/cgi.py");
+  EXPECT_EQ(cgi_info.cgi_location_.query_, "");
   close(fd);
 }
 
@@ -125,16 +125,16 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse_with_query) {
   int fd =
       xopen("tdata/cgi_test_data/cgi_local_redir_with_query.txt", O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_info;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_info.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }
-  // print_cgi_parser(cgi_parser);
-  EXPECT_EQ(cgi_parser.cgi_location_.path_, "/tdata/cgi.py");
-  EXPECT_EQ(cgi_parser.cgi_location_.query_, "test=aiueo");
+  // print_cgi_parser(cgi_info);
+  EXPECT_EQ(cgi_info.cgi_location_.path_, "/tdata/cgi.py");
+  EXPECT_EQ(cgi_info.cgi_location_.query_, "test=aiueo");
   close(fd);
 }
 
@@ -142,15 +142,15 @@ TEST(cgi_parse, cgi_parse_local_redir_reponse_with_null_query) {
   int fd = xopen("tdata/cgi_test_data/cgi_local_redir_with_null_query.txt",
                  O_RDONLY);
   std::string buffer;
-  CgiParser   cgi_parser;
+  CgiInfo     cgi_info;
   while (random_read(fd, buffer)) {
-    CgiParser::CgiState state = cgi_parser.handle_cgi(buffer);
-    if (state == CgiParser::END) {
+    CgiInfo::CgiState state = cgi_info.handle_cgi(buffer);
+    if (state == CgiInfo::END) {
       break;
     }
   }
-  // print_cgi_parser(cgi_parser);
-  EXPECT_EQ(cgi_parser.cgi_location_.path_, "/tdata/cgi.py");
-  EXPECT_EQ(cgi_parser.cgi_location_.query_, "");
+  // print_cgi_parser(cgi_info);
+  EXPECT_EQ(cgi_info.cgi_location_.path_, "/tdata/cgi.py");
+  EXPECT_EQ(cgi_info.cgi_location_.query_, "");
   close(fd);
 }

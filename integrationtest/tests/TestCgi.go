@@ -303,7 +303,7 @@ var testCgi = testCatergory{
 		},
 
 		{
-			caseName: "cgi client redirect",
+			caseName: "cgi client redirect doc",
 			test: func() bool {
 				expectBody := []byte(
 					"some content from rediroc response",
@@ -371,6 +371,81 @@ var testCgi = testCatergory{
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
 					Request: "GET /cgi_test/error/content_type_error.py HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "cgi status 1000 error",
+			test: func() bool {
+				expectStatusCode := 500
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+				port := "50000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /cgi_test/error/status_1000.py HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "cgi status 20 error",
+			test: func() bool {
+				expectStatusCode := 500
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+				port := "50000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /cgi_test/error/status_20.py HTTP/1.1\r\n" +
+						"Host: localhost:" + port + "\r\n" +
+						"Connection: close\r\n" +
+						"User-Agent: curl/7.79.1\r\n" +
+						`Accept: */*` + "\r\n" +
+						"\r\n",
+					ExpectStatusCode: expectStatusCode,
+					ExpectHeader: http.Header{
+						"Connection":     {"close"},
+						"Content-Length": {lenStr(expectBody)},
+						"Content-Type":   {"text/html"},
+					},
+					ExpectBody: expectBody,
+				})
+				return clientA.DoAndCheck()
+			},
+		},
+		{
+			caseName: "cgi status 20A error",
+			test: func() bool {
+				expectStatusCode := 500
+				expectBody := httpresp.ErrorBody(expectStatusCode)
+				port := "50000"
+				clientA := httptest.NewClient(httptest.TestSource{
+					Port: port,
+					Request: "GET /cgi_test/error/status_20A.py HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
