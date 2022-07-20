@@ -13,10 +13,6 @@ private:
   std::vector<SocketMapAction> _socket_map_action_vector_;
 
 public:
-  typedef std::vector<SocketMapAction>::iterator       iterator;
-  typedef std::vector<SocketMapAction>::const_iterator const_iterator;
-
-public:
   SocketMapActions() {}
   ~SocketMapActions() {}
   void add_action(SocketMapAction::ActionType type, int socket_fd,
