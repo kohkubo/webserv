@@ -133,21 +133,21 @@ ResponseGenerator::create_response_message(const std::string &content) {
 };
 
 std::string
-ResponseGenerator::create_response_message(const CgiInfo &cgi_parser) const {
-  std::string response = cgi_parser.http_start_line();
-  response += cgi_parser.header_field_map_.to_string();
+ResponseGenerator::create_response_message(const CgiInfo &cgi_info) const {
+  std::string response = cgi_info.http_start_line();
+  response += cgi_info.header_field_map_.to_string();
   if (_is_connection_close_) {
     response += connection_header();
   }
-  if (!cgi_parser.http_status_.empty() &&
-      ((100 <= cgi_parser.status_digit_ && cgi_parser.status_digit_ <= 199) ||
-       (cgi_parser.status_digit_ == 304 || cgi_parser.status_digit_ == 204))) {
+  if (!cgi_info.http_status_phrase_.empty() &&
+      ((100 <= cgi_info.status_digit_ && cgi_info.status_digit_ <= 199) ||
+       (cgi_info.status_digit_ == 304 || cgi_info.status_digit_ == 204))) {
     response += CRLF;
     return response;
   }
-  response += "Content-Length: " + to_string(cgi_parser.content_.size()) + CRLF;
+  response += "Content-Length: " + to_string(cgi_info.content_.size()) + CRLF;
   response += CRLF;
-  response += cgi_parser.content_;
+  response += cgi_info.content_;
   return response;
 };
 

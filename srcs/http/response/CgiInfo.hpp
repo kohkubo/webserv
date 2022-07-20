@@ -81,7 +81,7 @@ public:
   ContentInfo content_info_;
   std::string content_;
 
-  std::string http_status_;
+  std::string http_status_phrase_;
   std::size_t status_digit_;
 
   static const std::size_t BUFFER_MAX_LENGTH_ = 8192;

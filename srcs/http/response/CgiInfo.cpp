@@ -103,8 +103,8 @@ bool CgiInfo::_parse_status_header() {
   if (result.is_err_ || status[3] != ' ') {
     return false;
   }
-  http_status_  = status;
-  status_digit_ = result.object_;
+  http_status_phrase_ = status;
+  status_digit_       = result.object_;
   header_field_map_.erase("status");
   return true;
 }
@@ -174,8 +174,8 @@ std::string CgiInfo::http_start_line() const {
   if (response_type_ == CLIENT_REDIR) {
     return "HTTP/1.1" + SP + HttpStatusCode(302).status_phrase() + CRLF;
   }
-  if (!http_status_.empty()) {
-    return "HTTP/1.1" + SP + http_status_ + CRLF;
+  if (!http_status_phrase_.empty()) {
+    return "HTTP/1.1" + SP + http_status_phrase_ + CRLF;
   }
   return "HTTP/1.1" + SP + HttpStatusCode().status_phrase() + CRLF;
 }
