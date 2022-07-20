@@ -36,6 +36,7 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
         _response_generator_.create_response_message(_buffer_.str());
     // LOG("response message: " << response_message);
     _response_.set_response_message_and_sending(response_message);
+    // delete myself from parent's chlid vector
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
