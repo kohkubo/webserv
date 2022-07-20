@@ -51,8 +51,12 @@ public:
   ResponseState send(connFd conn_fd) {
     const char *rest_str   = _response_message_.c_str() + _send_count_;
     size_t      rest_count = _response_message_.size() - _send_count_;
-    // TODO: error handling
-    _send_count_ += ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
+    ssize_t send_count = ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
+    if (send_count == -1) {
+      _state_ = CLOSING;
+      return CLOSING;
+    }
+    _send_count_ += send_count;
     if (_is_last_response_ && _is_send_all()) {
       shutdown(conn_fd, SHUT_WR);
       _state_ = CLOSING;
