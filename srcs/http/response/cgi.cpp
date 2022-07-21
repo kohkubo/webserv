@@ -57,10 +57,6 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
     }
   }
   // parent
-  if (fcntl(socket_pair[0], F_SETFL, O_NONBLOCK) == -1) {
-    ERROR_LOG_WITH_ERRNO("error: fcntl");
-    return Error<ResponseInfo>();
-  }
   if (close(socket_pair[1]) == -1) {
     ERROR_LOG_WITH_ERRNO("error: close");
     return Error<ResponseInfo>();
