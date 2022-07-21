@@ -38,6 +38,9 @@ std::vector<struct pollfd> SocketMap::create_pollfds() {
 
 SocketMapActions SocketMap::handle_socket_event(int       socket_fd,
                                                 short int revents) {
+  // if (_socket_map_[socket_fd] == NULL) {
+  //   return SocketMapActions();
+  // }
   return _socket_map_[socket_fd]->handle_event(revents);
 }
 

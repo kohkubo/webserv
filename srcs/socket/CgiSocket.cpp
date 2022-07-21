@@ -44,8 +44,8 @@ SocketBase *CgiSocket::handle_timed_out() {
   if (_response_generator_.need_socket()) {
     file_socket =
         _response_generator_.create_socket(_response_, _parent_socket_);
+    _parent_socket_->store_new_child_socket(file_socket);
   }
-  // TODO: exchange new child
   return file_socket;
 }
 

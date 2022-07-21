@@ -38,6 +38,7 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
     // LOG("connection was closed by client.");
+    _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
@@ -58,6 +59,7 @@ bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
   if (receive_result.rc_ == 0) {
     // LOG("got FIN from connection");
+    _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return true;
   }
@@ -92,7 +94,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
             response_generator.create_socket(_response_queue_.back(), this);
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
-        _child_socket_set_.insert(socket);
+        store_new_child_socket(socket);
       }
       _request_ = Request();
     }
@@ -105,7 +107,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
           response_generator.create_socket(_response_queue_.back(), this);
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
-      _child_socket_set_.insert(socket);
+      store_new_child_socket(socket);
     }
   }
 }
@@ -117,6 +119,10 @@ void ClientSocket::_add_delete_child_socket(
     socket_map_actions.add_action(SocketMapAction::DELETE, (*it)->socket_fd(),
                                   *it);
   }
+}
+
+void ClientSocket::store_new_child_socket(SocketBase *child_socket) {
+  _child_socket_set_.insert(child_socket);
 }
 
 void ClientSocket::notify_accomplished(SocketBase *child_socket) {

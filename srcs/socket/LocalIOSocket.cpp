@@ -17,8 +17,8 @@ SocketBase *LocalIOSocket::handle_timed_out() {
   if (_response_generator_.need_socket()) {
     file_socket =
         _response_generator_.create_socket(_response_, _parent_socket_);
+    _parent_socket_->store_new_child_socket(file_socket);
   }
-  // TODO: exchange child
   return file_socket;
 }
 
@@ -30,8 +30,8 @@ void LocalIOSocket::overwrite_error_response(
   if (file_socket != NULL) {
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
+    _parent_socket_->store_new_child_socket(file_socket);
   }
-  // TODO: exchange child
 }
 
 } // namespace ns_socket
