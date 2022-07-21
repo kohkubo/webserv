@@ -18,6 +18,7 @@ public:
   const RequestInfo       request_info_;
   const std::string      &peer_name_;
   const config::Location *location_;
+  size_t                  redirect_count_;
 
 private:
   bool _is_connection_close_;

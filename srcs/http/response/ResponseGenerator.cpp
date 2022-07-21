@@ -26,6 +26,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     : request_info_(request_info)
     , peer_name_(peer_name)
     , location_(NULL)
+    , redirect_count_(0)
     , _is_connection_close_(request_info_.is_close_connection() ||
                             status_code == HttpStatusCode::S_400_BAD_REQUEST ||
                             status_code ==
