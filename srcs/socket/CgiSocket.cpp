@@ -26,7 +26,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
   }
 }
 
-CgiSocket::~CgiSocket() {}
+CgiSocket::~CgiSocket() { _kill_cgi_process(); }
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -56,7 +56,6 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
-      _kill_cgi_process();
       _create_cgi_response(socket_map_actions);
       return socket_map_actions;
     }
@@ -72,7 +71,6 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
   if (receive_result.rc_ == -1) {
     LOG("receive error");
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return false;
@@ -93,7 +91,6 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   ssize_t      wc              = write(_socket_fd_, rest_str, rest_count);
   if (wc == -1) {
     LOG("write error");
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -110,7 +107,6 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   CgiInfo::CgiState cgi_state = _cgi_info_.handle_cgi(_buffer_);
   if (cgi_state == CgiInfo::ERROR) {
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -145,6 +141,11 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
 
   ResponseGenerator response_generator(request_info,
                                        _response_generator_.peer_name_);
+  response_generator.redirect_count_ = _response_generator_.redirect_count_ + 1;
+  if (response_generator.redirect_count_ >= 10) {
+    overwrite_error_response(socket_map_actions, 500);
+    return;
+  }
   _response_ = response_generator.generate_response();
   if (response_generator.need_socket()) {
     SocketBase *socket = response_generator.create_socket(_response_);
