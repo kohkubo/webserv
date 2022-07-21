@@ -61,14 +61,12 @@ void SocketMap::do_socket_map_action(const SocketMapAction &socket_map_action) {
 
 void SocketMap::close_timedout_socket() {
   std::map<int, SocketBase *>::const_iterator it = _socket_map_.begin();
-  // std::vector<SocketMapActions>               reserved_actions;
   while (it != _socket_map_.end()) {
     if (it->second->is_timed_out()) {
       int              socket_fd          = it->first;
       SocketBase      *socket             = it->second;
       SocketMapActions socket_map_actions = socket->handle_timed_out();
       if (!socket_map_actions.empty()) {
-        // reserved_actions.push_back(socket_map_actions);
         socket_map_actions.do_action(*this);
       }
       it++;
@@ -78,11 +76,6 @@ void SocketMap::close_timedout_socket() {
       it++;
     }
   }
-  // TODO: do reserved actions
-  // std::vector<SocketMapActions>::iterator r_it = reserved_actions.begin();
-  // for (; r_it != reserved_actions.end(); r_it++) {
-  //   (*r_it).do_action(*this);
-  // }
 }
 
 } // namespace ns_socket
