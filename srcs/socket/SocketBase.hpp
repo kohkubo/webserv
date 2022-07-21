@@ -25,7 +25,7 @@ public:
     close(_socket_fd_);
   }
   virtual bool             is_timed_out()                  = 0;
-  virtual SocketBase      *handle_timed_out()              = 0;
+  virtual SocketMapActions handle_timed_out()              = 0;
   virtual struct pollfd    pollfd()                        = 0;
   virtual SocketMapActions handle_event(short int revents) = 0;
   int                      socket_fd() const { return _socket_fd_; }

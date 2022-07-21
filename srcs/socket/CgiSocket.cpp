@@ -37,16 +37,19 @@ struct pollfd CgiSocket::pollfd() {
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-SocketBase *CgiSocket::handle_timed_out() {
+SocketMapActions CgiSocket::handle_timed_out() {
   _kill_cgi_process();
-  SocketBase *file_socket = NULL;
-  _response_              = _response_generator_.new_status_response(504);
+  SocketMapActions socket_map_actions;
+  SocketBase      *file_socket = NULL;
+  _response_                   = _response_generator_.new_status_response(504);
   if (_response_generator_.need_socket()) {
     file_socket =
         _response_generator_.create_socket(_response_, _parent_socket_);
     _parent_socket_->store_new_child_socket(file_socket);
+    socket_map_actions.add_action(SocketMapAction::INSERT,
+                                  file_socket->socket_fd(), file_socket);
   }
-  return file_socket;
+  return socket_map_actions;
 }
 
 SocketMapActions CgiSocket::handle_event(short int revents) {

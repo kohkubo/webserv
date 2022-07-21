@@ -33,6 +33,16 @@ struct pollfd ClientSocket::pollfd() {
 
 bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
+SocketMapActions ClientSocket::handle_timed_out() {
+  SocketMapActions                 socket_map_actions;
+  std::set<SocketBase *>::iterator it = _child_socket_set_.begin();
+  for (; it != _child_socket_set_.end(); it++) {
+    socket_map_actions.add_action(SocketMapAction::DELETE, (*it)->socket_fd(),
+                                  *it);
+  }
+  return socket_map_actions;
+}
+
 SocketMapActions ClientSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
