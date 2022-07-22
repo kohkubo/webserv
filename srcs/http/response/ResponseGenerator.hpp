@@ -18,10 +18,11 @@ public:
   const RequestInfo       request_info_;
   const std::string      &peer_name_;
   const config::Location *location_;
-  size_t                  redirect_count_;
 
 private:
-  bool _is_connection_close_;
+  bool                _is_connection_close_;
+  size_t              _redirect_count_;
+  static const size_t MAX_REDIRECT_COUNT_ = 10;
 
 private:
   ResponseInfo _handle_method(const Path &target_path);
@@ -39,8 +40,11 @@ public:
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
   Response generate_response();
-  bool     need_socket() const {
-        return response_info_.action_ != ResponseInfo::CREATED;
+  bool     is_over_max_redirect_count() const {
+        return _redirect_count_ > MAX_REDIRECT_COUNT_;
+  }
+  bool need_socket() const {
+    return response_info_.action_ != ResponseInfo::CREATED;
   }
   ns_socket::SocketBase *create_socket(Response &response);
   std::string            create_response_message(const std::string &content);

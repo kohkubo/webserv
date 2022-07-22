@@ -138,8 +138,8 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
   ResponseGenerator response_generator =
       _response_generator_.create_new_response_generator(
           _cgi_info_.cgi_location_.path_, _cgi_info_.cgi_location_.query_);
-  response_generator.redirect_count_ = _response_generator_.redirect_count_ + 1;
-  if (response_generator.redirect_count_ >= 10) {
+
+  if (response_generator.is_over_max_redirect_count()) {
     overwrite_error_response(socket_map_actions, 500);
     return;
   }
