@@ -47,13 +47,17 @@ bool Path::has_suffix(const std::string &suffix) const {
 }
 
 bool Path::is_accessible(int mode) const {
-  return access(_path_.c_str(), mode) == 0;
+  int ret = access(_path_.c_str(), mode);
+  if (ret == -1) {
+    ERROR_LOG_WITH_ERRNO("error: is_accessible: " << _path_);
+  }
+  return ret == 0;
 }
 
-Result<std::string> Path::get_realpath() const {
-  char *abs_path = realpath(_path_.c_str(), NULL);
+Result<std::string> Path::realpath() const {
+  char *abs_path = ::realpath(_path_.c_str(), NULL);
   if (abs_path == NULL) {
-    ERROR_LOG("get_realpath");
+    ERROR_LOG("realpath");
     return Error<std::string>();
   }
   std::string res = std::string(abs_path);
@@ -61,10 +65,14 @@ Result<std::string> Path::get_realpath() const {
   return Ok<std::string>(res);
 }
 
-std::string Path::get_script_name() const {
-  std::size_t last_slash  = _path_.find_last_of('/');
-  std::string scrpit_name = _path_.substr(last_slash + 1);
-  return scrpit_name;
+std::string Path::script_name() const {
+  std::size_t last_slash = _path_.find_last_of('/');
+  return _path_.substr(last_slash + 1);
+}
+
+std::string Path::dirname() const {
+  std::size_t last_slash = _path_.find_last_of('/');
+  return _path_.substr(0, last_slash);
 }
 
 bool Path::is_minus_depth() const {

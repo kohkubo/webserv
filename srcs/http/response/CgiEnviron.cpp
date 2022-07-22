@@ -19,19 +19,14 @@ create_environ_map(const RequestInfo &request_info,
     environ_map["CONTENT_TYPE"] = request_info.content_info_.content_type_;
   }
   environ_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-  Result<std::string> result       = target_path.get_realpath();
-  if (result.is_err_) {
-    environ_map["PATH_INFO"] = target_path.str();
-  } else {
-    environ_map["PATH_INFO"] = result.object_;
-  }
-  environ_map["PATH_TRANSLATED"] = environ_map["PATH_INFO"];
-  environ_map["REMOTE_ADDR"]     = peer_name;
-  environ_map["REMOTE_HOST"]     = environ_map["REMOTE_ADDR"];
-  environ_map["QUERY_STRING"]    = request_info.request_line_.query_;
-  environ_map["REQUEST_METHOD"]  = request_info.request_line_.method_;
+  environ_map["PATH_INFO"]         = target_path.str();
+  environ_map["PATH_TRANSLATED"]   = environ_map["PATH_INFO"];
+  environ_map["REMOTE_ADDR"]       = peer_name;
+  environ_map["REMOTE_HOST"]       = environ_map["REMOTE_ADDR"];
+  environ_map["QUERY_STRING"]      = request_info.request_line_.query_;
+  environ_map["REQUEST_METHOD"]    = request_info.request_line_.method_;
   environ_map["SCRIPT_NAME"] =
-      request_info.request_line_.absolute_path_.get_script_name();
+      request_info.request_line_.absolute_path_.script_name();
   environ_map["SERVER_NAME"] = request_info.config_.server_name_;
   environ_map["SERVER_PORT"] =
       to_string(ntohs(request_info.config_.sockaddr_in_.sin_port));
@@ -48,6 +43,9 @@ create_cgi_environ(const std::map<std::string, std::string> &environ_map) {
   for (std::size_t i = 0; it != environ_map.end(); i++, it++) {
     std::string value = it->first + "=" + it->second;
     cgi_environ[i]    = ::strdup(value.c_str());
+    if (cgi_environ[i] == NULL) {
+      ERROR_LOG_WITH_ERRNO("strdup() failed");
+    }
   }
   cgi_environ[environ_map.size()] = NULL;
   return cgi_environ;
