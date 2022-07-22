@@ -26,11 +26,11 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     : request_info_(request_info)
     , peer_name_(peer_name)
     , location_(NULL)
-    , _redirect_count_(0)
     , _is_connection_close_(request_info_.is_close_connection() ||
                             status_code == HttpStatusCode::S_400_BAD_REQUEST ||
                             status_code ==
-                                HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
+                                HttpStatusCode::S_413_ENTITY_TOO_LARGE)
+    , _redirect_count_(0) {
   if (status_code.is_error_status_code()) {
     response_info_ = _create_status_code_content(status_code);
     return;
