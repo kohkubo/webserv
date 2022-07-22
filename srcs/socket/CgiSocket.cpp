@@ -135,12 +135,9 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
-  RequestInfo request_info = _response_generator_.request_info_;
-  request_info.request_line_.absolute_path_ = _cgi_info_.cgi_location_.path_;
-  request_info.request_line_.query_         = _cgi_info_.cgi_location_.query_;
-
-  ResponseGenerator response_generator(request_info,
-                                       _response_generator_.peer_name_);
+  ResponseGenerator response_generator =
+      _response_generator_.create_new_response_generator(
+          _cgi_info_.cgi_location_.path_, _cgi_info_.cgi_location_.query_);
   response_generator.redirect_count_ = _response_generator_.redirect_count_ + 1;
   if (response_generator.redirect_count_ >= 10) {
     overwrite_error_response(socket_map_actions, 500);

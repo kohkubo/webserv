@@ -46,6 +46,8 @@ public:
   std::string            create_response_message(const std::string &content);
   std::string            create_response_message(const CgiInfo &cgi_info) const;
   Response               new_status_response(const HttpStatusCode &status_code);
+  ResponseGenerator create_new_response_generator(const std::string &new_target,
+                                                  const std::string &new_query);
 };
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,

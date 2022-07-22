@@ -85,6 +85,16 @@ ns_socket::SocketBase *ResponseGenerator::create_socket(Response &response) {
   }
 }
 
+ResponseGenerator
+ResponseGenerator::create_new_response_generator(const std::string &new_target,
+                                                 const std::string &new_query) {
+  RequestInfo request_info                  = request_info_;
+  request_info.request_line_.absolute_path_ = new_target;
+  request_info.request_line_.query_         = new_query;
+
+  return ResponseGenerator(request_info, peer_name_);
+}
+
 static std::string start_line(const HttpStatusCode &status_code) {
   return "HTTP/1.1" + SP + status_code.status_phrase() + CRLF;
 }
