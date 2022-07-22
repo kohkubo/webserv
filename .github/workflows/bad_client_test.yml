@@ -3,7 +3,7 @@ name: C/C++ CI
 on: [pull_request]
 
 jobs:
-  gtest:
+  bad_client_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
