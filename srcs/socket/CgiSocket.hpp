@@ -17,9 +17,7 @@ typedef response_generator::ResponseGenerator ResponseGenerator;
 class CgiSocket : public LocalIOSocket {
 private:
   Timeout                  _timeout_;
-  Response                &_response_;
   std::string              _buffer_;
-  ResponseGenerator        _response_generator_;
   CgiInfo                  _cgi_info_;
   bool                     _is_sending_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;

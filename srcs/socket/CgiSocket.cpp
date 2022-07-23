@@ -15,8 +15,6 @@ namespace ns_socket {
 CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
     : LocalIOSocket(response, response_generator)
     , _timeout_(TIMEOUT_SECONDS_)
-    , _response_(response)
-    , _response_generator_(response_generator)
     , _is_sending_(response_generator.response_info_.content_.size() != 0) {
   if (!_is_sending_) {
     if (shutdown(_socket_fd_, SHUT_WR) == -1) {
