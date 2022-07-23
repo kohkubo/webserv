@@ -109,6 +109,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
+    LOG("bad request: " << e.status());
     ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
                                          e.status());
     _response_queue_.push_back(response_generator.generate_response());

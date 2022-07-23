@@ -40,11 +40,6 @@ Request::_handle_request_header(std::string &request_buffer) {
         ERROR_LOG("invalid request header");
         throw RequestInfo::BadRequestException();
       }
-      if (_request_info_.content_info_.has_content_length()) {
-        _check_max_client_body_size_exception(
-            _request_info_.content_info_.content_length_,
-            _request_info_.config_.client_max_body_size_);
-      }
       if (_request_info_.has_body()) {
         _state_ = RECEIVING_BODY;
         break;
@@ -86,6 +81,11 @@ Request::handle_request(std::string               &request_buffer,
     _request_info_.config_ = config_group.select_config(_request_info_.host_);
   }
   if (_state_ == Request::RECEIVING_BODY) {
+    if (_request_info_.content_info_.has_content_length()) {
+      _check_max_client_body_size_exception(
+          _request_info_.content_info_.content_length_,
+          _request_info_.config_.client_max_body_size_);
+    }
     _state_ = _handle_request_body(request_buffer);
   }
   return _state_;
