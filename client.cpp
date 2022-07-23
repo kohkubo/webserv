@@ -32,6 +32,31 @@ int main() {
                     "GET / HTTP/1.1\r\n"
                     "User-Agent: curl/7.68.0\r\n"
                     "Host: 0.0.0.0:999\r\n"
+                    "Accept: */*\r\n"
+                    "\r\n"
+                    "GET / HTTP/1.1\r\n"
+                    "User-Agent: curl/7.68.0\r\n"
+                    "Host: 0.0.0.0:999\r\n"
+                    "Accept: */*\r\n"
+                    "\r\n"
+                    "GET / HTTP/1.1\r\n"
+                    "User-Agent: curl/7.68.0\r\n"
+                    "Host: 0.0.0.0:999\r\n"
+                    "Accept: */*\r\n"
+                    "\r\n"
+                    "GET / HTTP/1.1\r\n"
+                    "User-Agent: curl/7.68.0\r\n"
+                    "Host: 0.0.0.0:999\r\n"
+                    "Accept: */*\r\n"
+                    "\r\n"
+                    "GET / HTTP/1.1\r\n"
+                    "User-Agent: curl/7.68.0\r\n"
+                    "Host: 0.0.0.0:999\r\n"
+                    "Accept: */*\r\n"
+                    "\r\n"
+                    "GET / HTTP/1.1\r\n"
+                    "User-Agent: curl/7.68.0\r\n"
+                    "Host: 0.0.0.0:999\r\n"
                     "Connection: Close\r\n"
                     "Accept: */*\r\n\r\n";
   write(sock, req.c_str(), req.size());
@@ -46,8 +71,7 @@ int main() {
   // buf[rc] = '\0';
   // std::cout << "rc: " << rc << std::endl;
   // std::cout << buf << std::endl;
-  // close(sock);
-  while (1)
-    ;
+  close(sock);
+
   return 0;
 }

@@ -36,11 +36,18 @@ struct pollfd ClientSocket::pollfd() {
 
 bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
+SocketMapActions ClientSocket::destroy_timedout_socket() {
+  SocketMapActions socket_map_actions;
+  _add_delete_child_socket(socket_map_actions);
+  return socket_map_actions;
+}
+
 SocketMapActions ClientSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
-    // LOG("connection was closed by client.");
+    LOG("connection was closed by client.");
+    _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
@@ -60,7 +67,8 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
 bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
   if (receive_result.rc_ == 0) {
-    // LOG("got FIN from connection");
+    LOG("got FIN from connection");
+    _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return true;
   }
@@ -92,9 +100,11 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       _response_queue_.push_back(response_generator.generate_response());
       if (response_generator.need_socket()) {
         SocketBase *socket =
-            response_generator.create_socket(_response_queue_.back());
+            response_generator.create_socket(_response_queue_.back(), this);
+        LOG("add new socket:" << socket->socket_fd());
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
+        store_new_child_socket(socket);
       }
       _request_ = Request();
     }
@@ -104,11 +114,31 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
     _response_queue_.push_back(response_generator.generate_response());
     if (response_generator.need_socket()) {
       SocketBase *socket =
-          response_generator.create_socket(_response_queue_.back());
+          response_generator.create_socket(_response_queue_.back(), this);
+      LOG("add new socket:" << socket->socket_fd());
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
+      store_new_child_socket(socket);
     }
   }
+}
+
+void ClientSocket::_add_delete_child_socket(
+    SocketMapActions &socket_map_actions) {
+  LOG("reserved deleting all child socket");
+  std::set<SocketBase *>::iterator it = _child_socket_set_.begin();
+  for (; it != _child_socket_set_.end(); it++) {
+    socket_map_actions.add_action(SocketMapAction::DELETE, (*it)->socket_fd(),
+                                  *it);
+  }
+}
+
+void ClientSocket::store_new_child_socket(SocketBase *child_socket) {
+  _child_socket_set_.insert(child_socket);
+}
+
+void ClientSocket::notify_accomplished(SocketBase *child_socket) {
+  _child_socket_set_.erase(child_socket);
 }
 
 } // namespace ns_socket

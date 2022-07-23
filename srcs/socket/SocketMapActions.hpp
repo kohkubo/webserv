@@ -15,6 +15,7 @@ private:
 public:
   SocketMapActions() {}
   ~SocketMapActions() {}
+  bool empty() const { return _socket_map_action_vector_.empty(); }
   void add_action(SocketMapAction::ActionType type, int socket_fd,
                   SocketBase *target) {
     SocketMapAction socket_map_action(type, socket_fd, target);

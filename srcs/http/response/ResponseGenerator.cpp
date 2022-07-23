@@ -72,14 +72,16 @@ Response ResponseGenerator::generate_response() {
   }
 }
 
-ns_socket::SocketBase *ResponseGenerator::create_socket(Response &response) {
+ns_socket::SocketBase *
+ResponseGenerator::create_socket(Response                &response,
+                                 ns_socket::ClientSocket *parent_socket) {
   switch (response_info_.action_) {
   case ResponseInfo::READ:
-    return new ns_socket::FileReadSocket(response, *this);
+    return new ns_socket::FileReadSocket(response, *this, parent_socket);
   case ResponseInfo::WRITE:
-    return new ns_socket::FileWriteSocket(response, *this);
+    return new ns_socket::FileWriteSocket(response, *this, parent_socket);
   case ResponseInfo::CGI:
-    return new ns_socket::CgiSocket(response, *this);
+    return new ns_socket::CgiSocket(response, *this, parent_socket);
   default:
     return NULL;
   }
