@@ -104,7 +104,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
         LOG("add new socket:" << socket->socket_fd());
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
-        store_new_child_socket(socket);
+        store_child_socket(socket);
       }
       _request_ = Request();
     }
@@ -118,7 +118,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       LOG("add new socket:" << socket->socket_fd());
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
-      store_new_child_socket(socket);
+      store_child_socket(socket);
     }
   }
 }
@@ -133,7 +133,7 @@ void ClientSocket::_add_delete_child_socket(
   }
 }
 
-void ClientSocket::store_new_child_socket(SocketBase *child_socket) {
+void ClientSocket::store_child_socket(SocketBase *child_socket) {
   _child_socket_set_.insert(child_socket);
 }
 

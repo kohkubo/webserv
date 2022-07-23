@@ -52,10 +52,10 @@ public:
   std::string create_response_message(const std::string &content) const;
   std::string create_response_message(const CgiInfo &cgi_info) const;
   ResponseGenerator
-  new_status_response_generator(const HttpStatusCode &new_status_code) const;
+  create_response_generator(const HttpStatusCode &new_status_code) const;
   ResponseGenerator
-  new_target_response_generator(const std::string &new_target,
-                                const std::string &new_query) const;
+  create_response_generator(const std::string &new_target,
+                            const std::string &new_query) const;
 };
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,

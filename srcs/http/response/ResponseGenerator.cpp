@@ -87,21 +87,22 @@ ResponseGenerator::create_socket(Response                &response,
   }
 }
 
-ResponseGenerator ResponseGenerator::new_status_response_generator(
-    const HttpStatusCode &new_status_code) const {
-  return ResponseGenerator(request_info_, peer_name_, new_status_code);
+ResponseGenerator ResponseGenerator::create_response_generator(
+    const HttpStatusCode &status_code) const {
+  return ResponseGenerator(request_info_, peer_name_, status_code);
 }
 
-ResponseGenerator ResponseGenerator::new_target_response_generator(
-    const std::string &new_target, const std::string &new_query) const {
+ResponseGenerator
+ResponseGenerator::create_response_generator(const std::string &target_path,
+                                             const std::string &query) const {
   RequestInfo request_info                  = request_info_;
-  request_info.request_line_.absolute_path_ = new_target;
-  request_info.request_line_.query_         = new_query;
+  request_info.request_line_.absolute_path_ = target_path;
+  request_info.request_line_.query_         = query;
 
-  ResponseGenerator new_response_generator(request_info, peer_name_);
-  new_response_generator._redirect_count_ = _redirect_count_ + 1;
+  ResponseGenerator response_generator(request_info, peer_name_);
+  response_generator._redirect_count_ = _redirect_count_ + 1;
 
-  return new_response_generator;
+  return response_generator;
 }
 
 static std::string start_line(const HttpStatusCode &status_code) {
