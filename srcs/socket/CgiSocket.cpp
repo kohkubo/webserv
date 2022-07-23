@@ -159,6 +159,10 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
 void CgiSocket::_kill_cgi_process() const {
   pid_t cgi_process = _response_generator_.response_info_.cgi_pid_;
   int   status      = 0;
+  if (cgi_process == 0) {
+    ERROR_LOG("pid is invalid");
+    return;
+  }
   if (kill(cgi_process, SIGTERM) == -1) {
     ERROR_LOG_WITH_ERRNO("kill");
   }
