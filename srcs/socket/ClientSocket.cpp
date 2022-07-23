@@ -65,8 +65,8 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
 
 bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive_content(HTTP_BUFFER_SIZE_);
-  // TODO: error handling
-  if (receive_result.status_ == ReceiveResult::END) {
+  if (receive_result.status_ == ReceiveResult::ERROR ||
+      receive_result.status_ == ReceiveResult::END) {
     LOG("got FIN from connection");
     _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
