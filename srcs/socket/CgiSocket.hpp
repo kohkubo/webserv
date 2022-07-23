@@ -6,6 +6,7 @@
 #include "event/Response.hpp"
 #include "http/response/CgiInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "socket/ClientSocket.hpp"
 #include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
 #include "socket/socket.hpp"
@@ -32,12 +33,13 @@ private:
   void _redirect_local(SocketMapActions &socket_map_actions);
 
 public:
-  CgiSocket(Response &response, ResponseGenerator response_generator);
+  CgiSocket(Response &response, ResponseGenerator response_generator,
+            ClientSocket *parent_socket);
   virtual ~CgiSocket();
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
-  virtual SocketBase      *handle_timed_out();
+  virtual SocketMapActions destroy_timedout_socket();
 };
 
 } // namespace ns_socket

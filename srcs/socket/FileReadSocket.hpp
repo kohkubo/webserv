@@ -6,6 +6,7 @@
 #include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "socket/ClientSocket.hpp"
 #include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
 
@@ -21,7 +22,7 @@ private:
 
 public:
   FileReadSocket(Response &response, ResponseGenerator response_generator)
-      : LocalIOSocket(response, response_generator)
+      : LocalIOSocket(response, response_generator, parent_socket)
       , _timeout_(TIMEOUT_SECONDS_) {}
 
   virtual ~FileReadSocket() {}

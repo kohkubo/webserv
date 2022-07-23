@@ -4,6 +4,7 @@
 #include "SocketMapActions.hpp"
 #include "event/Response.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "socket/ClientSocket.hpp"
 #include "socket/SocketBase.hpp"
 
 namespace ns_socket {
@@ -20,6 +21,7 @@ protected:
 
   Response         &_response_;
   ResponseGenerator _response_generator_;
+  ClientSocket     *_parent_socket_;
   ssize_t           _send_count_;
 
 protected:
@@ -28,9 +30,10 @@ protected:
   IOResult send_content();
 
 public:
-  LocalIOSocket(Response &response, ResponseGenerator response_generator);
-  virtual ~LocalIOSocket() {}
-  virtual SocketBase *handle_timed_out();
+  LocalIOSocket(Response &response, ResponseGenerator response_generator,
+                ClientSocket *parent_socket);
+  virtual ~LocalIOSocket() { _parent_socket_->notify_accomplished(this); }
+  virtual SocketMapActions destroy_timedout_socket();
 };
 
 } // namespace ns_socket

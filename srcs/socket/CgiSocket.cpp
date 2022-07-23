@@ -12,8 +12,9 @@
 
 namespace ns_socket {
 
-CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
-    : LocalIOSocket(response, response_generator)
+CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator,
+                     ClientSocket *parent_socket)
+    : LocalIOSocket(response, response_generator, parent_socket)
     , _timeout_(TIMEOUT_SECONDS_)
     , _is_sending_(response_generator.response_info_.content_.size() != 0) {
   if (!_is_sending_) {
@@ -35,14 +36,19 @@ struct pollfd CgiSocket::pollfd() {
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-SocketBase *CgiSocket::handle_timed_out() {
+SocketMapActions CgiSocket::destroy_timedout_socket() {
   _kill_cgi_process();
-  SocketBase *file_socket = NULL;
-  _response_              = _response_generator_.new_status_response(504);
+  SocketMapActions socket_map_actions;
+  SocketBase      *file_socket = NULL;
+  _response_                   = _response_generator_.new_status_response(504);
   if (_response_generator_.need_socket()) {
-    file_socket = _response_generator_.create_socket(_response_);
+    file_socket =
+        _response_generator_.create_socket(_response_, _parent_socket_);
+    _parent_socket_->store_new_child_socket(file_socket);
+    socket_map_actions.add_action(SocketMapAction::INSERT,
+                                  file_socket->socket_fd(), file_socket);
   }
-  return file_socket;
+  return socket_map_actions;
 }
 
 SocketMapActions CgiSocket::handle_event(short int revents) {
@@ -139,10 +145,12 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
                                        _response_generator_.peer_name_);
   _response_ = response_generator.generate_response();
   if (response_generator.need_socket()) {
-    SocketBase *socket = response_generator.create_socket(_response_);
+    SocketBase *socket =
+        response_generator.create_socket(_response_, _parent_socket_);
     socket_map_actions.add_action(SocketMapAction::INSERT, socket->socket_fd(),
                                   socket);
   }
+  // TODO: exchange child
 }
 
 void CgiSocket::_kill_cgi_process() const {
