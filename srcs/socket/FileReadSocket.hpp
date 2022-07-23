@@ -17,8 +17,6 @@ typedef response_generator::ResponseGenerator ResponseGenerator;
 class FileReadSocket : public LocalIOSocket {
 private:
   Timeout                  _timeout_;
-  Response                &_response_;
-  ResponseGenerator        _response_generator_;
   std::stringstream        _buffer_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
@@ -26,9 +24,7 @@ public:
   FileReadSocket(Response &response, ResponseGenerator response_generator,
                  ClientSocket *parent_socket)
       : LocalIOSocket(response, response_generator, parent_socket)
-      , _timeout_(TIMEOUT_SECONDS_)
-      , _response_(response)
-      , _response_generator_(response_generator) {}
+      , _timeout_(TIMEOUT_SECONDS_) {}
 
   virtual ~FileReadSocket() {}
   virtual struct pollfd    pollfd();
