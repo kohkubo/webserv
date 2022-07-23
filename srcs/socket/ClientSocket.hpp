@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <deque>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -25,10 +26,13 @@ private:
   static const std::time_t   TIMEOUT_SECONDS_  = 60;
   static const size_t        HTTP_BUFFER_SIZE_ = 4096;
 
+  std::set<SocketBase *> _child_socket_set_;
+
 private:
   void _parse_buffer(SocketMapActions &socket_map_actions);
   void _handle_send_event();
   bool _handle_receive_event(SocketMapActions &socket_map_actions);
+  void _add_delete_child_socket(SocketMapActions &socket_map_actions);
 
 public:
   ClientSocket(int client_fd, const config::ConfigGroup &config_group);
@@ -36,7 +40,9 @@ public:
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
-  virtual SocketBase      *handle_timed_out() { return NULL; }
+  virtual SocketMapActions destroy_timedout_socket();
+  void                     store_new_child_socket(SocketBase *child_socket);
+  void                     notify_accomplished(SocketBase *child_socket);
 };
 
 } // namespace ns_socket

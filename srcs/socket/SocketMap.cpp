@@ -38,6 +38,9 @@ std::vector<struct pollfd> SocketMap::create_pollfds() {
 
 SocketMapActions SocketMap::handle_socket_event(int       socket_fd,
                                                 short int revents) {
+  if (_socket_map_.count(socket_fd) == 0) {
+    return SocketMapActions();
+  }
   return _socket_map_[socket_fd]->handle_event(revents);
 }
 
@@ -60,12 +63,11 @@ void SocketMap::close_timedout_socket() {
   std::map<int, SocketBase *>::const_iterator it = _socket_map_.begin();
   while (it != _socket_map_.end()) {
     if (it->second->is_timed_out()) {
-      int         socket_fd  = it->first;
-      SocketBase *socket     = it->second;
-      SocketBase *new_socket = socket->handle_timed_out();
-      if (new_socket != NULL) {
-        do_socket_map_action(SocketMapAction(
-            SocketMapAction::INSERT, new_socket->socket_fd(), new_socket));
+      int              socket_fd          = it->first;
+      SocketBase      *socket             = it->second;
+      SocketMapActions socket_map_actions = socket->destroy_timedout_socket();
+      if (!socket_map_actions.empty()) {
+        socket_map_actions.do_action(*this);
       }
       it++;
       do_socket_map_action(

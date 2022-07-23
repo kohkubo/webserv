@@ -6,6 +6,7 @@
 #include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/response/ResponseGenerator.hpp"
+#include "socket/ClientSocket.hpp"
 #include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
 
@@ -22,8 +23,9 @@ private:
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
 public:
-  FileReadSocket(Response &response, ResponseGenerator response_generator)
-      : LocalIOSocket(response, response_generator)
+  FileReadSocket(Response &response, ResponseGenerator response_generator,
+                 ClientSocket *parent_socket)
+      : LocalIOSocket(response, response_generator, parent_socket)
       , _timeout_(TIMEOUT_SECONDS_)
       , _response_(response)
       , _response_generator_(response_generator) {}

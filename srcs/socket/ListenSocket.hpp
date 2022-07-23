@@ -8,6 +8,7 @@
 #include "config/Config.hpp"
 #include "config/ConfigGroup.hpp"
 #include "socket/SocketBase.hpp"
+#include "socket/SocketMapActions.hpp"
 
 namespace ns_socket {
 
@@ -29,7 +30,9 @@ public:
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
-  virtual SocketBase      *handle_timed_out() { return NULL; }
+  virtual SocketMapActions destroy_timedout_socket() {
+    return SocketMapActions();
+  }
 };
 
 } // namespace ns_socket
