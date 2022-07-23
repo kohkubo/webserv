@@ -18,7 +18,8 @@ class FileReadSocket : public LocalIOSocket {
 private:
   Timeout                  _timeout_;
   std::stringstream        _buffer_;
-  static const std::time_t TIMEOUT_SECONDS_ = 5;
+  static const std::time_t TIMEOUT_SECONDS_  = 5;
+  static const std::size_t READ_BUFFER_SIZE_ = 1024;
 
 public:
   FileReadSocket(Response &response, ResponseGenerator response_generator,
