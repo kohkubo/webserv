@@ -24,7 +24,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator,
   }
 }
 
-CgiSocket::~CgiSocket() { _kill_cgi_process(); }
+CgiSocket::~CgiSocket() {}
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -74,6 +74,7 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
   if (receive_result.rc_ == -1) {
     LOG("receive error");
+    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return false;
@@ -90,6 +91,7 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   IOResult io_result = send_content();
   if (io_result == ERROR) {
+    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -105,6 +107,7 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   CgiInfo::CgiState cgi_state = _cgi_info_.handle_cgi(_buffer_);
   if (cgi_state == CgiInfo::ERROR) {
+    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -116,6 +119,7 @@ void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
 
 void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   std::string response_message;
+  _kill_cgi_process();
   socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   switch (_cgi_info_.response_type_) {
   case CgiInfo::DOCUMENT:
@@ -125,7 +129,6 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
     _response_.set_response_message_and_sending(response_message);
     return;
   case CgiInfo::LOCAL_REDIR:
-    _kill_cgi_process();
     _redirect_local(socket_map_actions);
     return;
   default:
@@ -139,6 +142,7 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
           _cgi_info_.cgi_location_.path_, _cgi_info_.cgi_location_.query_);
 
   if (response_generator.is_over_max_redirect_count()) {
+    ERROR_LOG("too many redirect");
     overwrite_error_response(socket_map_actions, 500);
     return;
   }
