@@ -10,7 +10,7 @@ LocalIOSocket::LocalIOSocket(Response         &response,
     , _response_generator_(response_generator)
     , _parent_socket_(parent_socket) {}
 
-SocketMapActions LocalIOSocket::handle_timed_out() {
+SocketMapActions LocalIOSocket::destroy_timedout_socket() {
   SocketMapActions socket_map_actions;
   SocketBase      *file_socket = NULL;
   _response_                   = _response_generator_.new_status_response(

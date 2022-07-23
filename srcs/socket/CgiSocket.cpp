@@ -39,7 +39,7 @@ struct pollfd CgiSocket::pollfd() {
 
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-SocketMapActions CgiSocket::handle_timed_out() {
+SocketMapActions CgiSocket::destroy_timedout_socket() {
   _kill_cgi_process();
   SocketMapActions socket_map_actions;
   SocketBase      *file_socket = NULL;

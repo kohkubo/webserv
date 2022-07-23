@@ -40,7 +40,7 @@ public:
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
-  virtual SocketMapActions handle_timed_out();
+  virtual SocketMapActions destroy_timedout_socket();
   void                     store_new_child_socket(SocketBase *child_socket);
   void                     notify_accomplished(SocketBase *child_socket);
 };

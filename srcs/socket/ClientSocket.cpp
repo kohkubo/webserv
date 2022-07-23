@@ -36,7 +36,7 @@ struct pollfd ClientSocket::pollfd() {
 
 bool ClientSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
-SocketMapActions ClientSocket::handle_timed_out() {
+SocketMapActions ClientSocket::destroy_timedout_socket() {
   SocketMapActions socket_map_actions;
   _add_delete_child_socket(socket_map_actions);
   return socket_map_actions;

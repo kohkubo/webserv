@@ -65,7 +65,7 @@ void SocketMap::close_timedout_socket() {
     if (it->second->is_timed_out()) {
       int              socket_fd          = it->first;
       SocketBase      *socket             = it->second;
-      SocketMapActions socket_map_actions = socket->handle_timed_out();
+      SocketMapActions socket_map_actions = socket->destroy_timedout_socket();
       if (!socket_map_actions.empty()) {
         socket_map_actions.do_action(*this);
       }

@@ -25,7 +25,7 @@ public:
   LocalIOSocket(Response &response, ResponseGenerator response_generator,
                 ClientSocket *parent_socket);
   virtual ~LocalIOSocket() { _parent_socket_->notify_accomplished(this); }
-  virtual SocketMapActions handle_timed_out();
+  virtual SocketMapActions destroy_timedout_socket();
 };
 
 } // namespace ns_socket
