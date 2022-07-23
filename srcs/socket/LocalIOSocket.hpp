@@ -12,13 +12,20 @@ typedef response_generator::ResponseGenerator ResponseGenerator;
 
 class LocalIOSocket : public SocketBase {
 protected:
+  enum IOResult {
+    ERROR = -1,
+    CONTINUE,
+    SUCCESS,
+  };
+
   Response         &_response_;
   ResponseGenerator _response_generator_;
+  ssize_t           _send_count_;
 
 protected:
-  void overwrite_error_response(SocketMapActions &socket_map_actions,
-                                HttpStatusCode    status_code);
-  // void send_content();
+  void     overwrite_error_response(SocketMapActions &socket_map_actions,
+                                    HttpStatusCode    status_code);
+  IOResult send_content();
 
 public:
   LocalIOSocket(Response &response, ResponseGenerator response_generator);

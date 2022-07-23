@@ -16,19 +16,12 @@ typedef response_generator::ResponseGenerator ResponseGenerator;
 
 class CgiSocket : public LocalIOSocket {
 private:
-  enum IOResult {
-    ERROR = -1,
-    CONTINUE,
-    SUCCESS,
-  };
-
   Timeout                  _timeout_;
   Response                &_response_;
   std::string              _buffer_;
   ResponseGenerator        _response_generator_;
   CgiInfo                  _cgi_info_;
   bool                     _is_sending_;
-  ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
   static const size_t      CGI_BUFFER_SIZE_ = 2048;
 
@@ -47,7 +40,6 @@ public:
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out();
   virtual SocketBase      *handle_timed_out();
-  IOResult                 send_content();
 };
 
 } // namespace ns_socket

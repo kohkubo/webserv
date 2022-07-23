@@ -17,8 +17,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator)
     , _timeout_(TIMEOUT_SECONDS_)
     , _response_(response)
     , _response_generator_(response_generator)
-    , _is_sending_(response_generator.response_info_.content_.size() != 0)
-    , _send_count_(0) {
+    , _is_sending_(response_generator.response_info_.content_.size() != 0) {
   if (!_is_sending_) {
     if (shutdown(_socket_fd_, SHUT_WR) == -1) {
       ERROR_LOG_WITH_ERRNO("shutdown error");
@@ -100,23 +99,6 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
       ERROR_LOG_WITH_ERRNO("shutdown error");
     }
   }
-}
-
-CgiSocket::IOResult CgiSocket::send_content() {
-  std::string &sending_content = _response_generator_.response_info_.content_;
-  const char  *rest_str        = sending_content.c_str() + _send_count_;
-  size_t       rest_count      = sending_content.size() - _send_count_;
-  ssize_t      write_size      = write(_socket_fd_, rest_str, rest_count);
-
-  if (write_size == -1) {
-    LOG("write error");
-    return ERROR;
-  }
-  _send_count_ += write_size;
-  if (_send_count_ == static_cast<ssize_t>(sending_content.size())) {
-    return SUCCESS;
-  }
-  return CONTINUE;
 }
 
 void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
