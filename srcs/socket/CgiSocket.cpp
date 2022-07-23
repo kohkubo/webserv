@@ -125,6 +125,7 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
     _response_.set_response_message_and_sending(response_message);
     return;
   case CgiInfo::LOCAL_REDIR:
+    _kill_cgi_process();
     _redirect_local(socket_map_actions);
     return;
   default:
