@@ -16,10 +16,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator,
                      ClientSocket *parent_socket)
     : LocalIOSocket(response, response_generator, parent_socket)
     , _timeout_(TIMEOUT_SECONDS_)
-    , _response_(response)
-    , _response_generator_(response_generator)
-    , _is_sending_(response_generator.response_info_.content_.size() != 0)
-    , _send_count_(0) {
+    , _is_sending_(response_generator.response_info_.content_.size() != 0) {
   if (!_is_sending_) {
     if (shutdown(_socket_fd_, SHUT_WR) == -1) {
       ERROR_LOG_WITH_ERRNO("shutdown error");
@@ -91,18 +88,13 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
-  std::string &sending_content = _response_generator_.response_info_.content_;
-  const char  *rest_str        = sending_content.c_str() + _send_count_;
-  size_t       rest_count      = sending_content.size() - _send_count_;
-  ssize_t      wc              = write(_socket_fd_, rest_str, rest_count);
-  if (wc == -1) {
-    LOG("write error");
+  IOResult io_result = send_content();
+  if (io_result == ERROR) {
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
   }
-  _send_count_ += wc;
-  if (_send_count_ == static_cast<ssize_t>(sending_content.size())) {
+  if (io_result == SUCCESS) {
     _is_sending_ = false;
     if (shutdown(_socket_fd_, SHUT_WR) == -1) {
       ERROR_LOG_WITH_ERRNO("shutdown error");
