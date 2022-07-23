@@ -58,7 +58,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
   response_info_ = _handle_method(target_path);
 }
 
-Response ResponseGenerator::generate_response() {
+Response ResponseGenerator::generate_response() const {
   switch (response_info_.action_) {
   case ResponseInfo::READ:
     return Response(_is_connection_close_, Response::READING);
@@ -87,9 +87,13 @@ ResponseGenerator::create_socket(Response                &response,
   }
 }
 
-ResponseGenerator
-ResponseGenerator::new_target_response_generator(const std::string &new_target,
-                                                 const std::string &new_query) {
+ResponseGenerator ResponseGenerator::new_status_response_generator(
+    const HttpStatusCode &new_status_code) const {
+  return ResponseGenerator(request_info_, peer_name_, new_status_code);
+}
+
+ResponseGenerator ResponseGenerator::new_target_response_generator(
+    const std::string &new_target, const std::string &new_query) const {
   RequestInfo request_info                  = request_info_;
   request_info.request_line_.absolute_path_ = new_target;
   request_info.request_line_.query_         = new_query;
@@ -140,7 +144,7 @@ static std::string create_response_header(const RequestInfo      &request_info,
 }
 
 std::string
-ResponseGenerator::create_response_message(const std::string &content) {
+ResponseGenerator::create_response_message(const std::string &content) const {
   std::string response =
       create_response_header(request_info_, location_, _is_connection_close_,
                              response_info_.status_code_);

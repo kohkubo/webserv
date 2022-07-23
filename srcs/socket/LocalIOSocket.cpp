@@ -43,10 +43,11 @@ void LocalIOSocket::overwrite_error_response(
 }
 
 LocalIOSocket::IOResult LocalIOSocket::send_content() {
-  std::string &sending_content = _response_generator_.response_info_.content_;
-  const char  *rest_str        = sending_content.c_str() + _send_count_;
-  size_t       rest_count      = sending_content.size() - _send_count_;
-  ssize_t      write_size      = write(_socket_fd_, rest_str, rest_count);
+  const std::string &sending_content =
+      _response_generator_.response_info_.content_;
+  const char *rest_str   = sending_content.c_str() + _send_count_;
+  size_t      rest_count = sending_content.size() - _send_count_;
+  ssize_t     write_size = write(_socket_fd_, rest_str, rest_count);
 
   if (write_size == -1) {
     LOG("write error");

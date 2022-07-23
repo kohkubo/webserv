@@ -19,10 +19,10 @@ protected:
     SUCCESS,
   };
 
-  Response         &_response_;
-  ResponseGenerator _response_generator_;
-  ClientSocket     *_parent_socket_;
-  ssize_t           _send_count_;
+  Response               &_response_;
+  const ResponseGenerator _response_generator_;
+  ClientSocket           *_parent_socket_;
+  ssize_t                 _send_count_;
 
 protected:
   void     overwrite_error_response(SocketMapActions &socket_map_actions,
