@@ -87,24 +87,36 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
-  std::string &sending_content = _response_generator_.response_info_.content_;
-  const char  *rest_str        = sending_content.c_str() + _send_count_;
-  size_t       rest_count      = sending_content.size() - _send_count_;
-  ssize_t      wc              = write(_socket_fd_, rest_str, rest_count);
-  if (wc == -1) {
-    LOG("write error");
+  IOResult io_result = send_content();
+  if (io_result == ERROR) {
     _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
   }
-  _send_count_ += wc;
-  if (_send_count_ == static_cast<ssize_t>(sending_content.size())) {
+  if (io_result == SUCCESS) {
     _is_sending_ = false;
     if (shutdown(_socket_fd_, SHUT_WR) == -1) {
       ERROR_LOG_WITH_ERRNO("shutdown error");
     }
   }
+}
+
+CgiSocket::IOResult CgiSocket::send_content() {
+  std::string &sending_content = _response_generator_.response_info_.content_;
+  const char  *rest_str        = sending_content.c_str() + _send_count_;
+  size_t       rest_count      = sending_content.size() - _send_count_;
+  ssize_t      write_size      = write(_socket_fd_, rest_str, rest_count);
+
+  if (write_size == -1) {
+    LOG("write error");
+    return ERROR;
+  }
+  _send_count_ += write_size;
+  if (_send_count_ == static_cast<ssize_t>(sending_content.size())) {
+    return SUCCESS;
+  }
+  return CONTINUE;
 }
 
 void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {

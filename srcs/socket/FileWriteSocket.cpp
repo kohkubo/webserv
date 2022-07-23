@@ -26,18 +26,14 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
   _timeout_.update_last_event();
 
   IOResult io_result = send_content();
-
   if (io_result == ERROR) {
-    LOG("write error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    overwrite_error_response(socket_map_actions,
-                             HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
+    overwrite_error_response(socket_map_actions, 500);
     return socket_map_actions;
   }
   if (io_result == SUCCESS) {
     std::string response_message = _response_generator_.create_response_message(
-        HttpStatusCode(HttpStatusCode::S_201_CREATED)
-            .create_default_content_str());
+        HttpStatusCode(201).create_default_content_str());
     _response_.set_response_message_and_sending(response_message);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   }
@@ -51,6 +47,7 @@ FileWriteSocket::IOResult FileWriteSocket::send_content() {
   ssize_t      write_size      = write(_socket_fd_, rest_str, rest_count);
 
   if (write_size == -1) {
+    LOG("write error");
     return ERROR;
   }
   _send_count_ += write_size;
