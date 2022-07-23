@@ -88,7 +88,7 @@ ResponseGenerator::create_socket(Response                &response,
 }
 
 ResponseGenerator
-ResponseGenerator::create_new_response_generator(const std::string &new_target,
+ResponseGenerator::new_target_response_generator(const std::string &new_target,
                                                  const std::string &new_query) {
   RequestInfo request_info                  = request_info_;
   request_info.request_line_.absolute_path_ = new_target;

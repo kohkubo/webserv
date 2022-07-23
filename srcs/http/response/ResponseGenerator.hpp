@@ -51,8 +51,9 @@ public:
                                        ns_socket::ClientSocket *parent_socket);
   std::string            create_response_message(const std::string &content);
   std::string            create_response_message(const CgiInfo &cgi_info) const;
-  Response               new_status_response(const HttpStatusCode &status_code);
-  ResponseGenerator create_new_response_generator(const std::string &new_target,
+  ResponseGenerator
+  new_status_response_generator(const HttpStatusCode &new_status_code);
+  ResponseGenerator new_target_response_generator(const std::string &new_target,
                                                   const std::string &new_query);
 };
 
