@@ -15,6 +15,12 @@ typedef response_generator::ResponseGenerator ResponseGenerator;
 
 class FileWriteSocket : public LocalIOSocket {
 private:
+  enum IOResult {
+    ERROR = -1,
+    CONTINUE,
+    SUCCESS,
+  };
+
   Timeout                  _timeout_;
   Response                &_response_;
   ResponseGenerator        _response_generator_;
@@ -32,6 +38,7 @@ public:
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
   virtual bool             is_timed_out() { return _timeout_.is_timed_out(); }
+  IOResult                 send_content();
 };
 
 } // namespace ns_socket

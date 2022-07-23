@@ -18,6 +18,7 @@ protected:
 protected:
   void overwrite_error_response(SocketMapActions &socket_map_actions,
                                 HttpStatusCode    status_code);
+  // void send_content();
 
 public:
   LocalIOSocket(Response &response, ResponseGenerator response_generator);
