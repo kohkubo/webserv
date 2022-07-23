@@ -24,7 +24,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator,
   }
 }
 
-CgiSocket::~CgiSocket() {}
+CgiSocket::~CgiSocket() { _kill_cgi_process(); }
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -37,7 +37,6 @@ struct pollfd CgiSocket::pollfd() {
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketMapActions CgiSocket::destroy_timedout_socket() {
-  _kill_cgi_process();
   SocketMapActions  socket_map_actions;
   ResponseGenerator new_response_gen =
       _response_generator_.new_status_response_generator(504);
@@ -76,7 +75,6 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
   if (receive_result.rc_ == -1) {
     LOG("receive error");
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return false;
@@ -93,7 +91,6 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   IOResult io_result = send_content();
   if (io_result == ERROR) {
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -109,7 +106,6 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   CgiInfo::CgiState cgi_state = _cgi_info_.handle_cgi(_buffer_);
   if (cgi_state == CgiInfo::ERROR) {
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -121,7 +117,6 @@ void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
 
 void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   std::string response_message;
-  _kill_cgi_process();
   socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   switch (_cgi_info_.response_type_) {
   case CgiInfo::DOCUMENT:
