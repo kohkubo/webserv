@@ -29,7 +29,8 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
     , _is_connection_close_(request_info_.is_close_connection() ||
                             status_code == HttpStatusCode::S_400_BAD_REQUEST ||
                             status_code ==
-                                HttpStatusCode::S_413_ENTITY_TOO_LARGE) {
+                                HttpStatusCode::S_413_ENTITY_TOO_LARGE)
+    , _redirect_count_(0) {
   if (status_code.is_error_status_code()) {
     response_info_ = _create_status_code_content(status_code);
     return;
@@ -84,6 +85,19 @@ ResponseGenerator::create_socket(Response                &response,
   default:
     return NULL;
   }
+}
+
+ResponseGenerator
+ResponseGenerator::create_new_response_generator(const std::string &new_target,
+                                                 const std::string &new_query) {
+  RequestInfo request_info                  = request_info_;
+  request_info.request_line_.absolute_path_ = new_target;
+  request_info.request_line_.query_         = new_query;
+
+  ResponseGenerator new_response_generator(request_info, peer_name_);
+  new_response_generator._redirect_count_ = _redirect_count_ + 1;
+
+  return new_response_generator;
 }
 
 static std::string start_line(const HttpStatusCode &status_code) {

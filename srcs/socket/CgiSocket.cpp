@@ -59,7 +59,6 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     LOG("got POLLIN  event of cgi " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
-      _kill_cgi_process();
       _create_cgi_response(socket_map_actions);
       return socket_map_actions;
     }
@@ -120,6 +119,7 @@ void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
 
 void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   std::string response_message;
+  _kill_cgi_process();
   socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   switch (_cgi_info_.response_type_) {
   case CgiInfo::DOCUMENT:
@@ -137,12 +137,15 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
-  RequestInfo request_info = _response_generator_.request_info_;
-  request_info.request_line_.absolute_path_ = _cgi_info_.cgi_location_.path_;
-  request_info.request_line_.query_         = _cgi_info_.cgi_location_.query_;
+  ResponseGenerator response_generator =
+      _response_generator_.create_new_response_generator(
+          _cgi_info_.cgi_location_.path_, _cgi_info_.cgi_location_.query_);
 
-  ResponseGenerator response_generator(request_info,
-                                       _response_generator_.peer_name_);
+  if (response_generator.is_over_max_redirect_count()) {
+    ERROR_LOG("too many redirect");
+    overwrite_error_response(socket_map_actions, 500);
+    return;
+  }
   _response_ = response_generator.generate_response();
   if (response_generator.need_socket()) {
     SocketBase *socket =
@@ -156,6 +159,10 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
 void CgiSocket::_kill_cgi_process() const {
   pid_t cgi_process = _response_generator_.response_info_.cgi_pid_;
   int   status      = 0;
+  if (cgi_process == 0) {
+    ERROR_LOG("pid is invalid");
+    return;
+  }
   if (kill(cgi_process, SIGTERM) == -1) {
     ERROR_LOG_WITH_ERRNO("kill");
   }

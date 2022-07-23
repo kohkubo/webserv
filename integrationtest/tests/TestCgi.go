@@ -467,7 +467,7 @@ var testCgi = testCatergory{
 			test: func() bool {
 				expectBody := []byte(
 					"Hello world\n" +
-					"pwd: cgi_test\n",
+						"pwd: cgi_test\n",
 				)
 
 				expectStatusCode := 200
@@ -492,18 +492,14 @@ var testCgi = testCatergory{
 			},
 		},
 		{
-			caseName: "cgi pwd",
+			caseName: "cgi redirect loop",
 			test: func() bool {
-				expectBody := []byte(
-					"Hello world\n" +
-					"pwd: cgi_test\n",
-				)
-
-				expectStatusCode := 200
+				expectStatusCode := 500
+				expectBody := httpresp.ErrorBody(expectStatusCode)
 				port := "50000"
 				clientA := httptest.NewClient(httptest.TestSource{
 					Port: port,
-					Request: "GET /cgi_test/pwd.py HTTP/1.1\r\n" +
+					Request: "GET /cgi_test/error/redirect_loop.py HTTP/1.1\r\n" +
 						"Host: localhost:" + port + "\r\n" +
 						"Connection: close\r\n" +
 						"User-Agent: curl/7.79.1\r\n" +
@@ -525,16 +521,16 @@ var testCgi = testCatergory{
 			test: func() bool {
 				expectBody := []byte(
 					`#!/usr/bin/python3` + "\n" +
-					`` + "\n" +
-					`import cgi` + "\n" +
-					`` + "\n" +
-					`form = cgi.FieldStorage()` + "\n" +
-					`print("Status: 200 OK")` + "\n" +
-					`print("Content-type: text/html")` + "\n" +
-					`print("")` + "\n" +
-					`print("name=", form.getvalue("name", "default"))` + "\n" +
-					`print("blood=", form.getvalue("blood", "default"))` + "\n" +
-					`print("text=", form.getvalue("text", "default"))` + "\n",
+						`` + "\n" +
+						`import cgi` + "\n" +
+						`` + "\n" +
+						`form = cgi.FieldStorage()` + "\n" +
+						`print("Status: 200 OK")` + "\n" +
+						`print("Content-type: text/html")` + "\n" +
+						`print("")` + "\n" +
+						`print("name=", form.getvalue("name", "default"))` + "\n" +
+						`print("blood=", form.getvalue("blood", "default"))` + "\n" +
+						`print("text=", form.getvalue("text", "default"))` + "\n",
 				)
 
 				expectStatusCode := 200
