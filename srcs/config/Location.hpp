@@ -28,15 +28,15 @@ private:
   static directiveParserMap directive_parser_map_;
 
 public:
-  Path        location_path_;
-  Path        root_;
-  Path        index_;
-  bool        autoindex_;
-  std::string cgi_extension_;
-  bool        upload_file_;
-  returnMap   return_map_;
-  bool        has_available_methods_;
-  MethodFlag  available_methods_;
+  Path       location_path_;
+  Path       root_;
+  Path       index_;
+  bool       autoindex_;
+  bool       cgi_extension_;
+  bool       upload_file_;
+  returnMap  return_map_;
+  bool       has_available_methods_;
+  MethodFlag available_methods_;
 
 private:
   static directiveParserMap _init_directive_parser_map();
@@ -46,6 +46,7 @@ public:
       : root_("html/")
       , index_("index.html")
       , autoindex_(false)
+      , cgi_extension_(false)
       , upload_file_(false)
       , has_available_methods_(false)
       , available_methods_((struct MethodFlag){false, false, false}) {}

@@ -119,7 +119,7 @@ tokenIterator Location::parse_available_methods_directive(tokenIterator pos,
 
 tokenIterator Location::parse_cgi_extension_directive(tokenIterator pos,
                                                       tokenIterator end) {
-  return parse_string_directive(cgi_extension_, pos, end);
+  return parse_bool_directive(cgi_extension_, pos, end);
 }
 
 tokenIterator Location::parse_upload_file_directive(tokenIterator pos,

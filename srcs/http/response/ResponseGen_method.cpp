@@ -40,8 +40,7 @@ ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
     if (!path_add_index.is_file_exists()) {
       return _method_get_dir(target_path);
     }
-    if (!location_->cgi_extension_.empty() &&
-        path_add_index.has_suffix(location_->cgi_extension_)) {
+    if (location_->cgi_extension_ && path_add_index.has_suffix(".py")) {
       return _method_cgi(path_add_index);
     }
     return _method_get_file(path_add_index);
@@ -110,8 +109,7 @@ ResponseInfo ResponseGenerator::_handle_method(const Path &target_path) {
   if (location_->is_unavailable_method(request_info_.request_line_.method_)) {
     return _create_status_code_content(HttpStatusCode::S_405_NOT_ALLOWED);
   }
-  if (!location_->cgi_extension_.empty() &&
-      target_path.has_suffix(location_->cgi_extension_)) {
+  if (location_->cgi_extension_ && target_path.has_suffix(".py")) {
     return _method_cgi(target_path);
   }
   if ("GET" == request_info_.request_line_.method_) {
