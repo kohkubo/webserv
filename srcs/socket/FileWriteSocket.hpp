@@ -24,7 +24,7 @@ private:
   Timeout                  _timeout_;
   Response                &_response_;
   ResponseGenerator        _response_generator_;
-  ssize_t                  _write_count_;
+  ssize_t                  _send_count_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
 public:
@@ -33,7 +33,7 @@ public:
       , _timeout_(TIMEOUT_SECONDS_)
       , _response_(response)
       , _response_generator_(response_generator)
-      , _write_count_(0) {}
+      , _send_count_(0) {}
   virtual ~FileWriteSocket(){};
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);
