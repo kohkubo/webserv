@@ -8,7 +8,7 @@ clang++ client.cpp -o bad_client
 pid=$!
 sleep 2
 ./bad_client
-ret=`ps | grep webserv | wc -l`
+ret=`ps | grep webserv | grep -v grep | wc -l`
 if [ $ret = 1 ]; then
   kill -9 $pid
   exit 0
