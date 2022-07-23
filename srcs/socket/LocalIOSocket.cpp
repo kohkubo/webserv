@@ -13,13 +13,13 @@ LocalIOSocket::LocalIOSocket(Response         &response,
 
 SocketMapActions LocalIOSocket::destroy_timedout_socket() {
   SocketMapActions  socket_map_actions;
-  ResponseGenerator response_generator =
+  ResponseGenerator new_response_generator =
       _response_generator_.create_response_generator(500);
 
-  _response_ = response_generator.generate_response();
-  if (response_generator.need_socket()) {
+  _response_ = new_response_generator.generate_response();
+  if (new_response_generator.need_socket()) {
     SocketBase *file_socket =
-        response_generator.create_socket(_response_, _parent_socket_);
+        new_response_generator.create_socket(_response_, _parent_socket_);
     _parent_socket_->store_child_socket(file_socket);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
@@ -29,13 +29,13 @@ SocketMapActions LocalIOSocket::destroy_timedout_socket() {
 
 void LocalIOSocket::overwrite_error_response(
     SocketMapActions &socket_map_actions, HttpStatusCode status_code) {
-  ResponseGenerator response_generator =
+  ResponseGenerator new_response_generator =
       _response_generator_.create_response_generator(status_code);
 
-  _response_ = response_generator.generate_response();
-  if (response_generator.need_socket()) {
+  _response_ = new_response_generator.generate_response();
+  if (new_response_generator.need_socket()) {
     SocketBase *file_socket =
-        response_generator.create_socket(_response_, _parent_socket_);
+        new_response_generator.create_socket(_response_, _parent_socket_);
     _parent_socket_->store_child_socket(file_socket);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
