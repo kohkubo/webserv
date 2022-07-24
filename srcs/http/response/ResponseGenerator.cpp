@@ -160,7 +160,9 @@ std::string
 ResponseGenerator::create_response_message(const CgiInfo &cgi_info) const {
   std::string response = cgi_info.http_start_line();
   response += cgi_info.header_field_map_.to_string();
-  if (_is_connection_close_) {
+  if (request_info_.is_close_connection() ||
+      (!cgi_info.http_status_phrase_.empty() &&
+       (400 <= cgi_info.status_digit_ && cgi_info.status_digit_ <= 499))) {
     response += connection_header();
   }
   if (!cgi_info.http_status_phrase_.empty() &&
