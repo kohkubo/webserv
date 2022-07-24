@@ -13,7 +13,7 @@ ResponseInfo ResponseGenerator::_method_get_dir(const Path &target_path) {
   if (!target_path.is_dir_exists()) {
     return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
   }
-  if (!request_info_.location_->autoindex_) {
+  if (!location_->autoindex_) {
     return _create_status_code_content(HttpStatusCode::S_403_FORBIDDEN);
   }
   return ResponseInfo(ResponseInfo::CREATED,
@@ -38,12 +38,12 @@ ResponseInfo ResponseGenerator::_method_get_file(const Path &target_path) {
 
 ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
   if (target_path.has_suffix("/")) {
-    Path path_add_index = target_path + request_info_.location_->index_;
+    Path path_add_index = target_path + location_->index_;
     if (!path_add_index.is_file_exists()) {
       return _method_get_dir(target_path);
     }
-    if (!request_info_.location_->cgi_extension_.empty() &&
-        path_add_index.has_suffix(request_info_.location_->cgi_extension_)) {
+    if (!location_->cgi_extension_.empty() &&
+        path_add_index.has_suffix(location_->cgi_extension_)) {
       return _method_cgi(path_add_index);
     }
     return _method_get_file(path_add_index);
@@ -72,7 +72,7 @@ ResponseInfo ResponseGenerator::_method_cgi(const Path &target_path) {
 }
 
 ResponseInfo ResponseGenerator::_method_post(const Path &target_path) {
-  if (!request_info_.location_->upload_file_ || target_path.has_suffix("/")) {
+  if (!location_->upload_file_ || target_path.has_suffix("/")) {
     return _create_status_code_content(HttpStatusCode::S_403_FORBIDDEN);
   }
   Result<int> result = target_path.open_write_file();
@@ -110,12 +110,11 @@ ResponseInfo ResponseGenerator::_method_delete(const Path &target_path) {
 // 405 (Method Not Allowed) status code.
 
 ResponseInfo ResponseGenerator::_handle_method(const Path &target_path) {
-  if (request_info_.location_->is_unavailable_method(
-          request_info_.request_line_.method_)) {
+  if (location_->is_unavailable_method(request_info_.request_line_.method_)) {
     return _create_status_code_content(HttpStatusCode::S_405_NOT_ALLOWED);
   }
-  if (!request_info_.location_->cgi_extension_.empty() &&
-      target_path.has_suffix(request_info_.location_->cgi_extension_)) {
+  if (!location_->cgi_extension_.empty() &&
+      target_path.has_suffix(location_->cgi_extension_)) {
     return _method_cgi(target_path);
   }
   if ("GET" == request_info_.request_line_.method_) {

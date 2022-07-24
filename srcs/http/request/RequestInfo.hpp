@@ -1,7 +1,6 @@
 #ifndef SRCS_HTTP_REQUEST_REQUESTINFO_HPP
 #define SRCS_HTTP_REQUEST_REQUESTINFO_HPP
 
-#include <cstdlib>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -42,22 +41,15 @@ public:
     std::string query_;
     std::string http_version_;
   };
-  RequestLine             request_line_;
-  std::string             host_;
-  ContentInfo             content_info_;
-  std::string             connection_;
-  transferEncodingVector  transfer_encoding_;
-  config::Config          config_;
-  const config::Location *location_;
+  RequestLine            request_line_;
+  std::string            host_;
+  ContentInfo            content_info_;
+  std::string            connection_;
+  transferEncodingVector transfer_encoding_;
+  config::Config         config_;
 
 public:
-  RequestInfo()
-      : location_(NULL) {}
-  ~RequestInfo() {
-    if (location_ == NULL) {
-      delete location_;
-    }
-  }
+  RequestInfo() {}
   class BadRequestException : public std::logic_error {
   private:
     HttpStatusCode _status_;
