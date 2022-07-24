@@ -57,7 +57,7 @@ Request::_handle_request_body(std::string &request_buffer) {
     _state_ = _chunk_loop(request_buffer);
     _check_max_client_body_size_exception(
         _request_info_.content_info_.content_.size(),
-        _request_info_.config_.client_max_body_size_);
+        _request_info_.config_->client_max_body_size_);
   } else if (request_buffer.size() >=
              static_cast<std::size_t>(
                  _request_info_.content_info_.content_length_)) {
@@ -83,7 +83,7 @@ Request::handle_request(std::string               &request_buffer,
       if (_request_info_.content_info_.has_content_length()) {
         _check_max_client_body_size_exception(
             _request_info_.content_info_.content_length_,
-            _request_info_.config_.client_max_body_size_);
+            _request_info_.config_->client_max_body_size_);
       }
     }
   }

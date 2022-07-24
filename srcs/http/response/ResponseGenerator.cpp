@@ -31,6 +31,12 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                             status_code ==
                                 HttpStatusCode::S_413_ENTITY_TOO_LARGE)
     , _redirect_count_(0) {
+  if (request_info_.config_ == NULL) {
+    response_info_ =
+        ResponseInfo(ResponseInfo::CREATED,
+                     status_code.create_default_content_str(), status_code);
+    return;
+  }
   if (status_code.is_error_status_code()) {
     response_info_ = _create_status_code_content(status_code);
     return;
@@ -41,7 +47,7 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
         _create_status_code_content(HttpStatusCode::S_501_NOT_IMPLEMENTED);
     return;
   }
-  location_ = request_info_.config_.locations_.select_location(
+  location_ = request_info_.config_->locations_.select_location(
       request_info_.request_line_.absolute_path_);
   if (location_ == NULL) {
     response_info_ =

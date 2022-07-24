@@ -27,9 +27,9 @@ create_environ_map(const RequestInfo &request_info,
   environ_map["REQUEST_METHOD"]    = request_info.request_line_.method_;
   environ_map["SCRIPT_NAME"] =
       request_info.request_line_.absolute_path_.script_name();
-  environ_map["SERVER_NAME"] = request_info.config_.server_name_;
+  environ_map["SERVER_NAME"] = request_info.config_->server_name_;
   environ_map["SERVER_PORT"] =
-      to_string(ntohs(request_info.config_.sockaddr_in_.sin_port));
+      to_string(ntohs(request_info.config_->sockaddr_in_.sin_port));
   environ_map["SERVER_PROTOCOL"] = "HTTP/1.1";
   environ_map["SERVER_SOFTWARE"] = "webserv 0.0.0";
 

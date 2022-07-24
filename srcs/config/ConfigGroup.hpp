@@ -29,7 +29,7 @@ public:
   struct sockaddr_in sockaddr_in() const;
   bool               is_same_socket(const Config &config);
   void               add_config_or_exit(const Config &config);
-  Config             select_config(const std::string &host_name) const;
+  const Config      *select_config(const std::string &host_name) const;
 };
 
 } // namespace config

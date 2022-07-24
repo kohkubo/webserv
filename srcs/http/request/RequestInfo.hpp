@@ -46,10 +46,11 @@ public:
   ContentInfo            content_info_;
   std::string            connection_;
   transferEncodingVector transfer_encoding_;
-  config::Config         config_;
+  const config::Config  *config_;
 
 public:
-  RequestInfo() {}
+  RequestInfo()
+      : config_(NULL) {}
   class BadRequestException : public std::logic_error {
   private:
     HttpStatusCode _status_;
