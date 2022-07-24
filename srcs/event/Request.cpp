@@ -26,27 +26,23 @@ Request::RequestState
 Request::_handle_request_header(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) {
-    if (_state_ == RECEIVING_HEADER) {
-      if (line != "") {
-        bool result = _header_field_map_.store_new_field(line);
-        if (!result) {
-          ERROR_LOG("invalid header field");
-          throw RequestInfo::BadRequestException();
-        }
-        continue;
-      }
-      _request_info_.parse_request_header(_header_field_map_);
-      if (!_request_info_.is_valid_request_header()) {
-        ERROR_LOG("invalid request header");
+    if (line != "") {
+      bool result = _header_field_map_.store_new_field(line);
+      if (!result) {
         throw RequestInfo::BadRequestException();
       }
-      if (_request_info_.has_body()) {
-        _state_ = RECEIVING_BODY;
-        break;
-      }
-      _state_ = SUCCESS;
+      continue;
+    }
+    _request_info_.parse_request_header(_header_field_map_);
+    if (!_request_info_.is_valid_request_header()) {
+      throw RequestInfo::BadRequestException();
+    }
+    if (_request_info_.has_body()) {
+      _state_ = RECEIVING_BODY;
       break;
     }
+    _state_ = SUCCESS;
+    break;
   }
   return _state_;
 }
