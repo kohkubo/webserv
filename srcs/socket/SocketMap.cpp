@@ -20,7 +20,7 @@ SocketMap::SocketMap(const std::vector<config::ConfigGroup> &config_groups) {
 }
 
 SocketMap::~SocketMap() {
-  std::map<socketFd, SocketBase *>::iterator it = _socket_map_.begin();
+  socketMap::iterator it = _socket_map_.begin();
   for (; it != _socket_map_.end(); it++) {
     delete it->second;
   }
@@ -29,7 +29,7 @@ SocketMap::~SocketMap() {
 std::vector<struct pollfd> SocketMap::create_pollfds() {
   std::vector<struct pollfd> pollfds;
   pollfds.clear();
-  std::map<socketFd, SocketBase *>::const_iterator it = _socket_map_.begin();
+  socketMap::const_iterator it = _socket_map_.begin();
   for (; it != _socket_map_.end(); it++) {
     pollfds.push_back(it->second->pollfd());
   }
@@ -38,7 +38,7 @@ std::vector<struct pollfd> SocketMap::create_pollfds() {
 
 SocketMapActions SocketMap::handle_socket_event(int       socket_fd,
                                                 short int revents) {
-  std::map<socketFd, SocketBase *>::iterator it = _socket_map_.find(socket_fd);
+  socketMap::iterator it = _socket_map_.find(socket_fd);
   if (it == _socket_map_.end()) {
     return SocketMapActions();
   }
@@ -61,7 +61,7 @@ void SocketMap::do_socket_map_action(const SocketMapAction &socket_map_action) {
 }
 
 void SocketMap::close_timedout_socket() {
-  std::map<socketFd, SocketBase *>::const_iterator it = _socket_map_.begin();
+  socketMap::const_iterator it = _socket_map_.begin();
   while (it != _socket_map_.end()) {
     if (it->second->is_timed_out()) {
       int              socket_fd          = it->first;
