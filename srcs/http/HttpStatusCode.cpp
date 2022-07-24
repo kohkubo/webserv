@@ -105,6 +105,10 @@ std::string HttpStatusCode::create_default_content_str() const {
          "</html>";
 }
 
+bool HttpStatusCode::is_connection_close() const {
+  return 400 <= status_code_ && status_code_ <= 499;
+}
+
 bool operator==(const HttpStatusCode &lhs, const HttpStatusCode &rhs) {
   return lhs.status_code_ == rhs.status_code_;
 }
