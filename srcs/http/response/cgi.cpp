@@ -62,7 +62,8 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
     return Error<ResponseInfo>();
   }
   return Ok<ResponseInfo>(
-      CgiContent(socket_pair[0], pid, request_info.content_info_.content_));
+      ResponseInfo(ResponseInfo::CGI, request_info.content_info_.content_,
+                   HttpStatusCode::S_200_OK, socket_pair[0], pid));
 }
 
 } // namespace response_generator

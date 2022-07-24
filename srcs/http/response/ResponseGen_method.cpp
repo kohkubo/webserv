@@ -16,7 +16,8 @@ ResponseInfo ResponseGenerator::_method_get_dir(const Path &target_path) {
   if (!location_->autoindex_) {
     return _create_status_code_content(HttpStatusCode::S_403_FORBIDDEN);
   }
-  return ResponseInfo(create_autoindex_body(request_info_, target_path),
+  return ResponseInfo(ResponseInfo::CREATED,
+                      create_autoindex_body(request_info_, target_path),
                       HttpStatusCode::S_200_OK);
 }
 
@@ -31,7 +32,8 @@ ResponseInfo ResponseGenerator::_method_get_file(const Path &target_path) {
     return _create_status_code_content(
         HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  return ReadContent(result.object_, HttpStatusCode::S_200_OK);
+  return ResponseInfo(ResponseInfo::READ, std::string(),
+                      HttpStatusCode::S_200_OK, result.object_);
 }
 
 ResponseInfo ResponseGenerator::_method_get(const Path &target_path) {
@@ -79,7 +81,8 @@ ResponseInfo ResponseGenerator::_method_post(const Path &target_path) {
     return _create_status_code_content(
         HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
   }
-  return WriteContent(result.object_, request_info_.content_info_.content_);
+  return ResponseInfo(ResponseInfo::WRITE, request_info_.content_info_.content_,
+                      HttpStatusCode::S_201_CREATED, result.object_);
 }
 
 ResponseInfo ResponseGenerator::_method_delete(const Path &target_path) {
