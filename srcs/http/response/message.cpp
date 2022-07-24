@@ -46,10 +46,10 @@ static std::string create_response_header(const RequestInfo    &request_info,
 
 std::string create_response_message(const RequestInfo  &request_info,
                                     const ResponseInfo &response_info,
-                                    const std::string  &content) {
+                                    const std::string  &body) {
   std::string response =
       create_response_header(request_info, response_info.status_code_);
-  response += entity_header_and_body(content);
+  response += entity_header_and_body(body);
   return response;
 };
 

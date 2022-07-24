@@ -59,7 +59,7 @@ std::string          create_autoindex_body(const RequestInfo &request_info,
 
 std::string create_response_message(const RequestInfo  &request_info,
                                     const ResponseInfo &response_info,
-                                    const std::string  &content);
+                                    const std::string  &body);
 std::string create_response_message(const RequestInfo &request_info,
                                     const CgiInfo     &cgi_info);
 
