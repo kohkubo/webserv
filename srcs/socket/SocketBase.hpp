@@ -34,7 +34,11 @@ protected:
 
 public:
   SocketBase()
-      : _socket_fd_(-1) {}
+      : _socket_fd_(-1) {
+    if (fcntl(_socket_fd_, F_SETFL, O_NONBLOCK) == -1) {
+      ERROR_EXIT_WITH_ERRNO("fcntl() failed.");
+    }
+  }
   SocketBase(int socket_fd, const std::time_t timeout_seconds)
       : _socket_fd_(socket_fd)
       , _timeout_(timeout_seconds) {
