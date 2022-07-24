@@ -49,9 +49,6 @@ public:
   }
   ns_socket::SocketBase *create_socket(Response                &response,
                                        ns_socket::ClientSocket *parent_socket);
-  // 外に行く
-  std::string create_response_message(const std::string &content) const;
-  std::string create_response_message(const CgiInfo &cgi_info) const;
   // 更新しているだけ, resopnse_infoのコンストラクタになる
   ResponseGenerator
   create_response_generator(const HttpStatusCode &new_status_code) const;
@@ -65,6 +62,13 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
                                         const Path        &target_path);
 std::string          create_autoindex_body(const RequestInfo &request_info,
                                            const Path        &target_path);
+
+std::string create_response_message(const RequestInfo  &request_info,
+                                    const ResponseInfo &response_info,
+                                    const std::string  &content);
+std::string create_response_message(const RequestInfo &request_info,
+                                    const CgiInfo     &cgi_info);
+
 } // namespace response_generator
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */

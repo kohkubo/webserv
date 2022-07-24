@@ -122,7 +122,8 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   case CgiInfo::DOCUMENT:
   case CgiInfo::CLIENT_REDIR:
   case CgiInfo::CLIENT_REDIRDOC:
-    response_message = _response_generator_.create_response_message(_cgi_info_);
+    response_message = response_generator::create_response_message(
+        _response_generator_.request_info_, _cgi_info_);
     _response_.set_response_message_and_sending(response_message);
     return;
   case CgiInfo::LOCAL_REDIR:

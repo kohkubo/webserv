@@ -32,7 +32,8 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
     return socket_map_actions;
   }
   if (io_result == SUCCESS) {
-    std::string response_message = _response_generator_.create_response_message(
+    std::string response_message = response_generator::create_response_message(
+        _response_generator_.request_info_, _response_generator_.response_info_,
         HttpStatusCode(201).create_default_content_str());
     _response_.set_response_message_and_sending(response_message);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
