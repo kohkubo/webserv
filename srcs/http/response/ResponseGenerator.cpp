@@ -79,15 +79,16 @@ ResponseSender ResponseGenerator::generate_response_sender(
 
 // actionを引数で渡すようにして外に出す
 ns_socket::SocketBase *
-ResponseGenerator::create_socket(ResponseSender          &response,
+ResponseGenerator::create_socket(ResponseSender          &response_sender,
                                  ns_socket::ClientSocket *parent_socket) {
   switch (response_info_.action_) {
   case ResponseInfo::READ:
-    return new ns_socket::FileReadSocket(response, *this, parent_socket);
+    return new ns_socket::FileReadSocket(response_sender, *this, parent_socket);
   case ResponseInfo::WRITE:
-    return new ns_socket::FileWriteSocket(response, *this, parent_socket);
+    return new ns_socket::FileWriteSocket(response_sender, *this,
+                                          parent_socket);
   case ResponseInfo::CGI:
-    return new ns_socket::CgiSocket(response, *this, parent_socket);
+    return new ns_socket::CgiSocket(response_sender, *this, parent_socket);
   default:
     return NULL;
   }

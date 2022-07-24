@@ -20,9 +20,10 @@ private:
   static const std::size_t READ_BUFFER_SIZE_ = 1024;
 
 public:
-  FileReadSocket(ResponseSender &response, ResponseGenerator response_generator,
-                 ClientSocket *parent_socket)
-      : LocalIOSocket(response, response_generator, parent_socket,
+  FileReadSocket(ResponseSender   &response_sender,
+                 ResponseGenerator response_generator,
+                 ClientSocket     *parent_socket)
+      : LocalIOSocket(response_sender, response_generator, parent_socket,
                       TIMEOUT_SECONDS_) {}
 
   virtual ~FileReadSocket() {}

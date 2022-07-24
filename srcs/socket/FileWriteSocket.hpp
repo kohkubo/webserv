@@ -19,10 +19,10 @@ private:
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
 public:
-  FileWriteSocket(ResponseSender   &response,
+  FileWriteSocket(ResponseSender   &response_sender,
                   ResponseGenerator response_generator,
                   ClientSocket     *parent_socket)
-      : LocalIOSocket(response, response_generator, parent_socket,
+      : LocalIOSocket(response_sender, response_generator, parent_socket,
                       TIMEOUT_SECONDS_) {}
 
   virtual ~FileWriteSocket(){};

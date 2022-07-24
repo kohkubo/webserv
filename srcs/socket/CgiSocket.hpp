@@ -31,8 +31,8 @@ private:
   void _redirect_local(SocketMapActions &socket_map_actions);
 
 public:
-  CgiSocket(ResponseSender &response, ResponseGenerator response_generator,
-            ClientSocket *parent_socket);
+  CgiSocket(ResponseSender   &response_sender,
+            ResponseGenerator response_generator, ClientSocket *parent_socket);
   virtual ~CgiSocket();
   virtual struct pollfd    pollfd();
   virtual SocketMapActions handle_event(short int revents);

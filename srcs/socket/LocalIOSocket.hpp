@@ -30,10 +30,11 @@ protected:
   IOResult send_content();
 
 public:
-  LocalIOSocket(ResponseSender &response, ResponseGenerator response_generator,
+  LocalIOSocket(ResponseSender   &response_sender,
+                ResponseGenerator response_generator,
                 ClientSocket *parent_socket, const std::time_t timeout_seconds)
       : SocketBase(response_generator.response_info_.fd_, timeout_seconds)
-      , _response_sender_(response)
+      , _response_sender_(response_sender)
       , _response_generator_(response_generator)
       , _parent_socket_(parent_socket)
       , _send_count_(0) {}

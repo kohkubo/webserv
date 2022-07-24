@@ -12,10 +12,10 @@
 
 namespace ns_socket {
 
-CgiSocket::CgiSocket(ResponseSender   &response,
+CgiSocket::CgiSocket(ResponseSender   &response_sender,
                      ResponseGenerator response_generator,
                      ClientSocket     *parent_socket)
-    : LocalIOSocket(response, response_generator, parent_socket,
+    : LocalIOSocket(response_sender, response_generator, parent_socket,
                     TIMEOUT_SECONDS_)
     , _is_sending_(response_generator.response_info_.content_.size() != 0) {
   if (!_is_sending_) {
