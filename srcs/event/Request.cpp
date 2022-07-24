@@ -73,11 +73,11 @@ Request::handle_request(std::string               &request_buffer,
                         const config::ConfigGroup &config_group) {
   if (_state_ == Request::RECEIVING_STARTLINE) {
     _state_ = _handle_request_line(request_buffer);
-    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+    _check_buffer_length_exception(request_buffer);
   }
   if (_state_ == Request::RECEIVING_HEADER) {
     _state_ = _handle_request_header(request_buffer);
-    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+    _check_buffer_length_exception(request_buffer);
     if (_state_ == RECEIVING_BODY || _state_ == SUCCESS) {
       _request_info_.config_ = config_group.select_config(_request_info_.host_);
       if (_request_info_.content_info_.has_content_length()) {
