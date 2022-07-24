@@ -5,6 +5,7 @@
 #include <poll.h>
 #include <unistd.h>
 
+#include "socket/Timeout.hpp"
 #include "utils/utils.hpp"
 
 namespace ns_socket {
@@ -28,13 +29,15 @@ struct ReceiveResult {
 
 class SocketBase {
 protected:
-  int _socket_fd_;
+  int     _socket_fd_;
+  Timeout _timeout_;
 
 public:
   SocketBase()
       : _socket_fd_(-1) {}
-  SocketBase(int socket_fd)
-      : _socket_fd_(socket_fd) {
+  SocketBase(int socket_fd, const std::time_t timeout_seconds)
+      : _socket_fd_(socket_fd)
+      , _timeout_(timeout_seconds) {
     if (fcntl(_socket_fd_, F_SETFL, O_NONBLOCK) == -1) {
       ERROR_EXIT_WITH_ERRNO("fcntl() failed.");
     }

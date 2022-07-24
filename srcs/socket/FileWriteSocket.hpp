@@ -16,14 +16,13 @@ typedef response_generator::ResponseGenerator ResponseGenerator;
 
 class FileWriteSocket : public LocalIOSocket {
 private:
-  Timeout                  _timeout_;
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
 public:
   FileWriteSocket(Response &response, ResponseGenerator response_generator,
                   ClientSocket *parent_socket)
-      : LocalIOSocket(response, response_generator, parent_socket)
-      , _timeout_(TIMEOUT_SECONDS_) {}
+      : LocalIOSocket(response, response_generator, parent_socket,
+                      TIMEOUT_SECONDS_) {}
 
   virtual ~FileWriteSocket(){};
   virtual struct pollfd    pollfd();

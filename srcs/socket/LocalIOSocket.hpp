@@ -31,7 +31,12 @@ protected:
 
 public:
   LocalIOSocket(Response &response, ResponseGenerator response_generator,
-                ClientSocket *parent_socket);
+                ClientSocket *parent_socket, const std::time_t timeout_seconds)
+      : SocketBase(response_generator.response_info_.fd_, timeout_seconds)
+      , _response_(response)
+      , _response_generator_(response_generator)
+      , _parent_socket_(parent_socket)
+      , _send_count_(0) {}
   virtual ~LocalIOSocket() { _parent_socket_->notify_accomplished(this); }
   virtual SocketMapActions destroy_timedout_socket();
 };
