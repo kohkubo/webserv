@@ -9,7 +9,7 @@ ResponseInfo ResponseGenerator::_create_status_code_content(
   config::errorPageMap::const_iterator it =
       request_info_.config_.error_pages_.find(status_code);
   if (it != request_info_.config_.error_pages_.end()) {
-    Path file_path = location_->root_ + it->second;
+    Path file_path = request_info_.location_->root_ + it->second;
     if (!file_path.is_file_exists()) {
       if (status_code == HttpStatusCode::S_404_NOT_FOUND) {
         return ResponseInfo(ResponseInfo::CREATED,

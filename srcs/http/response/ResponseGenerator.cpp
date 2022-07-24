@@ -25,7 +25,6 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      HttpStatusCode     status_code)
     : request_info_(request_info)
     , peer_name_(peer_name)
-    , location_(NULL)
     , _is_connection_close_(request_info_.is_close_connection() ||
                             status_code == HttpStatusCode::S_400_BAD_REQUEST ||
                             status_code ==
@@ -41,20 +40,18 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
         _create_status_code_content(HttpStatusCode::S_501_NOT_IMPLEMENTED);
     return;
   }
-  location_ = request_info_.config_.locations_.select_location(
-      request_info_.request_line_.absolute_path_);
-  if (location_ == NULL) {
+  if (request_info_.location_ == NULL) {
     response_info_ =
         _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
     return;
   }
-  if (location_->return_map_.size() != 0) {
-    status_code    = location_->return_map_.begin()->first;
+  if (request_info_.location_->return_map_.size() != 0) {
+    status_code    = request_info_.location_->return_map_.begin()->first;
     response_info_ = _create_status_code_content(status_code);
     return;
   }
-  Path target_path =
-      location_->root_ + request_info_.request_line_.absolute_path_;
+  Path target_path = request_info_.location_->root_ +
+                     request_info_.request_line_.absolute_path_;
   response_info_ = _handle_method(target_path);
 }
 
@@ -146,9 +143,9 @@ static std::string create_response_header(const RequestInfo      &request_info,
 
 std::string
 ResponseGenerator::create_response_message(const std::string &content) const {
-  std::string response =
-      create_response_header(request_info_, location_, _is_connection_close_,
-                             response_info_.status_code_);
+  std::string response = create_response_header(
+      request_info_, request_info_.location_, _is_connection_close_,
+      response_info_.status_code_);
   response += entity_header_and_body(content);
   return response;
 };

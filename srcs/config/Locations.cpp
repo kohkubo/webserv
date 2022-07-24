@@ -31,7 +31,10 @@ const Location *Locations::select_location(const Path &request_target) const {
       }
     }
   }
-  return location;
+  if (location != NULL) {
+    return new Location(*location);
+  }
+  return NULL;
 }
 
 } // namespace config
