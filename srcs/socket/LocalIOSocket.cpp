@@ -7,7 +7,7 @@ SocketMapActions LocalIOSocket::destroy_timedout_socket() {
   ResponseGenerator new_response_generator =
       _response_generator_.create_response_generator(500);
 
-  _response_ = new_response_generator.generate_response();
+  _response_ = new_response_generator.generate_response(500);
   if (new_response_generator.need_socket()) {
     SocketBase *file_socket =
         new_response_generator.create_socket(_response_, _parent_socket_);
@@ -23,7 +23,7 @@ void LocalIOSocket::overwrite_error_response(
   ResponseGenerator new_response_generator =
       _response_generator_.create_response_generator(status_code);
 
-  _response_ = new_response_generator.generate_response();
+  _response_ = new_response_generator.generate_response(status_code);
   if (new_response_generator.need_socket()) {
     SocketBase *file_socket =
         new_response_generator.create_socket(_response_, _parent_socket_);

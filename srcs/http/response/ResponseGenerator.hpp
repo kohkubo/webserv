@@ -20,8 +20,7 @@ public:
   const std::string &peer_name_;
 
 private:
-  bool                _is_connection_close_;
-  size_t              _redirect_count_;
+  size_t              _redirect_count_; // response infoの中に入る
   static const size_t MAX_REDIRECT_COUNT_ = 10;
 
 private:
@@ -35,21 +34,25 @@ private:
   ResponseInfo _create_status_code_content(const HttpStatusCode &status_code);
 
 public:
+  // レスポンスinfoのコンストラクタにする
   ResponseGenerator(const RequestInfo &request_info,
                     const std::string &peer_name,
                     HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
   ~ResponseGenerator() {}
-  Response generate_response() const;
-  bool     is_over_max_redirect_count() const {
-        return _redirect_count_ > MAX_REDIRECT_COUNT_;
+  Response generate_response(
+      const HttpStatusCode &status_code) const; // response_infoに移動
+  bool is_over_max_redirect_count() const {
+    return _redirect_count_ > MAX_REDIRECT_COUNT_;
   }
   bool need_socket() const {
     return response_info_.action_ != ResponseInfo::CREATED;
   }
   ns_socket::SocketBase *create_socket(Response                &response,
                                        ns_socket::ClientSocket *parent_socket);
+  // 外に行く
   std::string create_response_message(const std::string &content) const;
   std::string create_response_message(const CgiInfo &cgi_info) const;
+  // 更新しているだけ, resopnse_infoのコンストラクタになる
   ResponseGenerator
   create_response_generator(const HttpStatusCode &new_status_code) const;
   ResponseGenerator

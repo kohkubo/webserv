@@ -96,7 +96,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       }
       ResponseGenerator response_generator(_request_.request_info(),
                                            _peer_name_);
-      _response_queue_.push_back(response_generator.generate_response());
+      _response_queue_.push_back(response_generator.generate_response(200));
       if (response_generator.need_socket()) {
         SocketBase *socket =
             response_generator.create_socket(_response_queue_.back(), this);
@@ -111,7 +111,8 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
     LOG("bad request: " << e.status());
     ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
                                          e.status());
-    _response_queue_.push_back(response_generator.generate_response());
+    _response_queue_.push_back(
+        response_generator.generate_response(e.status()));
     if (response_generator.need_socket()) {
       SocketBase *socket =
           response_generator.create_socket(_response_queue_.back(), this);

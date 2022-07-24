@@ -25,10 +25,6 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      HttpStatusCode     status_code)
     : request_info_(request_info)
     , peer_name_(peer_name)
-    , _is_connection_close_(request_info_.is_close_connection() ||
-                            status_code == HttpStatusCode::S_400_BAD_REQUEST ||
-                            status_code ==
-                                HttpStatusCode::S_413_ENTITY_TOO_LARGE)
     , _redirect_count_(0) {
   if (request_info_.config_ == NULL) {
     response_info_ =
@@ -61,20 +57,25 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
   response_info_ = _handle_method(target_path);
 }
 
-Response ResponseGenerator::generate_response() const {
+// reqponse_info_に移動
+Response
+ResponseGenerator::generate_response(const HttpStatusCode &status_code) const {
+  bool is_connection_close =
+      status_code.is_connection_close() || request_info_.is_close_connection();
   switch (response_info_.action_) {
   case ResponseInfo::READ:
-    return Response(_is_connection_close_, Response::READING);
+    return Response(is_connection_close, Response::READING);
   case ResponseInfo::WRITE:
-    return Response(_is_connection_close_, Response::WRITING);
+    return Response(is_connection_close, Response::WRITING);
   case ResponseInfo::CGI:
-    return Response(_is_connection_close_, Response::READING);
+    return Response(is_connection_close, Response::READING);
   default:
     return Response(create_response_message(response_info_.content_),
-                    _is_connection_close_);
+                    is_connection_close);
   }
 }
 
+// actionを引数で渡すようにして外に出す
 ns_socket::SocketBase *
 ResponseGenerator::create_socket(Response                &response,
                                  ns_socket::ClientSocket *parent_socket) {
@@ -150,7 +151,9 @@ static std::string create_response_header(const RequestInfo      &request_info,
 std::string
 ResponseGenerator::create_response_message(const std::string &content) const {
   std::string response = create_response_header(
-      request_info_, request_info_.location_, _is_connection_close_,
+      request_info_, request_info_.location_,
+      request_info_.is_close_connection() ||
+          response_info_.status_code_.is_connection_close(),
       response_info_.status_code_);
   response += entity_header_and_body(content);
   return response;
