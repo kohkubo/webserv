@@ -11,7 +11,8 @@ namespace ns_socket {
 
 class SocketMap {
 private:
-  std::map<int, SocketBase *> _socket_map_;
+  typedef int                      socketFd;
+  std::map<socketFd, SocketBase *> _socket_map_;
 
 private:
   SocketMap(const SocketMap &other);

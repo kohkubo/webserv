@@ -1,5 +1,5 @@
-#ifndef SRCS_SOCKET_FILESOCKET_HPP
-#define SRCS_SOCKET_FILESOCKET_HPP
+#ifndef SRCS_SOCKET_FILEREADSOCKET_HPP
+#define SRCS_SOCKET_FILEREADSOCKET_HPP
 
 #include <string>
 
@@ -35,4 +35,4 @@ public:
 
 } // namespace ns_socket
 
-#endif /* SRCS_SOCKET_FILESOCKET_HPP */
+#endif /* SRCS_SOCKET_FILEREADSOCKET_HPP */
