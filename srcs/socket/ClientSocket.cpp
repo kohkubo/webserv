@@ -94,8 +94,8 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       if (request_state != Request::SUCCESS) {
         break;
       }
-      ResponseGenerator response_generator(_request_.request_info(),
-                                           _peer_name_);
+      ResponseGenerator response_generator(
+          _request_.request_info(), _peer_name_, HttpStatusCode::S_200_OK);
       _response_queue_.push_back(response_generator.generate_response(200));
       if (response_generator.need_socket()) {
         SocketBase *socket =

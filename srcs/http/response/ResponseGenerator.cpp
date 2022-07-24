@@ -22,10 +22,11 @@
 namespace response_generator {
 ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
                                      const std::string &peer_name,
-                                     HttpStatusCode     status_code)
+                                     HttpStatusCode     status_code,
+                                     size_t             redirect_count)
     : request_info_(request_info)
     , peer_name_(peer_name)
-    , _redirect_count_(0) {
+    , redirect_count_(redirect_count) {
   if (request_info_.config_ == NULL) {
     response_info_ =
         ResponseInfo(ResponseInfo::CREATED,
@@ -90,24 +91,6 @@ ResponseGenerator::create_socket(Response                &response,
   default:
     return NULL;
   }
-}
-
-ResponseGenerator ResponseGenerator::create_response_generator(
-    const HttpStatusCode &status_code) const {
-  return ResponseGenerator(request_info_, peer_name_, status_code);
-}
-
-ResponseGenerator
-ResponseGenerator::create_response_generator(const std::string &target_path,
-                                             const std::string &query) const {
-  RequestInfo request_info                  = request_info_;
-  request_info.request_line_.absolute_path_ = target_path;
-  request_info.request_line_.query_         = query;
-
-  ResponseGenerator response_generator(request_info, peer_name_);
-  response_generator._redirect_count_ = _redirect_count_ + 1;
-
-  return response_generator;
 }
 
 } // namespace response_generator
