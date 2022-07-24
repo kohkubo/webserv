@@ -15,7 +15,7 @@ static std::string cutout_request_body(std::string &request_buffer,
 Request::RequestState
 Request::_handle_request_line(std::string &request_buffer) {
   std::string line;
-  while (getline(request_buffer, line)) {
+  if (getline(request_buffer, line)) {
     _request_info_.parse_request_line(line);
     return RECEIVING_HEADER;
   }
