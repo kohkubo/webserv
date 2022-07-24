@@ -32,6 +32,9 @@ listenFd ListenSocket::_create_socket() {
   if (listen_fd == -1) {
     ERROR_EXIT_WITH_ERRNO("socket() failed.");
   }
+  if (fcntl(listen_fd, F_SETFL, O_NONBLOCK) == -1) {
+    ERROR_EXIT_WITH_ERRNO("fcntl() failed.");
+  }
   int on = 1;
   if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&on,
                  sizeof(on)) == -1) {
