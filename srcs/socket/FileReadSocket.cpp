@@ -22,16 +22,16 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
   (void)revents;
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
-  char    buf[1024];
-  ssize_t read_size = read(_socket_fd_, buf, 1024);
-  if (read_size == -1) {
+
+  ReceiveResult receive_result = receive_content(READ_BUFFER_SIZE_);
+  if (receive_result.status_ == ReceiveResult::ERROR) {
     LOG("read error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions,
                              HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     return socket_map_actions;
   }
-  if (read_size == 0) {
+  if (receive_result.status_ == ReceiveResult::END) {
     std::string response_message =
         _response_generator_.create_response_message(_buffer_.str());
     // LOG("response message: " << response_message);
@@ -39,7 +39,7 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
-  _buffer_ << std::string(buf, read_size);
+  _buffer_ << receive_result.str_;
   // LOG("read_size: " << read_size);
   return socket_map_actions;
 }

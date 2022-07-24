@@ -9,7 +9,6 @@
 #include "socket/ClientSocket.hpp"
 #include "socket/LocalIOSocket.hpp"
 #include "socket/Timeout.hpp"
-#include "socket/socket.hpp"
 
 namespace ns_socket {
 

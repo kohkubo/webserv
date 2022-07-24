@@ -11,6 +11,21 @@ namespace ns_socket {
 
 class SocketMapActions;
 
+struct ReceiveResult {
+  enum ReceiveStatus {
+    ERROR = -1,
+    END,
+    SUCCESS,
+  };
+
+  ReceiveStatus status_;
+  std::string   str_;
+
+  ReceiveResult(ReceiveStatus status, std::string str)
+      : status_(status)
+      , str_(str) {}
+};
+
 class SocketBase {
 protected:
   int _socket_fd_;
@@ -35,6 +50,7 @@ public:
   virtual struct pollfd    pollfd()                        = 0;
   virtual SocketMapActions handle_event(short int revents) = 0;
   int                      socket_fd() const { return _socket_fd_; }
+  ReceiveResult            receive_content(size_t size) const;
 };
 
 } // namespace ns_socket

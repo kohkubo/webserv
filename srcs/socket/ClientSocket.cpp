@@ -5,7 +5,6 @@
 
 #include "SocketMapActions.hpp"
 #include "http/response/ResponseGenerator.hpp"
-#include "socket.hpp"
 #include "socket/CgiSocket.hpp"
 #include "socket/FileReadSocket.hpp"
 #include "socket/FileWriteSocket.hpp"
@@ -65,8 +64,9 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
 }
 
 bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
-  ReceiveResult receive_result = receive(_socket_fd_, HTTP_BUFFER_SIZE_);
-  if (receive_result.rc_ == 0) {
+  ReceiveResult receive_result = receive_content(HTTP_BUFFER_SIZE_);
+  if (receive_result.status_ == ReceiveResult::ERROR ||
+      receive_result.status_ == ReceiveResult::END) {
     LOG("got FIN from connection");
     _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);

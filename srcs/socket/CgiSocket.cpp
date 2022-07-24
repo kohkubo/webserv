@@ -72,14 +72,14 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
 }
 
 bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
-  ReceiveResult receive_result = receive(_socket_fd_, CGI_BUFFER_SIZE_);
-  if (receive_result.rc_ == -1) {
+  ReceiveResult receive_result = receive_content(CGI_BUFFER_SIZE_);
+  if (receive_result.status_ == ReceiveResult::ERROR) {
     LOG("receive error");
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return false;
   }
-  if (receive_result.rc_ == 0) {
+  if (receive_result.status_ == ReceiveResult::END) {
     LOG("got FIN from connection");
     return true;
   }
