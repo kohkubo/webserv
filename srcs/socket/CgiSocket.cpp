@@ -24,7 +24,7 @@ CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator,
   }
 }
 
-CgiSocket::~CgiSocket() {}
+CgiSocket::~CgiSocket() { _kill_cgi_process(); }
 
 struct pollfd CgiSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
@@ -37,14 +37,15 @@ struct pollfd CgiSocket::pollfd() {
 bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketMapActions CgiSocket::destroy_timedout_socket() {
-  _kill_cgi_process();
-  SocketMapActions socket_map_actions;
-  SocketBase      *file_socket = NULL;
-  _response_                   = _response_generator_.new_status_response(504);
-  if (_response_generator_.need_socket()) {
-    file_socket =
-        _response_generator_.create_socket(_response_, _parent_socket_);
-    _parent_socket_->store_new_child_socket(file_socket);
+  SocketMapActions  socket_map_actions;
+  ResponseGenerator new_response_generator =
+      _response_generator_.create_response_generator(504);
+
+  _response_ = new_response_generator.generate_response();
+  if (new_response_generator.need_socket()) {
+    SocketBase *file_socket =
+        new_response_generator.create_socket(_response_, _parent_socket_);
+    _parent_socket_->store_child_socket(file_socket);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
   }
@@ -74,7 +75,6 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   ReceiveResult receive_result = receive_content(CGI_BUFFER_SIZE_);
   if (receive_result.status_ == ReceiveResult::ERROR) {
     LOG("receive error");
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return false;
@@ -91,7 +91,6 @@ bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   IOResult io_result = send_content();
   if (io_result == ERROR) {
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -107,7 +106,6 @@ void CgiSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
 void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   CgiInfo::CgiState cgi_state = _cgi_info_.handle_cgi(_buffer_);
   if (cgi_state == CgiInfo::ERROR) {
-    _kill_cgi_process();
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
     return;
@@ -119,7 +117,6 @@ void CgiSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
 
 void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   std::string response_message;
-  _kill_cgi_process();
   socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   switch (_cgi_info_.response_type_) {
   case CgiInfo::DOCUMENT:
@@ -137,23 +134,23 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
-  ResponseGenerator response_generator =
-      _response_generator_.create_new_response_generator(
+  ResponseGenerator new_response_generator =
+      _response_generator_.create_response_generator(
           _cgi_info_.cgi_location_.path_, _cgi_info_.cgi_location_.query_);
 
-  if (response_generator.is_over_max_redirect_count()) {
+  if (new_response_generator.is_over_max_redirect_count()) {
     ERROR_LOG("too many redirect");
     overwrite_error_response(socket_map_actions, 500);
     return;
   }
-  _response_ = response_generator.generate_response();
-  if (response_generator.need_socket()) {
+  _response_ = new_response_generator.generate_response();
+  if (new_response_generator.need_socket()) {
     SocketBase *socket =
-        response_generator.create_socket(_response_, _parent_socket_);
+        new_response_generator.create_socket(_response_, _parent_socket_);
+    _parent_socket_->store_child_socket(socket);
     socket_map_actions.add_action(SocketMapAction::INSERT, socket->socket_fd(),
                                   socket);
   }
-  // TODO: exchange child
 }
 
 void CgiSocket::_kill_cgi_process() const {

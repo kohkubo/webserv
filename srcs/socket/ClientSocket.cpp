@@ -45,7 +45,7 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
   SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
-    LOG("connection was closed by client.");
+    // LOG("connection was closed by client.");
     _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
@@ -101,31 +101,32 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       if (response_generator.need_socket()) {
         SocketBase *socket =
             response_generator.create_socket(_response_queue_.back(), this);
-        LOG("add new socket:" << socket->socket_fd());
+        // LOG("add new socket:" << socket->socket_fd());
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
-        store_new_child_socket(socket);
+        store_child_socket(socket);
       }
       _request_ = Request();
     }
   } catch (const RequestInfo::BadRequestException &e) {
+    LOG("bad request: " << e.status());
     ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
                                          e.status());
     _response_queue_.push_back(response_generator.generate_response());
     if (response_generator.need_socket()) {
       SocketBase *socket =
           response_generator.create_socket(_response_queue_.back(), this);
-      LOG("add new socket:" << socket->socket_fd());
+      // LOG("add new socket:" << socket->socket_fd());
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
-      store_new_child_socket(socket);
+      store_child_socket(socket);
     }
   }
 }
 
 void ClientSocket::_add_delete_child_socket(
     SocketMapActions &socket_map_actions) {
-  LOG("reserved deleting all child socket");
+  // LOG("reserved deleting all child socket");
   std::set<SocketBase *>::iterator it = _child_socket_set_.begin();
   for (; it != _child_socket_set_.end(); it++) {
     socket_map_actions.add_action(SocketMapAction::DELETE, (*it)->socket_fd(),
@@ -133,7 +134,7 @@ void ClientSocket::_add_delete_child_socket(
   }
 }
 
-void ClientSocket::store_new_child_socket(SocketBase *child_socket) {
+void ClientSocket::store_child_socket(SocketBase *child_socket) {
   _child_socket_set_.insert(child_socket);
 }
 
