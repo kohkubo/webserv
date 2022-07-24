@@ -9,7 +9,7 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "event/Response.hpp"
+#include "event/ResponseSender.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
@@ -59,27 +59,27 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 // reqponse_info_に移動
-Response
-ResponseGenerator::generate_response(const HttpStatusCode &status_code) const {
+ResponseSender ResponseGenerator::generate_response_sender(
+    const HttpStatusCode &status_code) const {
   bool is_connection_close =
       status_code.is_connection_close() || request_info_.is_close_connection();
   switch (response_info_.action_) {
   case ResponseInfo::READ:
-    return Response(is_connection_close, Response::READING);
+    return ResponseSender(ResponseSender::READING, is_connection_close);
   case ResponseInfo::WRITE:
-    return Response(is_connection_close, Response::WRITING);
+    return ResponseSender(ResponseSender::WRITING, is_connection_close);
   case ResponseInfo::CGI:
-    return Response(is_connection_close, Response::READING);
+    return ResponseSender(ResponseSender::READING, is_connection_close);
   default:
-    return Response(create_response_message(request_info_, response_info_,
-                                            response_info_.content_),
-                    is_connection_close);
+    return ResponseSender(ResponseSender::SENDING, is_connection_close,
+                          create_response_message(request_info_, response_info_,
+                                                  response_info_.content_));
   }
 }
 
 // actionを引数で渡すようにして外に出す
 ns_socket::SocketBase *
-ResponseGenerator::create_socket(Response                &response,
+ResponseGenerator::create_socket(ResponseSender          &response,
                                  ns_socket::ClientSocket *parent_socket) {
   switch (response_info_.action_) {
   case ResponseInfo::READ:

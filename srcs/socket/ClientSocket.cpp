@@ -77,9 +77,9 @@ bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 }
 
 void ClientSocket::_handle_send_event() {
-  Response::ResponseState response_state =
+  ResponseSender::ResponseState response_state =
       _response_queue_.front().send(_socket_fd_);
-  if (response_state == Response::COMPLETE) {
+  if (response_state == ResponseSender::COMPLETE) {
     _response_queue_.pop_front();
   }
 }
@@ -96,7 +96,8 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
       }
       ResponseGenerator response_generator(
           _request_.request_info(), _peer_name_, HttpStatusCode::S_200_OK);
-      _response_queue_.push_back(response_generator.generate_response(200));
+      _response_queue_.push_back(
+          response_generator.generate_response_sender(200));
       if (response_generator.need_socket()) {
         SocketBase *socket =
             response_generator.create_socket(_response_queue_.back(), this);
@@ -112,7 +113,7 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
     ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
                                          e.status());
     _response_queue_.push_back(
-        response_generator.generate_response(e.status()));
+        response_generator.generate_response_sender(e.status()));
     if (response_generator.need_socket()) {
       SocketBase *socket =
           response_generator.create_socket(_response_queue_.back(), this);

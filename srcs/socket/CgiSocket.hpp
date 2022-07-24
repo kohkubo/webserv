@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "event/Response.hpp"
+#include "event/ResponseSender.hpp"
 #include "http/response/CgiInfo.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/ClientSocket.hpp"
@@ -31,7 +31,7 @@ private:
   void _redirect_local(SocketMapActions &socket_map_actions);
 
 public:
-  CgiSocket(Response &response, ResponseGenerator response_generator,
+  CgiSocket(ResponseSender &response, ResponseGenerator response_generator,
             ClientSocket *parent_socket);
   virtual ~CgiSocket();
   virtual struct pollfd    pollfd();

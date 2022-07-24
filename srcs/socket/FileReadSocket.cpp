@@ -36,7 +36,7 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
         _response_generator_.request_info_, _response_generator_.response_info_,
         _buffer_.str());
     // LOG("response message: " << response_message);
-    _response_.set_response_message_and_sending(response_message);
+    _response_sender_.set_response_message_and_sending(response_message);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return socket_map_actions;
   }
