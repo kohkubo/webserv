@@ -28,6 +28,7 @@ func NormalTests() T {
 		testReturn,
 		testKeepAlive,
 		testErrorPage,
+		testMaxSize,
 	}
 	return s
 }
