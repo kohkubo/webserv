@@ -38,11 +38,11 @@ std::vector<struct pollfd> SocketMap::create_pollfds() {
 
 SocketMapActions SocketMap::handle_socket_event(int       socket_fd,
                                                 short int revents) {
-
-  if (_socket_map_.count(socket_fd) == 0) {
+  std::map<socketFd, SocketBase *>::iterator it = _socket_map_.find(socket_fd);
+  if (it == _socket_map_.end()) {
     return SocketMapActions();
   }
-  return _socket_map_[socket_fd]->handle_event(revents);
+  return it->second->handle_event(revents);
 }
 
 void SocketMap::do_socket_map_action(const SocketMapAction &socket_map_action) {
