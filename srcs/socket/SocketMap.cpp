@@ -28,7 +28,6 @@ SocketMap::~SocketMap() {
 
 std::vector<struct pollfd> SocketMap::create_pollfds() {
   std::vector<struct pollfd> pollfds;
-  pollfds.clear();
   socketMapType::const_iterator it = _socket_map_.begin();
   for (; it != _socket_map_.end(); it++) {
     pollfds.push_back(it->second->pollfd());
