@@ -4,7 +4,7 @@
 
 #include "config/Config.hpp"
 #include "config/ConfigGroup.hpp"
-#include "event/Request.hpp"
+#include "event/RequestHandler.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_chunked_test, chunked_body) {
@@ -31,10 +31,10 @@ TEST(request_chunked_test, chunked_body) {
   config.locations_.add_or_exit(location);
 
   config::ConfigGroup config_group(config);
-  Request             request;
+  RequestHandler      request_handler;
 
-  request.handle_request(request_buffer, config_group);
-  const RequestInfo &request_info = request.request_info();
+  request_handler.handle_request(request_buffer, config_group);
+  const RequestInfo &request_info = request_handler.request_info();
 
   EXPECT_EQ(request_info.is_chunked(), true);
   EXPECT_EQ(request_info.content_info_.content_,
@@ -67,16 +67,16 @@ TEST(request_chunked_test, chunked_body_split) {
   location.location_path_ = "/";
   config.locations_.add_or_exit(location);
   config::ConfigGroup config_group(config);
-  Request             request;
+  RequestHandler      request_handler;
   std::string         request_buffer;
   request_buffer.append(request_buffer1);
-  request.handle_request(request_buffer, config_group);
+  request_handler.handle_request(request_buffer, config_group);
   request_buffer.append(request_buffer2);
-  request.handle_request(request_buffer, config_group);
+  request_handler.handle_request(request_buffer, config_group);
   request_buffer.append(request_buffer3);
-  request.handle_request(request_buffer, config_group);
+  request_handler.handle_request(request_buffer, config_group);
 
-  const RequestInfo &request_info = request.request_info();
+  const RequestInfo &request_info = request_handler.request_info();
 
   EXPECT_EQ(request_info.is_chunked(), true);
   EXPECT_EQ(request_info.content_info_.content_,

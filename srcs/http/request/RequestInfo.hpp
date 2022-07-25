@@ -62,7 +62,7 @@ public:
   public:
     BadRequestException(
         HttpStatusCode     status = HttpStatusCode::S_400_BAD_REQUEST,
-        const std::string &msg    = "Illegal request.");
+        const std::string &msg    = "Illegal request_handler.");
     HttpStatusCode status() const;
   };
 

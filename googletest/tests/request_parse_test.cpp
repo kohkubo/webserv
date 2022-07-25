@@ -3,7 +3,7 @@
 #include <string>
 
 #include "config/ConfigGroup.hpp"
-#include "event/Request.hpp"
+#include "event/RequestHandler.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_parse_test, normal) {
@@ -15,10 +15,10 @@ TEST(request_parse_test, normal) {
 
   config::Config      config;
   config::ConfigGroup config_group(config);
-  Request             request;
+  RequestHandler      request_handler;
 
-  request.handle_request(request_buffer, config_group);
-  const RequestInfo &request_info = request.request_info();
+  request_handler.handle_request(request_buffer, config_group);
+  const RequestInfo &request_info = request_handler.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "GET");
   EXPECT_EQ(request_info.request_line_.absolute_path_.str(), "/");
@@ -36,10 +36,10 @@ TEST(request_parse_test, normal_delete) {
 
   config::Config      config;
   config::ConfigGroup config_group(config);
-  Request             request;
+  RequestHandler      request_handler;
 
-  request.handle_request(request_buffer, config_group);
-  const RequestInfo &request_info = request.request_info();
+  request_handler.handle_request(request_buffer, config_group);
+  const RequestInfo &request_info = request_handler.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "DELETE");
   EXPECT_EQ(request_info.request_line_.absolute_path_.str(),
@@ -61,10 +61,10 @@ TEST(request_parse_test, normal_post) {
 
   config::Config      config;
   config::ConfigGroup config_group(config);
-  Request             request;
+  RequestHandler      request_handler;
 
-  request.handle_request(request_buffer, config_group);
-  const RequestInfo &request_info = request.request_info();
+  request_handler.handle_request(request_buffer, config_group);
+  const RequestInfo &request_info = request_handler.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "POST");
   EXPECT_EQ(request_info.request_line_.absolute_path_.str(), "/target");
@@ -86,10 +86,10 @@ TEST(request_parse_test, query_string) {
 
   config::Config      config;
   config::ConfigGroup config_group(config);
-  Request             request;
+  RequestHandler      request_handler;
 
-  request.handle_request(request_buffer, config_group);
-  const RequestInfo &request_info = request.request_info();
+  request_handler.handle_request(request_buffer, config_group);
+  const RequestInfo &request_info = request_handler.request_info();
 
   EXPECT_EQ(request_info.request_line_.method_, "GET");
   EXPECT_EQ(request_info.request_line_.absolute_path_.str(), "/hoge.cgi");

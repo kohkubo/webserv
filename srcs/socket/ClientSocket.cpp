@@ -89,13 +89,14 @@ typedef response_generator::ResponseGenerator ResponseGenerator;
 void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   try {
     for (;;) {
-      Request::RequestState request_state =
-          _request_.handle_request(_buffer_, _config_group_);
-      if (request_state != Request::SUCCESS) {
+      RequestHandler::RequestState request_state =
+          _request_handler_.handle_request(_buffer_, _config_group_);
+      if (request_state != RequestHandler::SUCCESS) {
         break;
       }
-      ResponseGenerator response_generator(
-          _request_.request_info(), _peer_name_, HttpStatusCode::S_200_OK);
+      ResponseGenerator response_generator(_request_handler_.request_info(),
+                                           _peer_name_,
+                                           HttpStatusCode::S_200_OK);
       _response_queue_.push_back(
           response_generator.generate_response_sender(200));
       if (response_generator.need_socket()) {
@@ -106,12 +107,12 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
                                       socket->socket_fd(), socket);
         store_child_socket(socket);
       }
-      _request_ = Request();
+      _request_handler_ = RequestHandler();
     }
   } catch (const RequestInfo::BadRequestException &e) {
     LOG("bad request: " << e.status());
-    ResponseGenerator response_generator(_request_.request_info(), _peer_name_,
-                                         e.status());
+    ResponseGenerator response_generator(_request_handler_.request_info(),
+                                         _peer_name_, e.status());
     _response_queue_.push_back(
         response_generator.generate_response_sender(e.status()));
     if (response_generator.need_socket()) {

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "config/ConfigGroup.hpp"
-#include "event/Request.hpp"
+#include "event/RequestHandler.hpp"
 #include "event/ResponseSender.hpp"
 #include "socket/SocketMapActions.hpp"
 #include "socket/Timeout.hpp"
@@ -18,7 +18,7 @@ namespace ns_socket {
 class ClientSocket : public SocketBase {
 private:
   const config::ConfigGroup &_config_group_;
-  Request                    _request_;
+  RequestHandler             _request_handler_;
   std::deque<ResponseSender> _response_queue_;
   std::string                _buffer_;
   std::string                _peer_name_;

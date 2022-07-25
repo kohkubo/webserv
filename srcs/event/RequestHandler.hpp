@@ -10,7 +10,7 @@
 
 typedef int connFd;
 
-struct Request {
+struct RequestHandler {
   enum RequestState {
     RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
     RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
@@ -47,7 +47,7 @@ private:
   RequestState _handle_request_body(std::string &request_buffer);
 
 public:
-  Request()
+  RequestHandler()
       : _state_(RECEIVING_STARTLINE) {}
 
   const RequestInfo &request_info() const { return _request_info_; }
