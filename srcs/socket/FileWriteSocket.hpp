@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "event/ResponseSender.hpp"
+#include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/ClientSocket.hpp"
@@ -19,10 +19,9 @@ private:
   static const std::time_t TIMEOUT_SECONDS_ = 5;
 
 public:
-  FileWriteSocket(ResponseSender   &response_sender,
-                  ResponseGenerator response_generator,
-                  ClientSocket     *parent_socket)
-      : LocalIOSocket(response_sender, response_generator, parent_socket,
+  FileWriteSocket(Response &response, ResponseGenerator response_generator,
+                  ClientSocket *parent_socket)
+      : LocalIOSocket(response, response_generator, parent_socket,
                       TIMEOUT_SECONDS_) {}
 
   virtual ~FileWriteSocket(){};

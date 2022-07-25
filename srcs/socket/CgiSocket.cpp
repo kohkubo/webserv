@@ -12,10 +12,9 @@
 
 namespace ns_socket {
 
-CgiSocket::CgiSocket(ResponseSender   &response_sender,
-                     ResponseGenerator response_generator,
-                     ClientSocket     *parent_socket)
-    : LocalIOSocket(response_sender, response_generator, parent_socket,
+CgiSocket::CgiSocket(Response &response, ResponseGenerator response_generator,
+                     ClientSocket *parent_socket)
+    : LocalIOSocket(response, response_generator, parent_socket,
                     TIMEOUT_SECONDS_)
     , _is_sending_(response_generator.response_info_.content_.size() != 0) {
   if (!_is_sending_) {
@@ -43,10 +42,10 @@ SocketMapActions CgiSocket::destroy_timedout_socket() {
       _response_generator_.request_info_, _response_generator_.peer_name_,
       HttpStatusCode::S_504_GATEWAY_TIME_OUT);
 
-  _response_sender_ = new_response_generator.generate_response_sender(504);
+  _response_ = new_response_generator.generate_response(504);
   if (new_response_generator.need_socket()) {
-    SocketBase *file_socket = new_response_generator.create_socket(
-        _response_sender_, _parent_socket_);
+    SocketBase *file_socket =
+        new_response_generator.create_socket(_response_, _parent_socket_);
     _parent_socket_->store_child_socket(file_socket);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
@@ -126,7 +125,7 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   case CgiInfo::CLIENT_REDIRDOC:
     response_message = response_generator::create_response_message(
         _response_generator_.request_info_, _cgi_info_);
-    _response_sender_.set_response_message_and_sending(response_message);
+    _response_.set_response_message_and_sending(response_message);
     return;
   case CgiInfo::LOCAL_REDIR:
     _redirect_local(socket_map_actions);
@@ -148,10 +147,10 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
     overwrite_error_response(socket_map_actions, 500);
     return;
   }
-  _response_sender_ = new_response_generator.generate_response_sender(500);
+  _response_ = new_response_generator.generate_response(500);
   if (new_response_generator.need_socket()) {
-    SocketBase *socket = new_response_generator.create_socket(_response_sender_,
-                                                              _parent_socket_);
+    SocketBase *socket =
+        new_response_generator.create_socket(_response_, _parent_socket_);
     _parent_socket_->store_child_socket(socket);
     socket_map_actions.add_action(SocketMapAction::INSERT, socket->socket_fd(),
                                   socket);

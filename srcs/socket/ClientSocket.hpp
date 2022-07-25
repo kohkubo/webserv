@@ -9,7 +9,7 @@
 
 #include "config/ConfigGroup.hpp"
 #include "event/RequestHandler.hpp"
-#include "event/ResponseSender.hpp"
+#include "event/Response.hpp"
 #include "socket/SocketMapActions.hpp"
 #include "socket/Timeout.hpp"
 
@@ -19,7 +19,7 @@ class ClientSocket : public SocketBase {
 private:
   const config::ConfigGroup &_config_group_;
   RequestHandler             _request_handler_;
-  std::deque<ResponseSender> _response_queue_;
+  std::deque<Response>       _response_queue_;
   std::string                _buffer_;
   std::string                _peer_name_;
   static const std::time_t   TIMEOUT_SECONDS_  = 60;

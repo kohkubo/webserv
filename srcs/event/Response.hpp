@@ -10,7 +10,7 @@
 
 typedef int connFd;
 
-class ResponseSender {
+class Response {
 public:
   enum ResponseState {
     SENDING,  // おくってないか、送信中
@@ -32,13 +32,13 @@ private:
   }
 
 public:
-  ResponseSender(ResponseState state, bool is_close,
-                 std::string response_message = std::string())
+  Response(ResponseState state, bool is_close,
+           std::string response_message = std::string())
       : _state_(state)
       , _response_message_(response_message)
       , _is_last_response_(is_close)
       , _send_count_(0) {}
-  ~ResponseSender() {}
+  ~Response() {}
 
   bool          is_sending() const { return _state_ == SENDING; }
   ResponseState send(connFd conn_fd) {

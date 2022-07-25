@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "event/ResponseSender.hpp"
+#include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/ClientSocket.hpp"
@@ -20,10 +20,9 @@ private:
   static const std::size_t READ_BUFFER_SIZE_ = 1024;
 
 public:
-  FileReadSocket(ResponseSender   &response_sender,
-                 ResponseGenerator response_generator,
-                 ClientSocket     *parent_socket)
-      : LocalIOSocket(response_sender, response_generator, parent_socket,
+  FileReadSocket(Response &response, ResponseGenerator response_generator,
+                 ClientSocket *parent_socket)
+      : LocalIOSocket(response, response_generator, parent_socket,
                       TIMEOUT_SECONDS_) {}
 
   virtual ~FileReadSocket() {}

@@ -8,10 +8,10 @@ SocketMapActions LocalIOSocket::destroy_timedout_socket() {
       _response_generator_.request_info_, _response_generator_.peer_name_,
       HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
 
-  _response_sender_ = new_response_generator.generate_response_sender(500);
+  _response_ = new_response_generator.generate_response(500);
   if (new_response_generator.need_socket()) {
-    SocketBase *file_socket = new_response_generator.create_socket(
-        _response_sender_, _parent_socket_);
+    SocketBase *file_socket =
+        new_response_generator.create_socket(_response_, _parent_socket_);
     _parent_socket_->store_child_socket(file_socket);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);
@@ -25,11 +25,10 @@ void LocalIOSocket::overwrite_error_response(
                                            _response_generator_.peer_name_,
                                            status_code);
 
-  _response_sender_ =
-      new_response_generator.generate_response_sender(status_code);
+  _response_ = new_response_generator.generate_response(status_code);
   if (new_response_generator.need_socket()) {
-    SocketBase *file_socket = new_response_generator.create_socket(
-        _response_sender_, _parent_socket_);
+    SocketBase *file_socket =
+        new_response_generator.create_socket(_response_, _parent_socket_);
     _parent_socket_->store_child_socket(file_socket);
     socket_map_actions.add_action(SocketMapAction::INSERT,
                                   file_socket->socket_fd(), file_socket);

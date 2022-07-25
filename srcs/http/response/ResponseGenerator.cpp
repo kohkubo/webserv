@@ -9,7 +9,7 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "event/ResponseSender.hpp"
+#include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
@@ -59,36 +59,35 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 // reqponse_info_に移動
-ResponseSender ResponseGenerator::generate_response_sender(
-    const HttpStatusCode &status_code) const {
+Response
+ResponseGenerator::generate_response(const HttpStatusCode &status_code) const {
   bool is_connection_close =
       status_code.is_connection_close() || request_info_.is_close_connection();
   switch (response_info_.action_) {
   case ResponseInfo::READ:
-    return ResponseSender(ResponseSender::READING, is_connection_close);
+    return Response(Response::READING, is_connection_close);
   case ResponseInfo::WRITE:
-    return ResponseSender(ResponseSender::WRITING, is_connection_close);
+    return Response(Response::WRITING, is_connection_close);
   case ResponseInfo::CGI:
-    return ResponseSender(ResponseSender::READING, is_connection_close);
+    return Response(Response::READING, is_connection_close);
   default:
-    return ResponseSender(ResponseSender::SENDING, is_connection_close,
-                          create_response_message(request_info_, response_info_,
-                                                  response_info_.content_));
+    return Response(Response::SENDING, is_connection_close,
+                    create_response_message(request_info_, response_info_,
+                                            response_info_.content_));
   }
 }
 
 // actionを引数で渡すようにして外に出す
 ns_socket::SocketBase *
-ResponseGenerator::create_socket(ResponseSender          &response_sender,
+ResponseGenerator::create_socket(Response                &response,
                                  ns_socket::ClientSocket *parent_socket) {
   switch (response_info_.action_) {
   case ResponseInfo::READ:
-    return new ns_socket::FileReadSocket(response_sender, *this, parent_socket);
+    return new ns_socket::FileReadSocket(response, *this, parent_socket);
   case ResponseInfo::WRITE:
-    return new ns_socket::FileWriteSocket(response_sender, *this,
-                                          parent_socket);
+    return new ns_socket::FileWriteSocket(response, *this, parent_socket);
   case ResponseInfo::CGI:
-    return new ns_socket::CgiSocket(response_sender, *this, parent_socket);
+    return new ns_socket::CgiSocket(response, *this, parent_socket);
   default:
     return NULL;
   }

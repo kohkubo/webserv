@@ -11,8 +11,8 @@
 
 // clang-format off
 /*
-rfc 3875 6. CGI ResponseSender
-  CGI-ResponseSender = document-response | local-redir-response | client-redir-response | client-redirdoc-response
+rfc 3875 6. CGI Response
+  CGI-Response = document-response | local-redir-response | client-redir-response | client-redirdoc-response
 
   document-response = Content-Type [ Status ] *other-field NL response-body
   local-redir-response = local-Location NL

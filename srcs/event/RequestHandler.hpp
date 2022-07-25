@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_REQUEST_HPP
-#define SRCS_EVENT_REQUEST_HPP
+#ifndef SRCS_EVENT_REQUESTHANDLER_HPP
+#define SRCS_EVENT_REQUESTHANDLER_HPP
 
 #include <sys/types.h>
 
@@ -55,4 +55,4 @@ public:
                                     const config::ConfigGroup &config_group);
 };
 
-#endif /* SRCS_EVENT_REQUEST_HPP */
+#endif /* SRCS_EVENT_REQUESTHANDLER_HPP */

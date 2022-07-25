@@ -2,7 +2,7 @@
 #define SRCS_SOCKET_LOCALIOSOCKET_HPP
 
 #include "SocketMapActions.hpp"
-#include "event/ResponseSender.hpp"
+#include "event/Response.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/ClientSocket.hpp"
 #include "socket/SocketBase.hpp"
@@ -19,7 +19,7 @@ protected:
     SUCCESS,
   };
 
-  ResponseSender         &_response_sender_;
+  Response               &_response_;
   const ResponseGenerator _response_generator_;
   ClientSocket           *_parent_socket_;
   ssize_t                 _send_count_;
@@ -30,11 +30,10 @@ protected:
   IOResult send_content();
 
 public:
-  LocalIOSocket(ResponseSender   &response_sender,
-                ResponseGenerator response_generator,
+  LocalIOSocket(Response &response, ResponseGenerator response_generator,
                 ClientSocket *parent_socket, const std::time_t timeout_seconds)
       : SocketBase(response_generator.response_info_.fd_, timeout_seconds)
-      , _response_sender_(response_sender)
+      , _response_(response)
       , _response_generator_(response_generator)
       , _parent_socket_(parent_socket)
       , _send_count_(0) {}
