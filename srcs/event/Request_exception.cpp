@@ -13,9 +13,8 @@ void Request::_check_max_client_body_size_exception(ssize_t actual_body_size,
   }
 }
 
-void Request::_check_buffer_length_exception(std::string &request_buffer,
-                                             std::size_t  buffer_max_length) {
-  if (request_buffer.size() >= buffer_max_length) {
+void Request::_check_buffer_length_exception(std::string &request_buffer) {
+  if (request_buffer.size() >= BUFFER_MAX_LENGTH_) {
     request_buffer.clear();
     ERROR_LOG("buffer_max_length exceeded");
     throw RequestInfo::BadRequestException();

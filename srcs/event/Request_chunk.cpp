@@ -41,7 +41,7 @@ Request::RequestState Request::_chunk_loop(std::string &request_buffer) {
     }
   }
   if (_chunk_.next_chunk_type_ == CHUNK_SIZE) {
-    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+    _check_buffer_length_exception(request_buffer);
   }
   return RECEIVING_BODY;
 }
