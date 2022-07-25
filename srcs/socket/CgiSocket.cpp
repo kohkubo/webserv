@@ -42,7 +42,7 @@ SocketMapActions CgiSocket::destroy_timedout_socket() {
       _response_generator_.request_info_, _response_generator_.peer_name_,
       HttpStatusCode::S_504_GATEWAY_TIME_OUT);
 
-  _response_ = new_response_generator.generate_response(504);
+  _response_ = new_response_generator.generate_response();
   if (new_response_generator.need_socket()) {
     SocketBase *file_socket =
         new_response_generator.create_socket(_response_, _parent_socket_);
@@ -147,7 +147,7 @@ void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
     overwrite_error_response(socket_map_actions, 500);
     return;
   }
-  _response_ = new_response_generator.generate_response(500);
+  _response_ = new_response_generator.generate_response();
   if (new_response_generator.need_socket()) {
     SocketBase *socket =
         new_response_generator.create_socket(_response_, _parent_socket_);

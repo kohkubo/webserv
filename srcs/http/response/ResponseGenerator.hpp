@@ -39,10 +39,9 @@ public:
                     const std::string &peer_name, HttpStatusCode status_code,
                     size_t redirect_count = 0);
   ~ResponseGenerator() {}
-  Response generate_response(
-      const HttpStatusCode &status_code) const; // response_infoに移動
-  bool is_over_max_redirect_count() const {
-    return redirect_count_ > MAX_REDIRECT_COUNT_;
+  Response generate_response() const; // response_infoに移動
+  bool     is_over_max_redirect_count() const {
+        return redirect_count_ > MAX_REDIRECT_COUNT_;
   }
   bool need_socket() const {
     return response_info_.action_ != ResponseInfo::CREATED;

@@ -59,10 +59,10 @@ ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
 }
 
 // reqponse_info_に移動
-Response
-ResponseGenerator::generate_response(const HttpStatusCode &status_code) const {
+Response ResponseGenerator::generate_response() const {
   bool is_connection_close =
-      status_code.is_connection_close() || request_info_.is_close_connection();
+      response_info_.status_code_.is_connection_close() ||
+      request_info_.is_close_connection();
   switch (response_info_.action_) {
   case ResponseInfo::READ:
     return Response(Response::READING, is_connection_close);
