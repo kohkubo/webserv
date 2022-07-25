@@ -35,13 +35,13 @@ std::vector<struct pollfd> SocketMap::create_pollfds() {
   return pollfds;
 }
 
-SocketMapActions SocketMap::handle_socket_event(int       socket_fd,
-                                                short int revents) {
+void SocketMap::handle_socket_event(int socket_fd, short int revents,
+                                    SocketMapActions &socket_map_actions) {
   socketMapType::iterator it = _socket_map_.find(socket_fd);
   if (it == _socket_map_.end()) {
-    return SocketMapActions();
+    return;
   }
-  return it->second->handle_event(revents);
+  it->second->handle_event(revents, socket_map_actions);
 }
 
 void SocketMap::do_socket_map_action(const SocketMapAction &socket_map_action) {

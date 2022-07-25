@@ -53,8 +53,8 @@ SocketMapActions CgiSocket::destroy_timedout_socket() {
   return socket_map_actions;
 }
 
-SocketMapActions CgiSocket::handle_event(short int revents) {
-  SocketMapActions socket_map_actions;
+void CgiSocket::handle_event(short int         revents,
+                             SocketMapActions &socket_map_actions) {
   _timeout_.update_last_event();
 
   if ((revents & POLLIN) != 0) {
@@ -62,14 +62,14 @@ SocketMapActions CgiSocket::handle_event(short int revents) {
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close) {
       _create_cgi_response(socket_map_actions);
-      return socket_map_actions;
+      return;
     }
   }
   if ((revents & POLLOUT) != 0) {
     LOG("got POLLOUT event of cgi " << _socket_fd_);
     _handle_send_event(socket_map_actions);
   }
-  return socket_map_actions;
+  return;
 }
 
 bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {

@@ -84,4 +84,13 @@ bench:
 	--benchmark_out_format=csv \
 	--benchmark_out=benchmark.csv # --benchmark_filter=BM_VectorInsert_input_iterator
 
+cov: CXXFLAGS += -fprofile-arcs -ftest-coverage
+cov: re
+	./$(NAME) conf/test.conf
+	lcov -c -b . -d . -o cov_test.info $(lcov_op)
+	genhtml cov_test.info -o cov_test
+	# $(RM) $(NAME) cov_test.info
+	# $(RM) $(TOBJS) $(TOBJDIR)/*.gcda $(TOBJDIR)/*.gcno
+	open cov_test/index-sort-f.html
+
 -include $(deps)

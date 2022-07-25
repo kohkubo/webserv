@@ -28,7 +28,8 @@ public:
   ListenSocket(const config::ConfigGroup &config_group);
   virtual ~ListenSocket() {}
   virtual struct pollfd    pollfd();
-  virtual SocketMapActions handle_event(short int revents);
+  virtual void             handle_event(short int         revents,
+                                        SocketMapActions &socket_map_actions);
   virtual bool             is_timed_out();
   virtual SocketMapActions destroy_timedout_socket() {
     return SocketMapActions();

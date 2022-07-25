@@ -25,8 +25,9 @@ public:
   ~SocketMap();
   void                       close_timedout_socket();
   std::vector<struct pollfd> create_pollfds();
-  SocketMapActions handle_socket_event(int socket_fd, short int revents);
-  void             do_socket_map_action(const SocketMapAction &socket_map_op);
+  void handle_socket_event(int socket_fd, short int revents,
+                           SocketMapActions &socket_map_actions);
+  void do_socket_map_action(const SocketMapAction &socket_map_op);
 };
 
 } // namespace ns_socket

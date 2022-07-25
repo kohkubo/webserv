@@ -40,26 +40,26 @@ SocketMapActions ClientSocket::destroy_timedout_socket() {
   return socket_map_actions;
 }
 
-SocketMapActions ClientSocket::handle_event(short int revents) {
-  SocketMapActions socket_map_actions;
+void ClientSocket::handle_event(short int         revents,
+                                SocketMapActions &socket_map_actions) {
   _timeout_.update_last_event();
   if ((revents & (POLLHUP | POLLERR)) != 0) {
     // LOG("connection was closed by client.");
     _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
-    return socket_map_actions;
+    return;
   }
   if ((revents & POLLIN) != 0) {
     // LOG("got POLLIN  event of client " << _socket_fd_);
     bool is_close = _handle_receive_event(socket_map_actions);
     if (is_close)
-      return socket_map_actions;
+      return;
   }
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of client " << _socket_fd_);
     _handle_send_event(socket_map_actions);
   }
-  return socket_map_actions;
+  return;
 }
 
 bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
