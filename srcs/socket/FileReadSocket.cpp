@@ -41,7 +41,6 @@ void FileReadSocket::handle_event(short int         revents,
   }
   _buffer_ << receive_result.str_;
   // LOG("read_size: " << read_size);
-  return;
 }
 
 } // namespace ns_socket

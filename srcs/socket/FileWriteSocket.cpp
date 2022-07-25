@@ -37,7 +37,6 @@ void FileWriteSocket::handle_event(short int         revents,
     _response_.set_response_message_and_sending(response_message);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   }
-  return;
 }
 
 } // namespace ns_socket

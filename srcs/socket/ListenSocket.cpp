@@ -80,7 +80,6 @@ void ListenSocket::handle_event(short int         revents,
     socket_map_actions.add_action(SocketMapAction::INSERT, conn_fd,
                                   client_socket);
   }
-  return;
 }
 
 bool ListenSocket::is_timed_out() { return false; }

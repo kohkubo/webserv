@@ -69,7 +69,6 @@ void CgiSocket::handle_event(short int         revents,
     LOG("got POLLOUT event of cgi " << _socket_fd_);
     _handle_send_event(socket_map_actions);
   }
-  return;
 }
 
 bool CgiSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
