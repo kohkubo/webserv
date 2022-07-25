@@ -18,6 +18,7 @@ public:
     COMPLETE, // 送信終了
     READING,  // CGI,FILE待ち
     WRITING,  // ファイル書き込み
+    ERROR,    // エラー
   };
 
 private:
@@ -46,8 +47,8 @@ public:
     size_t      rest_count = _response_message_.size() - _send_count_;
     ssize_t send_count = ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
     if (send_count == -1) {
-      _state_ = CLOSING;
-      return CLOSING;
+      _state_ = ERROR;
+      return ERROR;
     }
     _send_count_ += send_count;
     if (_is_last_response_ && _is_send_all()) {
