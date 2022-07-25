@@ -15,7 +15,7 @@ static std::string cutout_request_body(std::string &request_buffer,
 Request::RequestState
 Request::_handle_request_line(std::string &request_buffer) {
   std::string line;
-  while (getline(request_buffer, line)) {
+  if (getline(request_buffer, line)) {
     _request_info_.parse_request_line(line);
     return RECEIVING_HEADER;
   }
@@ -26,27 +26,21 @@ Request::RequestState
 Request::_handle_request_header(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) {
-    if (_state_ == RECEIVING_HEADER) {
-      if (line != "") {
-        bool result = _header_field_map_.store_new_field(line);
-        if (!result) {
-          ERROR_LOG("invalid header field");
-          throw RequestInfo::BadRequestException();
-        }
-        continue;
-      }
-      _request_info_.parse_request_header(_header_field_map_);
-      if (!_request_info_.is_valid_request_header()) {
-        ERROR_LOG("invalid request header");
+    if (line != "") {
+      bool result = _header_field_map_.store_new_field(line);
+      if (!result) {
         throw RequestInfo::BadRequestException();
       }
-      if (_request_info_.has_body()) {
-        _state_ = RECEIVING_BODY;
-        break;
-      }
-      _state_ = SUCCESS;
-      break;
+      continue;
     }
+    _request_info_.parse_request_header(_header_field_map_);
+    if (!_request_info_.is_valid_request_header()) {
+      throw RequestInfo::BadRequestException();
+    }
+    if (_request_info_.has_body()) {
+      return RECEIVING_BODY;
+    }
+    return SUCCESS;
   }
   return _state_;
 }
@@ -58,12 +52,13 @@ Request::_handle_request_body(std::string &request_buffer) {
     _check_max_client_body_size_exception(
         _request_info_.content_info_.content_.size(),
         _request_info_.config_->client_max_body_size_);
-  } else if (request_buffer.size() >=
-             static_cast<std::size_t>(
-                 _request_info_.content_info_.content_length_)) {
+    return _state_;
+  }
+  if (request_buffer.size() >=
+      static_cast<std::size_t>(_request_info_.content_info_.content_length_)) {
     _request_info_.content_info_.content_ = cutout_request_body(
         request_buffer, _request_info_.content_info_.content_length_);
-    _state_ = SUCCESS;
+    return SUCCESS;
   }
   return _state_;
 }
@@ -73,11 +68,11 @@ Request::handle_request(std::string               &request_buffer,
                         const config::ConfigGroup &config_group) {
   if (_state_ == Request::RECEIVING_STARTLINE) {
     _state_ = _handle_request_line(request_buffer);
-    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+    _check_buffer_length_exception(request_buffer);
   }
   if (_state_ == Request::RECEIVING_HEADER) {
     _state_ = _handle_request_header(request_buffer);
-    _check_buffer_length_exception(request_buffer, BUFFER_MAX_LENGTH_);
+    _check_buffer_length_exception(request_buffer);
     if (_state_ == RECEIVING_BODY || _state_ == SUCCESS) {
       _request_info_.config_ = config_group.select_config(_request_info_.host_);
       _request_info_.location_ =
