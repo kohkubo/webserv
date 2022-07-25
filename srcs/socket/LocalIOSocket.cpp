@@ -2,15 +2,6 @@
 
 namespace ns_socket {
 
-LocalIOSocket::LocalIOSocket(Response         &response,
-                             ResponseGenerator response_generator,
-                             ClientSocket     *parent_socket)
-    : SocketBase(response_generator.response_info_.fd_)
-    , _response_(response)
-    , _response_generator_(response_generator)
-    , _parent_socket_(parent_socket)
-    , _send_count_(0) {}
-
 SocketMapActions LocalIOSocket::destroy_timedout_socket() {
   SocketMapActions  socket_map_actions;
   ResponseGenerator new_response_generator =

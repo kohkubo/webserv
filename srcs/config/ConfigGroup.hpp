@@ -20,18 +20,15 @@ namespace config {
 
 class ConfigGroup {
 private:
-  std::string                   _default_server_name_;
-  std::map<std::string, Config> _config_group_;
-
-private:
-  ConfigGroup() {}
+  std::string                         _default_server_name_;
+  std::map<std::string, const Config> _config_group_;
 
 public:
-  ConfigGroup(Config config);
+  ConfigGroup(const Config &config);
   ~ConfigGroup() {}
   struct sockaddr_in sockaddr_in() const;
   bool               is_same_socket(const Config &config);
-  void               add_config_or_exit(const Config config);
+  void               add_config_or_exit(const Config &config);
   Config             select_config(const std::string &host_name) const;
 };
 

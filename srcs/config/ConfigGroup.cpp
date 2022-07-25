@@ -2,7 +2,7 @@
 
 namespace config {
 
-ConfigGroup::ConfigGroup(const Config config)
+ConfigGroup::ConfigGroup(const Config &config)
     : _default_server_name_(config.server_name_) {
   _config_group_.insert(std::make_pair(config.server_name_, config));
 }
@@ -17,7 +17,7 @@ bool ConfigGroup::is_same_socket(const Config &config) {
   return (x.sin_addr.s_addr == y.sin_addr.s_addr) && (x.sin_port == y.sin_port);
 }
 
-void ConfigGroup::add_config_or_exit(const Config config) {
+void ConfigGroup::add_config_or_exit(const Config &config) {
   bool has_server_name =
       static_cast<bool>(_config_group_.count(config.server_name_));
   if (has_server_name) {
@@ -27,7 +27,7 @@ void ConfigGroup::add_config_or_exit(const Config config) {
 }
 
 Config ConfigGroup::select_config(const std::string &host_name) const {
-  std::map<std::string, Config>::const_iterator proper_conf =
+  std::map<std::string, const Config>::const_iterator proper_conf =
       _config_group_.find(host_name);
   if (proper_conf != _config_group_.end()) {
     return proper_conf->second;

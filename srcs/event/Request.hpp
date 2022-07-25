@@ -18,10 +18,10 @@ struct Request {
     SUCCESS,             // リクエストのパース完了。
   };
   enum NextChunkType { CHUNK_SIZE, CHUNK_DATA };
-  struct Chunk {
+  struct ChunkInfo {
     NextChunkType next_chunk_type_;
     std::size_t   next_chunk_size_;
-    Chunk()
+    ChunkInfo()
         : next_chunk_type_(CHUNK_SIZE)
         , next_chunk_size_(-1) {}
   };
@@ -29,7 +29,7 @@ struct Request {
 private:
   RequestState   _state_;
   RequestInfo    _request_info_;
-  Chunk          _chunk_;
+  ChunkInfo      _chunk_info_;
   HeaderFieldMap _header_field_map_;
   // RFC 9110
   // 4.1.URI References

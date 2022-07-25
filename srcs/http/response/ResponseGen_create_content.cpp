@@ -12,7 +12,8 @@ ResponseInfo ResponseGenerator::_create_status_code_content(
     Path file_path = location_->root_ + it->second;
     if (!file_path.is_file_exists()) {
       if (status_code == HttpStatusCode::S_404_NOT_FOUND) {
-        return ResponseInfo(status_code.create_default_content_str(),
+        return ResponseInfo(ResponseInfo::CREATED,
+                            status_code.create_default_content_str(),
                             status_code);
       }
       return _create_status_code_content(HttpStatusCode::S_404_NOT_FOUND);
@@ -20,15 +21,18 @@ ResponseInfo ResponseGenerator::_create_status_code_content(
     Result<int> result = file_path.open_read_file();
     if (result.is_err_) {
       if (status_code == HttpStatusCode::S_500_INTERNAL_SERVER_ERROR) {
-        return ResponseInfo(status_code.create_default_content_str(),
+        return ResponseInfo(ResponseInfo::CREATED,
+                            status_code.create_default_content_str(),
                             status_code);
       }
       return _create_status_code_content(
           HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
     }
-    return ReadContent(result.object_, status_code);
+    return ResponseInfo(ResponseInfo::READ, std::string(), status_code,
+                        result.object_);
   }
-  return ResponseInfo(status_code.create_default_content_str(), status_code);
+  return ResponseInfo(ResponseInfo::CREATED,
+                      status_code.create_default_content_str(), status_code);
 }
 
 } // namespace response_generator

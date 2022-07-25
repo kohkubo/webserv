@@ -13,9 +13,8 @@ namespace ns_socket {
 
 ClientSocket::ClientSocket(int                        client_fd,
                            const config::ConfigGroup &config_group)
-    : SocketBase(client_fd)
-    , _config_group_(config_group)
-    , _timeout_(TIMEOUT_SECONDS_) {
+    : SocketBase(client_fd, TIMEOUT_SECONDS_)
+    , _config_group_(config_group) {
   struct sockaddr_in peer_addr;
   socklen_t          serv_len = sizeof(peer_addr);
   if (getpeername(_socket_fd_, (struct sockaddr *)&peer_addr, &serv_len) ==
