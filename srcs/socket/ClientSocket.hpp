@@ -29,7 +29,7 @@ private:
 
 private:
   void _parse_buffer(SocketMapActions &socket_map_actions);
-  void _handle_send_event();
+  void _handle_send_event(SocketMapActions &socket_map_actions);
   bool _handle_receive_event(SocketMapActions &socket_map_actions);
   void _add_delete_child_socket(SocketMapActions &socket_map_actions);
 

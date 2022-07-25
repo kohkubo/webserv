@@ -57,7 +57,7 @@ SocketMapActions ClientSocket::handle_event(short int revents) {
   }
   if ((revents & POLLOUT) != 0) {
     // LOG("got POLLOUT event of client " << _socket_fd_);
-    _handle_send_event();
+    _handle_send_event(socket_map_actions);
   }
   return socket_map_actions;
 }
@@ -76,9 +76,14 @@ bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
   return false;
 }
 
-void ClientSocket::_handle_send_event() {
+void ClientSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   Response::ResponseState response_state =
       _response_queue_.front().send(_socket_fd_);
+  if (response_state == Response::ERROR) {
+    _add_delete_child_socket(socket_map_actions);
+    socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
+    return;
+  }
   if (response_state == Response::COMPLETE) {
     _response_queue_.pop_front();
   }
