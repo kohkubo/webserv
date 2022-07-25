@@ -26,13 +26,13 @@ void ConfigGroup::add_config_or_exit(const Config &config) {
   _config_group_.insert(std::make_pair(config.server_name_, config));
 }
 
-Config ConfigGroup::select_config(const std::string &host_name) const {
+const Config *ConfigGroup::select_config(const std::string &host_name) const {
   std::map<std::string, const Config>::const_iterator proper_conf =
       _config_group_.find(host_name);
   if (proper_conf != _config_group_.end()) {
-    return proper_conf->second;
+    return &proper_conf->second;
   }
-  return _config_group_.find(_default_server_name_)->second;
+  return &_config_group_.find(_default_server_name_)->second;
 }
 
 } // namespace config

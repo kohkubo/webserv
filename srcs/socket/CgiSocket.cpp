@@ -38,8 +38,9 @@ bool CgiSocket::is_timed_out() { return _timeout_.is_timed_out(); }
 
 SocketMapActions CgiSocket::destroy_timedout_socket() {
   SocketMapActions  socket_map_actions;
-  ResponseGenerator new_response_generator =
-      _response_generator_.create_response_generator(504);
+  ResponseGenerator new_response_generator(
+      _response_generator_.request_info_, _response_generator_.peer_name_,
+      HttpStatusCode::S_504_GATEWAY_TIME_OUT);
 
   _response_ = new_response_generator.generate_response();
   if (new_response_generator.need_socket()) {
@@ -122,7 +123,8 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
   case CgiInfo::DOCUMENT:
   case CgiInfo::CLIENT_REDIR:
   case CgiInfo::CLIENT_REDIRDOC:
-    response_message = _response_generator_.create_response_message(_cgi_info_);
+    response_message = response_generator::create_response_message(
+        _response_generator_.request_info_, _cgi_info_);
     _response_.set_response_message_and_sending(response_message);
     return;
   case CgiInfo::LOCAL_REDIR:
@@ -134,10 +136,12 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
-  ResponseGenerator new_response_generator =
-      _response_generator_.create_response_generator(
-          _cgi_info_.cgi_location_.path_, _cgi_info_.cgi_location_.query_);
-
+  RequestInfo request_info = _response_generator_.request_info_;
+  request_info.request_line_.absolute_path_ = _cgi_info_.cgi_location_.path_;
+  request_info.request_line_.query_         = _cgi_info_.cgi_location_.query_;
+  ResponseGenerator new_response_generator(
+      request_info, _response_generator_.peer_name_, HttpStatusCode::S_200_OK,
+      _response_generator_.redirect_count_ + 1);
   if (new_response_generator.is_over_max_redirect_count()) {
     ERROR_LOG("too many redirect");
     overwrite_error_response(socket_map_actions, 500);

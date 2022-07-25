@@ -1,5 +1,5 @@
-#ifndef SRCS_EVENT_REQUEST_HPP
-#define SRCS_EVENT_REQUEST_HPP
+#ifndef SRCS_EVENT_REQUESTHANDLER_HPP
+#define SRCS_EVENT_REQUESTHANDLER_HPP
 
 #include <sys/types.h>
 
@@ -10,7 +10,7 @@
 
 typedef int connFd;
 
-struct Request {
+struct RequestHandler {
   enum RequestState {
     RECEIVING_STARTLINE, // リクエストはrequest_lineを読み取り中。
     RECEIVING_HEADER,    // リクエストはheaderを読み取り中。
@@ -47,7 +47,7 @@ private:
   RequestState _handle_request_body(std::string &request_buffer);
 
 public:
-  Request()
+  RequestHandler()
       : _state_(RECEIVING_STARTLINE) {}
 
   const RequestInfo &request_info() const { return _request_info_; }
@@ -55,4 +55,4 @@ public:
                                     const config::ConfigGroup &config_group);
 };
 
-#endif /* SRCS_EVENT_REQUEST_HPP */
+#endif /* SRCS_EVENT_REQUESTHANDLER_HPP */

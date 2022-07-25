@@ -4,8 +4,9 @@ namespace ns_socket {
 
 SocketMapActions LocalIOSocket::destroy_timedout_socket() {
   SocketMapActions  socket_map_actions;
-  ResponseGenerator new_response_generator =
-      _response_generator_.create_response_generator(500);
+  ResponseGenerator new_response_generator(
+      _response_generator_.request_info_, _response_generator_.peer_name_,
+      HttpStatusCode::S_500_INTERNAL_SERVER_ERROR);
 
   _response_ = new_response_generator.generate_response();
   if (new_response_generator.need_socket()) {
@@ -20,8 +21,9 @@ SocketMapActions LocalIOSocket::destroy_timedout_socket() {
 
 void LocalIOSocket::overwrite_error_response(
     SocketMapActions &socket_map_actions, HttpStatusCode status_code) {
-  ResponseGenerator new_response_generator =
-      _response_generator_.create_response_generator(status_code);
+  ResponseGenerator new_response_generator(_response_generator_.request_info_,
+                                           _response_generator_.peer_name_,
+                                           status_code);
 
   _response_ = new_response_generator.generate_response();
   if (new_response_generator.need_socket()) {

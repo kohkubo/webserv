@@ -1,4 +1,4 @@
-#include "event/Request.hpp"
+#include "event/RequestHandler.hpp"
 
 #include <sys/socket.h>
 
@@ -12,8 +12,8 @@ static std::string cutout_request_body(std::string &request_buffer,
   return request_body;
 }
 
-Request::RequestState
-Request::_handle_request_line(std::string &request_buffer) {
+RequestHandler::RequestState
+RequestHandler::_handle_request_line(std::string &request_buffer) {
   std::string line;
   if (getline(request_buffer, line)) {
     _request_info_.parse_request_line(line);
@@ -22,8 +22,8 @@ Request::_handle_request_line(std::string &request_buffer) {
   return _state_;
 }
 
-Request::RequestState
-Request::_handle_request_header(std::string &request_buffer) {
+RequestHandler::RequestState
+RequestHandler::_handle_request_header(std::string &request_buffer) {
   std::string line;
   while (getline(request_buffer, line)) {
     if (line != "") {
@@ -45,13 +45,13 @@ Request::_handle_request_header(std::string &request_buffer) {
   return _state_;
 }
 
-Request::RequestState
-Request::_handle_request_body(std::string &request_buffer) {
+RequestHandler::RequestState
+RequestHandler::_handle_request_body(std::string &request_buffer) {
   if (_request_info_.is_chunked()) {
     _state_ = _chunk_loop(request_buffer);
     _check_max_client_body_size_exception(
         _request_info_.content_info_.content_.size(),
-        _request_info_.config_.client_max_body_size_);
+        _request_info_.config_->client_max_body_size_);
     return _state_;
   }
   if (request_buffer.size() >=
@@ -63,26 +63,29 @@ Request::_handle_request_body(std::string &request_buffer) {
   return _state_;
 }
 
-Request::RequestState
-Request::handle_request(std::string               &request_buffer,
-                        const config::ConfigGroup &config_group) {
-  if (_state_ == Request::RECEIVING_STARTLINE) {
+RequestHandler::RequestState
+RequestHandler::handle_request(std::string               &request_buffer,
+                               const config::ConfigGroup &config_group) {
+  if (_state_ == RequestHandler::RECEIVING_STARTLINE) {
     _state_ = _handle_request_line(request_buffer);
     _check_buffer_length_exception(request_buffer);
   }
-  if (_state_ == Request::RECEIVING_HEADER) {
+  if (_state_ == RequestHandler::RECEIVING_HEADER) {
     _state_ = _handle_request_header(request_buffer);
     _check_buffer_length_exception(request_buffer);
     if (_state_ == RECEIVING_BODY || _state_ == SUCCESS) {
       _request_info_.config_ = config_group.select_config(_request_info_.host_);
+      _request_info_.location_ =
+          _request_info_.config_->locations_.select_location(
+              _request_info_.request_line_.absolute_path_);
       if (_request_info_.content_info_.has_content_length()) {
         _check_max_client_body_size_exception(
             _request_info_.content_info_.content_length_,
-            _request_info_.config_.client_max_body_size_);
+            _request_info_.config_->client_max_body_size_);
       }
     }
   }
-  if (_state_ == Request::RECEIVING_BODY) {
+  if (_state_ == RequestHandler::RECEIVING_BODY) {
     _state_ = _handle_request_body(request_buffer);
   }
   return _state_;

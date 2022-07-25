@@ -32,8 +32,9 @@ SocketMapActions FileReadSocket::handle_event(short int revents) {
     return socket_map_actions;
   }
   if (receive_result.status_ == ReceiveResult::END) {
-    std::string response_message =
-        _response_generator_.create_response_message(_buffer_.str());
+    std::string response_message = response_generator::create_response_message(
+        _response_generator_.request_info_, _response_generator_.response_info_,
+        _buffer_.str());
     // LOG("response message: " << response_message);
     _response_.set_response_message_and_sending(response_message);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);

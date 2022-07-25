@@ -80,6 +80,9 @@ bool HttpStatusCode::is_error_status_code() const {
 bool HttpStatusCode::has_default_content() const {
   return 299 < status_code_ && status_code_ < 600;
 }
+bool HttpStatusCode::is_connection_close() const {
+  return 400 <= status_code_ && status_code_ <= 499;
+}
 
 std::string HttpStatusCode::status_phrase() const {
   return std::string(g_response_status_phrase_map[status_code_]);

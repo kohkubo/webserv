@@ -1,10 +1,10 @@
-#include "event/Request.hpp"
+#include "event/RequestHandler.hpp"
 
 #include "http/request/RequestInfo.hpp"
 #include "utils/utils.hpp"
 
-void Request::_check_max_client_body_size_exception(ssize_t actual_body_size,
-                                                    std::size_t max_body_size) {
+void RequestHandler::_check_max_client_body_size_exception(
+    ssize_t actual_body_size, std::size_t max_body_size) {
   if (static_cast<std::size_t>(actual_body_size) > max_body_size) {
     ERROR_LOG("max_client_body_size exceeded: " << actual_body_size << " > "
                                                 << max_body_size);
@@ -13,7 +13,8 @@ void Request::_check_max_client_body_size_exception(ssize_t actual_body_size,
   }
 }
 
-void Request::_check_buffer_length_exception(std::string &request_buffer) {
+void RequestHandler::_check_buffer_length_exception(
+    std::string &request_buffer) {
   if (request_buffer.size() >= BUFFER_MAX_LENGTH_) {
     request_buffer.clear();
     ERROR_LOG("buffer_max_length exceeded");

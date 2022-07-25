@@ -15,14 +15,12 @@ namespace response_generator {
 
 class ResponseGenerator {
 public:
-  ResponseInfo            response_info_;
-  const RequestInfo       request_info_;
-  const std::string      &peer_name_;
-  const config::Location *location_;
+  ResponseInfo       response_info_;
+  const RequestInfo  request_info_;
+  const std::string &peer_name_;
+  size_t             redirect_count_; // response infoの中に入る
 
 private:
-  bool                _is_connection_close_;
-  size_t              _redirect_count_;
   static const size_t MAX_REDIRECT_COUNT_ = 10;
 
 private:
@@ -36,26 +34,20 @@ private:
   ResponseInfo _create_status_code_content(const HttpStatusCode &status_code);
 
 public:
+  // レスポンスinfoのコンストラクタにする
   ResponseGenerator(const RequestInfo &request_info,
-                    const std::string &peer_name,
-                    HttpStatusCode     status_code = HttpStatusCode::S_200_OK);
+                    const std::string &peer_name, HttpStatusCode status_code,
+                    size_t redirect_count = 0);
   ~ResponseGenerator() {}
-  Response generate_response() const;
+  Response generate_response() const; // response_infoに移動
   bool     is_over_max_redirect_count() const {
-        return _redirect_count_ > MAX_REDIRECT_COUNT_;
+        return redirect_count_ > MAX_REDIRECT_COUNT_;
   }
   bool need_socket() const {
     return response_info_.action_ != ResponseInfo::CREATED;
   }
   ns_socket::SocketBase *create_socket(Response                &response,
                                        ns_socket::ClientSocket *parent_socket);
-  std::string create_response_message(const std::string &content) const;
-  std::string create_response_message(const CgiInfo &cgi_info) const;
-  ResponseGenerator
-  create_response_generator(const HttpStatusCode &new_status_code) const;
-  ResponseGenerator
-  create_response_generator(const std::string &new_target,
-                            const std::string &new_query) const;
 };
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
@@ -63,6 +55,13 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
                                         const Path        &target_path);
 std::string          create_autoindex_body(const RequestInfo &request_info,
                                            const Path        &target_path);
+
+std::string create_response_message(const RequestInfo  &request_info,
+                                    const ResponseInfo &response_info,
+                                    const std::string  &body);
+std::string create_response_message(const RequestInfo &request_info,
+                                    const CgiInfo     &cgi_info);
+
 } // namespace response_generator
 
 #endif /* SRCS_HTTP_RESPONSE_RESPONSEGENERATOR_HPP */
