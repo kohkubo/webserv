@@ -46,7 +46,7 @@ public:
     const char *rest_str   = _response_message_.c_str() + _send_count_;
     size_t      rest_count = _response_message_.size() - _send_count_;
     ssize_t send_count = ::send(conn_fd, rest_str, rest_count, MSG_DONTWAIT);
-    if (send_count == -1) {
+    if (send_count == -1 || send_count == 0) {
       _state_ = ERROR;
       return ERROR;
     }
