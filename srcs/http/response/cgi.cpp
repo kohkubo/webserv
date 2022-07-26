@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <string>
 
 #include "http/request/RequestInfo.hpp"
@@ -14,6 +15,17 @@
 #include "utils/utils.hpp"
 
 namespace response_generator {
+
+typedef std::map<std::string, std::string> cgiExtensionMap;
+
+cgiExtensionMap init_cgi_extension_map() {
+  cgiExtensionMap cgi_extension_map;
+  cgi_extension_map[".py"] = "python3";
+  cgi_extension_map[".sh"] = "bash";
+  return cgi_extension_map;
+}
+
+cgiExtensionMap g_cgi_extension_map = init_cgi_extension_map();
 
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
                                         const std::string &peer_name,
