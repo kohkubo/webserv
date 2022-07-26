@@ -20,7 +20,7 @@
 #include "utils/utils.hpp"
 
 namespace response_generator {
-ResponseGenerator::ResponseGenerator(const RequestInfo &request_info,
+ResponseGenerator::ResponseGenerator(RequestInfo       &request_info,
                                      const std::string &peer_name,
                                      HttpStatusCode     status_code,
                                      size_t             redirect_count)

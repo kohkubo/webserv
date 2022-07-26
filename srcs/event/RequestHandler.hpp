@@ -50,9 +50,9 @@ public:
   RequestHandler()
       : _state_(RECEIVING_STARTLINE) {}
 
-  const RequestInfo &request_info() const { return _request_info_; }
-  RequestState       handle_request(std::string               &request_buffer,
-                                    const config::ConfigGroup &config_group);
+  RequestInfo &request_info() { return _request_info_; }
+  RequestState handle_request(std::string               &request_buffer,
+                              const config::ConfigGroup &config_group);
 };
 
 #endif /* SRCS_EVENT_REQUESTHANDLER_HPP */

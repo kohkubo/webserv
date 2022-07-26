@@ -16,7 +16,7 @@ namespace response_generator {
 class ResponseGenerator {
 public:
   ResponseInfo       response_info_;
-  const RequestInfo  request_info_;
+  RequestInfo       &request_info_;
   const std::string &peer_name_;
   size_t             redirect_count_; // response infoの中に入る
 
@@ -35,9 +35,8 @@ private:
 
 public:
   // レスポンスinfoのコンストラクタにする
-  ResponseGenerator(const RequestInfo &request_info,
-                    const std::string &peer_name, HttpStatusCode status_code,
-                    size_t redirect_count = 0);
+  ResponseGenerator(RequestInfo &request_info, const std::string &peer_name,
+                    HttpStatusCode status_code, size_t redirect_count = 0);
   ~ResponseGenerator() {}
   Response generate_response() const; // response_infoに移動
   bool     is_over_max_redirect_count() const {

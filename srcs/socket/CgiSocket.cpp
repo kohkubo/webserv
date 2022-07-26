@@ -136,7 +136,7 @@ void CgiSocket::_create_cgi_response(SocketMapActions &socket_map_actions) {
 }
 
 void CgiSocket::_redirect_local(SocketMapActions &socket_map_actions) {
-  RequestInfo request_info = _response_generator_.request_info_;
+  RequestInfo &request_info = _response_generator_.request_info_;
   request_info.request_line_.absolute_path_ = _cgi_info_.cgi_location_.path_;
   request_info.request_line_.query_         = _cgi_info_.cgi_location_.query_;
   ResponseGenerator new_response_generator(
