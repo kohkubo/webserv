@@ -125,16 +125,6 @@ tokenIterator ConfigParser::parse_listen_directive(tokenIterator pos,
   return pos + 2;
 }
 
-static ConfigGroups::iterator
-find_joinable_config_group(const Config &config, ConfigGroups &config_groups) {
-  ConfigGroups::iterator it = config_groups.begin();
-  for (; it != config_groups.end(); it++) {
-    if (it->is_same_socket(config))
-      break;
-  }
-  return it;
-}
-
 ConfigGroups ConfigParser::generate_config_group(const Path config_file_path) {
   ConfigGroups config_groups;
 

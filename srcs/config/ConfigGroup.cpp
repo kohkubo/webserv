@@ -35,4 +35,14 @@ const Config *ConfigGroup::select_config(const std::string &host_name) const {
   return &_config_group_.find(_default_server_name_)->second;
 }
 
+ConfigGroups::iterator find_joinable_config_group(const Config &config,
+                                                  ConfigGroups &config_groups) {
+  ConfigGroups::iterator it = config_groups.begin();
+  for (; it != config_groups.end(); it++) {
+    if (it->is_same_socket(config))
+      break;
+  }
+  return it;
+}
+
 } // namespace config

@@ -30,6 +30,9 @@ public:
   const Config      *select_config(const std::string &host_name) const;
 };
 
+ConfigGroups::iterator find_joinable_config_group(const Config &config,
+                                                  ConfigGroups &config_groups);
+
 } // namespace config
 
 #endif /* SRCS_CONFIG_CONFIGGROUP_HPP */
