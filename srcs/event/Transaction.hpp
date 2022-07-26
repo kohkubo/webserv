@@ -6,6 +6,7 @@
 
 class Transaction {
 public:
+  // 現状、ローカルリダイレクトのため非const
   RequestInfo request_info_;
   Response    response_;
 
