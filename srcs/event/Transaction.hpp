@@ -1,13 +1,16 @@
 #ifndef SRCS_EVENT_TRANSACTION
 #define SRCS_EVENT_TRANSACTION
 
-#include "event/RequestHandler.hpp"
 #include "event/Response.hpp"
+#include "http/request/RequestInfo.hpp"
 
 class Transaction {
 public:
-  RequestHandler request_handler_;
-  Response       response_;
+  RequestInfo request_info_;
+  Response    response_;
+
+  Transaction(const RequestInfo &request_info)
+      : request_info_(request_info) {}
 };
 
 #endif /* SRCS_EVENT_TRANSACTION */

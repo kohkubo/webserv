@@ -22,7 +22,6 @@ ClientSocket::ClientSocket(int                        client_fd,
     ERROR_LOG_WITH_ERRNO("getpeername() failed.");
   }
   _peer_name_ = inet_ntoa(peer_addr.sin_addr);
-  _transaction_queue_.push_back(Transaction());
 }
 
 struct pollfd ClientSocket::pollfd() {
@@ -97,14 +96,15 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   try {
     for (;;) {
       RequestHandler::RequestState request_state =
-          _transaction_queue_.back().request_handler_.handle_request(
-              _buffer_, _config_group_);
+          _request_handler_.handle_request(_buffer_, _config_group_);
       if (request_state != RequestHandler::SUCCESS) {
         break;
       }
+      _transaction_queue_.push_back(
+          Transaction(_request_handler_.request_info()));
       ResponseGenerator response_generator(
-          _transaction_queue_.back().request_handler_.request_info(),
-          _peer_name_, HttpStatusCode::S_200_OK);
+          _transaction_queue_.back().request_info_, _peer_name_,
+          HttpStatusCode::S_200_OK);
       _transaction_queue_.back().response_ =
           response_generator.generate_response();
       if (response_generator.need_socket()) {
@@ -115,13 +115,14 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
                                       socket->socket_fd(), socket);
         store_child_socket(socket);
       }
-      _transaction_queue_.push_back(Transaction());
+      _request_handler_ = RequestHandler();
     }
   } catch (const RequestInfo::BadRequestException &e) {
     LOG("bad request: " << e.status());
+    _transaction_queue_.push_back(
+        Transaction(_request_handler_.request_info()));
     ResponseGenerator response_generator(
-        _transaction_queue_.back().request_handler_.request_info(), _peer_name_,
-        e.status());
+        _transaction_queue_.back().request_info_, _peer_name_, e.status());
     _transaction_queue_.back().response_ =
         response_generator.generate_response();
     if (response_generator.need_socket()) {

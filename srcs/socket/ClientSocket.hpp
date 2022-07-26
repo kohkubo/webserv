@@ -19,6 +19,7 @@ namespace ns_socket {
 class ClientSocket : public SocketBase {
 private:
   const config::ConfigGroup &_config_group_;
+  RequestHandler             _request_handler_;
   std::deque<Transaction>    _transaction_queue_;
   std::string                _buffer_;
   std::string                _peer_name_;
