@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include "config/ConfGroupGen.hpp"
 #include "config/Config.hpp"
 #include "event/Server.hpp"
 #include "utils/tokenize.hpp"
@@ -293,4 +294,9 @@ TEST(server_config_test, parse_location_directive) {
     EXPECT_EQ(location->available_methods_.post_, true);
     EXPECT_EQ(location->available_methods_.delete_, false);
   }
+}
+
+TEST(server_config_test, config_group_exit) {
+  EXPECT_EXIT({ config::generate_config_group("../conf/empty.conf"); },
+              ::testing::ExitedWithCode(EXIT_FAILURE), "");
 }
