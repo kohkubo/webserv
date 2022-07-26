@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "config/ConfGroupGen.hpp"
+#include "config/ConfigParser.hpp"
 #include "event/Server.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
@@ -19,9 +19,10 @@ static const char *resolve_config_file(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  const char *config_file_path = resolve_config_file(argc, argv);
+  const char          *config_file_path = resolve_config_file(argc, argv);
+  config::ConfigParser config_parser;
   std::vector<config::ConfigGroup> config_groups =
-      config::generate_config_group(config_file_path);
+      config_parser.generate_config_group(config_file_path);
 
   Server server(config_groups);
   server.run_loop();

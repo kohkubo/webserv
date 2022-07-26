@@ -11,12 +11,10 @@
 
 #include "config/Config.hpp"
 
-/*
-  同じソケットを使うconfigのリスト
-  Config自体はvectorで保存、server_nameをkeyにしたmapを持つ。
-*/
-
 namespace config {
+
+class ConfigGroup;
+typedef std::vector<ConfigGroup> ConfigGroups;
 
 class ConfigGroup {
 private:
