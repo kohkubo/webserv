@@ -33,6 +33,11 @@ private:
   }
 
 public:
+  Response()
+      : _state_(ERROR)
+      , _is_last_response_(false)
+      , _send_count_(0) {}
+
   Response(ResponseState state, bool is_close,
            std::string response_message = std::string())
       : _state_(state)

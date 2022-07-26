@@ -22,11 +22,13 @@ ClientSocket::ClientSocket(int                        client_fd,
     ERROR_LOG_WITH_ERRNO("getpeername() failed.");
   }
   _peer_name_ = inet_ntoa(peer_addr.sin_addr);
+  _transaction_queue_.push_back(Transaction());
 }
 
 struct pollfd ClientSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLIN, 0};
-  if (!_response_queue_.empty() && _response_queue_.front().is_sending()) {
+  if (!_transaction_queue_.empty() &&
+      _transaction_queue_.front().response_.is_sending()) {
     pfd.events = POLLIN | POLLOUT;
   }
   return pfd;
@@ -78,14 +80,14 @@ bool ClientSocket::_handle_receive_event(SocketMapActions &socket_map_actions) {
 
 void ClientSocket::_handle_send_event(SocketMapActions &socket_map_actions) {
   Response::ResponseState response_state =
-      _response_queue_.front().send(_socket_fd_);
+      _transaction_queue_.front().response_.send(_socket_fd_);
   if (response_state == Response::ERROR) {
     _add_delete_child_socket(socket_map_actions);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     return;
   }
   if (response_state == Response::COMPLETE) {
-    _response_queue_.pop_front();
+    _transaction_queue_.pop_front();
   }
 }
 
@@ -95,32 +97,36 @@ void ClientSocket::_parse_buffer(SocketMapActions &socket_map_actions) {
   try {
     for (;;) {
       RequestHandler::RequestState request_state =
-          _request_handler_.handle_request(_buffer_, _config_group_);
+          _transaction_queue_.back().request_handler_.handle_request(
+              _buffer_, _config_group_);
       if (request_state != RequestHandler::SUCCESS) {
         break;
       }
-      ResponseGenerator response_generator(_request_handler_.request_info(),
-                                           _peer_name_,
-                                           HttpStatusCode::S_200_OK);
-      _response_queue_.push_back(response_generator.generate_response());
+      ResponseGenerator response_generator(
+          _transaction_queue_.back().request_handler_.request_info(),
+          _peer_name_, HttpStatusCode::S_200_OK);
+      _transaction_queue_.back().response_ =
+          response_generator.generate_response();
       if (response_generator.need_socket()) {
-        SocketBase *socket =
-            response_generator.create_socket(_response_queue_.back(), this);
+        SocketBase *socket = response_generator.create_socket(
+            _transaction_queue_.back().response_, this);
         // LOG("add new socket:" << socket->socket_fd());
         socket_map_actions.add_action(SocketMapAction::INSERT,
                                       socket->socket_fd(), socket);
         store_child_socket(socket);
       }
-      _request_handler_ = RequestHandler();
+      _transaction_queue_.push_back(Transaction());
     }
   } catch (const RequestInfo::BadRequestException &e) {
     LOG("bad request: " << e.status());
-    ResponseGenerator response_generator(_request_handler_.request_info(),
-                                         _peer_name_, e.status());
-    _response_queue_.push_back(response_generator.generate_response());
+    ResponseGenerator response_generator(
+        _transaction_queue_.back().request_handler_.request_info(), _peer_name_,
+        e.status());
+    _transaction_queue_.back().response_ =
+        response_generator.generate_response();
     if (response_generator.need_socket()) {
-      SocketBase *socket =
-          response_generator.create_socket(_response_queue_.back(), this);
+      SocketBase *socket = response_generator.create_socket(
+          _transaction_queue_.back().response_, this);
       // LOG("add new socket:" << socket->socket_fd());
       socket_map_actions.add_action(SocketMapAction::INSERT,
                                     socket->socket_fd(), socket);
