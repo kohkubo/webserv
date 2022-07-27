@@ -1,11 +1,13 @@
 #include "http/response/ResponseGenerator.hpp"
 
 #include <fcntl.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <string>
 
 #include "http/request/RequestInfo.hpp"
@@ -15,6 +17,24 @@
 
 namespace response_generator {
 
+typedef std::map<std::string, std::string> cgiExtensionMap;
+
+cgiExtensionMap init_cgi_extension_map() {
+  cgiExtensionMap cgi_extension_map;
+  cgi_extension_map[".py"] = "python3";
+  cgi_extension_map[".sh"] = "bash";
+  return cgi_extension_map;
+}
+
+cgiExtensionMap g_cgi_extension_map = init_cgi_extension_map();
+
+Result<std::string> search_executable(std::string extension) {
+  if (g_cgi_extension_map.count(extension) != 1) {
+    return Error<std::string>();
+  }
+  return Ok<std::string>(g_cgi_extension_map[extension]);
+}
+
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
                                         const std::string &peer_name,
                                         const Path        &target_path) {
@@ -23,7 +43,13 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
     ERROR_LOG_WITH_ERRNO("error: socketpair");
     return Error<ResponseInfo>();
   }
-  pid_t pid = fork();
+  Result<std::string> result =
+      search_executable(request_info.location_->cgi_extension_);
+  if (result.is_err_) {
+    return Error<ResponseInfo>();
+  }
+  std::string command_name = result.object_;
+  pid_t       pid          = fork();
   if (pid == -1) {
     ERROR_LOG_WITH_ERRNO("error: fork");
     return Error<ResponseInfo>();
@@ -43,14 +69,14 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
       ERROR_EXIT_WITH_ERRNO("error: close");
     }
     std::string path   = target_path.script_name();
-    char       *argv[] = {const_cast<char *>("/usr/bin/python3"),
+    char       *argv[] = {const_cast<char *>(command_name.c_str()),
                           const_cast<char *>(path.c_str()), NULL};
     CgiEnviron  cgi_environ(request_info, peer_name, target_path);
     if (chdir(target_path.dirname().c_str()) == -1) {
       ERROR_EXIT_WITH_ERRNO("error: chdir");
     }
-    if (execve("/usr/bin/python3", argv, cgi_environ.environ()) == -1) {
-      ERROR_EXIT_WITH_ERRNO("error: execve");
+    if (execvpe(command_name.c_str(), argv, cgi_environ.environ()) == -1) {
+      ERROR_EXIT_WITH_ERRNO("error: execvpe");
     }
   }
   // parent
