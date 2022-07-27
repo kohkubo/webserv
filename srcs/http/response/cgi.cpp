@@ -97,7 +97,7 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
       ERROR_EXIT_WITH_ERRNO("error: chdir");
     }
     if (execve(command_path.str().c_str(), argv, cgi_environ.environ()) == -1) {
-      ERROR_EXIT_WITH_ERRNO("error: execvpe");
+      ERROR_EXIT_WITH_ERRNO("error: execve");
     }
   }
   // parent
