@@ -1,6 +1,7 @@
 #include "http/response/ResponseGenerator.hpp"
 
 #include <fcntl.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -35,6 +36,22 @@ Result<std::string> search_executable(std::string extension) {
   return Ok<std::string>(g_cgi_extension_map[extension]);
 }
 
+Result<Path> search_command_from_path(std::string command_name) {
+  char *path = getenv("PATH");
+  if (path == NULL) {
+    return Error<Path>();
+  }
+  tokenVector   dirs = tokenize(path, ":", ":");
+  tokenIterator it   = dirs.begin();
+  for (; it != dirs.end(); it++) {
+    Path fullpath = *it + "/" + command_name;
+    if (fullpath.is_accessible(X_OK)) {
+      return Ok<Path>(fullpath);
+    }
+  }
+  return Error<Path>();
+}
+
 Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
                                         const std::string &peer_name,
                                         const Path        &target_path) {
@@ -48,8 +65,12 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
   if (result.is_err_) {
     return Error<ResponseInfo>();
   }
-  std::string command_name = result.object_;
-  pid_t       pid          = fork();
+  Result<Path> search_result = search_command_from_path(result.object_);
+  if (search_result.is_err_) {
+    return Error<ResponseInfo>();
+  }
+  Path  command_path = search_result.object_;
+  pid_t pid          = fork();
   if (pid == -1) {
     ERROR_LOG_WITH_ERRNO("error: fork");
     return Error<ResponseInfo>();
@@ -69,14 +90,14 @@ Result<ResponseInfo> create_cgi_content(const RequestInfo &request_info,
       ERROR_EXIT_WITH_ERRNO("error: close");
     }
     std::string path   = target_path.script_name();
-    char       *argv[] = {const_cast<char *>(command_name.c_str()),
+    char       *argv[] = {const_cast<char *>(command_path.str().c_str()),
                           const_cast<char *>(path.c_str()), NULL};
     CgiEnviron  cgi_environ(request_info, peer_name, target_path);
     if (chdir(target_path.dirname().c_str()) == -1) {
       ERROR_EXIT_WITH_ERRNO("error: chdir");
     }
-    if (execvpe(command_name.c_str(), argv, cgi_environ.environ()) == -1) {
-      ERROR_EXIT_WITH_ERRNO("error: execvpe");
+    if (execve(command_path.str().c_str(), argv, cgi_environ.environ()) == -1) {
+      ERROR_EXIT_WITH_ERRNO("error: execve");
     }
   }
   // parent
