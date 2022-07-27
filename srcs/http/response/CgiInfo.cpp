@@ -141,9 +141,6 @@ CgiInfo::CgiState CgiInfo::parse_header_end() {
 }
 
 CgiInfo::CgiState CgiInfo::parse_body(std::string &buffer) {
-  // content-lengthがあるとき…bodyの長さで切り出す。そうじゃないとき入力の終了まで受け取る。
-  // 入力を受け取りながら送信は現状無し、
-
   if (content_info_.has_content_length() &&
       content_.size() + buffer.size() >=
           static_cast<std::size_t>(content_info_.content_length_)) {
@@ -154,6 +151,10 @@ CgiInfo::CgiState CgiInfo::parse_body(std::string &buffer) {
 
   content_ += buffer;
   buffer.clear();
+  if (content_.size() >= CONTENT_MAX_LENGTH_) {
+    ERROR_LOG("cgi: parse_body: too long content");
+    return ERROR;
+  }
   return BODY;
 }
 
