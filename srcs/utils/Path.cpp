@@ -49,7 +49,7 @@ bool Path::has_suffix(const std::string &suffix) const {
 bool Path::is_accessible(int mode) const {
   int ret = access(_path_.c_str(), mode);
   if (ret == -1) {
-    ERROR_LOG_WITH_ERRNO("error: is_accessible: " << _path_);
+    // ERROR_LOG_WITH_ERRNO("error: is_accessible: " << _path_);
   }
   return ret == 0;
 }

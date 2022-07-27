@@ -45,7 +45,7 @@ Result<Path> search_command_from_path(std::string command_name) {
   tokenIterator it   = dirs.begin();
   for (; it != dirs.end(); it++) {
     Path fullpath = *it + "/" + command_name;
-    if (fullpath.is_file_exists()) {
+    if (fullpath.is_accessible(X_OK)) {
       return Ok<Path>(fullpath);
     }
   }
