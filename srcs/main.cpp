@@ -1,3 +1,5 @@
+#include <signal.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <vector>
@@ -18,11 +20,14 @@ static const char *resolve_config_file(int argc, char **argv) {
   }
 }
 
+void init_signal() { signal(SIGPIPE, SIG_IGN); }
+
 int main(int argc, char **argv) {
   const char *config_file_path = resolve_config_file(argc, argv);
   std::vector<config::ConfigGroup> config_groups =
       config::generate_config_group(config_file_path);
 
+  init_signal();
   Server server(config_groups);
   server.run_loop();
   return (0);
