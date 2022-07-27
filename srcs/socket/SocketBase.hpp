@@ -48,10 +48,11 @@ public:
       ERROR_LOG_WITH_ERRNO("close connection fd: " << _socket_fd_);
     }
   }
-  virtual bool             is_timed_out()                  = 0;
-  virtual SocketMapActions destroy_timedout_socket()       = 0;
-  virtual struct pollfd    pollfd()                        = 0;
-  virtual SocketMapActions handle_event(short int revents) = 0;
+  virtual bool             is_timed_out()            = 0;
+  virtual SocketMapActions destroy_timedout_socket() = 0;
+  virtual struct pollfd    pollfd()                  = 0;
+  virtual void             handle_event(short int         revents,
+                                        SocketMapActions &socket_map_actions) = 0;
   int                      socket_fd() const { return _socket_fd_; }
   ReceiveResult            receive_content(size_t size) const;
 };
