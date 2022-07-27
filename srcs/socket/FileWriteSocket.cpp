@@ -18,18 +18,17 @@ struct pollfd FileWriteSocket::pollfd() {
   struct pollfd pfd = {_socket_fd_, POLLOUT, 0};
   return pfd;
 }
-
-SocketMapActions FileWriteSocket::handle_event(short int revents) {
+void FileWriteSocket::handle_event(short int         revents,
+                                   SocketMapActions &socket_map_actions) {
   LOG("FileWriteSocket: handle_event: socket: " << _socket_fd_);
   (void)revents;
-  SocketMapActions socket_map_actions;
   _timeout_.update_last_event();
 
   IOResult io_result = send_content();
   if (io_result == ERROR) {
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
     overwrite_error_response(socket_map_actions, 500);
-    return socket_map_actions;
+    return;
   }
   if (io_result == SUCCESS) {
     std::string response_message = response_generator::create_response_message(
@@ -38,7 +37,6 @@ SocketMapActions FileWriteSocket::handle_event(short int revents) {
     _response_.set_response_message_and_sending(response_message);
     socket_map_actions.add_action(SocketMapAction::DELETE, _socket_fd_, this);
   }
-  return socket_map_actions;
 }
 
 } // namespace ns_socket
