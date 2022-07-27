@@ -1,6 +1,7 @@
 #include "http/response/ResponseGenerator.hpp"
 
 #include <fcntl.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
