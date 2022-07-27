@@ -26,7 +26,7 @@ bool Path::is_file_exists() const {
   struct stat file_info = {};
 
   if (stat(_path_.c_str(), &file_info) == -1) {
-    ERROR_LOG("file not exists: " << _path_);
+    // ERROR_LOG("file not exists: " << _path_);
     return false;
   }
   return ((file_info.st_mode & S_IFMT) == S_IFREG);
@@ -49,7 +49,7 @@ bool Path::has_suffix(const std::string &suffix) const {
 bool Path::is_accessible(int mode) const {
   int ret = access(_path_.c_str(), mode);
   if (ret == -1) {
-    ERROR_LOG_WITH_ERRNO("error: is_accessible: " << _path_);
+    // ERROR_LOG_WITH_ERRNO("error: is_accessible: " << _path_);
   }
   return ret == 0;
 }
