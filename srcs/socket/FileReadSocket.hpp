@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
+#include "http/response/Response.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/ClientSocket.hpp"
 #include "socket/LocalIOSocket.hpp"
