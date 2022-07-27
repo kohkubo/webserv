@@ -3,9 +3,9 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "event/Response.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/CgiInfo.hpp"
+#include "http/response/Response.hpp"
 #include "http/response/ResponseInfo.hpp"
 #include "socket/ClientSocket.hpp"
 #include "socket/SocketBase.hpp"

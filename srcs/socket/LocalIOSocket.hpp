@@ -2,7 +2,7 @@
 #define SRCS_SOCKET_LOCALIOSOCKET_HPP
 
 #include "SocketMapActions.hpp"
-#include "event/Response.hpp"
+#include "http/response/Response.hpp"
 #include "http/response/ResponseGenerator.hpp"
 #include "socket/ClientSocket.hpp"
 #include "socket/SocketBase.hpp"

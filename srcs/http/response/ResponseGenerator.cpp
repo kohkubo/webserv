@@ -9,10 +9,10 @@
 
 #include "config/Config.hpp"
 #include "config/Location.hpp"
-#include "event/Response.hpp"
 #include "http/HttpStatusCode.hpp"
 #include "http/const/const_delimiter.hpp"
 #include "http/request/RequestInfo.hpp"
+#include "http/response/Response.hpp"
 #include "socket/CgiSocket.hpp"
 #include "socket/FileReadSocket.hpp"
 #include "socket/FileWriteSocket.hpp"

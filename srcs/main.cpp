@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include "Server.hpp"
 #include "config/ConfGroupGen.hpp"
-#include "event/Server.hpp"
 
 #define DEFAULT_CONFIG_FILE_PATH "conf/webserv.conf"
 

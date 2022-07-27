@@ -11,7 +11,7 @@
 
 #include "config/ConfGroupGen.hpp"
 #include "config/Config.hpp"
-#include "event/RequestHandler.hpp"
+#include "http/request/RequestHandler.hpp"
 #include "http/request/RequestInfo.hpp"
 #include "http/response/CgiInfo.hpp"
 #include "utils/Result.hpp"

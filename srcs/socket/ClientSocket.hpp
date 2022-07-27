@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "config/ConfigGroup.hpp"
-#include "event/RequestHandler.hpp"
-#include "event/Response.hpp"
+#include "http/request/RequestHandler.hpp"
+#include "http/response/Response.hpp"
 #include "socket/SocketMapActions.hpp"
 #include "socket/Timeout.hpp"
 

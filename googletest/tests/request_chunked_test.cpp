@@ -4,7 +4,7 @@
 
 #include "config/Config.hpp"
 #include "config/ConfigGroup.hpp"
-#include "event/RequestHandler.hpp"
+#include "http/request/RequestHandler.hpp"
 #include "http/request/RequestInfo.hpp"
 
 TEST(request_chunked_test, chunked_body) {
