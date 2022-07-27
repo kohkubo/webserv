@@ -14,7 +14,7 @@ endif
 LIBDIR := lib
 SRCDIR := ../srcs
 OBJDIR := objs
-MAIN_FILE := webserv.cpp
+MAIN_FILE := main.cpp
 SRCFILE := $(filter-out %$(MAIN_FILE),$(shell find $(SRCDIR) -name "*.cpp" -type f))
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.o))
 DEPS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCFILE:.cpp=.d))
