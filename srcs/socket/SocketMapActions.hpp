@@ -28,6 +28,7 @@ public:
       socket_map.do_socket_map_action(*it);
     }
   }
+  void clear() { _socket_map_action_vector_.clear(); }
 };
 
 } // namespace ns_socket

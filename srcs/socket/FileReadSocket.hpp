@@ -26,9 +26,10 @@ public:
                       TIMEOUT_SECONDS_) {}
 
   virtual ~FileReadSocket() {}
-  virtual struct pollfd    pollfd();
-  virtual SocketMapActions handle_event(short int revents);
-  virtual bool             is_timed_out() { return _timeout_.is_timed_out(); }
+  virtual struct pollfd pollfd();
+  virtual void          handle_event(short int         revents,
+                                     SocketMapActions &socket_map_actions);
+  virtual bool          is_timed_out() { return _timeout_.is_timed_out(); }
 };
 
 } // namespace ns_socket
