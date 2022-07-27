@@ -68,19 +68,18 @@ struct pollfd ListenSocket::pollfd() {
   return (struct pollfd){_socket_fd_, POLLIN, 0};
 }
 
-SocketMapActions ListenSocket::handle_event(short int revents) {
-  SocketMapActions socket_map_actions;
+void ListenSocket::handle_event(short int         revents,
+                                SocketMapActions &socket_map_actions) {
   if ((revents & POLLIN) != 0) {
     connFd conn_fd = accept(_socket_fd_, (struct sockaddr *)NULL, NULL);
     if (conn_fd == -1) {
       ERROR_LOG_WITH_ERRNO("accept() failed.");
-      return socket_map_actions;
+      return;
     }
     SocketBase *client_socket = new ClientSocket(conn_fd, config_group_);
     socket_map_actions.add_action(SocketMapAction::INSERT, conn_fd,
                                   client_socket);
   }
-  return socket_map_actions;
 }
 
 bool ListenSocket::is_timed_out() { return false; }
