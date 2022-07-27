@@ -40,7 +40,9 @@ std::vector<ConfigGroup> generate_config_group(const Path config_file_path) {
       ERROR_EXIT("unexpected token: " << *it);
     }
   }
-
+  if (config_groups.size() == 0) {
+    ERROR_EXIT("need at least one server!");
+  }
   return config_groups;
 }
 
