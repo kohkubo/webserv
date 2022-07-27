@@ -1,3 +1,5 @@
+#include <signal.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <vector>
@@ -18,9 +20,7 @@ static const char *resolve_config_file(int argc, char **argv) {
   }
 }
 
-void init_signal() {
-  signal(SIGPIPE, SIG_IGN);
-}
+void init_signal() { signal(SIGPIPE, SIG_IGN); }
 
 int main(int argc, char **argv) {
   const char *config_file_path = resolve_config_file(argc, argv);
