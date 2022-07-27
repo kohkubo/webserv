@@ -20,7 +20,7 @@ void Server::run_loop() {
     _socket_map_.close_timedout_socket();
     std::vector<struct pollfd> pollfds = _socket_map_.create_pollfds();
     // usleep(1000); // siegeを使うときはここでsleepを入れる
-    int                        nready = poll(&pollfds[0], pollfds.size(), 5000);
+    int nready = poll(&pollfds[0], pollfds.size(), 5000);
     if (nready == -1) {
       ERROR_LOG_WITH_ERRNO("poll() failed");
       continue;
