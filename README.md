@@ -5,6 +5,8 @@ Web server program like nginx.
 Language: C++, Go(test)  
 Feature: I/O Multiplexing. CGI. GET, POST, and DELETE methods.
 
+⚠️ It is implemented for learning purposes and cannot be used in actual applications.
+
 # Getting Started
 
 ## Build & Start  
